@@ -52,6 +52,7 @@ namespace Antlr.Runtime.Debug
         }
 
         #region Properties
+
         public virtual int Index
         {
             get
@@ -59,6 +60,15 @@ namespace Antlr.Runtime.Debug
                 return input.Index;
             }
         }
+
+        public virtual int Range
+        {
+            get
+            {
+                return input.Range;
+            }
+        }
+
         public virtual IDebugEventListener DebugListener
         {
             get
@@ -70,6 +80,7 @@ namespace Antlr.Runtime.Debug
                 dbg = value;
             }
         }
+
         #endregion
 
         public virtual void Consume()

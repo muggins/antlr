@@ -33,6 +33,8 @@
 namespace Antlr.Runtime
 {
     using System.Collections.Generic;
+    using ArgumentException = System.ArgumentException;
+    using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
     using CLSCompliant = System.CLSCompliantAttribute;
     using IndexOutOfRangeException = System.IndexOutOfRangeException;
     using StringBuilder = System.Text.StringBuilder;
@@ -104,6 +106,15 @@ namespace Antlr.Runtime
             {
                 return _p;
             }
+        }
+
+        /// <summary>
+        /// How deep have we gone?
+        /// </summary>
+        public virtual int Range
+        {
+            get;
+            protected set;
         }
 
         public virtual int Count
@@ -201,6 +212,36 @@ namespace Antlr.Runtime
             return _tokens[i];
         }
 
+#if false // why is this different from GetTokens(start, count) ?
+        /// <summary>
+        /// Get all tokens from start..(start+count-1) inclusively
+        /// </summary>
+        public virtual List<IToken> Get(int start, int count)
+        {
+            if (start < 0)
+                throw new ArgumentOutOfRangeException("start");
+            if (count < 0)
+                throw new ArgumentOutOfRangeException("count");
+            if (start + count >= _tokens.Count)
+                throw new ArgumentException();
+
+            if (_p == -1)
+                Setup();
+
+            List<IToken> subset = new List<IToken>(count);
+            for (int i = 0; i < count; i++)
+            {
+                IToken token = _tokens[i];
+                if (token.Type == TokenTypes.EndOfFile)
+                    break;
+
+                subset.Add(token);
+            }
+
+            return subset;
+        }
+#endif
+
         public virtual int LA(int i)
         {
             return LT(i).Type;
@@ -223,12 +264,17 @@ namespace Antlr.Runtime
             if (k < 0)
                 return LB(-k);
 
-            Sync(_p + k - 1);
-            if ((_p + k - 1) >= _tokens.Count)
+            int i = _p + k - 1;
+            Sync(i);
+            if (i >= _tokens.Count)
             {
                 // EOF must be last token
                 return _tokens[_tokens.Count - 1];
             }
+
+            if (i > Range)
+                Range = i;
+
             return _tokens[_p + k - 1];
         }
 
@@ -245,7 +291,7 @@ namespace Antlr.Runtime
 
         public virtual List<IToken> GetTokens(int start, int stop)
         {
-            return GetTokens(start, stop, (BitSet)null);
+            return GetTokens(start, stop, default(BitSet));
         }
 
         /** Given a start and stop index, return a List of all tokens in

@@ -33,7 +33,9 @@
 namespace Antlr.Runtime
 {
     using System.Collections.Generic;
+    using System.Linq;
 
+    using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
     using InvalidOperationException = System.InvalidOperationException;
     using StringBuilder = System.Text.StringBuilder;
 
@@ -104,6 +106,15 @@ namespace Antlr.Runtime
             {
                 return p;
             }
+        }
+
+        /// <summary>
+        /// How deep have we gone?
+        /// </summary>
+        public virtual int Range
+        {
+            get;
+            protected set;
         }
 
         /** <summary>Reset this token stream by setting its token source.</summary> */
@@ -342,6 +353,10 @@ namespace Antlr.Runtime
             {
                 return tokens[tokens.Count - 1];
             }
+
+            if (i > Range)
+                Range = i;
+
             return (IToken)tokens[i];
         }
 
@@ -386,6 +401,20 @@ namespace Antlr.Runtime
         public virtual IToken Get( int i )
         {
             return (IToken)tokens[i];
+        }
+
+        /** Get all tokens from start..stop inclusively */
+        public virtual List<IToken> get(int start, int count)
+        {
+            if (start < 0)
+                throw new ArgumentOutOfRangeException("start");
+            if (count < 0)
+                throw new ArgumentOutOfRangeException("count");
+
+            if (p == -1)
+                FillBuffer();
+
+            return new List<IToken>(tokens.Skip(start).Take(count));
         }
 
         public virtual int LA( int i )

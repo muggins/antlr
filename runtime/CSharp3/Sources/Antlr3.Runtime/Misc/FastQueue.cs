@@ -33,7 +33,7 @@
 namespace Antlr.Runtime.Misc
 {
     using System.Collections.Generic;
-    using IndexOutOfRangeException = System.IndexOutOfRangeException;
+    using ArgumentException = System.ArgumentException;
 
     /** A queue that can dequeue and get(i) in O(1) and grow arbitrarily large.
      *  A linked list is fast at dequeue but slow at get(i).  An array is
@@ -60,6 +60,15 @@ namespace Antlr.Runtime.Misc
             }
         }
 
+        /// <summary>
+        /// How deep have we gone?
+        /// </summary>
+        public virtual int Range
+        {
+            get;
+            protected set;
+        }
+
         /** <summary>
          *  Return element i elements ahead of current element.  i==0 gets
          *  current element.  This is not an absolute index into the data list
@@ -70,12 +79,16 @@ namespace Antlr.Runtime.Misc
         {
             get
             {
-                if ( _p + i >= _data.Count )
-                    throw new IndexOutOfRangeException("queue index " + (_p + i) + " > last index " + (_data.Count - 1));
-                if (_p + i < 0)
-                    throw new IndexOutOfRangeException("queue index " + (_p + i) + " < 0");
+                int absIndex = _p + i;
+                if (absIndex >= _data.Count)
+                    throw new ArgumentException(string.Format("queue index {0} > last index {1}", absIndex, _data.Count - 1));
+                if (absIndex < 0)
+                    throw new ArgumentException(string.Format("queue index {0} < 0", absIndex));
 
-                return _data[_p + i];
+                if (absIndex > Range)
+                    Range = absIndex;
+
+                return _data[absIndex];
             }
         }
 

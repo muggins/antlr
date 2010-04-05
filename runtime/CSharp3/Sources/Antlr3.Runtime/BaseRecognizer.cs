@@ -619,7 +619,11 @@ namespace Antlr.Runtime
             return CombineFollows( true );
         }
 
-        protected virtual BitSet CombineFollows( bool exact )
+        // what is exact? it seems to only add sets from above on stack
+        // if EOR is in set i.  When it sees a set w/o EOR, it stops adding.
+        // Why would we ever want them all?  Maybe no viable alt instead of
+        // mismatched token?
+        protected virtual BitSet CombineFollows(bool exact)
         {
             int top = state._fsp;
             BitSet followSet = new BitSet();

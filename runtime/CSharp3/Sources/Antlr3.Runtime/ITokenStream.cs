@@ -43,6 +43,15 @@ namespace Antlr.Runtime
          */
         IToken LT( int k );
 
+        /// <summary>
+        /// How far ahead has the stream been asked to look?  The return
+        /// value is a valid index from 0..n-1.
+        /// </summary>
+        int Range
+        {
+            get;
+        }
+
         /** <summary>
          *  Get a token at an absolute index i; 0..n-1.  This is really only
          *  needed for profiling and debugging and token stream rewriting.

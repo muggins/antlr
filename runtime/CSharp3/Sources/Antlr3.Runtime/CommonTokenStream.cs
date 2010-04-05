@@ -131,6 +131,10 @@ namespace Antlr.Runtime
                 i = SkipOffTokenChannels(i + 1);
                 n++;
             }
+
+            if (i > Range)
+                Range = i;
+
             return _tokens[i];
         }
 
