@@ -96,6 +96,7 @@ namespace Antlr.Runtime
             index = oldToken.TokenIndex;
             charPositionInLine = oldToken.CharPositionInLine;
             channel = oldToken.Channel;
+            input = oldToken.InputStream;
             if ( oldToken is CommonToken )
             {
                 start = ( (CommonToken)oldToken ).start;
@@ -114,7 +115,7 @@ namespace Antlr.Runtime
                     return null;
 
                 if (start < input.Count && stop < input.Count)
-                    text = input.Substring(start, stop - start + 1);
+                text = input.Substring( start, stop - start + 1 );
                 else
                     text = "<EOF>";
 
