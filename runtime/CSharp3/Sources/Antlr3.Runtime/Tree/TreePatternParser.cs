@@ -32,7 +32,7 @@
 
 namespace Antlr.Runtime.Tree
 {
-    using Console = System.Console;
+    using InvalidOperationException = System.InvalidOperationException;
 
     public class TreePatternParser
     {
@@ -70,10 +70,8 @@ namespace Antlr.Runtime.Tree
         public virtual object ParseTree()
         {
             if ( ttype != TreePatternLexer.BEGIN )
-            {
-                Console.Out.WriteLine( "no BEGIN" );
-                return null;
-            }
+                throw new InvalidOperationException("No beginning.");
+
             ttype = tokenizer.NextToken();
             object root = ParseNode();
             if ( root == null )
@@ -100,11 +98,10 @@ namespace Antlr.Runtime.Tree
                     adaptor.AddChild( root, child );
                 }
             }
+
             if ( ttype != TreePatternLexer.END )
-            {
-                Console.Out.WriteLine( "no END" );
-                return null;
-            }
+                throw new InvalidOperationException("No end.");
+
             ttype = tokenizer.NextToken();
             return root;
         }
