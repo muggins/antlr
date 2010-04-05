@@ -42,7 +42,6 @@
     <Compile Include="ANTLRxxxxStreamFixture.cs" />
     <Compile Include="RewriteRuleXxxxStreamFixture.cs" />
     <Compile Include="TestDriver.cs" />
-    <Compile Include="TreeWizardFixture.cs" />
     <Compile Include="ITreeFixture.cs" />
     <Compile Include="ITreeNodeStreamFixture.cs" />
     <Compile Include="TestFixtureBase.cs" />

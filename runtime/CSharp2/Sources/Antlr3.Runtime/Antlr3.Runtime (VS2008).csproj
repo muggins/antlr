@@ -72,8 +72,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Antlr.Runtime.Debug\DebugEventListenerConstants.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\Check.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\DictionaryExtensions.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\EnumerableExtensions.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\ExceptionExtensions.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\IOExtensions.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\JSystem.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\LexerExtensions.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\StringExtensions.cs" />
+    <Compile Include="Antlr.Runtime.JavaExtensions\StringTokenizer.cs" />
     <Compile Include="Antlr.Runtime.Misc\FastQueue.cs" />
     <Compile Include="Antlr.Runtime.Misc\LookaheadStream.cs" />
     <Compile Include="Antlr.Runtime.Tree\BufferedTreeNodeStream.cs" />
@@ -81,7 +93,11 @@
     <Compile Include="Antlr.Runtime.Tree\TreeIterator.cs" />
     <Compile Include="Antlr.Runtime\ANTLRFileStream.cs" />
     <Compile Include="Antlr.Runtime\ANTLRStringStream.cs" />
+    <Compile Include="Antlr.Runtime\BufferedTokenStream.cs" />
+    <Compile Include="Antlr.Runtime\CharStreamConstants.cs" />
+    <Compile Include="Antlr.Runtime\LegacyCommonTokenStream.cs" />
     <Compile Include="Antlr.Runtime\TokenConstants.cs" />
+    <Compile Include="Antlr.Runtime\UnbufferedTokenStream.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Antlr.Runtime\BitSet.cs" />
     <Compile Include="Antlr.Runtime\ICharStream.cs" />
@@ -107,7 +123,6 @@
     <Compile Include="Antlr.Runtime\MissingTokenException.cs" />
     <Compile Include="Antlr.Runtime.Tree\CommonErrorNode.cs" />
     <Compile Include="Antlr.Runtime\UnwantedTokenException.cs" />
-    <Compile Include="Antlr.Runtime.Collections\CollectionUtils.cs" />
     <Compile Include="Antlr.Runtime.Collections\HashList.cs" />
     <Compile Include="Antlr.Runtime.Collections\StackList.cs" />
     <Compile Include="Antlr.Runtime.Tree\BaseTree.cs" />

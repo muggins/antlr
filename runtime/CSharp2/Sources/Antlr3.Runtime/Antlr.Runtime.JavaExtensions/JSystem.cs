@@ -1,10 +1,10 @@
-/*
+﻿/*
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008-2009 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2008 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,38 +30,60 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Antlr.Runtime {
+#if !DEBUG
+namespace Antlr.Runtime.JavaExtensions
+{
+    using System;
+    using System.IO;
 
-    /** <summary>
-     *  We were expecting a token but it's not found.  The current token
-     *  is actually what we wanted next.  Used for tree node errors too.
-     *  </summary>
-     */
-    public class MissingTokenException : MismatchedTokenException {
-        public object inserted;
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MissingTokenException() {
-        }
-
-        public MissingTokenException(int expecting, IIntStream input, object inserted) :
-            base(expecting, input) {
-            this.inserted = inserted;
-        }
-
-        public virtual int MissingType {
-            get {
-                return expecting;
+    public static class JSystem
+    {
+        [Obsolete]
+        public static TextWriter err
+        {
+            get
+            {
+                return Console.Error;
             }
         }
 
-        public override string ToString() {
-            if (inserted != null && Token != null) {
-                return "MissingTokenException(inserted " + inserted + " at " + Token.Text + ")";
+        [Obsolete]
+        public static TextWriter @out
+        {
+            get
+            {
+                return Console.Out;
             }
-            if (Token != null) {
-                return "MissingTokenException(at " + Token.Text + ")";
-            }
-            return "MissingTokenException";
         }
+
+        [Obsolete]
+        public static void arraycopy<T>( T[] sourceArray, int sourceIndex, T[] destinationArray, int destinationIndex, int length )
+        {
+            Array.Copy( sourceArray, sourceIndex, destinationArray, destinationIndex, length );
+        }
+
+        [Obsolete]
+        public static string getProperty( string name )
+        {
+            switch ( name )
+            {
+            case "file.encoding":
+                return System.Text.Encoding.Default.WebName;
+
+            case "line.separator":
+                return Environment.NewLine;
+
+            case "java.io.tmpdir":
+                return System.IO.Path.GetTempPath();
+
+            case "user.home":
+                return Environment.GetFolderPath( Environment.SpecialFolder.Personal );
+
+            default:
+                throw new ArgumentException( string.Format( "Unknown system property: '{0}'", name ) );
+            }
+        }
+
     }
 }
+#endif

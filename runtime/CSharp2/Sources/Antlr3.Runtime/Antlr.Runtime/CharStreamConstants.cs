@@ -1,4 +1,4 @@
-/*
+﻿/*
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
@@ -32,36 +32,8 @@
 
 namespace Antlr.Runtime {
 
-    /** <summary>
-     *  We were expecting a token but it's not found.  The current token
-     *  is actually what we wanted next.  Used for tree node errors too.
-     *  </summary>
-     */
-    public class MissingTokenException : MismatchedTokenException {
-        public object inserted;
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MissingTokenException() {
-        }
-
-        public MissingTokenException(int expecting, IIntStream input, object inserted) :
-            base(expecting, input) {
-            this.inserted = inserted;
-        }
-
-        public virtual int MissingType {
-            get {
-                return expecting;
-            }
-        }
-
-        public override string ToString() {
-            if (inserted != null && Token != null) {
-                return "MissingTokenException(inserted " + inserted + " at " + Token.Text + ")";
-            }
-            if (Token != null) {
-                return "MissingTokenException(at " + Token.Text + ")";
-            }
-            return "MissingTokenException";
-        }
+    public static class CharStreamConstants {
+        public const int EndOfFile = -1;
     }
+
 }

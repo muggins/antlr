@@ -34,9 +34,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Antlr.Runtime.Tree {
 	using System;
-	using System.Collections.Generic;
 	using IToken = Antlr.Runtime.IToken;
 	using CommonToken = Antlr.Runtime.CommonToken;
+    using System.Collections;
 
 	/// <summary>
 	/// A generic list of elements tracked in an alternative to be used in
@@ -67,7 +67,7 @@ namespace Antlr.Runtime.Tree {
 		/// <summary>
 		/// The list of tokens or subtrees we are tracking
 		/// </summary>
-		protected IList<object> elements;
+		protected IList elements;
 
 		/// <summary>
 		/// Tracks whether a node or subtree has been used in a stream
@@ -111,30 +111,11 @@ namespace Antlr.Runtime.Tree {
 		public RewriteRuleElementStream(
 			ITreeAdaptor adaptor,
 		    string elementDescription,
-            IList<object> elements
+            IList elements
 		)
 			: this(adaptor, elementDescription) {
 			this.singleElement = null;
 			this.elements = elements;
-		}
-
-		/// <summary>
-		/// Create a stream, but feed off an existing list
-		/// </summary>
-		[Obsolete("This constructor is for internal use only and might be phased out soon. Use instead the one with IList<T>.")]
-		public RewriteRuleElementStream(
-			ITreeAdaptor adaptor,
-			string elementDescription,
-		    System.Collections.IList elements
-		)
-			: this(adaptor, elementDescription) {
-			this.singleElement = null;
-			this.elements = new List<object>();
-			if (elements != null) {
-				foreach (object o in elements) {
-					this.elements.Add(o);
-				}
-			}
 		}
 
 		public virtual void Add(object el) {
@@ -150,7 +131,7 @@ namespace Antlr.Runtime.Tree {
 				return;
 			}
 			// adding 2nd element, move to list
-			elements = new List<object>(5);
+			elements = new ArrayList(5);
 			elements.Add(singleElement);
 			singleElement = null;
 			elements.Add(el);

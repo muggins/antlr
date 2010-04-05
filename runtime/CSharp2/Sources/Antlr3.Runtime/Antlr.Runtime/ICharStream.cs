@@ -36,11 +36,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Antlr.Runtime
 {
     using System;
-	
-	public enum CharStreamConstants
-    {
-		EOF = - 1,
-	}
 
     /// <summary>A source of characters for an ANTLR lexer </summary>
     public interface ICharStream : IIntStream

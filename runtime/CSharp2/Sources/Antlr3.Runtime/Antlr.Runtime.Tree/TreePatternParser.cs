@@ -155,7 +155,7 @@ namespace Antlr.Runtime.Tree
 			ttype = tokenizer.NextToken();
 			if (tokenName.Equals("nil"))
 			{
-				return adaptor.GetNilNode();
+				return adaptor.Nil;
 			}
 			string text = tokenName;
 			// check for arg

@@ -30,8 +30,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Antlr.Runtime.Tree
-{
+namespace Antlr.Runtime.Tree {
     using System.Collections.Generic;
 
     using Console = System.Console;
@@ -61,28 +60,23 @@ namespace Antlr.Runtime.Tree
      *
      *  @see CommonTreeNodeStream
      */
-    public class BufferedTreeNodeStream : ITreeNodeStream
-    {
+    public class BufferedTreeNodeStream : ITreeNodeStream {
         public const int DEFAULT_INITIAL_BUFFER_SIZE = 100;
         public const int INITIAL_CALL_STACK_SIZE = 10;
 
-        protected sealed class StreamIterator : IEnumerator<object>
-        {
+        protected sealed class StreamIterator : IEnumerator<object> {
             BufferedTreeNodeStream _outer;
             int _index;
 
-            public StreamIterator(BufferedTreeNodeStream outer)
-            {
+            public StreamIterator(BufferedTreeNodeStream outer) {
                 _outer = outer;
                 _index = -1;
             }
 
             #region IEnumerator<object> Members
 
-            public object Current
-            {
-                get
-                {
+            public object Current {
+                get {
                     if (_index < _outer.nodes.Count)
                         return _outer.nodes[_index];
 
@@ -94,24 +88,21 @@ namespace Antlr.Runtime.Tree
 
             #region IDisposable Members
 
-            public void Dispose()
-            {
+            public void Dispose() {
             }
 
             #endregion
 
             #region IEnumerator Members
 
-            public bool MoveNext()
-            {
+            public bool MoveNext() {
                 if (_index < _outer.nodes.Count)
                     _index++;
 
                 return _index < _outer.nodes.Count;
             }
 
-            public void Reset()
-            {
+            public void Reset() {
                 _index = -1;
             }
 
@@ -160,17 +151,14 @@ namespace Antlr.Runtime.Tree
         protected Stack<int> calls;
 
         public BufferedTreeNodeStream(object tree)
-            : this(new CommonTreeAdaptor(), tree)
-        {
+            : this(new CommonTreeAdaptor(), tree) {
         }
 
         public BufferedTreeNodeStream(ITreeAdaptor adaptor, object tree)
-            : this(adaptor, tree, DEFAULT_INITIAL_BUFFER_SIZE)
-        {
+            : this(adaptor, tree, DEFAULT_INITIAL_BUFFER_SIZE) {
         }
 
-        public BufferedTreeNodeStream(ITreeAdaptor adaptor, object tree, int initialBufferSize)
-        {
+        public BufferedTreeNodeStream(ITreeAdaptor adaptor, object tree, int initialBufferSize) {
             this.root = tree;
             this.adaptor = adaptor;
             nodes = new List<object>(initialBufferSize);
@@ -181,66 +169,50 @@ namespace Antlr.Runtime.Tree
 
         #region Properties
 
-        public virtual int Count
-        {
-            get
-            {
-                if (p == -1)
-                {
+        public virtual int Count {
+            get {
+                if (p == -1) {
                     throw new InvalidOperationException("Cannot determine the Count before the buffer is filled.");
                 }
                 return nodes.Count;
             }
         }
 
-        public virtual object TreeSource
-        {
-            get
-            {
+        public virtual object TreeSource {
+            get {
                 return root;
             }
         }
 
-        public virtual string SourceName
-        {
-            get
-            {
+        public virtual string SourceName {
+            get {
                 return TokenStream.SourceName;
             }
         }
 
-        public virtual ITokenStream TokenStream
-        {
-            get
-            {
+        public virtual ITokenStream TokenStream {
+            get {
                 return tokens;
             }
-            set
-            {
+            set {
                 tokens = value;
             }
         }
 
-        public virtual ITreeAdaptor TreeAdaptor
-        {
-            get
-            {
+        public virtual ITreeAdaptor TreeAdaptor {
+            get {
                 return adaptor;
             }
-            set
-            {
+            set {
                 adaptor = value;
             }
         }
 
-        public virtual bool UniqueNavigationNodes
-        {
-            get
-            {
+        public virtual bool UniqueNavigationNodes {
+            get {
                 return uniqueNavigationNodes;
             }
-            set
-            {
+            set {
                 uniqueNavigationNodes = value;
             }
         }
@@ -250,35 +222,29 @@ namespace Antlr.Runtime.Tree
         /** Walk tree with depth-first-search and fill nodes buffer.
          *  Don't do DOWN, UP nodes if its a list (t is isNil).
          */
-        protected virtual void FillBuffer()
-        {
+        protected virtual void FillBuffer() {
             FillBuffer(root);
             //Console.Out.WriteLine( "revIndex=" + tokenTypeToStreamIndexesMap );
             p = 0; // buffer of nodes intialized now
         }
 
-        public virtual void FillBuffer(object t)
-        {
+        public virtual void FillBuffer(object t) {
             bool nil = adaptor.IsNil(t);
-            if (!nil)
-            {
+            if (!nil) {
                 nodes.Add(t); // add this node
             }
             // add DOWN node if t has children
             int n = adaptor.GetChildCount(t);
-            if (!nil && n > 0)
-            {
+            if (!nil && n > 0) {
                 AddNavigationNode(TokenTypes.Down);
             }
             // and now add all its children
-            for (int c = 0; c < n; c++)
-            {
+            for (int c = 0; c < n; c++) {
                 object child = adaptor.GetChild(t, c);
                 FillBuffer(child);
             }
             // add UP node if t has children
-            if (!nil && n > 0)
-            {
+            if (!nil && n > 0) {
                 AddNavigationNode(TokenTypes.Up);
             }
         }
@@ -286,17 +252,13 @@ namespace Antlr.Runtime.Tree
         /** What is the stream index for node? 0..n-1
          *  Return -1 if node not found.
          */
-        protected virtual int GetNodeIndex(object node)
-        {
-            if (p == -1)
-            {
+        protected virtual int GetNodeIndex(object node) {
+            if (p == -1) {
                 FillBuffer();
             }
-            for (int i = 0; i < nodes.Count; i++)
-            {
+            for (int i = 0; i < nodes.Count; i++) {
                 object t = nodes[i];
-                if (t == node)
-                {
+                if (t == node) {
                     return i;
                 }
             }
@@ -307,70 +269,51 @@ namespace Antlr.Runtime.Tree
          *  the tree structure.  When debugging we need unique nodes
          *  so instantiate new ones when uniqueNavigationNodes is true.
          */
-        protected virtual void AddNavigationNode(int ttype)
-        {
+        protected virtual void AddNavigationNode(int ttype) {
             object navNode = null;
-            if (ttype == TokenTypes.Down)
-            {
-                if (UniqueNavigationNodes)
-                {
+            if (ttype == TokenTypes.Down) {
+                if (UniqueNavigationNodes) {
                     navNode = adaptor.Create(TokenTypes.Down, "DOWN");
-                }
-                else
-                {
+                } else {
                     navNode = down;
                 }
-            }
-            else
-            {
-                if (UniqueNavigationNodes)
-                {
+            } else {
+                if (UniqueNavigationNodes) {
                     navNode = adaptor.Create(TokenTypes.Up, "UP");
-                }
-                else
-                {
+                } else {
                     navNode = up;
                 }
             }
             nodes.Add(navNode);
         }
 
-        public virtual object this[int i]
-        {
-            get
-            {
-                if (p == -1)
-                {
+        public virtual object this[int i] {
+            get {
+                if (p == -1) {
                     throw new InvalidOperationException("Cannot get the node at index i before the buffer is filled.");
                 }
                 return nodes[i];
             }
         }
 
-        public virtual object LT(int k)
-        {
-            if (p == -1)
-            {
+        public virtual object LT(int k) {
+            if (p == -1) {
                 FillBuffer();
             }
-            if (k == 0)
-            {
+            if (k == 0) {
                 return null;
             }
-            if (k < 0)
-            {
+            if (k < 0) {
                 return LB(-k);
             }
             //System.out.print("LT(p="+p+","+k+")=");
-            if ((p + k - 1) >= nodes.Count)
-            {
+            if ((p + k - 1) >= nodes.Count) {
                 return eof;
             }
             return nodes[p + k - 1];
         }
 
-        public virtual object GetCurrentSymbol()
-        {
+        public virtual object GetCurrentSymbol() {
             return LT(1);
         }
 
@@ -396,70 +339,55 @@ namespace Antlr.Runtime.Tree
 #endif
 
         /** <summary>Look backwards k nodes</summary> */
-        protected virtual object LB(int k)
-        {
-            if (k == 0)
-            {
+        protected virtual object LB(int k) {
+            if (k == 0) {
                 return null;
             }
-            if ((p - k) < 0)
-            {
+            if ((p - k) < 0) {
                 return null;
             }
             return nodes[p - k];
         }
 
-        public virtual void Consume()
-        {
-            if (p == -1)
-            {
+        public virtual void Consume() {
+            if (p == -1) {
                 FillBuffer();
             }
             p++;
         }
 
-        public virtual int LA(int i)
-        {
-            return adaptor.GetNodeType(LT(i));
+        public virtual int LA(int i) {
+            return adaptor.GetType(LT(i));
         }
 
-        public virtual int Mark()
-        {
-            if (p == -1)
-            {
+        public virtual int Mark() {
+            if (p == -1) {
                 FillBuffer();
             }
             lastMarker = Index;
             return lastMarker;
         }
 
-        public virtual void Release(int marker)
-        {
+        public virtual void Release(int marker) {
             // no resources to release
         }
 
-        public virtual int Index
-        {
-            get
-            {
+        public virtual int Index {
+            get {
                 return p;
             }
         }
 
-        public virtual void Rewind(int marker)
-        {
+        public virtual void Rewind(int marker) {
             Seek(marker);
         }
 
-        public virtual void Rewind()
-        {
+        public virtual void Rewind() {
             Seek(lastMarker);
         }
 
-        public virtual void Seek(int index)
-        {
-            if (p == -1)
-            {
+        public virtual void Seek(int index) {
+            if (p == -1) {
                 FillBuffer();
             }
             p = index;
@@ -470,10 +398,8 @@ namespace Antlr.Runtime.Tree
          *  Switch back with pop().
          *  </summary>
          */
-        public virtual void Push(int index)
-        {
-            if (calls == null)
-            {
+        public virtual void Push(int index) {
+            if (calls == null) {
                 calls = new Stack<int>();
             }
             calls.Push(p); // save current index
@@ -485,27 +411,22 @@ namespace Antlr.Runtime.Tree
          *  Return top of stack (return index).
          *  </summary>
          */
-        public virtual int Pop()
-        {
+        public virtual int Pop() {
             int ret = calls.Pop();
             Seek(ret);
             return ret;
         }
 
-        public virtual void Reset()
-        {
+        public virtual void Reset() {
             p = 0;
             lastMarker = 0;
-            if (calls != null)
-            {
+            if (calls != null) {
                 calls.Clear();
             }
         }
 
-        public virtual IEnumerator<object> Iterator()
-        {
-            if (p == -1)
-            {
+        public virtual IEnumerator<object> Iterator() {
+            if (p == -1) {
                 FillBuffer();
             }
 
@@ -514,41 +435,33 @@ namespace Antlr.Runtime.Tree
 
         // TREE REWRITE INTERFACE
 
-        public virtual void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t)
-        {
-            if (parent != null)
-            {
+        public virtual void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t) {
+            if (parent != null) {
                 adaptor.ReplaceChildren(parent, startChildIndex, stopChildIndex, t);
             }
         }
 
         /** <summary>Used for testing, just return the token type stream</summary> */
-        public virtual string ToTokenTypeString()
-        {
-            if (p == -1)
-            {
+        public virtual string ToTokenTypeString() {
+            if (p == -1) {
                 FillBuffer();
             }
             StringBuilder buf = new StringBuilder();
-            for (int i = 0; i < nodes.Count; i++)
-            {
+            for (int i = 0; i < nodes.Count; i++) {
                 object t = nodes[i];
                 buf.Append(" ");
-                buf.Append(adaptor.GetNodeType(t));
+                buf.Append(adaptor.GetType(t));
             }
             return buf.ToString();
         }
 
         /** <summary>Debugging</summary> */
-        public virtual string ToTokenString(int start, int stop)
-        {
-            if (p == -1)
-            {
+        public virtual string ToTokenString(int start, int stop) {
+            if (p == -1) {
                 FillBuffer();
             }
             StringBuilder buf = new StringBuilder();
-            for (int i = start; i < nodes.Count && i <= stop; i++)
-            {
+            for (int i = start; i < nodes.Count && i <= stop; i++) {
                 object t = nodes[i];
                 buf.Append(" ");
                 buf.Append(adaptor.GetToken(t));
@@ -556,15 +469,12 @@ namespace Antlr.Runtime.Tree
             return buf.ToString();
         }
 
-        public virtual string ToString(object start, object stop)
-        {
+        public virtual string ToString(object start, object stop) {
             Console.Out.WriteLine("toString");
-            if (start == null || stop == null)
-            {
+            if (start == null || stop == null) {
                 return null;
             }
-            if (p == -1)
-            {
+            if (p == -1) {
                 throw new InvalidOperationException("Buffer is not yet filled.");
             }
             //Console.Out.WriteLine( "stop: " + stop );
@@ -577,18 +487,14 @@ namespace Antlr.Runtime.Tree
             else
                 Console.Out.WriteLine(stop);
             // if we have the token stream, use that to dump text in order
-            if (tokens != null)
-            {
+            if (tokens != null) {
                 int beginTokenIndex = adaptor.GetTokenStartIndex(start);
                 int endTokenIndex = adaptor.GetTokenStopIndex(stop);
                 // if it's a tree, use start/stop index from start node
                 // else use token range from start/stop nodes
-                if (adaptor.GetNodeType(stop) == TokenTypes.Up)
-                {
+                if (adaptor.GetType(stop) == TokenTypes.Up) {
                     endTokenIndex = adaptor.GetTokenStopIndex(start);
-                }
-                else if (adaptor.GetNodeType(stop) == TokenTypes.EndOfFile)
-                {
+                } else if (adaptor.GetType(stop) == TokenTypes.EndOfFile) {
                     endTokenIndex = Count - 2; // don't use EOF
                 }
                 return tokens.ToString(beginTokenIndex, endTokenIndex);
@@ -596,33 +502,28 @@ namespace Antlr.Runtime.Tree
             // walk nodes looking for start
             object t = null;
             int i = 0;
-            for (; i < nodes.Count; i++)
-            {
+            for (; i < nodes.Count; i++) {
                 t = nodes[i];
-                if (t == start)
-                {
+                if (t == start) {
                     break;
                 }
             }
             // now walk until we see stop, filling string buffer with text
             StringBuilder buf = new StringBuilder();
             t = nodes[i];
-            while (t != stop)
-            {
-                string text = adaptor.GetNodeText(t);
-                if (text == null)
-                {
-                    text = " " + adaptor.GetNodeType(t).ToString();
+            while (t != stop) {
+                string text = adaptor.GetText(t);
+                if (text == null) {
+                    text = " " + adaptor.GetType(t).ToString();
                 }
                 buf.Append(text);
                 i++;
                 t = nodes[i];
             }
             // include stop node too
-            string text2 = adaptor.GetNodeText(stop);
-            if (text2 == null)
-            {
-                text2 = " " + adaptor.GetNodeType(stop).ToString();
+            string text2 = adaptor.GetText(stop);
+            if (text2 == null) {
+                text2 = " " + adaptor.GetType(stop).ToString();
             }
             buf.Append(text2);
             return buf.ToString();

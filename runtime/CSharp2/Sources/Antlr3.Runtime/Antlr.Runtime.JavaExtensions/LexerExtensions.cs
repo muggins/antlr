@@ -1,10 +1,10 @@
-/*
+﻿/*
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008-2009 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2008 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,38 +30,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Antlr.Runtime {
-
-    /** <summary>
-     *  We were expecting a token but it's not found.  The current token
-     *  is actually what we wanted next.  Used for tree node errors too.
-     *  </summary>
-     */
-    public class MissingTokenException : MismatchedTokenException {
-        public object inserted;
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MissingTokenException() {
-        }
-
-        public MissingTokenException(int expecting, IIntStream input, object inserted) :
-            base(expecting, input) {
-            this.inserted = inserted;
-        }
-
-        public virtual int MissingType {
-            get {
-                return expecting;
-            }
-        }
-
-        public override string ToString() {
-            if (inserted != null && Token != null) {
-                return "MissingTokenException(inserted " + inserted + " at " + Token.Text + ")";
-            }
-            if (Token != null) {
-                return "MissingTokenException(at " + Token.Text + ")";
-            }
-            return "MissingTokenException";
+namespace Antlr.Runtime.JavaExtensions
+{
+    public static class LexerExtensions
+    {
+        public static void skip( Lexer lexer )
+        {
+            lexer.Skip();
         }
     }
 }

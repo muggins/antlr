@@ -56,8 +56,8 @@ namespace Antlr.Runtime.Tests
 		public void testSingleNode()
 		{
 			CommonTree t = new CommonTree(new CommonToken(101));
-			Assert.IsNull(t.parent);
-			Assert.AreEqual(-1, t.childIndex);
+			Assert.IsNull(t.Parent);
+			Assert.AreEqual(-1, t.ChildIndex);
 		}
 
 		[Test]
@@ -69,8 +69,8 @@ namespace Antlr.Runtime.Tests
 			r0.GetChild(0).AddChild(new CommonTree(new CommonToken(103)));
 			r0.AddChild(new CommonTree(new CommonToken(104)));
 
-			Assert.IsNull(r0.parent);
-			Assert.AreEqual(-1, r0.childIndex);
+			Assert.IsNull(r0.Parent);
+			Assert.AreEqual(-1, r0.ChildIndex);
 		}
 
 		[Test]
@@ -83,14 +83,14 @@ namespace Antlr.Runtime.Tests
 			r0.AddChild(c1 = new CommonTree(new CommonToken(102)));
 			r0.AddChild(c2 = new CommonTree(new CommonToken(103)));
 
-			Assert.IsNull(r0.parent);
-			Assert.AreEqual(-1, r0.childIndex);
-			Assert.AreEqual(r0, c0.parent);
-			Assert.AreEqual(0, c0.childIndex);
-			Assert.AreEqual(r0, c1.parent);
-			Assert.AreEqual(1, c1.childIndex);
-			Assert.AreEqual(r0, c2.parent);
-			Assert.AreEqual(2, c2.childIndex);
+			Assert.IsNull(r0.Parent);
+			Assert.AreEqual(-1, r0.ChildIndex);
+			Assert.AreEqual(r0, c0.Parent);
+			Assert.AreEqual(0, c0.ChildIndex);
+			Assert.AreEqual(r0, c1.Parent);
+			Assert.AreEqual(1, c1.ChildIndex);
+			Assert.AreEqual(r0, c2.Parent);
+			Assert.AreEqual(2, c2.ChildIndex);
 		}
 
 		[Test]
@@ -109,15 +109,15 @@ namespace Antlr.Runtime.Tests
 
 			root.AddChild(r0);
 
-			Assert.IsNull(root.parent);
-			Assert.AreEqual(-1, root.childIndex);
+			Assert.IsNull(root.Parent);
+			Assert.AreEqual(-1, root.ChildIndex);
 			// check children of root all point at root
-			Assert.AreEqual(root, c0.parent);
-			Assert.AreEqual(0, c0.childIndex);
-			Assert.AreEqual(root, c0.parent);
-			Assert.AreEqual(1, c1.childIndex);
-			Assert.AreEqual(root, c0.parent);
-			Assert.AreEqual(2, c2.childIndex);
+			Assert.AreEqual(root, c0.Parent);
+			Assert.AreEqual(0, c0.ChildIndex);
+			Assert.AreEqual(root, c0.Parent);
+			Assert.AreEqual(1, c1.ChildIndex);
+			Assert.AreEqual(root, c0.Parent);
+			Assert.AreEqual(2, c2.ChildIndex);
 		}
 
 		[Test]
@@ -137,15 +137,15 @@ namespace Antlr.Runtime.Tests
 
 			root.AddChild(r0);
 
-			Assert.IsNull(root.parent);
-			Assert.AreEqual(-1, root.childIndex);
+			Assert.IsNull(root.Parent);
+			Assert.AreEqual(-1, root.ChildIndex);
 			// check children of root all point at root
-			Assert.AreEqual(root, c0.parent);
-			Assert.AreEqual(1, c0.childIndex);
-			Assert.AreEqual(root, c0.parent);
-			Assert.AreEqual(2, c1.childIndex);
-			Assert.AreEqual(root, c0.parent);
-			Assert.AreEqual(3, c2.childIndex);
+			Assert.AreEqual(root, c0.Parent);
+			Assert.AreEqual(1, c0.ChildIndex);
+			Assert.AreEqual(root, c0.Parent);
+			Assert.AreEqual(2, c1.ChildIndex);
+			Assert.AreEqual(root, c0.Parent);
+			Assert.AreEqual(3, c2.ChildIndex);
 		}
 
 		[Test]
@@ -164,8 +164,8 @@ namespace Antlr.Runtime.Tests
 
 			CommonTree dup = (CommonTree)(new CommonTreeAdaptor()).DupTree(r0);
 
-			Assert.IsNull(dup.parent);
-			Assert.AreEqual(-1, dup.childIndex);
+			Assert.IsNull(dup.Parent);
+			Assert.AreEqual(-1, dup.ChildIndex);
 			dup.SanityCheckParentAndChildIndexes();
 		}
 
@@ -238,8 +238,8 @@ namespace Antlr.Runtime.Tests
 		{
 			// emulates construction of ^(5 6)
 			ITreeAdaptor adaptor = new CommonTreeAdaptor();
-			CommonTree root_0 = (CommonTree)adaptor.GetNilNode();
-			CommonTree root_1 = (CommonTree)adaptor.GetNilNode();
+			CommonTree root_0 = (CommonTree)adaptor.Nil;
+			CommonTree root_1 = (CommonTree)adaptor.Nil;
 			root_1 = (CommonTree)adaptor.BecomeRoot(new CommonTree(new CommonToken(5)), root_1);
 
 			adaptor.AddChild(root_1, new CommonTree(new CommonToken(6)));
@@ -337,7 +337,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.GetNilNode();
+			CommonTree newChildren = (CommonTree)adaptor.Nil;
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 
@@ -356,7 +356,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.GetNilNode();
+			CommonTree newChildren = (CommonTree)adaptor.Nil;
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 
@@ -375,7 +375,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.GetNilNode();
+			CommonTree newChildren = (CommonTree)adaptor.Nil;
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 
@@ -442,7 +442,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.GetNilNode();
+			CommonTree newChildren = (CommonTree)adaptor.Nil;
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 

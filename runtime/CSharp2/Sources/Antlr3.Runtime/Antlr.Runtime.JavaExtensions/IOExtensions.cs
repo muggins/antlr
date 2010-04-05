@@ -1,4 +1,4 @@
-/*
+﻿/*
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
@@ -30,38 +30,65 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Antlr.Runtime {
+#if !DEBUG
 
-    /** <summary>
-     *  We were expecting a token but it's not found.  The current token
-     *  is actually what we wanted next.  Used for tree node errors too.
-     *  </summary>
-     */
-    public class MissingTokenException : MismatchedTokenException {
-        public object inserted;
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MissingTokenException() {
+using System;
+
+using TextReader = System.IO.TextReader;
+using TextWriter = System.IO.TextWriter;
+
+namespace Antlr.Runtime.JavaExtensions
+{
+    public static class IOExtensions
+    {
+        [Obsolete]
+        public static void close( this TextReader reader )
+        {
+            reader.Close();
         }
 
-        public MissingTokenException(int expecting, IIntStream input, object inserted) :
-            base(expecting, input) {
-            this.inserted = inserted;
+        [Obsolete]
+        public static void close( this TextWriter writer )
+        {
+            writer.Close();
         }
 
-        public virtual int MissingType {
-            get {
-                return expecting;
-            }
+        [Obsolete]
+        public static void print<T>( this TextWriter writer, T value )
+        {
+            writer.Write( value );
         }
 
-        public override string ToString() {
-            if (inserted != null && Token != null) {
-                return "MissingTokenException(inserted " + inserted + " at " + Token.Text + ")";
-            }
-            if (Token != null) {
-                return "MissingTokenException(at " + Token.Text + ")";
-            }
-            return "MissingTokenException";
+        [Obsolete]
+        public static void println( this TextWriter writer )
+        {
+            writer.WriteLine();
+        }
+
+        [Obsolete]
+        public static void println<T>( this TextWriter writer, T value )
+        {
+            writer.WriteLine( value );
+        }
+
+        [Obsolete]
+        public static void write<T>( this TextWriter writer, T value )
+        {
+            writer.Write( value );
+        }
+
+        [Obsolete]
+        public static int read( this TextReader reader, char[] buffer, int index, int count )
+        {
+            return reader.Read( buffer, index, count );
+        }
+
+        [Obsolete]
+        public static string readLine( this TextReader reader )
+        {
+            return reader.ReadLine();
         }
     }
 }
+
+#endif

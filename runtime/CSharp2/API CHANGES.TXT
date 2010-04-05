@@ -41,3 +41,7 @@ Antlr.Runtime.Tree.RewriteRuleElementStream.Dup() has been added
 Antlr.Runtime.Tree.RewriteRuleTokenStream.Dup() has been added
 
 Antlr.Runtime.Tree.RewriteRuleTokenStream.Dup() has been added
+
+Antlr.Runtime.CharStreamConstants.EOF has been renamed to EndOfFile
+
+Antlr.Runtime.Tree.ITreeAdaptor.GetNilNode has been turned into property Nil (implementing classes followed)

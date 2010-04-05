@@ -47,7 +47,7 @@ namespace Antlr.Runtime
 
 		public static readonly int MIN_TOKEN_TYPE = UP + 1;
 
-		public static readonly int EOF = (int)CharStreamConstants.EOF;
+        public static readonly int EOF = (int)CharStreamConstants.EndOfFile;
 		public static readonly IToken EOF_TOKEN = new CommonToken(EOF);
 
 		public const int INVALID_TOKEN_TYPE = 0;

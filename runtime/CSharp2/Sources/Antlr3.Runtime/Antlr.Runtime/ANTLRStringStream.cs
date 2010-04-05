@@ -146,13 +146,13 @@ namespace Antlr.Runtime
 				i++; // e.g., translate LA(-1) to use offset i=0; then data[p+0-1]
 				if ( (p + i - 1) < 0 ) 
 				{
-					return (int)CharStreamConstants.EOF; // invalid; no char before first char
+                    return (int)CharStreamConstants.EndOfFile; // invalid; no char before first char
 				}
 			}
 			
 			if ((p + i - 1) >= n)
             {
-                return (int)CharStreamConstants.EOF;
+                return (int)CharStreamConstants.EndOfFile;
             }
             return data[p + i - 1];
         }

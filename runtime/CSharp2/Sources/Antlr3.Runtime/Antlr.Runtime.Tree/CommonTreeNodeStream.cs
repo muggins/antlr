@@ -30,16 +30,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Antlr.Runtime.Tree
-{
+namespace Antlr.Runtime.Tree {
     using System.Collections.Generic;
     using Antlr.Runtime.Misc;
 
     using StringBuilder = System.Text.StringBuilder;
+    using NotSupportedException = System.NotSupportedException;
 
     [System.Serializable]
-    public class CommonTreeNodeStream : LookaheadStream<object>, ITreeNodeStream
-    {
+    public class CommonTreeNodeStream : LookaheadStream<object>, ITreeNodeStream {
         public const int DEFAULT_INITIAL_BUFFER_SIZE = 100;
         public const int INITIAL_CALL_STACK_SIZE = 10;
 
@@ -66,73 +65,61 @@ namespace Antlr.Runtime.Tree
         int _level = 0;
 
         public CommonTreeNodeStream(object tree)
-            : this(new CommonTreeAdaptor(), tree)
-        {
+            : this(new CommonTreeAdaptor(), tree) {
         }
 
-        public CommonTreeNodeStream(ITreeAdaptor adaptor, object tree)
-            : base(adaptor.Create(TokenTypes.EndOfFile, "EOF")) // set EOF
-        {
+        public CommonTreeNodeStream(ITreeAdaptor adaptor, object tree) {
             this._root = tree;
             this._adaptor = adaptor;
             _it = new TreeIterator(adaptor, _root);
-            _it.eof = this.EndOfFile; // make sure tree iterator returns the EOF we want
         }
 
         #region Properties
-        public virtual string SourceName
-        {
-            get
-            {
+
+        public virtual string SourceName {
+            get {
                 if (TokenStream == null)
                     return null;
 
                 return TokenStream.SourceName;
             }
         }
-        public virtual ITokenStream TokenStream
-        {
-            get
-            {
+
+        public virtual ITokenStream TokenStream {
+            get {
                 return tokens;
             }
-            set
-            {
+            set {
                 tokens = value;
             }
         }
-        public virtual ITreeAdaptor TreeAdaptor
-        {
-            get
-            {
+
+        public virtual ITreeAdaptor TreeAdaptor {
+            get {
                 return _adaptor;
             }
-            set
-            {
+            set {
                 _adaptor = value;
             }
         }
-        public virtual object TreeSource
-        {
-            get
-            {
+
+        public virtual object TreeSource {
+            get {
                 return _root;
             }
         }
-        public virtual bool UniqueNavigationNodes
-        {
-            get
-            {
+
+        public virtual bool UniqueNavigationNodes {
+            get {
                 return false;
             }
-            set
-            {
+            set {
             }
         }
+
         #endregion
 
-        public virtual void Reset()
-        {
+        public virtual void Reset() {
             base.Clear();
             _it.Reset();
             _hasNilRoot = false;
@@ -141,27 +128,21 @@ namespace Antlr.Runtime.Tree
                 _calls.Clear();
         }
 
-        public override object NextElement()
-        {
+        public override object NextElement() {
             _it.MoveNext();
             object t = _it.Current;
             //System.out.println("pulled "+adaptor.getType(t));
-            if (t == _it.up)
-            {
+            if (t == _it.up) {
                 _level--;
-                if (_level == 0 && _hasNilRoot)
-                {
+                if (_level == 0 && _hasNilRoot) {
                     _it.MoveNext();
                     return _it.Current; // don't give last UP; get EOF
                 }
-            }
-            else if (t == _it.down)
-            {
+            } else if (t == _it.down) {
                 _level++;
             }
 
-            if (_level == 0 && _adaptor.IsNil(t))
-            {
+            if (_level == 0 && _adaptor.IsNil(t)) {
                 // if nil root, scarf nil, DOWN
                 _hasNilRoot = true;
                 _it.MoveNext();
@@ -173,18 +154,19 @@ namespace Antlr.Runtime.Tree
             return t;
         }
 
-        public virtual int LA(int i)
-        {
-            return _adaptor.GetNodeType(LT(i));
+        public override bool IsEndOfFile(object o) {
+            return _adaptor.GetType(o) == CharStreamConstants.EndOfFile;
+        }
+
+        public virtual int LA(int i) {
+            return _adaptor.GetType(LT(i));
         }
 
         /** Make stream jump to a new location, saving old location.
          *  Switch back with pop().
          */
-        public virtual void Push(int index)
-        {
-            if (_calls == null)
-            {
+        public virtual void Push(int index) {
+            if (_calls == null) {
                 _calls = new Stack<int>();
             }
             _calls.Push(_p); // save current index
@@ -194,8 +176,7 @@ namespace Antlr.Runtime.Tree
         /** Seek back to previous index saved during last push() call.
          *  Return top of stack (return index).
          */
-        public virtual int Pop()
-        {
+        public virtual int Pop() {
             int ret = _calls.Pop();
             Seek(ret);
             return ret;
@@ -203,37 +184,32 @@ namespace Antlr.Runtime.Tree
 
         #region Tree rewrite interface
 
-        public virtual void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t)
-        {
-            if (parent != null)
-            {
+        public virtual void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t) {
+            if (parent != null) {
                 _adaptor.ReplaceChildren(parent, startChildIndex, stopChildIndex, t);
             }
         }
 
         #endregion
 
-        public virtual string ToString(object start, object stop)
-        {
+        public virtual string ToString(object start, object stop) {
             // we'll have to walk from start to stop in tree; we're not keeping
             // a complete node stream buffer
             return "n/a";
         }
 
         /** <summary>For debugging; destructive: moves tree iterator to end.</summary> */
-        public virtual string ToTokenTypeString()
-        {
+        public virtual string ToTokenTypeString() {
             Reset();
             StringBuilder buf = new StringBuilder();
             object o = LT(1);
-            int type = _adaptor.GetNodeType(o);
-            while (type != TokenTypes.EndOfFile)
-            {
+            int type = _adaptor.GetType(o);
+            while (type != TokenTypes.EndOfFile) {
                 buf.Append(" ");
                 buf.Append(type);
                 Consume();
                 o = LT(1);
-                type = _adaptor.GetNodeType(o);
+                type = _adaptor.GetType(o);
             }
             return buf.ToString();
         }

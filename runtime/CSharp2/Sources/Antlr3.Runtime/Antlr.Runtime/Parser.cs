@@ -51,7 +51,7 @@ namespace Antlr.Runtime
 		public Parser(ITokenStream input, RecognizerSharedState state)
 			: base(state) // share the state object with another parser
 		{
-			TokenStream = input;
+            this.input = input;
 		}
 
 		override public void Reset() 
@@ -82,7 +82,7 @@ namespace Antlr.Runtime
 			}
 			t.line = current.Line;
 			t.CharPositionInLine = current.CharPositionInLine;
-			t.Channel = DEFAULT_TOKEN_CHANNEL;
+			t.Channel = DefaultTokenChannel;
 			return t;
 		}
 

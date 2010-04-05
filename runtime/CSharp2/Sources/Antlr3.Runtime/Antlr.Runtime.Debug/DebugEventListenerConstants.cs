@@ -1,4 +1,4 @@
-/*
+﻿/*
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
@@ -30,38 +30,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Antlr.Runtime {
+namespace Antlr.Runtime.Debug
+{
 
-    /** <summary>
-     *  We were expecting a token but it's not found.  The current token
-     *  is actually what we wanted next.  Used for tree node errors too.
-     *  </summary>
-     */
-    public class MissingTokenException : MismatchedTokenException {
-        public object inserted;
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MissingTokenException() {
-        }
+    public static class DebugEventListenerConstants
+    {
+        /** <summary>Moved to version 2 for v3.1: added grammar name to enter/exit Rule</summary> */
+        public const string ProtocolVersion = "2";
 
-        public MissingTokenException(int expecting, IIntStream input, object inserted) :
-            base(expecting, input) {
-            this.inserted = inserted;
-        }
-
-        public virtual int MissingType {
-            get {
-                return expecting;
-            }
-        }
-
-        public override string ToString() {
-            if (inserted != null && Token != null) {
-                return "MissingTokenException(inserted " + inserted + " at " + Token.Text + ")";
-            }
-            if (Token != null) {
-                return "MissingTokenException(at " + Token.Text + ")";
-            }
-            return "MissingTokenException";
-        }
+        /** <summary>Serialized version of true</summary> */
+        public const int True = 1;
+        public const int False = 0;
     }
+
 }

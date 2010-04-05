@@ -645,7 +645,7 @@ namespace Antlr.Runtime.Tests
 			for (int i = 0; i < nodes.Count; i++)
 			{
 				object t = nodes.LT(i + 1);
-				int type = nodes.TreeAdaptor.GetNodeType(t);
+				int type = nodes.TreeAdaptor.GetType(t);
 				if (!((type == Token.DOWN) || (type == Token.UP)))
 				{
 					buf.Append(" ");

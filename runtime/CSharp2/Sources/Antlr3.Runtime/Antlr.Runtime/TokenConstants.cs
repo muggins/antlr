@@ -52,7 +52,7 @@ namespace Antlr.Runtime
 
     public static class TokenTypes
     {
-        public const int EndOfFile = (int) CharStreamConstants.EOF;
+        public const int EndOfFile = (int)CharStreamConstants.EndOfFile;
         public const int Invalid = 0;
         public const int EndOfRule = 1;
         /** <summary>imaginary tree navigation type; traverse "get child" link</summary> */

@@ -222,7 +222,7 @@ namespace Antlr.Runtime
 				{
 					ITreeNodeStream nodes = (ITreeNodeStream)input;
 					ITreeAdaptor adaptor = nodes.TreeAdaptor;
-					return adaptor.GetNodeType(node);
+					return adaptor.GetType(node);
 				}
 				else
 				{
@@ -283,8 +283,8 @@ namespace Antlr.Runtime
 			}
 			else 
 			{
-				int type = adaptor.GetNodeType(this.node);
-				string text = adaptor.GetNodeText(this.node);
+				int type = adaptor.GetType(this.node);
+				string text = adaptor.GetText(this.node);
 				this.token = new CommonToken(type, text);
 			}
 		}
