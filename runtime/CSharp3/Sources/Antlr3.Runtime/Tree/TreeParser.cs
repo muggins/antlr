@@ -106,7 +106,8 @@ namespace Antlr.Runtime.Tree
         {
             string tokenText =
                 "<missing " + TokenNames[expectedTokenType] + ">";
-            return new CommonTree( new CommonToken( expectedTokenType, tokenText ) );
+            ITreeAdaptor adaptor = ((ITreeNodeStream)e.Input).TreeAdaptor;
+            return adaptor.Create(new CommonToken(expectedTokenType, tokenText));
         }
 
         /** <summary>
