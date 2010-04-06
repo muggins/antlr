@@ -403,8 +403,9 @@ namespace Antlr.Runtime
             return (IToken)tokens[i];
         }
 
+#if false
         /** Get all tokens from start..stop inclusively */
-        public virtual List<IToken> get(int start, int count)
+        public virtual List<IToken> Get(int start, int count)
         {
             if (start < 0)
                 throw new ArgumentOutOfRangeException("start");
@@ -416,6 +417,7 @@ namespace Antlr.Runtime
 
             return new List<IToken>(tokens.Skip(start).Take(count));
         }
+#endif
 
         public virtual int LA( int i )
         {
