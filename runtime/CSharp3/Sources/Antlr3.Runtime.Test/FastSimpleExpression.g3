@@ -40,10 +40,7 @@ options
 	ASTLabelType=CommonTree;
 }
 
-@lexer::header
-{
-using Lexer = Antlr.Runtime.SlimLexer;
-}
+@lexer::superClass{Antlr.Runtime.SlimLexer}
 
 public
 expression

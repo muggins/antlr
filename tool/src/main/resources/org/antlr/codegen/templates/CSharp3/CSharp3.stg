@@ -90,7 +90,7 @@ namespace <actions.(actionScope).namespace>
 >>
 
 lexer(grammar, name, tokens, scopes, rules, numRules, labelType="CommonToken",
-      filterMode, superClass="Lexer") ::= <<
+      filterMode, superClass={<if(actions.(actionScope).superClass)><actions.(actionScope).superClass><else>Antlr.Runtime.Lexer<endif>}) ::= <<
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "<ANTLRVersion>")]
 [System.CLSCompliant(false)]
 public partial class <grammar.recognizerName> : <@superClassName><superClass><@end>
@@ -340,7 +340,7 @@ this.state.ruleMemo = new System.Collections.Generic.Dictionary\<int, int>[<leng
 >>
 
 parser(grammar, name, scopes, tokens, tokenNames, rules, numRules, bitsets,
-       ASTLabelType="object", superClass="Parser", labelType="IToken",
+       ASTLabelType="object", superClass={<if(actions.(actionScope).superClass)><actions.(actionScope).superClass><else>Antlr.Runtime.Parser<endif>}, labelType="IToken",
        members={<actions.parser.members>}) ::= <<
 <genericParser(inputStreamType="ITokenStream", rewriteElementType="IToken", ...)>
 >>
@@ -350,7 +350,7 @@ parser(grammar, name, scopes, tokens, tokenNames, rules, numRules, bitsets,
  */
 treeParser(grammar, name, scopes, tokens, tokenNames, globalAction, rules,
            numRules, bitsets, labelType={<ASTLabelType>}, ASTLabelType="object",
-           superClass={<if(filterMode)><if(buildAST)>TreeRewriter<else>TreeFilter<endif><else>TreeParser<endif>},
+           superClass={<if(actions.(actionScope).superClass)><actions.(actionScope).superClass><else>Antlr.Runtime.Tree.<if(filterMode)><if(buildAST)>TreeRewriter<else>TreeFilter<endif><else>TreeParser<endif><endif>},
            members={<actions.treeparser.members>},
            filterMode) ::= <<
 <genericParser(inputStreamType="ITreeNodeStream", rewriteElementType="Node", ...)>
