@@ -32,27 +32,62 @@
 
 namespace Antlr.Runtime
 {
+    using ArgumentNullException = System.ArgumentNullException;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
+    [System.Serializable]
     public class MismatchedRangeException : RecognitionException
     {
-        public int a;
-        public int b;
+        private readonly int _a;
+        private readonly int _b;
 
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MismatchedRangeException()
+        public MismatchedRangeException(int a, int b, IIntStream input)
+            : base(input)
         {
+            this._a = a;
+            this._b = b;
         }
 
-        public MismatchedRangeException( int a, int b, IIntStream input )
-            : base( input )
+        protected MismatchedRangeException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
-            this.a = a;
-            this.b = b;
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            this._a = info.GetInt32("A");
+            this._b = info.GetInt32("B");
+        }
+
+        public int A
+        {
+            get
+            {
+                return _a;
+            }
+        }
+
+        public int B
+        {
+            get
+            {
+                return _b;
+            }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("A", _a);
+            info.AddValue("B", _b);
         }
 
         public override string ToString()
         {
-            return "MismatchedRangeException(" + UnexpectedType + " not in [" + a + "," + b + "])";
+            return "MismatchedRangeException(" + UnexpectedType + " not in [" + A + "," + B + "])";
         }
     }
 }

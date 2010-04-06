@@ -32,25 +32,50 @@
 
 namespace Antlr.Runtime
 {
+    using ArgumentNullException = System.ArgumentNullException;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
+    [System.Serializable]
     public class MismatchedSetException : RecognitionException
     {
-        public BitSet expecting;
+        private readonly BitSet _expecting;
 
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MismatchedSetException()
+        public MismatchedSetException( BitSet expecting, IIntStream input )
+            : base( input )
         {
+            this._expecting = expecting;
+        }
+        
+        protected MismatchedSetException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            this._expecting = (BitSet)info.GetValue("Expecting", typeof(BitSet));
         }
 
-        public MismatchedSetException( BitSet expecting, IIntStream input ) :
-            base( input )
+        public BitSet Expecting
         {
-            this.expecting = expecting;
+            get
+            {
+                return _expecting;
+            }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("Expecting", _expecting);
         }
 
         public override string ToString()
         {
-            return "MismatchedSetException(" + UnexpectedType + "!=" + expecting + ")";
+            return "MismatchedSetException(" + UnexpectedType + "!=" + Expecting + ")";
         }
     }
 }

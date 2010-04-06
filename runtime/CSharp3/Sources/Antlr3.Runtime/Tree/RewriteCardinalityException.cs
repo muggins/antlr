@@ -32,7 +32,10 @@
 
 namespace Antlr.Runtime.Tree
 {
+    using ArgumentNullException = System.ArgumentNullException;
     using Exception = System.Exception;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>
      *  Base class for all exceptions thrown during AST rewrite construction.
@@ -43,19 +46,37 @@ namespace Antlr.Runtime.Tree
     [System.Serializable]
     public class RewriteCardinalityException : Exception
     {
-        public string elementDescription;
+        private readonly string _elementDescription;
 
-        public RewriteCardinalityException( string elementDescription )
+        public RewriteCardinalityException(string elementDescription)
         {
-            this.elementDescription = elementDescription;
+            this._elementDescription = elementDescription;
+        }
+
+        protected RewriteCardinalityException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            _elementDescription = info.GetString("ElementDescription");
         }
 
         public override string Message
         {
             get
             {
-                return elementDescription;
+                return _elementDescription;
             }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("ElementDescription", _elementDescription);
         }
     }
 }

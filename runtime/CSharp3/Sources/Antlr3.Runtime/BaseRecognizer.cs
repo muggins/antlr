@@ -274,13 +274,13 @@ namespace Antlr.Runtime
             {
                 UnwantedTokenException ute = (UnwantedTokenException)e;
                 string tokenName = "<unknown>";
-                if ( ute.expecting == TokenTypes.EndOfFile )
+                if ( ute.Expecting == TokenTypes.EndOfFile )
                 {
                     tokenName = "EndOfFile";
                 }
                 else
                 {
-                    tokenName = tokenNames[ute.expecting];
+                    tokenName = tokenNames[ute.Expecting];
                 }
                 msg = "extraneous input " + GetTokenErrorDisplay( ute.UnexpectedToken ) +
                     " expecting " + tokenName;
@@ -289,13 +289,13 @@ namespace Antlr.Runtime
             {
                 MissingTokenException mte = (MissingTokenException)e;
                 string tokenName = "<unknown>";
-                if ( mte.expecting == TokenTypes.EndOfFile )
+                if ( mte.Expecting == TokenTypes.EndOfFile )
                 {
                     tokenName = "EndOfFile";
                 }
                 else
                 {
-                    tokenName = tokenNames[mte.expecting];
+                    tokenName = tokenNames[mte.Expecting];
                 }
                 msg = "missing " + tokenName + " at " + GetTokenErrorDisplay( e.Token );
             }
@@ -303,13 +303,13 @@ namespace Antlr.Runtime
             {
                 MismatchedTokenException mte = (MismatchedTokenException)e;
                 string tokenName = "<unknown>";
-                if ( mte.expecting == TokenTypes.EndOfFile )
+                if ( mte.Expecting == TokenTypes.EndOfFile )
                 {
                     tokenName = "EndOfFile";
                 }
                 else
                 {
-                    tokenName = tokenNames[mte.expecting];
+                    tokenName = tokenNames[mte.Expecting];
                 }
                 msg = "mismatched input " + GetTokenErrorDisplay( e.Token ) +
                     " expecting " + tokenName;
@@ -318,13 +318,13 @@ namespace Antlr.Runtime
             {
                 MismatchedTreeNodeException mtne = (MismatchedTreeNodeException)e;
                 string tokenName = "<unknown>";
-                if ( mtne.expecting == TokenTypes.EndOfFile )
+                if ( mtne.Expecting == TokenTypes.EndOfFile )
                 {
                     tokenName = "EndOfFile";
                 }
                 else
                 {
-                    tokenName = tokenNames[mtne.expecting];
+                    tokenName = tokenNames[mtne.Expecting];
                 }
                 // workaround for a .NET framework bug (NullReferenceException)
                 string nodeText = ( mtne.Node != null ) ? mtne.Node.ToString() ?? string.Empty : string.Empty;
@@ -349,19 +349,19 @@ namespace Antlr.Runtime
             {
                 MismatchedSetException mse = (MismatchedSetException)e;
                 msg = "mismatched input " + GetTokenErrorDisplay( e.Token ) +
-                    " expecting set " + mse.expecting;
+                    " expecting set " + mse.Expecting;
             }
             else if ( e is MismatchedNotSetException )
             {
                 MismatchedNotSetException mse = (MismatchedNotSetException)e;
                 msg = "mismatched input " + GetTokenErrorDisplay( e.Token ) +
-                    " expecting set " + mse.expecting;
+                    " expecting set " + mse.Expecting;
             }
             else if ( e is FailedPredicateException )
             {
                 FailedPredicateException fpe = (FailedPredicateException)e;
-                msg = "rule " + fpe.ruleName + " failed predicate: {" +
-                    fpe.predicateText + "}?";
+                msg = "rule " + fpe.RuleName + " failed predicate: {" +
+                    fpe.PredicateText + "}?";
             }
             return msg;
         }
@@ -691,10 +691,7 @@ namespace Antlr.Runtime
             // if next token is what we are looking for then "delete" this token
             if ( MismatchIsUnwantedToken( input, ttype ) )
             {
-                e = new UnwantedTokenException( ttype, input )
-                {
-                    tokenNames = TokenNames
-                };
+                e = new UnwantedTokenException( ttype, input, TokenNames );
                 /*
                 System.err.println("recoverFromMismatchedToken deleting "+
                                    ((TokenStream)input).LT(1)+
@@ -718,10 +715,7 @@ namespace Antlr.Runtime
                 return inserted;
             }
             // even that didn't work; must throw the exception
-            e = new MismatchedTokenException( ttype, input )
-            {
-                tokenNames = TokenNames
-            };
+            e = new MismatchedTokenException(ttype, input, TokenNames);
             throw e;
         }
 

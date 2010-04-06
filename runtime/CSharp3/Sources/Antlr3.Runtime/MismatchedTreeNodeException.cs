@@ -32,27 +32,51 @@
 
 namespace Antlr.Runtime
 {
+    using ArgumentNullException = System.ArgumentNullException;
     using ITreeNodeStream = Antlr.Runtime.Tree.ITreeNodeStream;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
-    /**
-     */
+    [System.Serializable]
     public class MismatchedTreeNodeException : RecognitionException
     {
-        public int expecting;
+        private readonly int _expecting;
 
-        public MismatchedTreeNodeException()
+        public MismatchedTreeNodeException( int expecting, ITreeNodeStream input )
+            : base( input )
         {
+            this._expecting = expecting;
+        }
+        
+        protected MismatchedTreeNodeException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            this._expecting = info.GetInt32("Expecting");
         }
 
-        public MismatchedTreeNodeException( int expecting, ITreeNodeStream input ) :
-            base( input )
+        public int Expecting
         {
-            this.expecting = expecting;
+            get
+            {
+                return _expecting;
+            }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("Expecting", _expecting);
         }
 
         public override string ToString()
         {
-            return "MismatchedTreeNodeException(" + UnexpectedType + "!=" + expecting + ")";
+            return "MismatchedTreeNodeException(" + UnexpectedType + "!=" + Expecting + ")";
         }
     }
 }

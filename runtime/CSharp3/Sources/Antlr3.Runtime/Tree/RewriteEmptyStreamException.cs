@@ -32,13 +32,20 @@
 
 namespace Antlr.Runtime.Tree
 {
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>Ref to ID or expr but no tokens in ID stream or subtrees in expr stream</summary> */
     [System.Serializable]
     public class RewriteEmptyStreamException : RewriteCardinalityException
     {
-        public RewriteEmptyStreamException( string elementDescription )
-            : base( elementDescription )
+        public RewriteEmptyStreamException(string elementDescription)
+            : base(elementDescription)
+        {
+        }
+
+        protected RewriteEmptyStreamException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

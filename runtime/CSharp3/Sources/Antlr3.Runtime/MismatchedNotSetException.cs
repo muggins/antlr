@@ -32,22 +32,25 @@
 
 namespace Antlr.Runtime
 {
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
+    [System.Serializable]
     public class MismatchedNotSetException : MismatchedSetException
     {
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MismatchedNotSetException()
+        public MismatchedNotSetException(BitSet expecting, IIntStream input)
+            : base(expecting, input)
         {
         }
 
-        public MismatchedNotSetException( BitSet expecting, IIntStream input )
-            : base( expecting, input )
+        protected MismatchedNotSetException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 
         public override string ToString()
         {
-            return "MismatchedNotSetException(" + UnexpectedType + "!=" + expecting + ")";
+            return "MismatchedNotSetException(" + UnexpectedType + "!=" + Expecting + ")";
         }
     }
 }

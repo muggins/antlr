@@ -32,6 +32,9 @@
 
 namespace Antlr.Runtime
 {
+    using ArgumentNullException = System.ArgumentNullException;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>
      *  A semantic predicate failed during validation.  Validation of predicates
@@ -40,26 +43,58 @@ namespace Antlr.Runtime
      *  a prediction decision.
      *  </summary>
      */
+    [System.Serializable]
     public class FailedPredicateException : RecognitionException
     {
-        public string ruleName;
-        public string predicateText;
+        private readonly string _ruleName;
+        private readonly string _predicateText;
 
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public FailedPredicateException()
+        public FailedPredicateException(IIntStream input, string ruleName, string predicateText)
+            : base(input)
         {
+            this._ruleName = ruleName;
+            this._predicateText = predicateText;
         }
 
-        public FailedPredicateException( IIntStream input, string ruleName, string predicateText )
-            : base( input )
+        protected FailedPredicateException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
-            this.ruleName = ruleName;
-            this.predicateText = predicateText;
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            this._ruleName = info.GetString("RuleName");
+            this._predicateText = info.GetString("PredicateText");
+        }
+
+        public string RuleName
+        {
+            get
+            {
+                return _ruleName;
+            }
+        }
+
+        public string PredicateText
+        {
+            get
+            {
+                return _predicateText;
+            }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("RuleName", _ruleName);
+            info.AddValue("PredicateText", _predicateText);
         }
 
         public override string ToString()
         {
-            return "FailedPredicateException(" + ruleName + ",{" + predicateText + "}?)";
+            return "FailedPredicateException(" + RuleName + ",{" + PredicateText + "}?)";
         }
     }
 }

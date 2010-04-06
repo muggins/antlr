@@ -34,9 +34,11 @@ namespace Antlr.Runtime
 {
     using Antlr.Runtime.Tree;
 
+    using ArgumentNullException = System.ArgumentNullException;
     using Exception = System.Exception;
     using NonSerialized = System.NonSerializedAttribute;
-    using System.Runtime.Serialization;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>The root of the ANTLR exception hierarchy.</summary>
      *
@@ -74,7 +76,6 @@ namespace Antlr.Runtime
     public class RecognitionException : Exception
     {
         /** <summary>What input stream did the error occur in?</summary> */
-        [NonSerialized]
         private IIntStream _input;
 
         /** <summary>What is index of token/char were we looking at when the error occurred?</summary> */
@@ -179,6 +180,14 @@ namespace Antlr.Runtime
         protected RecognitionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            _index = info.GetInt32("Index");
+            _c = info.GetInt32("C");
+            _line = info.GetInt32("Line");
+            _charPositionInLine = info.GetInt32("CharPositionInLine");
+            _approximateLineInfo = info.GetBoolean("ApproximateLineInfo");
         }
 
         /** <summary>Return the token type or char of the unexpected input element</summary> */
@@ -296,6 +305,19 @@ namespace Antlr.Runtime
             {
                 _charPositionInLine = value;
             }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("Index", _index);
+            info.AddValue("C", _c);
+            info.AddValue("Line", _line);
+            info.AddValue("CharPositionInLine", _charPositionInLine);
+            info.AddValue("ApproximateLineInfo", _approximateLineInfo);
         }
 
         protected virtual void ExtractInformationFromTreeNodeStream( IIntStream input )

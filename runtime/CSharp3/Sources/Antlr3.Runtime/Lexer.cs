@@ -252,11 +252,7 @@ namespace Antlr.Runtime
                         state.failed = true;
                         return;
                     }
-                    MismatchedTokenException mte =
-                        new MismatchedTokenException( s[i], input )
-                        {
-                            tokenNames = TokenNames
-                        };
+                    MismatchedTokenException mte = new MismatchedTokenException(s[i], input, TokenNames);
                     Recover( mte );
                     throw mte;
                 }
@@ -280,11 +276,7 @@ namespace Antlr.Runtime
                     state.failed = true;
                     return;
                 }
-                MismatchedTokenException mte =
-                    new MismatchedTokenException( c, input )
-                    {
-                        tokenNames = TokenNames
-                    };
+                MismatchedTokenException mte = new MismatchedTokenException(c, input, TokenNames);
                 Recover( mte );  // don't really recover; just consume in lexer
                 throw mte;
             }
@@ -301,8 +293,7 @@ namespace Antlr.Runtime
                     state.failed = true;
                     return;
                 }
-                MismatchedRangeException mre =
-                    new MismatchedRangeException( a, b, input );
+                MismatchedRangeException mre = new MismatchedRangeException(a, b, input);
                 Recover( mre );
                 throw mre;
             }
@@ -341,7 +332,7 @@ namespace Antlr.Runtime
             if ( e is MismatchedTokenException )
             {
                 MismatchedTokenException mte = (MismatchedTokenException)e;
-                msg = "mismatched character " + GetCharErrorDisplay( e.Character ) + " expecting " + GetCharErrorDisplay( mte.expecting );
+                msg = "mismatched character " + GetCharErrorDisplay( e.Character ) + " expecting " + GetCharErrorDisplay( mte.Expecting );
             }
             else if ( e is NoViableAltException )
             {
@@ -360,18 +351,18 @@ namespace Antlr.Runtime
             else if ( e is MismatchedNotSetException )
             {
                 MismatchedNotSetException mse = (MismatchedNotSetException)e;
-                msg = "mismatched character " + GetCharErrorDisplay( e.Character ) + " expecting set " + mse.expecting;
+                msg = "mismatched character " + GetCharErrorDisplay( e.Character ) + " expecting set " + mse.Expecting;
             }
             else if ( e is MismatchedSetException )
             {
                 MismatchedSetException mse = (MismatchedSetException)e;
-                msg = "mismatched character " + GetCharErrorDisplay( e.Character ) + " expecting set " + mse.expecting;
+                msg = "mismatched character " + GetCharErrorDisplay( e.Character ) + " expecting set " + mse.Expecting;
             }
             else if ( e is MismatchedRangeException )
             {
                 MismatchedRangeException mre = (MismatchedRangeException)e;
                 msg = "mismatched character " + GetCharErrorDisplay( e.Character ) + " expecting set " +
-                      GetCharErrorDisplay( mre.a ) + ".." + GetCharErrorDisplay( mre.b );
+                      GetCharErrorDisplay( mre.A ) + ".." + GetCharErrorDisplay( mre.B );
             }
             else
             {

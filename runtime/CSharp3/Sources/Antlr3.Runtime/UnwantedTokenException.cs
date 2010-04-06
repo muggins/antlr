@@ -32,19 +32,26 @@
 
 namespace Antlr.Runtime
 {
-    using System;
+    using System.Collections.Generic;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>An extra token while parsing a TokenStream</summary> */
-    [Serializable]
+    [System.Serializable]
     public class UnwantedTokenException : MismatchedTokenException
     {
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public UnwantedTokenException()
+        public UnwantedTokenException(int expecting, IIntStream input)
+            : base(expecting, input)
         {
         }
 
-        public UnwantedTokenException( int expecting, IIntStream input )
-            : base( expecting, input )
+        public UnwantedTokenException(int expecting, IIntStream input, IList<string> tokenNames)
+            : base(expecting, input, tokenNames)
+        {
+        }
+
+        protected UnwantedTokenException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 
@@ -60,14 +67,14 @@ namespace Antlr.Runtime
         {
             //int unexpectedType = getUnexpectedType();
             //string unexpected = ( tokenNames != null && unexpectedType >= 0 && unexpectedType < tokenNames.Length ) ? tokenNames[unexpectedType] : unexpectedType.ToString();
-            string expected = ( tokenNames != null && expecting >= 0 && expecting < tokenNames.Length ) ? tokenNames[expecting] : expecting.ToString();
+            string expected = (TokenNames != null && Expecting >= 0 && Expecting < TokenNames.Count) ? TokenNames[Expecting] : Expecting.ToString();
 
-            String exp = ", expected " + expected;
-            if ( expecting == TokenTypes.Invalid )
+            string exp = ", expected " + expected;
+            if (Expecting == TokenTypes.Invalid)
             {
                 exp = "";
             }
-            if ( Token == null )
+            if (Token == null)
             {
                 return "UnwantedTokenException(found=" + null + exp + ")";
             }

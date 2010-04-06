@@ -32,21 +32,46 @@
 
 namespace Antlr.Runtime
 {
+    using ArgumentNullException = System.ArgumentNullException;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>The recognizer did not match anything for a (..)+ loop.</summary> */
+    [System.Serializable]
     public class EarlyExitException : RecognitionException
     {
-        public int decisionNumber;
+        private readonly int _decisionNumber;
 
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public EarlyExitException()
+        public EarlyExitException(int decisionNumber, IIntStream input)
+            : base(input)
         {
+            this._decisionNumber = decisionNumber;
         }
 
-        public EarlyExitException( int decisionNumber, IIntStream input )
-            : base( input )
+        protected EarlyExitException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
-            this.decisionNumber = decisionNumber;
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            this._decisionNumber = info.GetInt32("DecisionNumber");
+        }
+
+        public int DecisionNumber
+        {
+            get
+            {
+                return _decisionNumber;
+            }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("DecisionNumber", DecisionNumber);
         }
     }
 }

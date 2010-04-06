@@ -32,30 +32,75 @@
 
 namespace Antlr.Runtime
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using ArgumentNullException = System.ArgumentNullException;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>A mismatched char or Token or tree node</summary> */
     [System.Serializable]
     public class MismatchedTokenException : RecognitionException
     {
-        public int expecting = TokenTypes.Invalid;
-        public string[] tokenNames;
+        private readonly int _expecting = TokenTypes.Invalid;
+        private readonly ReadOnlyCollection<string> _tokenNames;
 
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MismatchedTokenException()
+        public MismatchedTokenException( int expecting, IIntStream input )
+            : this(expecting, input, null)
         {
         }
 
-        public MismatchedTokenException( int expecting, IIntStream input )
-            : base( input )
+        public MismatchedTokenException(int expecting, IIntStream input, IList<string> tokenNames)
+            : base(input)
         {
-            this.expecting = expecting;
+            this._expecting = expecting;
+
+            if (tokenNames != null)
+                this._tokenNames = tokenNames.ToList().AsReadOnly();
+        }
+
+        protected MismatchedTokenException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            this._expecting = info.GetInt32("Expecting");
+            this._tokenNames = new ReadOnlyCollection<string>((string[])info.GetValue("TokenNames", typeof(string[])));
+        }
+
+        public int Expecting
+        {
+            get
+            {
+                return _expecting;
+            }
+        }
+
+        public ReadOnlyCollection<string> TokenNames
+        {
+            get
+            {
+                return _tokenNames;
+            }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("Expecting", _expecting);
+            info.AddValue("TokenNames", (_tokenNames != null) ? _tokenNames.ToArray() : default(string[]));
         }
 
         public override string ToString()
         {
             int unexpectedType = UnexpectedType;
-            string unexpected = ( tokenNames != null && unexpectedType >= 0 && unexpectedType < tokenNames.Length ) ? tokenNames[unexpectedType] : unexpectedType.ToString();
-            string expected = ( tokenNames != null && expecting >= 0 && expecting < tokenNames.Length ) ? tokenNames[expecting] : expecting.ToString();
+            string unexpected = ( TokenNames != null && unexpectedType >= 0 && unexpectedType < TokenNames.Count ) ? TokenNames[unexpectedType] : unexpectedType.ToString();
+            string expected = ( TokenNames != null && Expecting >= 0 && Expecting < TokenNames.Count ) ? TokenNames[Expecting] : Expecting.ToString();
             return "MismatchedTokenException(" + unexpected + "!=" + expected + ")";
         }
     }

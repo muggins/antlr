@@ -32,38 +32,80 @@
 
 namespace Antlr.Runtime
 {
+    using ArgumentNullException = System.ArgumentNullException;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
+    [System.Serializable]
     public class NoViableAltException : RecognitionException
     {
-        public string grammarDecisionDescription;
-        public int decisionNumber;
-        public int stateNumber;
+        private readonly string _grammarDecisionDescription;
+        private readonly int _decisionNumber;
+        private readonly int _stateNumber;
 
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public NoViableAltException()
+        public NoViableAltException(string grammarDecisionDescription, int decisionNumber, int stateNumber, IIntStream input)
+            : base(input)
         {
+            this._grammarDecisionDescription = grammarDecisionDescription;
+            this._decisionNumber = decisionNumber;
+            this._stateNumber = stateNumber;
+        }
+        
+        protected NoViableAltException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            this._grammarDecisionDescription = info.GetString("GrammarDecisionDescription");
+            this._decisionNumber = info.GetInt32("DecisionNumber");
+            this._stateNumber = info.GetInt32("StateNumber");
         }
 
-        public NoViableAltException( string grammarDecisionDescription,
-                                    int decisionNumber,
-                                    int stateNumber,
-                                    IIntStream input )
-            : base( input )
+        public int DecisionNumber
         {
-            this.grammarDecisionDescription = grammarDecisionDescription;
-            this.decisionNumber = decisionNumber;
-            this.stateNumber = stateNumber;
+            get
+            {
+                return _decisionNumber;
+            }
+        }
+
+        public string GrammarDecisionDescription
+        {
+            get
+            {
+                return _grammarDecisionDescription;
+            }
+        }
+
+        public int StateNumber
+        {
+            get
+            {
+                return _stateNumber;
+            }
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+            info.AddValue("GrammarDecisionDescription", _grammarDecisionDescription);
+            info.AddValue("DecisionNumber", _decisionNumber);
+            info.AddValue("StateNumber", _stateNumber);
         }
 
         public override string ToString()
         {
             if ( Input is ICharStream )
             {
-                return "NoViableAltException('" + (char)UnexpectedType + "'@[" + grammarDecisionDescription + "])";
+                return "NoViableAltException('" + (char)UnexpectedType + "'@[" + GrammarDecisionDescription + "])";
             }
             else
             {
-                return "NoViableAltException(" + UnexpectedType + "@[" + grammarDecisionDescription + "])";
+                return "NoViableAltException(" + UnexpectedType + "@[" + GrammarDecisionDescription + "])";
             }
         }
     }

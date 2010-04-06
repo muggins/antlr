@@ -32,41 +32,51 @@
 
 namespace Antlr.Runtime
 {
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
+    using System.Collections.Generic;
 
     /** <summary>
      *  We were expecting a token but it's not found.  The current token
      *  is actually what we wanted next.  Used for tree node errors too.
      *  </summary>
      */
+    [System.Serializable]
     public class MissingTokenException : MismatchedTokenException
     {
-        public object inserted;
-        /** <summary>Used for remote debugger deserialization</summary> */
-        public MissingTokenException()
+        private readonly object _inserted;
+
+        public MissingTokenException(int expecting, IIntStream input, object inserted)
+            : this(expecting, input, inserted, null)
         {
         }
 
-        public MissingTokenException( int expecting, IIntStream input, object inserted ) :
-            base( expecting, input )
+        public MissingTokenException(int expecting, IIntStream input, object inserted, IList<string> tokenNames)
+            : base(expecting, input, tokenNames)
         {
-            this.inserted = inserted;
+            this._inserted = inserted;
+        }
+
+        protected MissingTokenException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
         }
 
         public virtual int MissingType
         {
             get
             {
-                return expecting;
+                return Expecting;
             }
         }
 
         public override string ToString()
         {
-            if ( inserted != null && Token != null )
+            if (_inserted != null && Token != null)
             {
-                return "MissingTokenException(inserted " + inserted + " at " + Token.Text + ")";
+                return "MissingTokenException(inserted " + _inserted + " at " + Token.Text + ")";
             }
-            if ( Token != null )
+            if (Token != null)
             {
                 return "MissingTokenException(at " + Token.Text + ")";
             }
