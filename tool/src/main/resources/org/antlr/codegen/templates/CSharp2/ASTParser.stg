@@ -43,7 +43,7 @@ group ASTParser;
 
 @rule.setErrorReturnValue() ::= <<
 // Conversion of the second argument necessary, but harmless
-retval.Tree = (<ASTLabelType>)adaptor.ErrorNode(input, (IToken) retval.Start, input.LT(-1), re);
+retval.tree = (<ASTLabelType>)adaptor.ErrorNode(input, (IToken) retval.Start, input.LT(-1), re);
 <! System.Console.WriteLine("<ruleName> returns " + ((CommonTree)retval.Tree).ToStringTree()); !>
 >>
 
@@ -210,7 +210,7 @@ ruleCleanUp() ::= <<
 if ( <actions.(actionScope).synpredgate> )
 {
 <endif>
-	retval.Tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
+	retval.tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
 <if(!TREE_PARSER)>
 	adaptor.SetTokenBoundaries(retval.Tree, (IToken) retval.Start, (IToken) retval.Stop);
 <endif>

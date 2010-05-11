@@ -52,19 +52,19 @@ outputFile(LEXER,PARSER,TREE_PARSER, actionScope, actions,
 
 <@imports>
 using System;
+using System.Collections.Generic;
 using Antlr.Runtime;
 <if(TREE_PARSER)>
 using Antlr.Runtime.Tree;
+using RewriteRuleITokenStream = Antlr.Runtime.Tree.RewriteRuleTokenStream;
 <endif>
-using IList 		= System.Collections.IList;
-using ArrayList 	= System.Collections.ArrayList;
-using Stack 		= Antlr.Runtime.Collections.StackList;
-
+using Stack = System.Collections.Generic.Stack\<object>;
+using List = System.Collections.IList;
+using ArrayList = System.Collections.Generic.List\<object>;
 <if(backtracking)>
-using IDictionary	= System.Collections.IDictionary;
-using Hashtable 	= System.Collections.Hashtable;
+using Map = System.Collections.IDictionary;
+using HashMap = System.Collections.Generic.Dictionary\<object, object>;
 <endif>
-
 <@end>
 
 <if(actions.(actionScope).namespace)>
@@ -106,7 +106,7 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 		InitializeCyclicDFAs(); <! Necessary in C#??? Not removed yet. !>
 <if(memoize)>
 <if(grammar.grammarIsRoot)>
-        state.ruleMemo = new Hashtable[<numRules>+1];<\n> <! index from 1..n !>
+        state.ruleMemo = new System.Collections.Generic.Dictionary\<int, int>[<numRules>+1];<\n> <! index from 1..n !>
 <endif>
 <endif>
         <grammar.directDelegates:
@@ -152,14 +152,17 @@ override public IToken NextToken()
 {
     while (true) 
 	{
-        if ( input.LA(1) == (int)CharStreamConstants.EOF ) 
+        if ( input.LA(1) == CharStreamConstants.EndOfFile ) 
 		{
-            return Token.EOF_TOKEN;
+			IToken eof = new CommonToken((ICharStream)input, CharStreamConstants.EndOfFile, TokenChannels.Default, input.Index, input.Index);
+			eof.Line = Line;
+			eof.CharPositionInLine = CharPositionInLine;
+			return eof;
         }
 
 	    state.token = null;
-		state.channel = Token.DEFAULT_CHANNEL;
-        state.tokenStartCharIndex = input.Index();
+		state.channel = TokenChannels.Default;
+        state.tokenStartCharIndex = input.Index;
         state.tokenStartCharPositionInLine = input.CharPositionInLine;
         state.tokenStartLine = input.Line;
 	    state.text = null;
@@ -299,7 +302,7 @@ parserCtorBody() ::= <<
 <@initializeCyclicDFAs>InitializeCyclicDFAs();<@end>
 <if(memoize)>
 <if(grammar.grammarIsRoot)>
-this.state.ruleMemo = new Hashtable[<length(grammar.allImportedRules)>+1];<\n> <! index from 1..n !>
+this.state.ruleMemo = new System.Collections.Generic.Dictionary\<int, int>[<length(grammar.allImportedRules)>+1];<\n> <! index from 1..n !>
 <endif>
 <endif>
 <grammar.delegators:
@@ -459,14 +462,14 @@ catch (<e.decl>)
 ruleDeclarations() ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
 <returnType()> retval = new <returnType()>();
-retval.Start = input.LT(1);<\n>
+retval.start = input.LT(1);<\n>
 <else>
 <ruleDescriptor.returnScope.attributes:{ a |
 <a.type> <a.name> = <if(a.initValue)><a.initValue><else><initValue(a.type)><endif>;
 }>
 <endif>
 <if(memoize)>
-int <ruleDescriptor.name>_StartIndex = input.Index();
+int <ruleDescriptor.name>_StartIndex = input.Index;
 <endif>
 >>
 
@@ -487,7 +490,7 @@ ruleLabelDefs() ::= <<
     :{<labelType> <it.label.text> = null;}; separator="\n"
 >
 <[ruleDescriptor.tokenListLabels,ruleDescriptor.ruleListLabels,ruleDescriptor.wildcardTreeListLabels]
-    :{IList list_<it.label.text> = null;}; separator="\n"
+    :{List list_<it.label.text> = null;}; separator="\n"
 >
 <ruleDescriptor.ruleLabels:ruleLabelDef(label=it); separator="\n">
 <ruleDescriptor.ruleListLabels:{ll|RuleReturnScope <ll.label.text> = null;}; separator="\n">
@@ -502,7 +505,7 @@ lexerRuleLabelDefs() ::= <<
 <ruleDescriptor.charLabels:{int <it.label.text>;}; separator="\n">
 <[ruleDescriptor.tokenListLabels,
   ruleDescriptor.ruleListLabels]
-    :{IList list_<it.label.text> = null;}; separator="\n"
+    :{List list_<it.label.text> = null;}; separator="\n"
 >
 >>
 
@@ -521,7 +524,7 @@ retval
 ruleCleanUp() ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
 <if(!TREE_PARSER)>
-retval.Stop = input.LT(-1);<\n>
+retval.stop = input.LT(-1);<\n>
 <endif>
 <endif>
 >>
@@ -557,7 +560,7 @@ public void m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>
         <block><\n>
 <else>
         int _type = <ruleName>;
-	int _channel = DEFAULT_TOKEN_CHANNEL;
+        int _channel = DefaultTokenChannel;
         <ruleMemoization(name=ruleName)>
         <lexerRuleLabelDefs()>
         <ruleDescriptor.actions.init>
@@ -861,7 +864,7 @@ PushFollow(FOLLOW_<rule.name>_in_<ruleName><elementIndex>);
 <else>
 <if(scope)><scope:delegateName()>.<endif><rule.name>(<args; separator=", ">);<\n>
 <endif>
-state.followingStackPointer--;
+state._fsp--;
 <checkRuleBacktrackFailure()>
 >>
 
@@ -1147,7 +1150,7 @@ protected internal int DFA<dfa.decisionNumber>_SpecialStateTransition(DFA dfa, i
 cyclicDFAState(decisionNumber,stateNumber,edges,needErrorClause,semPredState) ::= <<
 int LA<decisionNumber>_<stateNumber> = input.LA(1);<\n>
 <if(semPredState)> <! get next lookahead symbol to test edges, then rewind !>
-int index<decisionNumber>_<stateNumber> = input.Index();
+int index<decisionNumber>_<stateNumber> = input.Index;
 input.Rewind();<\n>
 <endif>
 s = -1;
@@ -1414,7 +1417,7 @@ lexerRulePropertyRef_int(scope,attr) ::= "int.Parse(<scope>.Text)"
 
 // setting $st and $tree is allowed in local rule. everything else
 // is flagged as error
-ruleSetPropertyRef_tree(scope,attr,expr) ::= "retval.Tree = <expr>;"
+ruleSetPropertyRef_tree(scope,attr,expr) ::= "retval.tree = <expr>;"
 ruleSetPropertyRef_st(scope,attr,expr) ::= "retval.ST = <expr>;"
 
 

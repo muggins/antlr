@@ -55,12 +55,8 @@ public ITreeAdaptor TreeAdaptor
 >>
 
 @returnScope.ruleReturnMembers() ::= <<
-private <ASTLabelType> tree;
-override public object Tree
-{
-	get { return tree; }
-	set { tree = (<ASTLabelType>) value; }
-}
+internal <ASTLabelType> tree;
+public override object Tree { get { return tree; } }
 >>
 
 /** Add a variable to track rule's return AST */
@@ -89,7 +85,7 @@ ruleLabelDefs() ::= <<
 <if(autoAST)>
 <if(outerAlt)>
 <if(!rewriteMode)>
-root_0 = (<ASTLabelType>)adaptor.GetNilNode();<\n>
+root_0 = (<ASTLabelType>)adaptor.Nil;<\n>
 <endif>
 <endif>
 <endif>
@@ -171,14 +167,14 @@ rewriteCode(
 <if(backtracking)>
 if ( <actions.(actionScope).synpredgate> ) {<\n>
 <endif>
-<prevRuleRootRef()>.Tree = root_0;
+<prevRuleRootRef()>.tree = root_0;
 <rewriteCodeLabels()>
-root_0 = (<ASTLabelType>)adaptor.GetNilNode();
+root_0 = (<ASTLabelType>)adaptor.Nil;
 <alts:rewriteAlt(); separator="else ">
 <! if tree parser and rewrite=true !>
 <if(TREE_PARSER)>
 <if(rewriteMode)>
-<prevRuleRootRef()>.Tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
+<prevRuleRootRef()>.tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
 input.ReplaceChildren(adaptor.GetParent(retval.Start),
                       adaptor.GetChildIndex(retval.Start),
                       adaptor.GetChildIndex(_last),
@@ -187,10 +183,10 @@ input.ReplaceChildren(adaptor.GetParent(retval.Start),
 <endif>
 <! if parser or rewrite!=true, we need to set result !>
 <if(!TREE_PARSER)>
-<prevRuleRootRef()>.Tree = root_0;
+<prevRuleRootRef()>.tree = root_0;
 <endif>
 <if(!rewriteMode)>
-<prevRuleRootRef()>.Tree = root_0;
+<prevRuleRootRef()>.tree = root_0;
 <endif>
 <if(backtracking)>
 }
@@ -234,7 +230,7 @@ rewriteOptionalBlock(
 	description) ::=
 <<
 // <fileName>:<description>
-if ( <referencedElementsDeep:{el | stream_<el>.HasNext()}; separator=" || "> )
+if ( <referencedElementsDeep:{el | stream_<el>.HasNext}; separator=" || "> )
 {
     <alt>
 }
@@ -248,7 +244,7 @@ rewriteClosureBlock(
 	description) ::=
 <<
 // <fileName>:<description>
-while ( <referencedElements:{el | stream_<el>.HasNext()}; separator=" || "> )
+while ( <referencedElements:{el | stream_<el>.HasNext}; separator=" || "> )
 {
     <alt>
 }
@@ -261,10 +257,10 @@ rewritePositiveClosureBlock(
 	referencedElements,     // elements in immediately block; no nested blocks
 	description) ::=
 <<
-if ( !(<referencedElements:{el | stream_<el>.HasNext()}; separator=" || ">) ) {
+if ( !(<referencedElements:{el | stream_<el>.HasNext}; separator=" || ">) ) {
     throw new RewriteEarlyExitException();
 }
-while ( <referencedElements:{el | stream_<el>.HasNext()}; separator=" || "> )
+while ( <referencedElements:{el | stream_<el>.HasNext}; separator=" || "> )
 {
     <alt>
 }
@@ -291,7 +287,7 @@ rewriteEmptyAlt() ::= "root_0 = null;"
 rewriteTree(root,children,description,enclosingTreeLevel,treeLevel) ::= <<
 // <fileName>:<description>
 {
-<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.GetNilNode();
+<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.Nil;
 <root:rewriteElement()>
 <children:rewriteElement()>
 adaptor.AddChild(root_<enclosingTreeLevel>, root_<treeLevel>);

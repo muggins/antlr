@@ -54,9 +54,9 @@ ruleDeclarations() ::= <<
 noRewrite(rewriteBlockLevel, treeLevel) ::= <<
 <if(backtracking)>if ( <actions.(actionScope).synpredgate> ) {<endif>
 <if(rewriteMode)>
-retval.Tree = (<ASTLabelType>)_first_0;
+retval.tree = (<ASTLabelType>)_first_0;
 if ( adaptor.GetParent(retval.Tree)!=null && adaptor.IsNil( adaptor.GetParent(retval.Tree) ) )
-    retval.Tree = (<ASTLabelType>)adaptor.GetParent(retval.Tree);
+    retval.tree = (<ASTLabelType>)adaptor.GetParent(retval.Tree);
 <endif>
 <if(backtracking)>}<endif>
 >>
@@ -71,7 +71,7 @@ _last = (<ASTLabelType>)input.LT(1);
 <ASTLabelType> _save_last_<treeLevel> = _last;
 <ASTLabelType> _first_<treeLevel> = null;
 <if(!rewriteMode)>
-<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.GetNilNode();
+<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.Nil;
 <endif>
 <root:element()>
 <if(rewriteMode)>
@@ -307,7 +307,7 @@ ruleCleanUp() ::= <<
 if ( <actions.(actionScope).synpredgate> )
 {
 <endif>
-	retval.Tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
+	retval.tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
 <if(backtracking)>
 }
 <endif>
