@@ -9,6 +9,9 @@ CHANGES
 
 May 24, 2010
 
+* lexerStringRef was missing elementIndex attribute. i='import' didn't work
+  in lexer.  Altered all target stg files.  Set in codegen.g
+
 * output=AST, rewrite=true for tree rewriters broken. nextNode for subtree 
   streams didn't dup node, it gave whole tree back.
 

@@ -864,7 +864,7 @@ matchSetAndListLabel(s,label,elementIndex,postmatchCode) ::= <<
 >>
 
 /** Match a string literal */
-lexerStringRef(string,label) ::= <<
+lexerStringRef(string,label,elementIndex) ::= <<
 <if(label)>
 int <label>Start = CharIndex;
 Match(<string>); <checkRuleBacktrackFailure()>

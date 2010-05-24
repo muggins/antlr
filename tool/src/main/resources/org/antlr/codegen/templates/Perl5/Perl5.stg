@@ -730,7 +730,7 @@ matchSetAndListLabel(s,label,elementIndex,postmatchCode) ::= <<
 >>
 
 /** Match a string literal */
-lexerStringRef(string,label) ::= <<
+lexerStringRef(string,label,elementIndex) ::= <<
 <if(label)>
 int <label>Start = getCharIndex();
 $self->match(<string>); <checkRuleBacktrackFailure()>

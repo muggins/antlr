@@ -708,7 +708,7 @@ matchSetAndListLabel(s,label,elementIndex,postmatchCode) ::= <<
 >>
 
 /** Match a string literal */
-lexerStringRef(string,label) ::= <<
+lexerStringRef(string,label,elementIndex) ::= <<
 <if(label)>
 var <label>Start = this.getCharIndex();
 this.match(<string>); <checkRuleBacktrackFailure()>

@@ -1108,7 +1108,7 @@ matchSetAndListLabel(s,label,elementIndex,postmatchCode) ::= <<
 >>
 
 /** Match a string literal */
-lexerStringRef(string,label) ::= <<
+lexerStringRef(string,label,elementIndex) ::= <<
 <if(label)>
 Locals.AsInteger['<label>Start'] := CharIndex;
 Match(<string>); <checkRuleBacktrackFailure()>

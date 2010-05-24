@@ -987,10 +987,12 @@ if ( grammar.type!=Grammar.LEXER &&
 
     |   s:STRING_LITERAL
         {
+        int i = ((TokenWithIndex)#s.getToken()).getIndex();
 		if ( grammar.type==Grammar.LEXER ) {
 			code = templates.getInstanceOf("lexerStringRef");
 			code.setAttribute("string",
 			   generator.target.getTargetStringLiteralFromANTLRStringLiteral(generator,s.getText()));
+			code.setAttribute("elementIndex", i);
 			if ( label!=null ) {
 				code.setAttribute("label", labelText);
 			}
@@ -1003,7 +1005,6 @@ if ( grammar.type!=Grammar.LEXER &&
             if ( #s.terminalOptions!=null ) {
                 code.setAttribute("hetero",#s.terminalOptions.get(Grammar.defaultTokenOption));
             }
-            int i = ((TokenWithIndex)#s.getToken()).getIndex();
 			code.setAttribute("elementIndex", i);
 			generator.generateLocalFOLLOW(#s,tokenLabel,currentRuleName,i);
 		}

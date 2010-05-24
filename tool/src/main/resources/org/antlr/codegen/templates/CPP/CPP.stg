@@ -759,7 +759,7 @@ matchSetAndListLabel(s,label,elementIndex,postmatchCode) ::= <<
 >>
 
 /** Match a string literal */
-lexerStringRef(string,label) ::= <<
+lexerStringRef(string,label,elementIndex) ::= <<
 // lexerStringRef
 <if(label)>
 position_type <label>Start(input.getPosition());
