@@ -27,17 +27,13 @@
  */
 package org.antlr.test;
 
-import org.antlr.tool.ErrorManager;
-import org.antlr.tool.Grammar;
-import org.antlr.tool.GrammarSemanticsMessage;
-import org.antlr.tool.GrammarSyntaxMessage;
 import org.antlr.Tool;
 import org.antlr.codegen.CodeGenerator;
-
-import org.junit.Before;
+import org.antlr.tool.ErrorManager;
+import org.antlr.tool.Grammar;
+import org.antlr.tool.GrammarSyntaxMessage;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /** Tree rewrites in tree parsers are basically identical to rewrites
  *  in a normal grammar except that the atomic element is a node not
@@ -1099,4 +1095,26 @@ public class TestTreeGrammarRewriteAST extends BaseTest {
                                       treeGrammar, "TP", "TLexer", "a", "s", "1 2 3");
         assertEquals("(2 3) (2 3)\n", found);
     }
+
+	@Test public void testRuleResultAsRoot() throws Exception {
+		String grammar =
+			"grammar T;\n" +
+			"options {output=AST;}\n" +
+			"a : ID '=' INT -> ^('=' ID INT);\n" +
+			"ID : 'a'..'z'+ ;\n" +
+			"INT : '0'..'9'+;\n" +
+			"COLON : ':' ;\n" +
+			"WS : (' '|'\\n') {$channel=HIDDEN;} ;\n";
+
+		String treeGrammar =
+			"tree grammar TP;\n"+
+			"options {output=AST; rewrite=true; ASTLabelType=CommonTree; tokenVocab=T;}\n" +
+			"a : ^(eq e1=ID e2=.) -> ^(eq $e2 $e1) ;\n" +
+			"eq : '=' | ':' {;} ;\n";  // bug in set match, doesn't add to tree!! booh. force nonset.
+
+		String found = execTreeParser("T.g", grammar, "TParser", "TP.g",
+									  treeGrammar, "TP", "TLexer", "a", "a", "abc = 34");
+		assertEquals("(= 34 abc)\n", found);
+	}
+
 }

@@ -65,6 +65,7 @@ public class RewriteRuleSubtreeStream extends RewriteRuleElementStream {
 	 *  and super.next() doesn't know which to call: dup node or dup tree.
 	 */
 	public Object nextNode() {
+		//System.out.println("nextNode: elements="+elements+", singleElement="+((Tree)singleElement).toStringTree());
 		int n = size();
 		if ( dirty || (cursor>=n && n==1) ) {
 			// if out of elements and size is 1, dup (at most a single node
@@ -73,7 +74,9 @@ public class RewriteRuleSubtreeStream extends RewriteRuleElementStream {
 			return adaptor.dupNode(el);
 		}
 		// test size above then fetch
-		Object el = _next();
+		Object tree = _next();
+		//System.out.println("_next="+((Tree)tree).toStringTree());
+		Object el = adaptor.dupNode(tree); // dup just the root (want node here)
 		return el;
 	}
 

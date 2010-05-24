@@ -7,6 +7,11 @@ University of San Francisco
 
 CHANGES
 
+May 24, 2010
+
+* output=AST, rewrite=true for tree rewriters broken. nextNode for subtree 
+  streams didn't dup node, it gave whole tree back.
+
 March 17, 2010
 
 * Added MachineProbe class to make it easier to highlight ambig paths in

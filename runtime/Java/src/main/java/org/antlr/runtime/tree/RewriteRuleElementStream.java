@@ -27,11 +27,8 @@
  */
 package org.antlr.runtime.tree;
 
-import org.antlr.runtime.Token;
-import org.antlr.runtime.CommonToken;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /** A generic list of elements tracked in an alternative to be used in
  *  a -> rewrite rule.  We need to subclass to fill in the next() method,
@@ -65,6 +62,8 @@ public abstract class RewriteRuleElementStream {
 	 *
 	 *  I wanted to use "naughty bit" here, but couldn't think of a way
 	 *  to use "naughty".
+	 *
+	 *  TODO: unused?
 	 */
 	protected boolean dirty = false;
 
