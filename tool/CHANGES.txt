@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+June 5, 2010
+
+* Added -Xsavelexer
+
 May 24, 2010
 
 * lexerStringRef was missing elementIndex attribute. i='import' didn't work

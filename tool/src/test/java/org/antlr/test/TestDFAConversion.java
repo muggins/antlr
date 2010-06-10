@@ -27,17 +27,13 @@
  */
 package org.antlr.test;
 
+import org.antlr.Tool;
 import org.antlr.analysis.DFA;
 import org.antlr.analysis.DecisionProbe;
+import org.antlr.codegen.CodeGenerator;
 import org.antlr.misc.BitSet;
 import org.antlr.tool.*;
-import org.antlr.Tool;
-import org.antlr.codegen.CodeGenerator;
-
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.util.*;
 
@@ -488,8 +484,8 @@ public class TestDFAConversion extends BaseTest {
 		// nondeterministic from left edge
 		String expecting =
 			".s0-P->.s1\n" +
-			".s1-EOF->:s2=>2\n"+
-			".s1-P->:s3=>1\n";
+			".s1-EOF->:s3=>2\n"+
+			".s1-P->:s2=>1\n";
 		int[] unreachableAlts = null;
 		int[] nonDetAlts = new int[] {1,2};
 		String ambigInput = "P P";
@@ -517,6 +513,7 @@ public class TestDFAConversion extends BaseTest {
 
 		g.createLookaheadDFAs(false);
 
+		assertEquals(1, equeue.warnings.size());
 		Message msg = (Message)equeue.warnings.get(0);
 		assertTrue("expecting left recursion cycles; found "+msg.getClass().getName(),
 				    msg instanceof LeftRecursionCyclesMessage);
@@ -547,6 +544,7 @@ public class TestDFAConversion extends BaseTest {
 
 		g.createLookaheadDFAs(false);
 
+		assertEquals(1, equeue.warnings.size());
 		Message msg = (Message)equeue.warnings.get(0);
 		assertTrue("expecting left recursion cycles; found "+msg.getClass().getName(),
 				    msg instanceof LeftRecursionCyclesMessage);
@@ -577,6 +575,7 @@ public class TestDFAConversion extends BaseTest {
 			new HashSet() {{add("a"); add("b"); add("e"); add("d");}};
 		assertEquals(expectedRules, ruleNames(leftRecursive));
 
+		assertEquals(1, equeue.warnings.size());
 		Message msg = (Message)equeue.warnings.get(0);
 		assertTrue("expecting left recursion cycles; found "+msg.getClass().getName(),
 				    msg instanceof LeftRecursionCyclesMessage);
@@ -664,11 +663,11 @@ public class TestDFAConversion extends BaseTest {
 			"c : C ;\n");
 		String expecting =
 			".s0-C->.s1\n" +
-            ".s1-B->.s2\n" +
-            ".s1-X->:s4=>1\n" +
-            ".s1-Y->:s3=>2\n" +
-            ".s2-X->:s4=>1\n" +
-            ".s2-Y->:s3=>2\n";
+			".s1-B->.s2\n" +
+			".s1-X->:s3=>1\n" +
+			".s1-Y->:s4=>2\n" +
+			".s2-X->:s3=>1\n" +
+			".s2-Y->:s4=>2\n";
 		checkDecision(g, 1, expecting, null, null, null, null, 0);
 		expecting =
 			".s0-C->.s1\n" +
@@ -973,10 +972,10 @@ public class TestDFAConversion extends BaseTest {
 			"parser grammar t;\n"+
 			"a : (A|B)+ B;");
 		String expecting =
-			".s0-A->:s2=>1\n" +
+			".s0-A->:s3=>1\n" +
 			".s0-B->.s1\n" +
-			".s1-A..B->:s2=>1\n" +
-			".s1-EOF->:s3=>2\n"; // sees A|B as a set
+			".s1-A..B->:s3=>1\n" +
+			".s1-EOF->:s2=>2\n"; // sees A|B as a set
 		checkDecision(g, 1, expecting, null, null, null, null, 0);
 	}
 

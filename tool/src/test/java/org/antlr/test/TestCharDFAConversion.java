@@ -31,11 +31,7 @@ import org.antlr.analysis.DFA;
 import org.antlr.analysis.DFAOptimizer;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.*;
-
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -314,11 +310,11 @@ public class TestCharDFAConversion extends BaseTest {
 			"DUH : ('x'|'y')* 'xy' ;");
 		String expecting =
 			".s0-'x'->.s1\n" +
-			".s0-'y'->:s3=>1\n" +
-			".s1-'x'->:s3=>1\n" +
+			".s0-'y'->:s4=>1\n" +
+			".s1-'x'->:s4=>1\n" +
 			".s1-'y'->.s2\n" +
-			".s2-'x'..'y'->:s3=>1\n" +
-			".s2-<EOT>->:s4=>2\n";
+			".s2-'x'..'y'->:s4=>1\n" +
+			".s2-<EOT>->:s3=>2\n";
 		checkDecision(g, 1, expecting, null);
 	}
 

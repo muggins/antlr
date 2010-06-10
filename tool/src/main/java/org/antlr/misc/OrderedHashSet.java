@@ -87,6 +87,10 @@ public class OrderedHashSet<T> extends HashSet {
         return elements;
     }
 
+	public Object[] toArray() {
+		return elements.toArray();
+	}
+	
     public int size() {
 		/*
 		if ( elements.size()!=super.size() ) {

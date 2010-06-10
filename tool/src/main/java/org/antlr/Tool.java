@@ -27,14 +27,12 @@
  */
 package org.antlr;
 
-import antlr.TokenStreamException;
-import antlr.RecognitionException;
 import antlr.ANTLRException;
 import org.antlr.analysis.*;
 import org.antlr.codegen.CodeGenerator;
+import org.antlr.misc.Graph;
 import org.antlr.runtime.misc.Stats;
 import org.antlr.tool.*;
-import org.antlr.misc.Graph;
 
 import java.io.*;
 import java.util.*;
@@ -318,9 +316,12 @@ public class Tool {
                     DFA.MAX_TIME_PER_DFA_CREATION = Integer.parseInt(args[i]);
                 }
             }
-            else if (args[i].equals("-Xnfastates")) {
-                DecisionProbe.verbose = true;
-            }
+			else if (args[i].equals("-Xnfastates")) {
+				DecisionProbe.verbose = true;
+			}
+			else if (args[i].equals("-Xsavelexer")) {
+				deleteTempLexer = false;
+			}
             else if (args[i].equals("-X")) {
                 Xhelp();
             }
@@ -746,7 +747,8 @@ public class Tool {
         System.err.println("  -Xconversiontimeout t   set NFA conversion timeout (ms) for each decision          [" + DFA.MAX_TIME_PER_DFA_CREATION + "]");
         System.err.println("  -Xmaxinlinedfastates m  max DFA states before table used rather than inlining      [" + CodeGenerator.MADSI_DEFAULT +"]");
         System.err.println("  -Xmaxswitchcaselabels m don't generate switch() statements for dfas bigger  than m [" + CodeGenerator.MSCL_DEFAULT +"]");
-        System.err.println("  -Xminswitchalts m       don't generate switch() statements for dfas smaller than m [" + CodeGenerator.MSA_DEFAULT + "]");
+		System.err.println("  -Xminswitchalts m       don't generate switch() statements for dfas smaller than m [" + CodeGenerator.MSA_DEFAULT + "]");
+		System.err.println("  -Xsavelexer             don't delete temporary lexers generated from combined grammars");
     }
 
     /**
