@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+June 10, 2010
+
+* added toArray in OrderedHashSet to make addAll calls get same order for DFA edges and possibly code gen in some areas.
+
 June 5, 2010
 
 * Added -Xsavelexer
