@@ -27,13 +27,12 @@
  */
 package org.antlr.analysis;
 
+import antlr.Token;
 import org.antlr.misc.OrderedHashSet;
 import org.antlr.misc.Utils;
 import org.antlr.tool.ErrorManager;
 
 import java.util.*;
-
-import antlr.Token;
 
 /** Code that embodies the NFA conversion to DFA. A new object is needed
  *  per DFA (also required for thread safety if multiple conversions
@@ -637,7 +636,7 @@ public class NFAToDFAConverter {
 		if ( transition0 instanceof RuleClosureTransition ) {
 			int depth = context.recursionDepthEmanatingFromState(p.stateNumber);
 			// Detect recursion by more than a single alt, which indicates
-			// that the decision's lookahead language is non-regular; terminate
+			// that the decision's lookahead language is potentially non-regular; terminate
 			if ( depth == 1 && d.dfa.getUserMaxLookahead()==0 ) { // k=* only
 				d.dfa.recursiveAltSet.add(alt); // indicate that this alt is recursive
 				if ( d.dfa.recursiveAltSet.size()>1 ) {
