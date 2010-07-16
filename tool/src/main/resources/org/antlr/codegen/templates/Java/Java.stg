@@ -311,7 +311,7 @@ public final boolean <name>() {
     input.rewind(start);
     <@stop()>
     state.backtracking--;
-    state.failed=false;
+    state.failed=false; <! DO WE NEED? !>
     return success;
 }<\n>
 >>
