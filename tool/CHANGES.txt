@@ -7,6 +7,21 @@ University of San Francisco
 
 CHANGES
 
+July 20, 2010
+
+* greedy=true option shuts off nondeterminism warning.
+
+* code gen for AST and -profile didn't compile. had useless line:
+
+             proxy.setTreeAdaptor(adap);
+ 
+
+July 17, 2010
+
+* Removed conversion timeout failsafe; no longer needed.
+
+* Stats updated to be correct for -report.
+
 June 10, 2010
 
 * added toArray in OrderedHashSet to make addAll calls get same order for DFA edges and possibly code gen in some areas.

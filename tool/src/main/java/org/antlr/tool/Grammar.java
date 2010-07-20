@@ -27,21 +27,17 @@
  */
 package org.antlr.tool;
 
-import antlr.RecognitionException;
-import antlr.Token;
-import antlr.TokenStreamException;
-import antlr.TokenStreamRewriteEngine;
-import antlr.TokenWithIndex;
-import org.antlr.grammar.v2.*;
-import org.antlr.grammar.v3.*;
-
-import org.antlr.misc.*;
-import org.antlr.misc.Utils;
-
+import antlr.*;
 import antlr.collections.AST;
 import org.antlr.Tool;
 import org.antlr.analysis.*;
 import org.antlr.codegen.CodeGenerator;
+import org.antlr.grammar.v2.ANTLRLexer;
+import org.antlr.grammar.v2.ANTLRParser;
+import org.antlr.grammar.v2.*;
+import org.antlr.grammar.v3.ActionAnalysis;
+import org.antlr.misc.*;
+import org.antlr.misc.Utils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
 
@@ -349,6 +345,8 @@ public class Grammar {
 	 */
 	protected boolean externalAnalysisAbort;
 
+	public int numNonLLStar = 0; // hack to track for -report	
+
 	/** When we read in a grammar, we track the list of syntactic predicates
 	 *  and build faux rules for them later.  See my blog entry Dec 2, 2005:
 	 *  http://www.antlr.org/blog/antlr3/lookahead.tml
@@ -378,7 +376,7 @@ public class Grammar {
 	 *  in the recognizer for this file; only those that are affected by rule
 	 *  definitions in this grammar.  I am not sure the Java target will need
 	 *  this but I'm leaving in case other targets need it.
-	 *  @see NameSpaceChecker.lookForReferencesToUndefinedSymbols()
+	 *  see NameSpaceChecker.lookForReferencesToUndefinedSymbols()
 	 */
 	protected Set<Rule> delegatedRuleReferences = new HashSet();
 
@@ -455,7 +453,6 @@ public class Grammar {
 	public Set<Integer> setOfNondeterministicDecisionNumbers = new HashSet<Integer>();
 	public Set<Integer> setOfNondeterministicDecisionNumbersResolvedWithPredicates =
 		new HashSet<Integer>();
-	public Set setOfDFAWhoseAnalysisTimedOut = new HashSet();
 
 	/** Track decisions with syn preds specified for reporting.
 	 *  This is the a set of BLOCK type AST nodes.
@@ -1258,7 +1255,6 @@ outer:
 		// Retry to create a simpler DFA if analysis failed (non-LL(*),
 		// recursion overflow, or time out).
 		boolean failed =
-			lookaheadDFA.analysisTimedOut() ||
 			lookaheadDFA.probe.isNonLLStarDecision() ||
 			lookaheadDFA.probe.analysisOverflowed();
 		if ( failed && lookaheadDFA.okToRetryDFAWithK1() ) {
@@ -1275,12 +1271,6 @@ outer:
 			lookaheadDFA = null; // make sure other memory is "free" before redoing
 			lookaheadDFA = new DFA(decision, decisionStartState);
 		}
-		if ( lookaheadDFA.analysisTimedOut() ) { // did analysis bug out?
-			ErrorManager.internalError("could not even do k=1 for decision "+
-									   decision+"; reason: "+
-									   lookaheadDFA.getReasonForFailure());
-		}
-
 
 		setLookaheadDFA(decision, lookaheadDFA);
 

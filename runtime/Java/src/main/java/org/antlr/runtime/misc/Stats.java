@@ -28,6 +28,7 @@
 package org.antlr.runtime.misc;
 
 import java.io.*;
+import java.util.List;
 
 /** Stats routines needed by profiler etc...
 
@@ -104,6 +105,50 @@ public class Stats {
 		for (int i=0; i<m; i++){
 			if ( X[i] > max ) {
 				max = X[i];
+			}
+		}
+		return max;
+	}
+
+	/** Compute the sample mean */
+	public static double avg(List<Integer> X) {
+		double xbar = 0.0;
+		int m = X.size();
+		if ( m==0 ) {
+			return 0;
+		}
+		for (int i=0; i<m; i++){
+			xbar += X.get(i);
+		}
+		if ( xbar>=0.0 ) {
+			return xbar / m;
+		}
+		return 0.0;
+	}
+
+	public static int min(List<Integer> X) {
+		int min = Integer.MAX_VALUE;
+		int m = X.size();
+		if ( m==0 ) {
+			return 0;
+		}
+		for (int i=0; i<m; i++){
+			if ( X.get(i) < min ) {
+				min = X.get(i);
+			}
+		}
+		return min;
+	}
+
+	public static int max(List<Integer> X) {
+		int max = Integer.MIN_VALUE;
+		int m = X.size();
+		if ( m==0 ) {
+			return 0;
+		}
+		for (int i=0; i<m; i++){
+			if ( X.get(i) > max ) {
+				max = X.get(i);
 			}
 		}
 		return max;

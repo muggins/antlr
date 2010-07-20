@@ -27,16 +27,15 @@
  */
 package org.antlr.analysis;
 
+import antlr.Token;
+import org.antlr.grammar.v2.ANTLRParser;
+import org.antlr.misc.MultiMap;
+import org.antlr.misc.Utils;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarAST;
-import org.antlr.grammar.v2.ANTLRParser;
-import org.antlr.misc.Utils;
-import org.antlr.misc.MultiMap;
 
 import java.util.*;
-
-import antlr.Token;
 
 /** Collection of information about what is wrong with a decision as
  *  discovered while building the DFA predictor.
@@ -119,11 +118,11 @@ public class DecisionProbe {
 	 */
 	protected Set<Integer> altsWithProblem = new HashSet<Integer>();
 
-	/** If decision with > 1 alt has recursion in > 1 alt, it's nonregular
+	/** If decision with > 1 alt has recursion in > 1 alt, it's (likely) nonregular
 	 *  lookahead.  The decision cannot be made with a DFA.
 	 *  the alts are stored in altsWithProblem.
 	 */
-	protected boolean nonLLStarDecision = false;
+	public boolean nonLLStarDecision = false;
 
 	/** Recursion is limited to a particular depth.  If that limit is exceeded
 	 *  the proposed new NFAConfiguration is recorded for the associated DFA state.
@@ -214,9 +213,9 @@ public class DecisionProbe {
 	}
 
 	/** Did the analysis complete it's work? */
-	public boolean analysisTimedOut() {
-		return timedOut;
-	}
+//	public boolean analysisTimedOut() {
+//		return timedOut;
+//	}
 
 	/** Took too long to analyze a DFA */
 	public boolean analysisOverflowed() {
@@ -420,15 +419,6 @@ public class DecisionProbe {
 			ErrorManager.nonLLStarDecision(this);
 		}
 
-		if ( analysisTimedOut() ) {
-			// only report early termination errors if !backtracking
-			if ( !dfa.getAutoBacktrackMode() ) {
-				ErrorManager.analysisAborted(this);
-			}
-			// now just return...if we bailed out, don't spew other messages
-			return;
-		}
-
 		issueRecursionWarnings();
 
 		// generate a separate message for each problem state in DFA
@@ -450,7 +440,16 @@ public class DecisionProbe {
 					Set disabledAlts = getDisabledAlternatives(d);
 					stripWildCardAlts(disabledAlts);
 					if ( disabledAlts.size()>0 ) {
-						ErrorManager.nondeterminism(this,d);
+						// nondeterminism; same input predicts multiple alts.
+						// but don't emit error if greedy=true explicitly set
+						boolean explicitlyGreedy = false;
+						GrammarAST blockAST =
+							d.dfa.nfa.grammar.getDecisionBlockAST(d.dfa.decisionNumber);
+						if ( blockAST!=null ) {
+							String greedyS = (String)blockAST.getBlockOption("greedy");
+							if ( greedyS!=null && greedyS.equals("true") ) explicitlyGreedy = true;
+						}
+						if ( !explicitlyGreedy) ErrorManager.nondeterminism(this,d);
 					}
 				}
 			}
@@ -622,10 +621,10 @@ public class DecisionProbe {
 		danglingStates.add(d);
 	}
 
-	public void reportAnalysisTimeout() {
-		timedOut = true;
-		dfa.nfa.grammar.setOfDFAWhoseAnalysisTimedOut.add(dfa);
-	}
+//	public void reportAnalysisTimeout() {
+//		timedOut = true;
+//		dfa.nfa.grammar.setOfDFAWhoseAnalysisTimedOut.add(dfa);
+//	}
 
 	/** Report that at least 2 alts have recursive constructs.  There is
 	 *  no way to build a DFA so we terminated.
@@ -636,6 +635,7 @@ public class DecisionProbe {
 						   dfa.recursiveAltSet.toList());
 						   */
 		nonLLStarDecision = true;
+		dfa.nfa.grammar.numNonLLStar++;
 		altsWithProblem.addAll(dfa.recursiveAltSet.toList());
 	}
 

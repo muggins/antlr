@@ -72,7 +72,6 @@ proxy.setTreeAdaptor(adap);
 @ctorForProfilingRootGrammar.finally() ::=<<
 TreeAdaptor adap = new CommonTreeAdaptor();
 setTreeAdaptor(adap);
-proxy.setTreeAdaptor(adap);
 >>
 
 @ctorForPredefinedListener.superClassRef() ::= "super(input, dbg);"

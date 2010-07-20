@@ -30,8 +30,10 @@ package org.antlr.runtime.debug;
 import org.antlr.runtime.*;
 import org.antlr.runtime.misc.Stats;
 
-import java.util.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /** Using the debug event interface, track what is happening in the parser
  *  and record statistics about the runtime.

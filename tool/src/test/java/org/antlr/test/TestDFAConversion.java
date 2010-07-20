@@ -511,10 +511,8 @@ public class TestDFAConversion extends BaseTest {
 			new HashSet() {{add("a"); add("b");}};
 		assertEquals(expectedRules, ruleNames(leftRecursive));
 
-		g.createLookaheadDFAs(false);
-
-		assertEquals(1, equeue.warnings.size());
-		Message msg = (Message)equeue.warnings.get(0);
+		assertEquals(1, equeue.errors.size());
+		Message msg = (Message)equeue.errors.get(0);
 		assertTrue("expecting left recursion cycles; found "+msg.getClass().getName(),
 				    msg instanceof LeftRecursionCyclesMessage);
 		LeftRecursionCyclesMessage cyclesMsg = (LeftRecursionCyclesMessage)msg;
@@ -542,10 +540,8 @@ public class TestDFAConversion extends BaseTest {
 			new HashSet() {{add("a"); add("b");}};
 		assertEquals(expectedRules, ruleNames(leftRecursive));
 
-		g.createLookaheadDFAs(false);
-
-		assertEquals(1, equeue.warnings.size());
-		Message msg = (Message)equeue.warnings.get(0);
+		assertEquals(1, equeue.errors.size());
+		Message msg = (Message)equeue.errors.get(0);
 		assertTrue("expecting left recursion cycles; found "+msg.getClass().getName(),
 				    msg instanceof LeftRecursionCyclesMessage);
 		LeftRecursionCyclesMessage cyclesMsg = (LeftRecursionCyclesMessage)msg;
@@ -575,8 +571,8 @@ public class TestDFAConversion extends BaseTest {
 			new HashSet() {{add("a"); add("b"); add("e"); add("d");}};
 		assertEquals(expectedRules, ruleNames(leftRecursive));
 
-		assertEquals(1, equeue.warnings.size());
-		Message msg = (Message)equeue.warnings.get(0);
+		assertEquals(1, equeue.errors.size());
+		Message msg = (Message)equeue.errors.get(0);
 		assertTrue("expecting left recursion cycles; found "+msg.getClass().getName(),
 				    msg instanceof LeftRecursionCyclesMessage);
 		LeftRecursionCyclesMessage cyclesMsg = (LeftRecursionCyclesMessage)msg;
@@ -858,11 +854,12 @@ public class TestDFAConversion extends BaseTest {
 		// should look the same as A+ since no ambiguity
 		String expecting =
 			".s0-A->:s1=>1\n"; // always chooses to enter loop upon A
+		// turns off 1 of warnings. A can never exit loop now
 		int[] unreachableAlts = new int[] {2};
-		int[] nonDetAlts = new int[] {1,2};
-		String ambigInput = "A";
+		int[] nonDetAlts = null;
+		String ambigInput = null;
 		int[] danglingAlts = null;
-		int numWarnings = 2;
+		int numWarnings = 1;
 		checkDecision(g, 1, expecting, unreachableAlts,
 					  nonDetAlts, ambigInput, danglingAlts, numWarnings);
 	}
@@ -1395,6 +1392,53 @@ As a result, alternative(s) 2 were disabled for that input
 		Set<String> expectedPreds = new HashSet<String>() {{add("synpred1_t");}};
 		assertEquals("predicate names not recorded properly in grammar", expectedPreds, preds);
 	}
+
+	@Test public void testGreedyGetsNoErrorForAmbig() throws Exception {
+		Grammar g = new Grammar(
+			"parser grammar t;\n"+
+			"s : IF s (options {greedy=true;} : E s)? | B;\n" +
+			"slist: s SEMI ;");
+		String expecting =
+			".s0-E->:s1=>1\n" +
+			".s0-SEMI->:s2=>2\n";
+		int[] unreachableAlts = null;
+		int[] nonDetAlts = null;
+		String ambigInput = null;
+		int[] danglingAlts = null;
+		int numWarnings = 0;
+		checkDecision(g, 1, expecting, unreachableAlts,
+					  nonDetAlts, ambigInput, danglingAlts, numWarnings);
+		expecting =
+			".s0-B->:s2=>2\n" +
+			".s0-IF->:s1=>1\n";
+		checkDecision(g, 2, expecting, null, null, null, null, 0);
+	}
+
+	@Test public void testGreedyNonLLStarStillGetsError() throws Exception {
+		Grammar g = new Grammar(
+			"parser grammar t;\n"+
+			"x   : ( options {greedy=true;}\n" +
+			"	   : y X\n" +
+			"      | y Y\n" +
+			"	   )\n" +
+			"    ;\n" +
+			"y   : L y R\n" +
+			"    | B\n" +
+			"    ;");
+		List altsWithRecursion = Arrays.asList(new Object[] {1,2});
+		assertNonLLStar(g, altsWithRecursion);
+	}
+
+	@Test public void testGreedyRecOverflowStillGetsError() throws Exception {
+		Grammar g = new Grammar(
+			"parser grammar t;\n"+
+			"s : (options {greedy=true;} : a Y | A A A A A X) ;\n" + // force recursion past m=4
+			"a : A a | Q;");
+		List expectedTargetRules = Arrays.asList(new Object[] {"a"});
+		int expectedAlt = 1;
+		assertRecursionOverflow(g, expectedTargetRules, expectedAlt);
+	}
+
 
 	// Check state table creation
 

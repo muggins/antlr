@@ -162,7 +162,7 @@ public class DFA {
 	 *  if it takes too long, then terminate.  Assume bugs are in the
 	 *  analysis engine.
 	 */
-	protected long conversionStartTime;
+	//protected long conversionStartTime;
 
 	/** Map an edge transition table to a unique set number; ordered so
 	 *  we can push into the output template as an ordered list of sets
@@ -247,12 +247,12 @@ public class DFA {
 			//long stop = System.currentTimeMillis();
 			//System.out.println("verify cost: "+(int)(stop-start)+" ms");
 		}
-		catch (AnalysisTimeoutException at) {
-			probe.reportAnalysisTimeout();
-			if ( !okToRetryDFAWithK1() ) {
-				probe.issueWarnings();
-			}
-		}
+//		catch (AnalysisTimeoutException at) {
+//			probe.reportAnalysisTimeout();
+//			if ( !okToRetryDFAWithK1() ) {
+//				probe.issueWarnings();
+//			}
+//		}
 		catch (NonLLStarDecisionException nonLL) {
 			probe.reportNonLLStarDecision(this);
 			// >1 alt recurses, k=* and no auto backtrack nor manual sem/syn
@@ -725,6 +725,12 @@ public class DFA {
         return cyclic && getUserMaxLookahead()==0;
     }
 
+	public boolean isClassicDFA() {
+		return !isCyclic() &&
+			   !nfa.grammar.decisionsWhoseDFAsUsesSemPreds.contains(this) &&
+			   !nfa.grammar.decisionsWhoseDFAsUsesSynPreds.contains(this);
+	}
+
 	public boolean canInlineDecision() {
 		return !isCyclic() &&
 		    !probe.isNonLLStarDecision() &&
@@ -764,12 +770,26 @@ public class DFA {
 		this.user_k = k;
 	}
 
-	/** Return k if decision is LL(k) for some k else return max int */
+	/** Return k if decision is LL(k) for some k else return max int
+     */
 	public int getMaxLookaheadDepth() {
-		if ( isCyclic() ) {
-			return Integer.MAX_VALUE;
+		if ( !isClassicDFA() ) return Integer.MAX_VALUE;
+		// compute to be sure
+		return _getMaxLookaheadDepth(startState, 0);
+	}
+
+	public int _getMaxLookaheadDepth(DFAState d, int depth) {
+		// not cyclic; don't worry about termination
+		// it counts pred edges, don't call if not pure DFA
+		//if ( d.getNumberOfTransitions()==0 || d.acceptState ) return depth;
+		int max = depth;
+		for (int i=0; i<d.getNumberOfTransitions(); i++) {
+			Transition t = d.transition(i);
+			DFAState edgeTarget = (DFAState)t.target;
+			int m = _getMaxLookaheadDepth(edgeTarget, depth+1);
+			max = Math.max(max, m);
 		}
-		return max_k;
+		return max;
 	}
 
     /** Return a list of Integer alt numbers for which no lookahead could
@@ -916,7 +936,7 @@ public class DFA {
 			(probe.isNonLLStarDecision()||probe.analysisOverflowed()) &&
 		    predicateVisible; // auto backtrack or manual sem/syn
 		return getUserMaxLookahead()!=1 &&
-			 (analysisTimedOut() || nonLLStarOrOverflowAndPredicateVisible);
+			 nonLLStarOrOverflowAndPredicateVisible;
 	}
 
 	public String getReasonForFailure() {
@@ -932,14 +952,6 @@ public class DFA {
 			if ( predicateVisible ) {
 				buf.append(" && predicate visible");
 			}
-		}
-		if ( analysisTimedOut() ) {
-			if ( buf.length()>0 ) {
-				buf.append(" && ");
-			}
-			buf.append("timed out (>");
-			buf.append(DFA.MAX_TIME_PER_DFA_CREATION);
-			buf.append("ms)");
 		}
 		buf.append("\n");
 		return buf.toString();
@@ -984,9 +996,9 @@ public class DFA {
 		return nAlts;
 	}
 
-	public boolean analysisTimedOut() {
-		return probe.analysisTimedOut();
-	}
+//	public boolean analysisTimedOut() {
+//		return probe.analysisTimedOut();
+//	}
 
     protected void initAltRelatedInfo() {
         unreachableAlts = new LinkedList();

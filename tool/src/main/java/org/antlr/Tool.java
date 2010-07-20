@@ -463,8 +463,6 @@ public class Tool {
                     System.out.println(greport.toString());
                     // print out a backtracking report too (that is not encoded into log)
                     System.out.println(greport.getBacktrackingReport());
-                    // same for aborted NFA->DFA conversions
-                    System.out.println(greport.getAnalysisTimeoutReport());
                 }
                 if (isProfile()) {
                     GrammarReport greport = new GrammarReport(grammar);
@@ -744,7 +742,7 @@ public class Tool {
         System.err.println("  -Xnfastates             for nondeterminisms, list NFA states for each path");
         System.err.println("  -Xm m                   max number of rule invocations during conversion           [" + NFAContext.MAX_SAME_RULE_INVOCATIONS_PER_NFA_CONFIG_STACK + "]");
         System.err.println("  -Xmaxdfaedges m         max \"comfortable\" number of edges for single DFA state     [" + DFA.MAX_STATE_TRANSITIONS_FOR_TABLE + "]");
-        System.err.println("  -Xconversiontimeout t   set NFA conversion timeout (ms) for each decision          [" + DFA.MAX_TIME_PER_DFA_CREATION + "]");
+//        System.err.println("  -Xconversiontimeout t   set NFA conversion timeout (ms) for each decision          [" + DFA.MAX_TIME_PER_DFA_CREATION + "]");
         System.err.println("  -Xmaxinlinedfastates m  max DFA states before table used rather than inlining      [" + CodeGenerator.MADSI_DEFAULT +"]");
         System.err.println("  -Xmaxswitchcaselabels m don't generate switch() statements for dfas bigger  than m [" + CodeGenerator.MSCL_DEFAULT +"]");
 		System.err.println("  -Xminswitchalts m       don't generate switch() statements for dfas smaller than m [" + CodeGenerator.MSA_DEFAULT + "]");

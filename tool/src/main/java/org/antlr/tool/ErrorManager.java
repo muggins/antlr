@@ -29,10 +29,9 @@ package org.antlr.tool;
 
 import antlr.Token;
 import org.antlr.Tool;
-import org.antlr.misc.BitSet;
 import org.antlr.analysis.DFAState;
 import org.antlr.analysis.DecisionProbe;
-import org.antlr.analysis.Label;
+import org.antlr.misc.BitSet;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateErrorListener;
 import org.antlr.stringtemplate.StringTemplateGroup;
@@ -245,7 +244,6 @@ public class ErrorManager {
 			put("danglingState", new HashSet());
 		}
 	};
-
 
 	/** Messages should be sensitive to the locale. */
 	private static Locale locale;
