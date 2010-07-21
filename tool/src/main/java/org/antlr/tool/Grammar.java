@@ -152,6 +152,7 @@ public class Grammar {
 	public static final String AUTO_GENERATED_TOKEN_NAME_PREFIX = "T__";
 
 	public static class Decision {
+		public Grammar grammar;
 		public int decision;
 		public NFAState startState;
 		public GrammarAST blockAST;
@@ -2679,8 +2680,12 @@ outer:
 		if ( index >= indexToDecision.size() ) {
 			return null;
 		}
-		Decision d = (Decision)indexToDecision.get(index);
+		Decision d = indexToDecision.get(index);
 		return d;
+	}
+
+	public List<Decision> getDecisions() {
+		return indexToDecision;
 	}
 
 	protected Decision createDecision(int decision) {
@@ -2690,6 +2695,7 @@ outer:
 		}
 		Decision d = new Decision();
 		d.decision = decision;
+		d.grammar = this;
 		indexToDecision.setSize(getNumberOfDecisions());
 		indexToDecision.set(index, d);
 		return d;

@@ -29,10 +29,10 @@
 import antlr.RecognitionException;
 import org.antlr.analysis.Label;
 import org.antlr.analysis.NFAState;
+import org.antlr.grammar.v2.AssignTokenTypesWalker;
 import org.antlr.misc.Utils;
 
 import java.util.*;
-import org.antlr.grammar.v2.AssignTokenTypesWalker;
 
 /** A tree of component (delegate) grammars.
  *

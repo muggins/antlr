@@ -1221,16 +1221,7 @@ public class Tool {
     public void setMessageFormat(String format) {
         ErrorManager.setFormat(format);
     }
-
-    /**
-     * Set the timeout value (in milliseconds) after which DFA creation stops
-     *
-     * @param timeout value in milliseconds
-     */
-    public void setConversionTimeout(int timeout) {
-        DFA.MAX_TIME_PER_DFA_CREATION = timeout;
-    }
-
+	
     /** Provide the List of all grammar file names that the ANTLR tool should process.
      *
      * @param grammarFileNames The list of grammar files to process

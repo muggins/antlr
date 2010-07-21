@@ -28,55 +28,107 @@
 package org.antlr.runtime.debug;
 
 import org.antlr.runtime.*;
+import org.antlr.runtime.misc.DoubleKeyMap;
 import org.antlr.runtime.misc.Stats;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /** Using the debug event interface, track what is happening in the parser
  *  and record statistics about the runtime.
  */
 public class Profiler extends BlankDebugEventListener {
+	public static final String DATA_SEP = "\t";
+
+	public static class ProfileStats {
+		public String Version;
+		public String name;
+		public int numRuleInvocations;
+		public int numUniqueRulesInvoked;
+		public int numDecisionEvents;
+		public int maxRuleInvocationDepth;
+		public int numFixedDecisions;
+		public int minDecisionMaxFixedLookaheads;
+		public int maxDecisionMaxFixedLookaheads;
+		public int avgDecisionMaxFixedLookaheads;
+		public int stddevDecisionMaxFixedLookaheads;
+		public int numCyclicDecisions;
+		public int minDecisionMaxCyclicLookaheads;
+		public int maxDecisionMaxCyclicLookaheads;
+		public int avgDecisionMaxCyclicLookaheads;
+		public int stddevDecisionMaxCyclicLookaheads;
+		public int numBacktrackDecisions;
+//		int Stats.min(toArray(decisionMaxSynPredLookaheads);
+//		int Stats.max(toArray(decisionMaxSynPredLookaheads);
+//		int Stats.avg(toArray(decisionMaxSynPredLookaheads);
+//		int Stats.stddev(toArray(decisionMaxSynPredLookaheads);
+		public int numSemanticPredicates;
+		public int numTokens;
+		public int numHiddenTokens;
+		public int numCharsMatched;
+		public int numHiddenCharsMatched;
+		public int numReportedErrors;
+		public int numMemoizationCacheHits;
+		public int numMemoizationCacheMisses;
+		public int numGuessingRuleInvocations;
+		public int numMemoizationCacheEntries;
+	}
+
+	public static class DecisionDescriptor {
+		public int decision;
+		public String fileName;
+		public String ruleName;
+		public int line;
+		public int pos;
+
+		public int n;
+		public int maxk;
+		public int numSynPredEvals;
+		public int numSemPredEvals;
+	}
+
+	// all about a specific exec of a single decision
+	public static class DecisionEvent {
+		public DecisionDescriptor decision;
+		public int startIndex;
+		public int maxk;
+		public boolean evalSynPred;
+		public boolean evalSemPred;
+		public long startTime;
+		public long stopTime;
+		public int numMemoizationCacheHits;
+		public int numMemoizationCacheMisses;
+	}
+
 	/** Because I may change the stats, I need to track that for later
 	 *  computations to be consistent.
 	 */
-	public static final String Version = "2";
+	public static final String Version = "3";
 	public static final String RUNTIME_STATS_FILENAME = "runtime.stats";
-	public static final int NUM_RUNTIME_STATS = 29;
 
 	public DebugParser parser = null;
 
 	// working variables
 
 	protected int ruleLevel = 0;
-	protected int decisionLevel = 0;
-	protected int maxLookaheadInCurrentDecision = 0;
-	protected CommonToken lastTokenConsumed=null;
+	//protected int decisionLevel = 0;
+	protected Token lastRealTokenTouchedInDecision;
+	protected Set<String> uniqueRules = new HashSet<String>();
+	protected Stack<String> currentGrammarFileName = new Stack();
+	protected Stack<String> currentRuleName = new Stack();
+	protected Stack<Integer> currentLine = new Stack();
+	protected Stack<Integer> currentPos = new Stack();
 
-	protected List lookaheadStack = new ArrayList();
+	// Vector<DecisionStats>
+	//protected Vector decisions = new Vector(200); // need setSize
+	protected DoubleKeyMap<String,Integer, DecisionDescriptor> decisions =
+		new DoubleKeyMap<String,Integer, DecisionDescriptor>();
 
-	// stats variables
+	// Record a DecisionData for each decision we hit while parsing
+	protected List<DecisionEvent> decisionEvents = new ArrayList<DecisionEvent>();
+	protected Stack<DecisionEvent> decisionStack = new Stack<DecisionEvent>();
 
-	public int numRuleInvocations = 0;
-	public int numGuessingRuleInvocations = 0;
-	public int maxRuleInvocationDepth = 0;
-	public int numFixedDecisions = 0;
-	public int numCyclicDecisions = 0;
-	public int numBacktrackDecisions = 0;
-	public int[] decisionMaxFixedLookaheads = new int[200]; // TODO: make List
-	public int[] decisionMaxCyclicLookaheads = new int[200];
-	public List decisionMaxSynPredLookaheads = new ArrayList();
-	public int numHiddenTokens = 0;
-	public int numCharsMatched = 0;
-	public int numHiddenCharsMatched = 0;
-	public int numSemanticPredicates = 0;
-	public int numSyntacticPredicates = 0;
-	protected int numberReportedErrors = 0;
-	public int numMemoizationCacheMisses = 0;
-	public int numMemoizationCacheHits = 0;
-	public int numMemoizationCacheEntries = 0;
+	ProfileStats stats = new ProfileStats();
 
 	public Profiler() {
 	}
@@ -86,13 +138,19 @@ public class Profiler extends BlankDebugEventListener {
 	}
 
 	public void enterRule(String grammarFileName, String ruleName) {
-		//System.out.println("enterRule "+ruleName);
+		//System.out.println("enterRule "+grammarFileName+":"+ruleName);
 		ruleLevel++;
-		numRuleInvocations++;
-		if ( ruleLevel >maxRuleInvocationDepth ) {
-			maxRuleInvocationDepth = ruleLevel;
-		}
+		stats.numRuleInvocations++;
+		uniqueRules.add(grammarFileName+":"+ruleName);
+		stats.maxRuleInvocationDepth = Math.max(stats.maxRuleInvocationDepth, ruleLevel);
+		currentGrammarFileName.push( grammarFileName );
+		currentRuleName.push( ruleName );
+	}
 
+	public void exitRule(String grammarFileName, String ruleName) {
+		ruleLevel--;
+		currentGrammarFileName.pop();
+		currentRuleName.pop();
 	}
 
 	/** Track memoization; this is not part of standard debug interface
@@ -107,13 +165,15 @@ public class Profiler extends BlankDebugEventListener {
 		int stopIndex = parser.getRuleMemoization(ruleIndex, input.index());
 		if ( stopIndex==BaseRecognizer.MEMO_RULE_UNKNOWN ) {
 			//System.out.println("rule "+ruleIndex+" missed @ "+input.index());
-			numMemoizationCacheMisses++;
-			numGuessingRuleInvocations++; // we'll have to enter
+			stats.numMemoizationCacheMisses++;
+			stats.numGuessingRuleInvocations++; // we'll have to enter
+			currentDecision().numMemoizationCacheMisses++;
 		}
 		else {
 			// regardless of rule success/failure, if in cache, we have a cache hit
 			//System.out.println("rule "+ruleIndex+" hit @ "+input.index());
-			numMemoizationCacheHits++;
+			stats.numMemoizationCacheHits++;
+			currentDecision().numMemoizationCacheHits++;
 		}
 	}
 
@@ -124,88 +184,116 @@ public class Profiler extends BlankDebugEventListener {
 	{
 		// count how many entries go into table
 		//System.out.println("memoize "+ruleName);
-		numMemoizationCacheEntries++;
+		stats.numMemoizationCacheEntries++;
 	}
 
-	public void exitRule(String grammarFileName, String ruleName) {
-		ruleLevel--;
+	@Override
+	public void location(int line, int pos) {
+		currentLine.push(line);
+		currentPos.push(pos);
 	}
 
 	public void enterDecision(int decisionNumber) {
-		decisionLevel++;
+		lastRealTokenTouchedInDecision = null;
+		stats.numDecisionEvents++;
 		int startingLookaheadIndex = parser.getTokenStream().index();
-		//System.out.println("enterDecision "+decisionNumber+" @ index "+startingLookaheadIndex);
-		lookaheadStack.add(new Integer(startingLookaheadIndex));
+		TokenStream input = parser.getTokenStream();
+		System.out.println("enterDecision " + decisionNumber + " depth " + decisionStack.size() +
+						   " @ " + input.get(input.index()) +
+						   " rule " +locationDescription());
+		String g = (String) currentGrammarFileName.peek();
+		DecisionDescriptor descriptor = decisions.get(g, decisionNumber);
+		if ( descriptor ==null ) {
+			descriptor = new DecisionDescriptor();
+			decisions.put(g, decisionNumber, descriptor);
+			descriptor.decision = decisionNumber;
+			descriptor.fileName = (String)currentGrammarFileName.peek();
+			descriptor.ruleName = (String)currentRuleName.peek();
+			descriptor.line = (Integer)currentLine.peek();
+			descriptor.pos = (Integer)currentPos.peek();
+		}
+		descriptor.n++;
+
+		DecisionEvent d = new DecisionEvent();
+		decisionStack.push(d);
+		d.decision = descriptor;
+		d.startTime = System.currentTimeMillis();
+		d.startIndex = startingLookaheadIndex;
 	}
 
 	public void exitDecision(int decisionNumber) {
-		//System.out.println("exitDecision "+decisionNumber);
-		// track how many of acyclic, cyclic here as we don't know what kind
-		// yet in enterDecision event.
-		if ( parser.isCyclicDecision ) {
-			numCyclicDecisions++;
-		}
-		else {
-			numFixedDecisions++;
-		}
-		lookaheadStack.remove(lookaheadStack.size()-1); // pop lookahead depth counter
-		decisionLevel--;
-		if ( parser.isCyclicDecision ) {
-			if ( numCyclicDecisions>=decisionMaxCyclicLookaheads.length ) {
-				int[] bigger = new int[decisionMaxCyclicLookaheads.length*2];
-				System.arraycopy(decisionMaxCyclicLookaheads,0,bigger,0,decisionMaxCyclicLookaheads.length);
-				decisionMaxCyclicLookaheads = bigger;
-			}
-			decisionMaxCyclicLookaheads[numCyclicDecisions-1] = maxLookaheadInCurrentDecision;
-		}
-		else {
-			if ( numFixedDecisions>=decisionMaxFixedLookaheads.length ) {
-				int[] bigger = new int[decisionMaxFixedLookaheads.length*2];
-				System.arraycopy(decisionMaxFixedLookaheads,0,bigger,0,decisionMaxFixedLookaheads.length);
-				decisionMaxFixedLookaheads = bigger;
-			}
-			decisionMaxFixedLookaheads[numFixedDecisions-1] = maxLookaheadInCurrentDecision;
-		}
-		parser.isCyclicDecision = false; // can't nest so just reset to false
-		maxLookaheadInCurrentDecision = 0;
+		DecisionEvent d = decisionStack.pop();
+		d.stopTime = System.currentTimeMillis();
+
+		int lastTokenIndex = lastRealTokenTouchedInDecision.getTokenIndex();
+		int numHidden = getNumberOfHiddenTokens(d.startIndex, lastTokenIndex);
+		int depth = lastTokenIndex - d.startIndex - numHidden + 1; // +1 counts consuming start token as 1
+		d.maxk = depth;
+		d.decision.maxk = Math.max(d.decision.maxk, depth);
+
+		System.out.println("exitDecision "+decisionNumber+" in "+d.decision.ruleName+
+						   " depth "+d.maxk+" max token "+lastRealTokenTouchedInDecision);
+		decisionEvents.add(d); // done with decision; track all
 	}
 
 	public void consumeToken(Token token) {
 		//System.out.println("consume token "+token);
-		lastTokenConsumed = (CommonToken)token;
+		if ( !inDecision() ) return;
+		if ( lastRealTokenTouchedInDecision==null ||
+			 lastRealTokenTouchedInDecision.getTokenIndex() < token.getTokenIndex() )
+		{
+			lastRealTokenTouchedInDecision = token;
+		}
+		DecisionEvent d = currentDecision();
+		// compute lookahead depth
+		int thisRefIndex = token.getTokenIndex();
+		int numHidden = getNumberOfHiddenTokens(d.startIndex, thisRefIndex);
+		int depth = thisRefIndex - d.startIndex - numHidden + 1; // +1 counts consuming start token as 1
+		//d.maxk = Math.max(d.maxk, depth);
+		System.out.println("consume to "+thisRefIndex+" "+depth+" tokens ahead in "+
+						   d.decision.ruleName+"-"+d.decision.decision+" start index "+d.startIndex);		
 	}
 
 	/** The parser is in a decision if the decision depth > 0.  This
 	 *  works for backtracking also, which can have nested decisions.
 	 */
 	public boolean inDecision() {
-		return decisionLevel>0;
+		return decisionStack.size()>0;
 	}
 
 	public void consumeHiddenToken(Token token) {
 		//System.out.println("consume hidden token "+token);
-		lastTokenConsumed = (CommonToken)token;
 	}
 
 	/** Track refs to lookahead if in a fixed/nonfixed decision.
 	 */
 	public void LT(int i, Token t) {
-		if ( inDecision() ) {
-			// get starting index off stack
-			int stackTop = lookaheadStack.size()-1;
-			Integer startingIndex = (Integer)lookaheadStack.get(stackTop);
-			// compute lookahead depth
-			int thisRefIndex = parser.getTokenStream().index();
-			int numHidden =
-				getNumberOfHiddenTokens(startingIndex.intValue(), thisRefIndex);
-			int depth = i + thisRefIndex - startingIndex.intValue() - numHidden;
-			/*
-			System.out.println("LT("+i+") @ index "+thisRefIndex+" is depth "+depth+
-				" max is "+maxLookaheadInCurrentDecision);
-			*/
-			if ( depth>maxLookaheadInCurrentDecision ) {
-				maxLookaheadInCurrentDecision = depth;
+		if ( inDecision() && i>0 ) {
+			if ( lastRealTokenTouchedInDecision==null ||
+				 lastRealTokenTouchedInDecision.getTokenIndex() < t.getTokenIndex() )
+			{
+				lastRealTokenTouchedInDecision = t;
+				System.out.println("last token "+lastRealTokenTouchedInDecision);
 			}
+			DecisionEvent d = currentDecision();
+			System.out.println("LT("+i+")="+t+" index "+t.getTokenIndex()+" relative to "+d.decision.ruleName+"-"+
+							   d.decision.decision+" start index "+d.startIndex);			
+			// get starting index off stack
+//			int stackTop = lookaheadStack.size()-1;
+//			Integer startingIndex = (Integer)lookaheadStack.get(stackTop);
+//			// compute lookahead depth
+//			int thisRefIndex = parser.getTokenStream().index();
+//			int numHidden =
+//				getNumberOfHiddenTokens(startingIndex.intValue(), thisRefIndex);
+//			int depth = i + thisRefIndex - startingIndex.intValue() - numHidden;
+//			/*
+//			System.out.println("LT("+i+") @ index "+thisRefIndex+" is depth "+depth+
+//				" max is "+maxLookaheadInCurrentDecision);
+//			*/
+//			if ( depth>maxLookaheadInCurrentDecision ) {
+//				maxLookaheadInCurrentDecision = depth;
+//			}
+//			d.maxk = currentDecision()/
 		}
 	}
 
@@ -225,48 +313,49 @@ public class Profiler extends BlankDebugEventListener {
 	 * 		exit rule
 	 */
 	public void beginBacktrack(int level) {
-		//System.out.println("enter backtrack "+level);
-		numBacktrackDecisions++;
+		System.out.println("enter backtrack "+level);
+		stats.numBacktrackDecisions++;
+		DecisionEvent d = currentDecision();
+		d.evalSynPred = true;
+		d.decision.numSynPredEvals++;
 	}
 
 	/** Successful or not, track how much lookahead synpreds use */
 	public void endBacktrack(int level, boolean successful) {
-		//System.out.println("exit backtrack "+level+": "+successful);
-		decisionMaxSynPredLookaheads.add(
-			new Integer(maxLookaheadInCurrentDecision)
-		);
+		System.out.println("exit backtrack "+level+": "+successful);
 	}
 
-	/*
-	public void mark(int marker) {
-		int i = parser.getTokenStream().index();
-		System.out.println("mark @ index "+i);
-		synPredLookaheadStack.add(new Integer(i));
+	@Override
+	public void mark(int i) {
+		System.out.println("mark "+i);
 	}
 
-	public void rewind(int marker) {
-		// pop starting index off stack
-		int stackTop = synPredLookaheadStack.size()-1;
-		Integer startingIndex = (Integer)synPredLookaheadStack.get(stackTop);
-		synPredLookaheadStack.remove(synPredLookaheadStack.size()-1);
-		// compute lookahead depth
-		int stopIndex = parser.getTokenStream().index();
-		System.out.println("rewind @ index "+stopIndex);
-		int depth = stopIndex - startingIndex.intValue();
-		System.out.println("depth of lookahead for synpred: "+depth);
-		decisionMaxSynPredLookaheads.add(
-			new Integer(depth)
-		);
+	@Override
+	public void rewind(int i) {
+		System.out.println("rewind "+i);
 	}
-	*/
+
+	@Override
+	public void rewind() {
+		System.out.println("rewind");
+	}
+
+	protected DecisionEvent currentDecision() {
+		return decisionStack.peek();
+	}
 
 	public void recognitionException(RecognitionException e) {
-		numberReportedErrors++;
+		stats.numReportedErrors++;
 	}
 
 	public void semanticPredicate(boolean result, String predicate) {
+		stats.numSemanticPredicates++;
 		if ( inDecision() ) {
-			numSemanticPredicates++;
+			DecisionEvent d = currentDecision();
+			d.evalSemPred = true;
+			d.decision.numSemPredEvals++;
+			System.out.println("eval "+predicate+" in "+d.decision.ruleName+"-"+
+							   d.decision.decision);
 		}
 	}
 
@@ -279,7 +368,7 @@ public class Profiler extends BlankDebugEventListener {
 			System.err.println(ioe);
 			ioe.printStackTrace(System.err);
 		}
-		System.out.println(toString(stats));
+		System.out.println(toString());
 	}
 
 	public void setParser(DebugParser parser) {
@@ -289,189 +378,222 @@ public class Profiler extends BlankDebugEventListener {
 	// R E P O R T I N G
 
 	public String toNotifyString() {
-		TokenStream input = parser.getTokenStream();
-		for (int i=0; i<input.size()&&lastTokenConsumed!=null&&i<=lastTokenConsumed.getTokenIndex(); i++) {
-			Token t = input.get(i);
-			if ( t.getChannel()!=Token.DEFAULT_CHANNEL ) {
-				numHiddenTokens++;
-				numHiddenCharsMatched += t.getText().length();
-			}
-		}
-		numCharsMatched = lastTokenConsumed.getStopIndex() + 1;
-		decisionMaxFixedLookaheads = trim(decisionMaxFixedLookaheads, numFixedDecisions);
-		decisionMaxCyclicLookaheads = trim(decisionMaxCyclicLookaheads, numCyclicDecisions);
 		StringBuffer buf = new StringBuffer();
 		buf.append(Version);
 		buf.append('\t');
 		buf.append(parser.getClass().getName());
-		buf.append('\t');
-		buf.append(numRuleInvocations);
-		buf.append('\t');
-		buf.append(maxRuleInvocationDepth);
-		buf.append('\t');
-		buf.append(numFixedDecisions);
-		buf.append('\t');
-		buf.append(Stats.min(decisionMaxFixedLookaheads));
-		buf.append('\t');
-		buf.append(Stats.max(decisionMaxFixedLookaheads));
-		buf.append('\t');
-		buf.append(Stats.avg(decisionMaxFixedLookaheads));
-		buf.append('\t');
-		buf.append(Stats.stddev(decisionMaxFixedLookaheads));
-		buf.append('\t');
-		buf.append(numCyclicDecisions);
-		buf.append('\t');
-		buf.append(Stats.min(decisionMaxCyclicLookaheads));
-		buf.append('\t');
-		buf.append(Stats.max(decisionMaxCyclicLookaheads));
-		buf.append('\t');
-		buf.append(Stats.avg(decisionMaxCyclicLookaheads));
-		buf.append('\t');
-		buf.append(Stats.stddev(decisionMaxCyclicLookaheads));
-		buf.append('\t');
-		buf.append(numBacktrackDecisions);
-		buf.append('\t');
-		buf.append(Stats.min(toArray(decisionMaxSynPredLookaheads)));
-		buf.append('\t');
-		buf.append(Stats.max(toArray(decisionMaxSynPredLookaheads)));
-		buf.append('\t');
-		buf.append(Stats.avg(toArray(decisionMaxSynPredLookaheads)));
-		buf.append('\t');
-		buf.append(Stats.stddev(toArray(decisionMaxSynPredLookaheads)));
-		buf.append('\t');
-		buf.append(numSemanticPredicates);
-		buf.append('\t');
-		buf.append(parser.getTokenStream().size());
-		buf.append('\t');
-		buf.append(numHiddenTokens);
-		buf.append('\t');
-		buf.append(numCharsMatched);
-		buf.append('\t');
-		buf.append(numHiddenCharsMatched);
-		buf.append('\t');
-		buf.append(numberReportedErrors);
-		buf.append('\t');
-		buf.append(numMemoizationCacheHits);
-		buf.append('\t');
-		buf.append(numMemoizationCacheMisses);
-		buf.append('\t');
-		buf.append(numGuessingRuleInvocations);
-		buf.append('\t');
-		buf.append(numMemoizationCacheEntries);
+//		buf.append('\t');
+//		buf.append(numRuleInvocations);
+//		buf.append('\t');
+//		buf.append(maxRuleInvocationDepth);
+//		buf.append('\t');
+//		buf.append(numFixedDecisions);
+//		buf.append('\t');
+//		buf.append(Stats.min(decisionMaxFixedLookaheads));
+//		buf.append('\t');
+//		buf.append(Stats.max(decisionMaxFixedLookaheads));
+//		buf.append('\t');
+//		buf.append(Stats.avg(decisionMaxFixedLookaheads));
+//		buf.append('\t');
+//		buf.append(Stats.stddev(decisionMaxFixedLookaheads));
+//		buf.append('\t');
+//		buf.append(numCyclicDecisions);
+//		buf.append('\t');
+//		buf.append(Stats.min(decisionMaxCyclicLookaheads));
+//		buf.append('\t');
+//		buf.append(Stats.max(decisionMaxCyclicLookaheads));
+//		buf.append('\t');
+//		buf.append(Stats.avg(decisionMaxCyclicLookaheads));
+//		buf.append('\t');
+//		buf.append(Stats.stddev(decisionMaxCyclicLookaheads));
+//		buf.append('\t');
+//		buf.append(numBacktrackDecisions);
+//		buf.append('\t');
+//		buf.append(Stats.min(toArray(decisionMaxSynPredLookaheads)));
+//		buf.append('\t');
+//		buf.append(Stats.max(toArray(decisionMaxSynPredLookaheads)));
+//		buf.append('\t');
+//		buf.append(Stats.avg(toArray(decisionMaxSynPredLookaheads)));
+//		buf.append('\t');
+//		buf.append(Stats.stddev(toArray(decisionMaxSynPredLookaheads)));
+//		buf.append('\t');
+//		buf.append(numSemanticPredicates);
+//		buf.append('\t');
+//		buf.append(parser.getTokenStream().size());
+//		buf.append('\t');
+//		buf.append(numHiddenTokens);
+//		buf.append('\t');
+//		buf.append(numCharsMatched);
+//		buf.append('\t');
+//		buf.append(numHiddenCharsMatched);
+//		buf.append('\t');
+//		buf.append(numberReportedErrors);
+//		buf.append('\t');
+//		buf.append(numMemoizationCacheHits);
+//		buf.append('\t');
+//		buf.append(numMemoizationCacheMisses);
+//		buf.append('\t');
+//		buf.append(numGuessingRuleInvocations);
+//		buf.append('\t');
+//		buf.append(numMemoizationCacheEntries);
 		return buf.toString();
 	}
 
 	public String toString() {
-		return toString(toNotifyString());
+		return toString(getReport());
 	}
 
-	protected static String[] decodeReportData(String data) {
-		String[] fields = new String[NUM_RUNTIME_STATS];
-		StringTokenizer st = new StringTokenizer(data, "\t");
-		int i = 0;
-		while ( st.hasMoreTokens() ) {
-			fields[i] = st.nextToken();
-			i++;
+	public ProfileStats getReport() {
+		TokenStream input = parser.getTokenStream();
+		for (int i=0; i<input.size()&& lastRealTokenTouchedInDecision !=null&&i<= lastRealTokenTouchedInDecision.getTokenIndex(); i++) {
+			Token t = input.get(i);
+			if ( t.getChannel()!=Token.DEFAULT_CHANNEL ) {
+				stats.numHiddenTokens++;
+				stats.numHiddenCharsMatched += t.getText().length();
+			}
 		}
-		if ( i!=NUM_RUNTIME_STATS ) {
-			return null;
-		}
-		return fields;
+		stats.Version = Version;
+		stats.name = parser.getClass().getName();
+		stats.numUniqueRulesInvoked = uniqueRules.size();
+		//stats.numCharsMatched = lastTokenConsumed.getStopIndex() + 1;
+		return stats;
 	}
 
-	public static String toString(String notifyDataLine) {
-		String[] fields = decodeReportData(notifyDataLine);
-		if ( fields==null ) {
-			return null;
-		}
+	public DoubleKeyMap getDecisionStats() {
+		return decisions;
+	}
+
+	public List getDecisionEvents() {
+		return decisionEvents;
+	}
+
+	public static String toString(ProfileStats stats) {
 		StringBuffer buf = new StringBuffer();
 		buf.append("ANTLR Runtime Report; Profile Version ");
-		buf.append(fields[0]);
+		buf.append(stats.Version);
 		buf.append('\n');
 		buf.append("parser name ");
-		buf.append(fields[1]);
+		buf.append(stats.name);
 		buf.append('\n');
 		buf.append("Number of rule invocations ");
-		buf.append(fields[2]);
+		buf.append(stats.numRuleInvocations);
 		buf.append('\n');
-		buf.append("Number of rule invocations in \"guessing\" mode ");
-		buf.append(fields[27]);
+		buf.append("Number of unique rules visited ");
+		buf.append(stats.numUniqueRulesInvoked);
+		buf.append('\n');
+		buf.append("Number of decision events ");
+		buf.append(stats.numDecisionEvents);
+		buf.append('\n');
+		buf.append("Number of rule invocations while backtracking ");
+		buf.append(stats.numGuessingRuleInvocations);
 		buf.append('\n');
 		buf.append("max rule invocation nesting depth ");
-		buf.append(fields[3]);
+		buf.append(stats.maxRuleInvocationDepth);
 		buf.append('\n');
-		buf.append("number of fixed lookahead decisions ");
-		buf.append(fields[4]);
-		buf.append('\n');
-		buf.append("min lookahead used in a fixed lookahead decision ");
-		buf.append(fields[5]);
-		buf.append('\n');
-		buf.append("max lookahead used in a fixed lookahead decision ");
-		buf.append(fields[6]);
-		buf.append('\n');
-		buf.append("average lookahead depth used in fixed lookahead decisions ");
-		buf.append(fields[7]);
-		buf.append('\n');
-		buf.append("standard deviation of depth used in fixed lookahead decisions ");
-		buf.append(fields[8]);
-		buf.append('\n');
-		buf.append("number of arbitrary lookahead decisions ");
-		buf.append(fields[9]);
-		buf.append('\n');
-		buf.append("min lookahead used in an arbitrary lookahead decision ");
-		buf.append(fields[10]);
-		buf.append('\n');
-		buf.append("max lookahead used in an arbitrary lookahead decision ");
-		buf.append(fields[11]);
-		buf.append('\n');
-		buf.append("average lookahead depth used in arbitrary lookahead decisions ");
-		buf.append(fields[12]);
-		buf.append('\n');
-		buf.append("standard deviation of depth used in arbitrary lookahead decisions ");
-		buf.append(fields[13]);
-		buf.append('\n');
-		buf.append("number of evaluated syntactic predicates ");
-		buf.append(fields[14]);
-		buf.append('\n');
-		buf.append("min lookahead used in a syntactic predicate ");
-		buf.append(fields[15]);
-		buf.append('\n');
-		buf.append("max lookahead used in a syntactic predicate ");
-		buf.append(fields[16]);
-		buf.append('\n');
-		buf.append("average lookahead depth used in syntactic predicates ");
-		buf.append(fields[17]);
-		buf.append('\n');
-		buf.append("standard deviation of depth used in syntactic predicates ");
-		buf.append(fields[18]);
-		buf.append('\n');
+//		buf.append("number of fixed lookahead decisions ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("min lookahead used in a fixed lookahead decision ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("max lookahead used in a fixed lookahead decision ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("average lookahead depth used in fixed lookahead decisions ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("standard deviation of depth used in fixed lookahead decisions ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("number of arbitrary lookahead decisions ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("min lookahead used in an arbitrary lookahead decision ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("max lookahead used in an arbitrary lookahead decision ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("average lookahead depth used in arbitrary lookahead decisions ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("standard deviation of depth used in arbitrary lookahead decisions ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("number of evaluated syntactic predicates ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("min lookahead used in a syntactic predicate ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("max lookahead used in a syntactic predicate ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("average lookahead depth used in syntactic predicates ");
+//		buf.append();
+//		buf.append('\n');
+//		buf.append("standard deviation of depth used in syntactic predicates ");
+//		buf.append();
+//		buf.append('\n');
 		buf.append("rule memoization cache size ");
-		buf.append(fields[28]);
+		buf.append(stats.numMemoizationCacheEntries);
 		buf.append('\n');
 		buf.append("number of rule memoization cache hits ");
-		buf.append(fields[25]);
+		buf.append(stats.numMemoizationCacheHits);
 		buf.append('\n');
 		buf.append("number of rule memoization cache misses ");
-		buf.append(fields[26]);
+		buf.append(stats.numMemoizationCacheMisses);
 		buf.append('\n');
-		buf.append("number of evaluated semantic predicates ");
-		buf.append(fields[19]);
-		buf.append('\n');
+//		buf.append("number of evaluated semantic predicates ");
+//		buf.append();
+//		buf.append('\n');
 		buf.append("number of tokens ");
-		buf.append(fields[20]);
+		buf.append(stats.numTokens);
 		buf.append('\n');
 		buf.append("number of hidden tokens ");
-		buf.append(fields[21]);
+		buf.append(stats.numHiddenTokens);
 		buf.append('\n');
 		buf.append("number of char ");
-		buf.append(fields[22]);
+		buf.append(stats.numCharsMatched);
 		buf.append('\n');
 		buf.append("number of hidden char ");
-		buf.append(fields[23]);
+		buf.append(stats.numHiddenCharsMatched);
 		buf.append('\n');
 		buf.append("number of syntax errors ");
-		buf.append(fields[24]);
+		buf.append(stats.numReportedErrors);
 		buf.append('\n');
+		return buf.toString();
+	}
+
+	public String getDecisionStatsDump() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("location");
+		buf.append(DATA_SEP);
+		buf.append("n");
+		buf.append(DATA_SEP);
+		buf.append("maxk");
+		buf.append(DATA_SEP);
+		buf.append("synpred");
+		buf.append(DATA_SEP);
+		buf.append("sempred");
+		buf.append("\n");
+		for (String fileName : decisions.keySet()) {
+			for (int d : decisions.keySet(fileName)) {
+				DecisionDescriptor s = decisions.get(fileName, d);
+				buf.append(s.decision);
+				buf.append("@");
+				buf.append(locationDescription(s.fileName,s.ruleName,s.line,s.pos)); // decision number
+				buf.append(DATA_SEP);
+				buf.append(s.n);
+				buf.append(DATA_SEP);
+				buf.append(s.maxk);
+				buf.append(DATA_SEP);
+				buf.append(s.numSynPredEvals);
+				buf.append(DATA_SEP);
+				buf.append(s.numSemPredEvals);
+				buf.append('\n');
+			}
+		}
 		return buf.toString();
 	}
 
@@ -504,5 +626,17 @@ public class Profiler extends BlankDebugEventListener {
 			}
 		}
 		return n;
+	}
+
+	protected String locationDescription() {
+		return locationDescription(
+			currentGrammarFileName.peek(),
+			currentRuleName.peek(),
+			currentLine.peek(),
+			currentPos.peek());
+	}
+
+	protected String locationDescription(String file, String rule, int line, int pos) {
+		return file+":"+line+":"+pos+"(" + rule + ")";
 	}
 }
