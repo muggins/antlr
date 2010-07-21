@@ -27,25 +27,19 @@
 */
 package org.antlr.gunit;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Lexer;
-import org.antlr.runtime.TokenStream;
+import junit.framework.TestCase;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.TreeAdaptor;
 import org.antlr.runtime.tree.TreeNodeStream;
 import org.antlr.stringtemplate.StringTemplate;
 
-import junit.framework.TestCase;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /** All gUnit-generated JUnit class should extend this class 
  *  which implements the essential methods for triggering
@@ -66,7 +60,7 @@ public abstract class gUnitBaseTest extends TestCase {
 	private PrintStream consoleErr = System.err;
 	
 	// Invoke target lexer.rule
-	public String execLexer(String testRuleName, String testInput, boolean isFile) throws Exception {
+	public String execLexer(String testRuleName, int line, String testInput, boolean isFile) throws Exception {
 		CharStream input;
 		/** Set up ANTLR input stream based on input source, file or String */
 		if ( isFile ) {
@@ -91,8 +85,9 @@ public abstract class gUnitBaseTest extends TestCase {
             Class[] lexArgTypes = new Class[]{CharStream.class};				// assign type to lexer's args
             Constructor lexConstructor = lexer.getConstructor(lexArgTypes);        
             Object[] lexArgs = new Object[]{input};								// assign value to lexer's args   
-            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer    
-            
+            Lexer lexObj = (Lexer)lexConstructor.newInstance(lexArgs);				// makes new instance of lexer    
+            input.setLine(line);
+
             Method ruleName = lexer.getMethod("m"+testRuleName, new Class[0]);
             
             /** Start of I/O Redirecting */
@@ -155,7 +150,7 @@ public abstract class gUnitBaseTest extends TestCase {
 	}
 	
 	// Invoke target parser.rule
-	public Object execParser(String testRuleName, String testInput, boolean isFile) throws Exception {
+	public Object execParser(String testRuleName, int line, String testInput, boolean isFile) throws Exception {
 		CharStream input;
 		/** Set up ANTLR input stream based on input source, file or String */
 		if ( isFile ) {
@@ -175,20 +170,23 @@ public abstract class gUnitBaseTest extends TestCase {
 		Class parser = null;
 		PrintStream ps = null;		// for redirecting stdout later
 		PrintStream ps2 = null;		// for redirecting stderr later
+        ByteArrayOutputStream out = null;
+        ByteArrayOutputStream err = null;
 		try {
 			/** Use Reflection to create instances of lexer and parser */
 			lexer = Class.forName(lexerPath);
             Class[] lexArgTypes = new Class[]{CharStream.class};				// assign type to lexer's args
             Constructor lexConstructor = lexer.getConstructor(lexArgTypes);
             Object[] lexArgs = new Object[]{input};								// assign value to lexer's args   
-            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer    
-            
-            CommonTokenStream tokens = new CommonTokenStream((Lexer) lexObj);
+            Lexer lexObj = (Lexer)lexConstructor.newInstance(lexArgs);				// makes new instance of lexer
+            input.setLine(line);
+
+            CommonTokenStream tokens = new CommonTokenStream(lexObj);
             parser = Class.forName(parserPath);
             Class[] parArgTypes = new Class[]{TokenStream.class};				// assign type to parser's args
             Constructor parConstructor = parser.getConstructor(parArgTypes);
             Object[] parArgs = new Object[]{tokens};							// assign value to parser's args  
-            Object parObj = parConstructor.newInstance(parArgs);				// makes new instance of parser      
+            Parser parObj = (Parser)parConstructor.newInstance(parArgs);				// makes new instance of parser
             
             // set up customized tree adaptor if necessary
             if ( treeAdaptorPath!=null ) {
@@ -197,12 +195,12 @@ public abstract class gUnitBaseTest extends TestCase {
             	Class _treeAdaptor = Class.forName(treeAdaptorPath);
             	_setTreeAdaptor.invoke(parObj, _treeAdaptor.newInstance());
             }
-            
+
             Method ruleName = parser.getMethod(testRuleName);
 
             /** Start of I/O Redirecting */
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayOutputStream err = new ByteArrayOutputStream();
+            out = new ByteArrayOutputStream();
+            err = new ByteArrayOutputStream();
             ps = new PrintStream(out);
             ps2 = new PrintStream(err);
             System.setOut(ps);
@@ -238,23 +236,21 @@ public abstract class gUnitBaseTest extends TestCase {
                 }
             }
 
-			this.stdout = null;
-			this.stderr = null;
+			this.stdout = "";
+			this.stderr = "";
 			
 			/** Invalid input */
             if ( tokens.index()!=tokens.size() ) {
             	//throw new InvalidInputException();
-            	this.stderr = "Invalid input";
+            	this.stderr += "Stopped parsing at token index "+tokens.index()+": ";
             }
             
 			// retVal could be actual return object from rule, stderr or stdout
-			if ( err.toString().length()>0 ) {
-				this.stderr = err.toString();
-				return this.stderr;
-			}
-			if ( out.toString().length()>0 ) {
-				this.stdout = out.toString();
-			}
+            this.stdout += out.toString();
+            this.stderr += err.toString();
+
+			if ( err.toString().length()>0 ) return this.stderr;
+			if ( out.toString().length()>0 ) return this.stdout;
 			if ( astString!=null ) {	// Return toStringTree of AST
 				return astString;
 			}
@@ -267,17 +263,25 @@ public abstract class gUnitBaseTest extends TestCase {
 			if ( err.toString().length()==0 && out.toString().length()==0 ) {
 				return null;
 			}
-		} catch (ClassNotFoundException e) {
+		}
+        catch (ClassNotFoundException e) {
 			e.printStackTrace(); System.exit(1);
-		} catch (SecurityException e) {
+		}
+        catch (SecurityException e) {
 			e.printStackTrace(); System.exit(1);
-		} catch (NoSuchMethodException e) {
+		}
+        catch (NoSuchMethodException e) {
 			e.printStackTrace(); System.exit(1);
-		} catch (IllegalAccessException e) {
+		}
+        catch (IllegalAccessException e) {
 			e.printStackTrace(); System.exit(1);
-		} catch (InvocationTargetException e) {
-			if ( e.getCause()!=null ) this.stderr = e.getCause().toString();
-			else this.stderr = e.toString();
+		}
+        catch (InvocationTargetException e) {
+            this.stdout = out.toString();
+            this.stderr = err.toString();
+
+			if ( e.getCause()!=null ) this.stderr += e.getCause().toString();
+			else this.stderr += e.toString();
         	return this.stderr;
 		} finally {
         	try {
