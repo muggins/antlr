@@ -27,20 +27,17 @@
  */
 package org.antlr.test;
 
+import antlr.Token;
 import org.antlr.analysis.DFA;
 import org.antlr.analysis.DecisionProbe;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.misc.BitSet;
 import org.antlr.tool.*;
-
-import java.util.*;
-
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import antlr.Token;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TestSemanticPredicates extends BaseTest {
 
@@ -270,7 +267,7 @@ public class TestSemanticPredicates extends BaseTest {
 		*/
 
 		assertEquals("unexpected number of expected problems", 1, equeue.size());
-		Message msg = (Message)equeue.warnings.get(0);
+		Message msg = (Message)equeue.errors.get(0);
 		assertTrue("warning must be a left recursion msg",
 				    msg instanceof LeftRecursionCyclesMessage);
 	}
