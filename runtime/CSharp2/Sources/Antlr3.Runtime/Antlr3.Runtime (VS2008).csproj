@@ -118,7 +118,6 @@
     <Compile Include="Antlr.Runtime\ParserRuleReturnScope.cs" />
     <Compile Include="Antlr.Runtime\RecognitionException.cs" />
     <Compile Include="Antlr.Runtime\RuleReturnScope.cs" />
-    <Compile Include="Antlr.Runtime\Token.cs" />
     <Compile Include="Antlr.Runtime\ITokenSource.cs" />
     <Compile Include="Antlr.Runtime\MissingTokenException.cs" />
     <Compile Include="Antlr.Runtime.Tree\CommonErrorNode.cs" />

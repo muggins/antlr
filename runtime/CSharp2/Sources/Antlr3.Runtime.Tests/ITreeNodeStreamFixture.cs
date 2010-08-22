@@ -38,7 +38,7 @@ namespace Antlr.Runtime.Tests
 	using StringBuilder = System.Text.StringBuilder;
 
 	using IToken = Antlr.Runtime.IToken;
-	using Token = Antlr.Runtime.Token;
+    using Token = Antlr.Runtime.TokenTypes;
 	using CommonToken = Antlr.Runtime.CommonToken;
 	using ITree = Antlr.Runtime.Tree.ITree;
 	using ITreeNodeStream = Antlr.Runtime.Tree.ITreeNodeStream;
@@ -177,16 +177,16 @@ namespace Antlr.Runtime.Tests
 
             ITreeNodeStream stream = CreateBufferedTreeNodeStream(t);
 			Assert.AreEqual(101, ((ITree)stream.LT(1)).Type);
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(2)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(2)).Type);
 			Assert.AreEqual(102, ((ITree)stream.LT(3)).Type);
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(4)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(4)).Type);
 			Assert.AreEqual(103, ((ITree)stream.LT(5)).Type);
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(6)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(6)).Type);
 			Assert.AreEqual(104, ((ITree)stream.LT(7)).Type);
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(8)).Type);
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(9)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(8)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(9)).Type);
 			// check way ahead
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(100)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(100)).Type);
 		}
 
 		[Test]
@@ -194,7 +194,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103 ^(106 107) ) 104 105)
 			// stream has 7 real + 6 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 106 DN 107 UP UP 104 105 UP EOF
+			// Sequence of types: 101 DN 102 DN 103 106 DN 107 Up Up 104 105 Up EndOfFile
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r0.AddChild(r1);
@@ -212,8 +212,8 @@ namespace Antlr.Runtime.Tests
 				stream.LT(1);
 				stream.Consume();
 			}
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(1)).Type);
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(-1)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(-1)).Type);
 			stream.Rewind(m);      // REWIND
 
 			// consume til end again :)
@@ -222,8 +222,8 @@ namespace Antlr.Runtime.Tests
 				stream.LT(1);
 				stream.Consume();
 			}
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(1)).Type);
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(-1)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(-1)).Type);
 		}
 
 		[Test]
@@ -231,7 +231,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103 ^(106 107) ) 104 105)
 			// stream has 7 real + 6 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 106 DN 107 UP UP 104 105 UP EOF
+			// Sequence of types: 101 DN 102 DN 103 106 DN 107 Up Up 104 105 Up EndOfFile
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r0.AddChild(r1);
@@ -251,26 +251,26 @@ namespace Antlr.Runtime.Tests
 			Assert.AreEqual(107, ((ITree)stream.LT(1)).Type);
 			int m = stream.Mark(); // MARK
 			stream.Consume(); // consume 107
-			stream.Consume(); // consume UP
-			stream.Consume(); // consume UP
+			stream.Consume(); // consume Up
+			stream.Consume(); // consume Up
 			stream.Consume(); // consume 104
 			stream.Rewind(m);      // REWIND
 
 			Assert.AreEqual(107, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
 			Assert.AreEqual(104, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
 			// now we're past rewind position
 			Assert.AreEqual(105, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(1)).Type);
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(-1)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(-1)).Type);
 		}
 
 		[Test]
@@ -278,7 +278,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103 ^(106 107) ) 104 105)
 			// stream has 7 real + 6 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 106 DN 107 UP UP 104 105 UP EOF
+			// Sequence of types: 101 DN 102 DN 103 106 DN 107 Up Up 104 105 Up EndOfFile
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r0.AddChild(r1);
@@ -301,17 +301,17 @@ namespace Antlr.Runtime.Tests
 			stream.Rewind(m2);      // REWIND to 102
 			Assert.AreEqual(102, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
 			// stop at 103 and rewind to start
 			stream.Rewind(m); // REWIND to 101
 			Assert.AreEqual(101, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
 			Assert.AreEqual(102, ((ITree)stream.LT(1)).Type);
 			stream.Consume();
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 		}
 
 		[Test]
@@ -319,7 +319,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103 ^(106 107) ) 104 105)
 			// stream has 7 real + 6 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 106 DN 107 UP UP 104 105 UP EOF
+			// Sequence of types: 101 DN 102 DN 103 106 DN 107 Up Up 104 105 Up EndOfFile
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r0.AddChild(r1);
@@ -337,8 +337,8 @@ namespace Antlr.Runtime.Tests
 			stream.Seek(7);   // seek to 107
 			Assert.AreEqual(107, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 107
-			stream.Consume(); // consume UP
-			stream.Consume(); // consume UP
+			stream.Consume(); // consume Up
+			stream.Consume(); // consume Up
 			Assert.AreEqual(104, ((ITree)stream.LT(1)).Type);
 		}
 
@@ -347,7 +347,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103 ^(106 107) ) 104 105)
 			// stream has 7 real + 6 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 106 DN 107 UP UP 104 105 UP EOF
+			// Sequence of types: 101 DN 102 DN 103 106 DN 107 Up Up 104 105 Up EndOfFile
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r0.AddChild(r1);
@@ -362,8 +362,8 @@ namespace Antlr.Runtime.Tests
 			stream.Seek(7);   // seek to 107
 			Assert.AreEqual(107, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 107
-			stream.Consume(); // consume UP
-			stream.Consume(); // consume UP
+			stream.Consume(); // consume Up
+			stream.Consume(); // consume Up
 			Assert.AreEqual(104, ((ITree)stream.LT(1)).Type);
 		}
 
@@ -372,7 +372,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103) ^(104 105) ^(106 107) 108 109)
 			// stream has 9 real + 8 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 UP 104 DN 105 UP 106 DN 107 UP 108 109 UP
+			// Sequence of types: 101 DN 102 DN 103 Up 104 DN 105 Up 106 DN 107 Up 108 109 Up
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r1.AddChild(new CommonTree(new CommonToken(103)));
@@ -404,11 +404,11 @@ namespace Antlr.Runtime.Tests
 			stream.Push(indexOf102);
 			Assert.AreEqual(102, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 102
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume DN
 			Assert.AreEqual(103, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 103
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
 			// RETURN
 			stream.Pop();
 			Assert.AreEqual(107, ((ITree)stream.LT(1)).Type);
@@ -419,7 +419,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103) ^(104 105) ^(106 107) 108 109)
 			// stream has 9 real + 8 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 UP 104 DN 105 UP 106 DN 107 UP 108 109 UP
+			// Sequence of types: 101 DN 102 DN 103 Up 104 DN 105 Up 106 DN 107 Up 108 109 Up
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r1.AddChild(new CommonTree(new CommonToken(103)));
@@ -449,7 +449,7 @@ namespace Antlr.Runtime.Tests
 			stream.Push(indexOf102);
 			Assert.AreEqual(102, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 102
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume DN
 			Assert.AreEqual(103, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 103
@@ -459,15 +459,15 @@ namespace Antlr.Runtime.Tests
 			stream.Push(indexOf104);
 			Assert.AreEqual(104, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 102
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume DN
 			Assert.AreEqual(105, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 103
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
-			// RETURN (to UP node in 102 subtree)
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
+			// RETURN (to Up node in 102 subtree)
 			stream.Pop();
 
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
 			// RETURN (to empty stack)
 			stream.Pop();
 			Assert.AreEqual(107, ((ITree)stream.LT(1)).Type);
@@ -478,7 +478,7 @@ namespace Antlr.Runtime.Tests
 		{
 			// ^(101 ^(102 103) ^(104 105) ^(106 107) 108 109)
 			// stream has 9 real + 8 nav nodes
-			// Sequence of types: 101 DN 102 DN 103 UP 104 DN 105 UP 106 DN 107 UP 108 109 UP
+			// Sequence of types: 101 DN 102 DN 103 Up 104 DN 105 Up 106 DN 107 Up 108 109 Up
 			ITree r0 = new CommonTree(new CommonToken(101));
 			ITree r1 = new CommonTree(new CommonToken(102));
 			r1.AddChild(new CommonTree(new CommonToken(103)));
@@ -494,39 +494,39 @@ namespace Antlr.Runtime.Tests
 
             BufferedTreeNodeStream stream = new BufferedTreeNodeStream(r0);
 
-			while (stream.LA(1) != Token.EOF)
+			while (stream.LA(1) != Token.EndOfFile)
 			{
 				stream.Consume();
 			}
 			int indexOf102 = 2;
 			int indexOf104 = 6;
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(1)).Type);
 
 			// CALL 102
 			stream.Push(indexOf102);
 			Assert.AreEqual(102, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 102
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume DN
 			Assert.AreEqual(103, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 103
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
 			// RETURN (to empty stack)
 			stream.Pop();
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(1)).Type);
 
 			// CALL 104
 			stream.Push(indexOf104);
 			Assert.AreEqual(104, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 102
-			Assert.AreEqual(Token.DOWN, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Down, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume DN
 			Assert.AreEqual(105, ((ITree)stream.LT(1)).Type);
 			stream.Consume(); // consume 103
-			Assert.AreEqual(Token.UP, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.Up, ((ITree)stream.LT(1)).Type);
 			// RETURN (to empty stack)
 			stream.Pop();
-			Assert.AreEqual(Token.EOF, ((ITree)stream.LT(1)).Type);
+			Assert.AreEqual(Token.EndOfFile, ((ITree)stream.LT(1)).Type);
 		}
 
 		[Test]
@@ -559,7 +559,7 @@ namespace Antlr.Runtime.Tests
 			buf.Append(" 101");
 			buf2.Append(" 101");
 			buf2.Append(" ");
-			buf2.Append(Token.DOWN);
+			buf2.Append(Token.Down);
             for (int i = 0; i <= CommonTreeNodeStream.DEFAULT_INITIAL_BUFFER_SIZE + 10; i++)
 			{
 				t.AddChild(new CommonTree(new CommonToken(102 + i)));
@@ -569,7 +569,7 @@ namespace Antlr.Runtime.Tests
 				buf2.Append(102 + i);
 			}
 			buf2.Append(" ");
-			buf2.Append(Token.UP);
+			buf2.Append(Token.Up);
 
             ITreeNodeStream stream = CreateCommonTreeNodeStream(t);
 			String expecting = buf.ToString();
@@ -646,7 +646,7 @@ namespace Antlr.Runtime.Tests
 			{
 				object t = nodes.LT(i + 1);
 				int type = nodes.TreeAdaptor.GetType(t);
-				if (!((type == Token.DOWN) || (type == Token.UP)))
+				if (!((type == Token.Down) || (type == Token.Up)))
 				{
 					buf.Append(" ");
 					buf.Append(type);

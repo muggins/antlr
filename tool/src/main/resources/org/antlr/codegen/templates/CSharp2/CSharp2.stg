@@ -110,7 +110,7 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 <endif>
 <endif>
         <grammar.directDelegates:
-         {g|<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this);}; separator="\n">
+         {g|<g:delegateName()> = new <g.recognizerName>(input, this.state<trunc(g.delegators):{p|, <p:delegateName()>}>, this);}; separator="\n">
         <grammar.delegators:
          {g|this.<g:delegateName()> = <g:delegateName()>;}; separator="\n">
         <last(grammar.delegators):{g|gParent = <g:delegateName()>;}>
@@ -121,6 +121,26 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
     	get { return "<fileName>";} 
     }
 
+<if(grammar.hasDelegates)>
+	public override ICharStream CharStream
+	{
+		get
+		{
+			return base.CharStream;
+		}
+		set
+		{
+			base.CharStream = value;
+			<grammar.directDelegates:
+			 {g|<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this);}; separator="\n">
+			<grammar.delegators:
+			 {g|this.<g:delegateName()> = <g:delegateName()>;}; separator="\n">
+			<last(grammar.delegators):{g|gParent = <g:delegateName()>;}>
+		}
+	}
+
+<endif>
+	
 <if(filterMode)>
     <filteringNextToken()>
 <endif>
@@ -816,11 +836,15 @@ matchSetAndListLabel(s,label,elementIndex,postmatchCode) ::= <<
 >>
 
 /** Match a string literal */
-lexerStringRef(string,label,elementIndex) ::= <<
+lexerStringRef(string,label,elementIndex="0") ::= <<
 <if(label)>
 int <label>Start = CharIndex;
 Match(<string>); <checkRuleBacktrackFailure()>
+int <label>StartLine<elementIndex> = Line;
+int <label>StartCharPos<elementIndex> = CharPositionInLine;
 <label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, <label>Start, CharIndex-1);
+<label>.Line = <label>StartLine<elementIndex>;
+<label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
 Match(<string>); <checkRuleBacktrackFailure()><\n>
 <endif>
@@ -883,8 +907,12 @@ ruleRefAndListLabel(rule,label,elementIndex,args,scope) ::= <<
 lexerRuleRef(rule,label,args,elementIndex,scope) ::= <<
 <if(label)>
 int <label>Start<elementIndex> = CharIndex;
+int <label>StartLine<elementIndex> = Line;
+int <label>StartCharPos<elementIndex> = CharPositionInLine;
 <if(scope)><scope:delegateName()>.<endif>m<rule.name>(<args; separator=", ">); <checkRuleBacktrackFailure()>
 <label> = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, <label>Start<elementIndex>, CharIndex-1);
+<label>.Line = <label>StartLine<elementIndex>;
+<label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
 <if(scope)><scope:delegateName()>.<endif>m<rule.name>(<args; separator=", ">); <checkRuleBacktrackFailure()>
 <endif>
@@ -900,8 +928,12 @@ lexerRuleRefAndListLabel(rule,label,args,elementIndex,scope) ::= <<
 lexerMatchEOF(label,elementIndex) ::= <<
 <if(label)>
 int <label>Start<elementIndex> = CharIndex;
+int <label>StartLine<elementIndex> = Line;
+int <label>StartCharPos<elementIndex> = CharPositionInLine;
 Match(EOF); <checkRuleBacktrackFailure()>
 <labelType> <label> = new <labelType>(input, EOF, Token.DEFAULT_CHANNEL, <label>Start<elementIndex>, CharIndex-1);
+<label>.Line = <label>StartLine<elementIndex>;
+<label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
 Match(EOF); <checkRuleBacktrackFailure()>
 <endif>

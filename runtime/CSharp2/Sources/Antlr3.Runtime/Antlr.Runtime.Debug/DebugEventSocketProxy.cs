@@ -1,4 +1,6 @@
 /*
+ * Note to JL: Removed extension call syntax
+ * 
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.

@@ -38,7 +38,6 @@ namespace Antlr.Runtime.Tests
 	using StringBuilder = System.Text.StringBuilder;
 
 	using IToken = Antlr.Runtime.IToken;
-	using Token = Antlr.Runtime.Token;
 	using CommonToken = Antlr.Runtime.CommonToken;
 	using ITree = Antlr.Runtime.Tree.ITree;
 	using ITreeAdaptor = Antlr.Runtime.Tree.ITreeAdaptor;

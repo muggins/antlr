@@ -1,336 +1,318 @@
 /*
-[The "BSD licence"]
-Copyright (c) 2005-2007 Kunle Odutola
-All rights reserved.
+ * [The "BSD licence"]
+ * Copyright (c) 2005-2008 Terence Parr
+ * All rights reserved.
+ *
+ * Conversion to C#:
+ * Copyright (c) 2008-2009 Sam Harwell, Pixel Mine, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-1. Redistributions of source code MUST RETAIN the above copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form MUST REPRODUCE the above copyright
-   notice, this list of conditions and the following disclaimer in 
-   the documentation and/or other materials provided with the 
-   distribution.
-3. The name of the author may not be used to endorse or promote products
-   derived from this software without specific prior WRITTEN permission.
-4. Unless explicitly state otherwise, any contribution intentionally 
-   submitted for inclusion in this work to the copyright owner or licensor
-   shall be under the terms and conditions of this license, without any 
-   additional terms or conditions.
+namespace Antlr.Runtime {
+    using Antlr.Runtime.Tree;
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+    using ArgumentNullException = System.ArgumentNullException;
+    using Exception = System.Exception;
+    using NonSerialized = System.NonSerializedAttribute;
+    using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
+    using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
+    /** <summary>The root of the ANTLR exception hierarchy.</summary>
+     *
+     *  <remarks>
+     *  To avoid English-only error messages and to generally make things
+     *  as flexible as possible, these exceptions are not created with strings,
+     *  but rather the information necessary to generate an error.  Then
+     *  the various reporting methods in Parser and Lexer can be overridden
+     *  to generate a localized error message.  For example, MismatchedToken
+     *  exceptions are built with the expected token type.
+     *  So, don't expect getMessage() to return anything.
+     *
+     *  Note that as of Java 1.4, you can access the stack trace, which means
+     *  that you can compute the complete trace of rules from the start symbol.
+     *  This gives you considerable context information with which to generate
+     *  useful error messages.
+     *
+     *  ANTLR generates code that throws exceptions upon recognition error and
+     *  also generates code to catch these exceptions in each rule.  If you
+     *  want to quit upon first error, you can turn off the automatic error
+     *  handling mechanism using rulecatch action, but you still need to
+     *  override methods mismatch and recoverFromMismatchSet.
+     *
+     *  In general, the recognition exceptions can track where in a grammar a
+     *  problem occurred and/or what was the expected input.  While the parser
+     *  knows its state (such as current input symbol and line info) that
+     *  state can change before the exception is reported so current token index
+     *  is computed and stored at exception time.  From this info, you can
+     *  perhaps print an entire line of input not just a single token, for example.
+     *  Better to just say the recognizer had a problem and then let the parser
+     *  figure out a fancy report.
+     *  </remarks>
+     */
+    [System.Serializable]
+    public class RecognitionException : Exception {
+        /** <summary>What input stream did the error occur in?</summary> */
+        private IIntStream _input;
 
-namespace Antlr.Runtime
-{
-	using System;
-	using ITree = Antlr.Runtime.Tree.ITree;
-	using ITreeAdaptor = Antlr.Runtime.Tree.ITreeAdaptor;
-	using ITreeNodeStream = Antlr.Runtime.Tree.ITreeNodeStream;
-	using CommonTreeNodeStream = Antlr.Runtime.Tree.CommonTreeNodeStream;
-	using CommonTree = Antlr.Runtime.Tree.CommonTree;
-    using System.Runtime.Serialization;
+        /** <summary>What is index of token/char were we looking at when the error occurred?</summary> */
+        private int _index;
 
-	/// <summary>The root of the ANTLR exception hierarchy.</summary>
-	/// <remarks>
-	/// To avoid English-only error messages and to generally make things
-	/// as flexible as possible, these exceptions are not created with strings,
-	/// but rather the information necessary to generate an error.  Then
-	/// the various reporting methods in Parser and Lexer can be overridden
-	/// to generate a localized error message.  For example, MismatchedToken
-	/// exceptions are built with the expected token type.
-	/// So, don't expect getMessage() to return anything.
-	/// 
-	/// You can access the stack trace, which means that you can compute the 
-	/// complete trace of rules from the start symbol. This gives you considerable 
-	/// context information with which to generate useful error messages.
-	/// 
-	/// ANTLR generates code that throws exceptions upon recognition error and
-	/// also generates code to catch these exceptions in each rule.  If you
-	/// want to quit upon first error, you can turn off the automatic error
-	/// handling mechanism using rulecatch action, but you still need to
-	/// override methods mismatch and recoverFromMismatchSet.
-	/// 
-	/// In general, the recognition exceptions can track where in a grammar a
-	/// problem occurred and/or what was the expected input.  While the parser
-	/// knows its state (such as current input symbol and line info) that
-	/// state can change before the exception is reported so current token index
-	/// is computed and stored at exception time.  From this info, you can
-	/// perhaps print an entire line of input not just a single token, for example.
-	/// Better to just say the recognizer had a problem and then let the parser
-	/// figure out a fancy report.
-	/// </remarks>
-	[Serializable]
-	public class RecognitionException : Exception
-	{
-		#region Constructors
+        /** <summary>
+         *  The current Token when an error occurred.  Since not all streams
+         *  can retrieve the ith Token, we have to track the Token object.
+         *  For parsers.  Even when it's a tree parser, token might be set.
+         *  </summary>
+         */
+        private IToken _token;
 
-		/// <summary>Used for remote debugger deserialization </summary>
-		public RecognitionException()
-		{
-		}
+        /** <summary>
+         *  If this is a tree parser exception, node is set to the node with
+         *  the problem.
+         *  </summary>
+         */
+        private object _node;
 
-		public RecognitionException(string message)
-			: base(message)
-		{
-		}
+        /** <summary>The current char when an error occurred. For lexers.</summary> */
+        private int _c;
 
-		public RecognitionException(string message, Exception inner)
-			: base(message, inner)
-		{
-		}
+        /** <summary>
+         *  Track the line (1-based) at which the error occurred in case this is
+         *  generated from a lexer.  We need to track this since the
+         *  unexpected char doesn't carry the line info.
+         *  </summary>
+         */
+        private int _line;
 
-		public RecognitionException(IIntStream input)
-		{
-            Initialize(input);
+        /// <summary>
+        /// The 0-based index into the line where the error occurred.
+        /// </summary>
+        private int _charPositionInLine;
+
+        /** <summary>
+         *  If you are parsing a tree node stream, you will encounter som
+         *  imaginary nodes w/o line/col info.  We now search backwards looking
+         *  for most recent token with line/col info, but notify getErrorHeader()
+         *  that info is approximate.
+         *  </summary>
+         */
+        private bool _approximateLineInfo;
+
+        /** <summary>Used for remote debugger deserialization</summary> */
+        public RecognitionException()
+            : this("A recognition error occurred.", null, null) {
         }
 
-		public RecognitionException(string message, IIntStream input)
-			: base(message)
-		{
-            Initialize(input);
+        public RecognitionException(IIntStream input)
+            : this("A recognition error occurred.", null, input) {
         }
 
-		public RecognitionException(string message, Exception inner, IIntStream input)
-			: base(message, inner)
-		{
-            Initialize(input);
+        public RecognitionException(string message)
+            : this(message, null, null) {
+        }
+
+        public RecognitionException(string message, IIntStream input)
+            : this(message, null, input) {
+        }
+
+        public RecognitionException(string message, Exception innerException)
+            : this(message, innerException, null) {
+        }
+
+        public RecognitionException(string message, Exception innerException, IIntStream input)
+            : base(message, innerException) {
+            this._input = input;
+            if (input != null) {
+                this._index = input.Index;
+                if (input is ITokenStream) {
+                    this._token = ((ITokenStream)input).LT(1);
+                    this._line = _token.Line;
+                    this._charPositionInLine = _token.CharPositionInLine;
+                }
+                if (input is ITreeNodeStream) {
+                    ExtractInformationFromTreeNodeStream(input);
+                } else if (input is ICharStream) {
+                    this._c = input.LA(1);
+                    this._line = ((ICharStream)input).Line;
+                    this._charPositionInLine = ((ICharStream)input).CharPositionInLine;
+                } else {
+                    this._c = input.LA(1);
+                }
+            }
         }
 
         protected RecognitionException(SerializationInfo info, StreamingContext context)
             : base(info, context) {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            _index = info.GetInt32("Index");
+            _c = info.GetInt32("C");
+            _line = info.GetInt32("Line");
+            _charPositionInLine = info.GetInt32("CharPositionInLine");
+            _approximateLineInfo = info.GetBoolean("ApproximateLineInfo");
         }
 
-        private void Initialize(IIntStream input) {
-            this.input = input;
-            this.index = input.Index;
-            if (input is ITokenStream) {
-                this.token = ((ITokenStream)input).LT(1);
-                this.line = token.Line;
-                this.charPositionInLine = token.CharPositionInLine;
-            }
-            if (input is ITreeNodeStream) {
-                ExtractInformationFromTreeNodeStream(input);
-            } else if (input is ICharStream) {
-                this.c = input.LA(1);
-                this.line = ((ICharStream)input).Line;
-                this.charPositionInLine = ((ICharStream)input).CharPositionInLine;
-            } else {
-                this.c = input.LA(1);
+        /** <summary>Return the token type or char of the unexpected input element</summary> */
+        public virtual int UnexpectedType {
+            get {
+                if (_input is ITokenStream) {
+                    return _token.Type;
+                }
+
+                ITreeNodeStream treeNodeStream = _input as ITreeNodeStream;
+                if (treeNodeStream != null) {
+                    ITreeAdaptor adaptor = treeNodeStream.TreeAdaptor;
+                    return adaptor.GetType(_node);
+                }
+
+                return _c;
             }
         }
-
-		#endregion
-
-		#region Public API
-
-		/// <summary>Returns the input stream in which the error occurred</summary>
-		public IIntStream Input
-		{
-			get { return input; }
-			set { input = value; }
-		}
-
-		/// <summary>
-		/// Returns the token/char index in the stream when the error occurred
-		/// </summary>
-		public int Index
-		{
-			get { return index; }
-			set { index = value; }
-		}
-
-		/// <summary>
-		/// Returns the current Token when the error occurred (for parsers 
-		/// although a tree parser might also set the token)
-		/// </summary>
-		public IToken Token
-		{
-			get { return token; }
-			set { token = value; }
-		}
-
-		/// <summary>
-		/// Returns the [tree parser] node where the error occured (for tree parsers).
-		/// </summary>
-		public object Node
-		{
-			get { return node; }
-			set { node = value; }
-		}
-
-		/// <summary>
-		/// Returns the current char when the error occurred (for lexers)
-		/// </summary>
-		public int Character
-		{
-			get { return c; }
-			set { c = value; }
-		}
-
-		/// <summary>
-		/// Returns the character position in the line when the error 
-		/// occurred (for lexers)
-		/// </summary>
-		public int CharPositionInLine
-		{
-			get { return charPositionInLine; }
-			set { charPositionInLine = value; }
-		}
 
         public bool ApproximateLineInfo {
             get {
-                return approximateLineInfo;
+                return _approximateLineInfo;
             }
             protected set {
-                approximateLineInfo = value;
+                _approximateLineInfo = value;
             }
         }
 
-		/// <summary>
-		/// Returns the line at which the error occurred (for lexers)
-		/// </summary>
-		public int Line
-		{
-			get { return line; }
-			set { line = value; }
-		}
+        public IIntStream Input {
+            get {
+                return _input;
+            }
+            protected set {
+                _input = value;
+            }
+        }
 
-		/// <summary>
-		/// Returns the token type or char of the unexpected input element
-		/// </summary>
-		virtual public int UnexpectedType
-		{
-			get
-			{
-				if (input is ITokenStream)
-				{
-					return token.Type;
-				}
-				else if (input is ITreeNodeStream)
-				{
-					ITreeNodeStream nodes = (ITreeNodeStream)input;
-					ITreeAdaptor adaptor = nodes.TreeAdaptor;
-					return adaptor.GetType(node);
-				}
-				else
-				{
-					return c;
-				}
-			}
+        public IToken Token {
+            get {
+                return _token;
+            }
+            set {
+                _token = value;
+            }
+        }
 
-		}
+        public object Node {
+            get {
+                return _node;
+            }
+            protected set {
+                _node = value;
+            }
+        }
 
-		#endregion
+        public int Character {
+            get {
+                return _c;
+            }
+            protected set {
+                _c = value;
+            }
+        }
 
-		#region Non-Public API
+        public int Index {
+            get {
+                return _index;
+            }
+            protected set {
+                _index = value;
+            }
+        }
 
-		protected void ExtractInformationFromTreeNodeStream(IIntStream input)
-		{
-			ITreeNodeStream nodes = (ITreeNodeStream)input;
-			this.node = nodes.LT(1);
-			ITreeAdaptor adaptor = nodes.TreeAdaptor;
-			IToken payload = adaptor.GetToken(node);
-			if ( payload != null )
-			{
-				this.token = payload;
-				if ( payload.Line <= 0 )
-				{
-					// imaginary node; no line/pos info; scan backwards
-					int i = -1;
-					object priorNode = nodes.LT(i);
-					while ( priorNode != null )
-					{
-						IToken priorPayload = adaptor.GetToken(priorNode);
-						if ( (priorPayload != null) && (priorPayload.Line > 0) )
-						{
-							// we found the most recent real line / pos info
-							this.line = priorPayload.Line;
-							this.charPositionInLine = priorPayload.CharPositionInLine;
-							this.approximateLineInfo = true;
-							break;
-						}
-						--i;
-						priorNode = nodes.LT(i);
-					}
-				}
-				else
-				{
-					// node created from real token
-					this.line = payload.Line;
-					this.charPositionInLine = payload.CharPositionInLine;
-				}
-			}
-			else if (this.node is ITree)
-			{
-				this.line = ((ITree)this.node).Line;
-				this.charPositionInLine = ((ITree)this.node).CharPositionInLine;
-				if (this.node is CommonTree)
-				{
-					this.token = ((CommonTree)this.node).Token;
-				}
-			}
-			else 
-			{
-				int type = adaptor.GetType(this.node);
-				string text = adaptor.GetText(this.node);
-				this.token = new CommonToken(type, text);
-			}
-		}
+        public int Line {
+            get {
+                return _line;
+            }
+            set {
+                _line = value;
+            }
+        }
 
-		#endregion
+        public int CharPositionInLine {
+            get {
+                return _charPositionInLine;
+            }
+            set {
+                _charPositionInLine = value;
+            }
+        }
 
-		#region Data Members
+        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+            if (info == null)
+                throw new ArgumentNullException("info");
 
+            base.GetObjectData(info, context);
+            info.AddValue("Index", _index);
+            info.AddValue("C", _c);
+            info.AddValue("Line", _line);
+            info.AddValue("CharPositionInLine", _charPositionInLine);
+            info.AddValue("ApproximateLineInfo", _approximateLineInfo);
+        }
 
-		/// <summary>What input stream did the error occur in? </summary>
-		[NonSerialized]
-		private IIntStream input;
-
-		/// <summary>
-		/// What is index of token/char were we looking at when the error occurred?
-		/// </summary>
-        private int index;
-
-		/// <summary>
-		/// The current Token when an error occurred.  Since not all streams
-		/// can retrieve the ith Token, we have to track the Token object.
-		/// </summary>
-        private IToken token;
-
-		/// <summary>[Tree parser] Node with the problem.</summary>
-        private object node;
-
-		/// <summary>The current char when an error occurred. For lexers. </summary>
-        private int c;
-
-		/// <summary>Track the line at which the error occurred in case this is
-		/// generated from a lexer.  We need to track this since the
-		/// unexpected char doesn't carry the line info.
-		/// </summary>
-        private int line;
-
-        private int charPositionInLine;
-
-		/// <summary>
-		/// If you are parsing a tree node stream, you will encounter some
-		/// imaginary nodes w/o line/col info.  We now search backwards looking
-		/// for most recent token with line/col info, but notify getErrorHeader()
-		/// that info is approximate.
-		/// </summary>
-        private bool approximateLineInfo;
-
-		#endregion
-	}
+        protected virtual void ExtractInformationFromTreeNodeStream(IIntStream input) {
+            ITreeNodeStream nodes = (ITreeNodeStream)input;
+            this._node = nodes.LT(1);
+            ITreeAdaptor adaptor = nodes.TreeAdaptor;
+            IToken payload = adaptor.GetToken(_node);
+            if (payload != null) {
+                this._token = payload;
+                if (payload.Line <= 0) {
+                    // imaginary node; no line/pos info; scan backwards
+                    int i = -1;
+                    object priorNode = nodes.LT(i);
+                    while (priorNode != null) {
+                        IToken priorPayload = adaptor.GetToken(priorNode);
+                        if (priorPayload != null && priorPayload.Line > 0) {
+                            // we found the most recent real line / pos info
+                            this._line = priorPayload.Line;
+                            this._charPositionInLine = priorPayload.CharPositionInLine;
+                            this._approximateLineInfo = true;
+                            break;
+                        }
+                        --i;
+                        priorNode = nodes.LT(i);
+                    }
+                } else { // node created from real token
+                    this._line = payload.Line;
+                    this._charPositionInLine = payload.CharPositionInLine;
+                }
+            } else if (this._node is Tree.ITree) {
+                this._line = ((Tree.ITree)this._node).Line;
+                this._charPositionInLine = ((Tree.ITree)this._node).CharPositionInLine;
+                if (this._node is CommonTree) {
+                    this._token = ((CommonTree)this._node).Token;
+                }
+            } else {
+                int type = adaptor.GetType(this._node);
+                string text = adaptor.GetText(this._node);
+                this._token = new CommonToken(type, text);
+            }
+        }
+    }
 }

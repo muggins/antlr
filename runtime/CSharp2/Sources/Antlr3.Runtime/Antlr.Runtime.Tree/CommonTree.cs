@@ -45,6 +45,7 @@ namespace Antlr.Runtime.Tree {
     [System.Serializable]
     public class CommonTree : BaseTree {
         /** <summary>A single token is the payload</summary> */
+        [CLSCompliant(false)]
         public IToken token;
 
         /** <summary>

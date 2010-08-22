@@ -1,310 +1,285 @@
 /*
-[The "BSD licence"]
-Copyright (c) 2007-2008 Johannes Luber
-Copyright (c) 2005-2007 Kunle Odutola
-All rights reserved.
+ * [The "BSD licence"]
+ * Copyright (c) 2005-2008 Terence Parr
+ * All rights reserved.
+ *
+ * Conversion to C#:
+ * Copyright (c) 2008-2009 Sam Harwell, Pixel Mine, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-1. Redistributions of source code MUST RETAIN the above copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form MUST REPRODUCE the above copyright
-   notice, this list of conditions and the following disclaimer in 
-   the documentation and/or other materials provided with the 
-   distribution.
-3. The name of the author may not be used to endorse or promote products
-   derived from this software without specific prior WRITTEN permission.
-4. Unless explicitly state otherwise, any contribution intentionally 
-   submitted for inclusion in this work to the copyright owner or licensor
-   shall be under the terms and conditions of this license, without any 
-   additional terms or conditions.
+namespace Antlr.Runtime {
+    using System.Collections.Generic;
+    using ArgumentException = System.ArgumentException;
+    using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
+    using ArgumentNullException = System.ArgumentNullException;
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+    /** <summary>
+     *  A pretty quick CharStream that pulls all data from an array
+     *  directly.  Every method call counts in the lexer.  Java's
+     *  strings aren't very good so I'm avoiding.
+     *  </summary>
+     */
+    [System.Serializable]
+    public class ANTLRStringStream : ICharStream {
+        /** <summary>The data being scanned</summary> */
+        protected char[] data;
 
+        /** <summary>How many characters are actually in the buffer</summary> */
+        protected int n;
 
-namespace Antlr.Runtime
-{
-    using System;
-    using IList                 = System.Collections.IList;
-    using ArrayList             = System.Collections.ArrayList;
+        /** <summary>0..n-1 index into string of next char</summary> */
+        protected int p = 0;
 
-	/// <summary>
-	/// A pretty quick <see cref="ICharStream"/> that uses a character array 
-	/// directly as it's underlying source.
-	/// </summary>
-    public class ANTLRStringStream : ICharStream
-    {
-        #region Constructors
+        /** <summary>line number 1..n within the input</summary> */
+        int line = 1;
 
-		/// <summary>
-		/// Initializes a new instance of the ANTLRStringStream class
-		/// </summary>
-		protected ANTLRStringStream()
-        {
-        }
+        /** <summary>The index of the character relative to the beginning of the line 0..n-1</summary> */
+        int charPositionInLine = 0;
 
-		/// <summary>
-		/// Initializes a new instance of the ANTLRStringStream class for the
-		/// specified string. This copies data from the string to a local 
-		/// character array
-		/// </summary>
+        /** <summary>tracks how deep mark() calls are nested</summary> */
+        protected int markDepth = 0;
+
+        /** <summary>
+         *  A list of CharStreamState objects that tracks the stream state
+         *  values line, charPositionInLine, and p that can change as you
+         *  move through the input stream.  Indexed from 1..markDepth.
+         *  A null is kept @ index 0.  Create upon first call to mark().
+         *  </summary>
+         */
+        protected IList<CharStreamState> markers;
+
+        /** <summary>Track the last mark() call result value for use in rewind().</summary> */
+        protected int lastMarker;
+
+        /** <summary>What is name or source of this char stream?</summary> */
+        public string name;
+
+        /** <summary>Copy data in string to a local char array</summary> */
         public ANTLRStringStream(string input)
-        {
-            this.data = input.ToCharArray();
-			this.n = input.Length;
+            : this(input, null) {
         }
 
-		/// <summary>
-		/// Initializes a new instance of the ANTLRStringStream class for the
-		/// specified character array. This is the preferred constructor as 
-		/// no data is copied
-		/// </summary>
-		public ANTLRStringStream(char[] data, int numberOfActualCharsInArray)
-        {
+        public ANTLRStringStream(string input, string sourceName)
+            : this(input.ToCharArray(), input.Length, sourceName) {
+        }
+
+        /** <summary>This is the preferred constructor as no data is copied</summary> */
+        public ANTLRStringStream(char[] data, int numberOfActualCharsInArray)
+            : this(data, numberOfActualCharsInArray, null) {
+        }
+
+        public ANTLRStringStream(char[] data, int numberOfActualCharsInArray, string sourceName) {
+            if (data == null)
+                throw new ArgumentNullException("data");
+            if (numberOfActualCharsInArray < 0)
+                throw new ArgumentOutOfRangeException();
+            if (numberOfActualCharsInArray > data.Length)
+                throw new ArgumentException();
+
             this.data = data;
-			this.n = numberOfActualCharsInArray;
-		}
-
-        #endregion
-
-        #region Public API
-
-		/// <summary>
-		/// Current line position in stream.
-		/// </summary>
-		virtual public int Line
-        {
-            get { return line; }
-            set { this.line = value; }
-
+            this.n = numberOfActualCharsInArray;
+            this.name = sourceName;
         }
 
-		/// <summary>
-		/// Current character position on the current line stream 
-		/// (i.e. columnn position)
-		/// </summary>
-		virtual public int CharPositionInLine
-        {
-            get { return charPositionInLine; }
-            set { this.charPositionInLine = value; }
-
+        protected ANTLRStringStream() {
+            this.data = new char[0];
         }
 
-        /// <summary>
-        /// Resets the stream so that it is in the same state it was
-        /// when the object was created *except* the data array is not
-        /// touched.
-        /// </summary>
-        public virtual void Reset()
-        {
+        /** <summary>
+         *  Return the current input symbol index 0..n where n indicates the
+         *  last symbol has been read.  The index is the index of char to
+         *  be returned from LA(1).
+         *  </summary>
+         */
+        public virtual int Index {
+            get {
+                return p;
+            }
+        }
+        public virtual int Line {
+            get {
+                return line;
+            }
+            set {
+                line = value;
+            }
+        }
+        public virtual int CharPositionInLine {
+            get {
+                return charPositionInLine;
+            }
+            set {
+                charPositionInLine = value;
+            }
+        }
+
+        /** <summary>
+         *  Reset the stream so that it's in the same state it was
+         *  when the object was created *except* the data array is not
+         *  touched.
+         *  </summary>
+         */
+        public virtual void Reset() {
             p = 0;
             line = 1;
             charPositionInLine = 0;
             markDepth = 0;
         }
 
-		/// <summary>
-		/// Advances the read position of the stream. Updates line and column state
-		/// </summary>
-		public virtual void Consume()
-        {
-            if (p < n)
-            {
+        public virtual void Consume() {
+            //System.out.println("prev p="+p+", c="+(char)data[p]);
+            if (p < n) {
                 charPositionInLine++;
-                if (data[p] == '\n')
-                {
+                if (data[p] == '\n') {
+                    /*
+                    System.out.println("newline char found on line: "+line+
+                                       "@ pos="+charPositionInLine);
+                    */
                     line++;
                     charPositionInLine = 0;
                 }
                 p++;
+                //System.out.println("p moves to "+p+" (c='"+(char)data[p]+"')");
             }
         }
 
-		/// <summary>
-		/// Return lookahead characters at the specified offset from the current read position.
-		/// The lookahead offset can be negative.
-		/// </summary>
-		public virtual int LA(int i)
-        {
-			if (i == 0)
-			{
-				return 0; // undefined
-			}
-			if (i < 0)
-			{
-				i++; // e.g., translate LA(-1) to use offset i=0; then data[p+0-1]
-				if ( (p + i - 1) < 0 ) 
-				{
-                    return (int)CharStreamConstants.EndOfFile; // invalid; no char before first char
-				}
-			}
-			
-			if ((p + i - 1) >= n)
-            {
-                return (int)CharStreamConstants.EndOfFile;
+        public virtual int LA(int i) {
+            if (i == 0) {
+                return 0; // undefined
             }
+            if (i < 0) {
+                i++; // e.g., translate LA(-1) to use offset i=0; then data[p+0-1]
+                if ((p + i - 1) < 0) {
+                    return CharStreamConstants.EndOfFile; // invalid; no char before first char
+                }
+            }
+
+            if ((p + i - 1) >= n) {
+                //System.out.println("char LA("+i+")=EOF; p="+p);
+                return CharStreamConstants.EndOfFile;
+            }
+            //System.out.println("char LA("+i+")="+(char)data[p+i-1]+"; p="+p);
+            //System.out.println("LA("+i+"); p="+p+" n="+n+" data.length="+data.length);
             return data[p + i - 1];
         }
 
-        public virtual int LT(int i)
-        {
+        public virtual int LT(int i) {
             return LA(i);
         }
 
-        /// <summary>
-        /// Return the current input symbol index 0..n where n indicates the
-		/// last symbol has been read. The index is the index of char to
-		/// be returned from LA(1).
-        /// </summary>
-        public virtual int Index
-        {
-            get { return p; }
+        public virtual int Count {
+            get {
+                return n;
+            }
         }
 
-		/// <summary>
-		/// Returns the size of the stream
-		/// </summary>
-		public virtual int Count
-        {
-			get { return n; }
-        }
-
-        public virtual int Mark()
-        {
-			if (markers == null)
-			{
-				markers = new ArrayList();
-				markers.Add(null); // depth 0 means no backtracking, leave blank
-			}
+        public virtual int Mark() {
+            if (markers == null) {
+                markers = new List<CharStreamState>();
+                markers.Add(null); // depth 0 means no backtracking, leave blank
+            }
             markDepth++;
             CharStreamState state = null;
-            if (markDepth >= markers.Count)
-            {
+            if (markDepth >= markers.Count) {
                 state = new CharStreamState();
                 markers.Add(state);
-            }
-            else
-            {
-                state = (CharStreamState)markers[markDepth];
+            } else {
+                state = markers[markDepth];
             }
             state.p = p;
             state.line = line;
             state.charPositionInLine = charPositionInLine;
-			lastMarker = markDepth;
+            lastMarker = markDepth;
             return markDepth;
         }
 
-        public virtual void Rewind(int m)
-        {
-            CharStreamState state = (CharStreamState)markers[m];
+        public virtual void Rewind(int m) {
+            if (m < 0)
+                throw new ArgumentOutOfRangeException();
+
+            //if (m > markDepth)
+            //    throw new ArgumentException();
+
+            CharStreamState state = markers[m];
             // restore stream state
             Seek(state.p);
             line = state.line;
             charPositionInLine = state.charPositionInLine;
-			Release(m);
-		}
+            Release(m);
+        }
 
-		public virtual void Rewind() 
-		{
-			Rewind(lastMarker);
-		}
+        public virtual void Rewind() {
+            Rewind(lastMarker);
+        }
 
-		public virtual void Release(int marker)
-        {
+        public virtual void Release(int marker) {
             // unwind any other markers made after m and release m
             markDepth = marker;
             // release this marker
             markDepth--;
         }
 
-        /// <summary>Seeks to the specified position.</summary>
-        /// <remarks>
-        /// Consume ahead until p==index; can't just set p=index as we must
-        /// update line and charPositionInLine.
-        /// </remarks>
-        public virtual void Seek(int index)
-        {
-            if (index <= p)
-            {
+        /** <summary>
+         *  consume() ahead until p==index; can't just set p=index as we must
+         *  update line and charPositionInLine.
+         *  </summary>
+         */
+        public virtual void Seek(int index) {
+            if (index <= p) {
                 p = index; // just jump; don't update stream state (line, ...)
                 return;
             }
             // seek forward, consume until p hits index
-            while (p < index)
-            {
+            while (p < index) {
                 Consume();
             }
         }
 
-        public virtual string Substring(int start, int stop)
-        {
-            return new string(data, start, stop - start + 1);
+        public virtual string Substring(int start, int length) {
+            if (start < 0)
+                throw new ArgumentOutOfRangeException();
+            if (length < 0)
+                throw new ArgumentOutOfRangeException();
+            if (start + length > data.Length)
+                throw new ArgumentException();
+
+            if (length == 0)
+                return string.Empty;
+
+            return new string(data, start, length);
         }
-		
-		public virtual string SourceName {
-			get { return name; }
-			set { name = value; }
-		}
 
-        #endregion
+        public virtual string SourceName {
+            get {
+                return name;
+            }
+        }
 
-
-        #region Data Members
-
-        /// <summary>The data for the stream</summary>
-        protected internal char[] data;
-
-		/// <summary>How many characters are actually in the buffer?</summary>
-		protected int n;
-
-
-        /// <summary>Index in our array for the next char (0..n-1)</summary>
-        protected internal int p = 0;
-
-        /// <summary>Current line number within the input (1..n )</summary>
-        protected internal int line = 1;
-
-        /// <summary>
-        /// The index of the character relative to the beginning of the 
-        /// line (0..n-1)
-        /// </summary>
-        protected internal int charPositionInLine = 0;
-
-        /// <summary>
-        /// Tracks the depth of nested <see cref="IIntStream.Mark"/> calls
-        /// </summary>
-        protected internal int markDepth = 0;
-
-        /// <summary>
-        /// A list of CharStreamState objects that tracks the stream state
-        /// (i.e. line, charPositionInLine, and p) that can change as you
-        /// move through the input stream.  Indexed from 1..markDepth.
-        /// A null is kept @ index 0.  Create upon first call to Mark().
-        /// </summary>
-        protected internal IList markers;
-
-		/// <summary>
-		/// Track the last Mark() call result value for use in Rewind().
-		/// </summary>
-		protected int lastMarker;
-
-		/// <summary>
-		/// What is name or source of this char stream?
-		/// </summary>
-		protected string name;
-
-		#endregion
-
+        public override string ToString() {
+            return new string(data);
+        }
     }
 }
