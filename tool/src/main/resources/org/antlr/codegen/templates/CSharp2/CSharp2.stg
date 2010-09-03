@@ -842,7 +842,7 @@ int <label>Start = CharIndex;
 Match(<string>); <checkRuleBacktrackFailure()>
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
-<label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, <label>Start, CharIndex-1);
+<label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, TokenConstants.Default, <label>Start, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -910,7 +910,7 @@ int <label>Start<elementIndex> = CharIndex;
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
 <if(scope)><scope:delegateName()>.<endif>m<rule.name>(<args; separator=", ">); <checkRuleBacktrackFailure()>
-<label> = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, <label>Start<elementIndex>, CharIndex-1);
+<label> = new CommonToken(input, Token.INVALID_TOKEN_TYPE, TokenConstants.Default, <label>Start<elementIndex>, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -931,7 +931,7 @@ int <label>Start<elementIndex> = CharIndex;
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
 Match(EOF); <checkRuleBacktrackFailure()>
-<labelType> <label> = new <labelType>(input, EOF, Token.DEFAULT_CHANNEL, <label>Start<elementIndex>, CharIndex-1);
+<labelType> <label> = new <labelType>(input, EOF, TokenConstants.Default, <label>Start<elementIndex>, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -945,16 +945,16 @@ tree(root, actionsAfterRoot, children, nullableChildList,
 <root:element()>
 <actionsAfterRoot:element()>
 <if(nullableChildList)>
-if ( input.LA(1) == Token.DOWN )
+if ( input.LA(1) == TokenConstants.Down )
 {
-    Match(input, Token.DOWN, null); <checkRuleBacktrackFailure()>
+    Match(input, TokenConstants.Down, null); <checkRuleBacktrackFailure()>
     <children:element()>
-    Match(input, Token.UP, null); <checkRuleBacktrackFailure()>
+    Match(input, TokenConstants.Up, null); <checkRuleBacktrackFailure()>
 }
 <else>
-Match(input, Token.DOWN, null); <checkRuleBacktrackFailure()>
+Match(input, TokenConstants.Down, null); <checkRuleBacktrackFailure()>
 <children:element()>
-Match(input, Token.UP, null); <checkRuleBacktrackFailure()>
+Match(input, TokenConstants.Up, null); <checkRuleBacktrackFailure()>
 <endif>
 >>
 
@@ -1118,7 +1118,17 @@ static readonly char[] DFA<dfa.decisionNumber>_min = DFA.UnpackEncodedStringToUn
 static readonly char[] DFA<dfa.decisionNumber>_max = DFA.UnpackEncodedStringToUnsignedChars(DFA<dfa.decisionNumber>_maxS);
 static readonly short[] DFA<dfa.decisionNumber>_accept = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_acceptS);
 static readonly short[] DFA<dfa.decisionNumber>_special = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_specialS);
-static readonly short[][] DFA<dfa.decisionNumber>_transition = DFA.UnpackEncodedStringArray(DFA<dfa.decisionNumber>_transitionS);
+static readonly short[][] DFA<dfa.decisionNumber>_transition;
+
+static DFA<dfa.decisionNumber>()
+{
+	int numStates = DFA<dfa.decisionNumber>_transitionS.Length;
+	DFA<dfa.decisionNumber>_transition = new short[numStates][];
+	for ( int i=0; i \< numStates; i++ )
+	{
+		DFA<dfa.decisionNumber>_transition[i] = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_transitionS[i]);
+	}
+}
 
 protected class DFA<dfa.decisionNumber> : DFA
 {
