@@ -369,7 +369,7 @@ serializeText(pANTLR3_STRING buffer, pANTLR3_STRING text)
 
 	// strings lead in with a "
 	//
-	buffer->append(buffer, " \"");
+	buffer->append(buffer, "\t\"");
 
 	if	(text == NULL)
 	{
@@ -436,13 +436,13 @@ serializeToken(pANTLR3_DEBUG_EVENT_LISTENER delboy, pANTLR3_COMMON_TOKEN t)
 	// uses 32 bits.
 	//
 	delboy->tokenString->addi(delboy->tokenString, (ANTLR3_INT32)(t->getTokenIndex(t)));
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 	delboy->tokenString->addi(delboy->tokenString, (ANTLR3_INT32)(t->getType(t)));
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 	delboy->tokenString->addi(delboy->tokenString, (ANTLR3_INT32)(t->getChannel(t)));
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 	delboy->tokenString->addi(delboy->tokenString, (ANTLR3_INT32)(t->getLine(t)));
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 	delboy->tokenString->addi(delboy->tokenString, (ANTLR3_INT32)(t->getCharPositionInLine(t)));
 
 	// Now send the text that the token represents.
@@ -491,12 +491,12 @@ serializeNode(pANTLR3_DEBUG_EVENT_LISTENER delboy, pANTLR3_BASE_TREE node)
 	// Now we serialize the elements of the node.Note that the debugger only
 	// uses 32 bits.
 	//
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 
 	// Adaptor ID
 	//
 	delboy->tokenString->addi(delboy->tokenString, delboy->adaptor->getUniqueID(delboy->adaptor, node));
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 
 	// Type of the current token (which may be imaginary)
 	//
@@ -506,7 +506,7 @@ serializeNode(pANTLR3_DEBUG_EVENT_LISTENER delboy, pANTLR3_BASE_TREE node)
 	//
 	token	= delboy->adaptor->getToken(delboy->adaptor, node);
 
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 	if	(token != NULL)
 	{
 		// Real token
@@ -520,13 +520,13 @@ serializeNode(pANTLR3_DEBUG_EVENT_LISTENER delboy, pANTLR3_BASE_TREE node)
 		// Imaginary tokens have no location
 		//
 		delboy->tokenString->addi(delboy->tokenString, -1);
-		delboy->tokenString->addc(delboy->tokenString, ' ');
+		delboy->tokenString->addc(delboy->tokenString, '\t');
 		delboy->tokenString->addi(delboy->tokenString, -1);
 	}
 
 	// Start Index of the node
 	//
-	delboy->tokenString->addc(delboy->tokenString, ' ');
+	delboy->tokenString->addc(delboy->tokenString, '\t');
 	delboy->tokenString->addi(delboy->tokenString, (ANTLR3_UINT32)(delboy->adaptor->getTokenStartIndex(delboy->adaptor, node)));
 
 	// Now send the text that the node represents.
@@ -573,7 +573,7 @@ exitRule				(pANTLR3_DEBUG_EVENT_LISTENER delboy, const char * grammarFileName, 
 
 	// Create the message (speed is not of the essence)
 	//
-	sprintf(buffer, "enterRule\t%s\t%s\n", grammarFileName, ruleName);
+	sprintf(buffer, "exitRule\t%s\t%s\n", grammarFileName, ruleName);
 	transmit(delboy, buffer);
 }
 
@@ -764,7 +764,7 @@ recognitionException	(pANTLR3_DEBUG_EVENT_LISTENER delboy, pANTLR3_EXCEPTION e)
 {
 	char	buffer[256];
 
-	sprintf(buffer, "exception %s\t%d\t%d\t%d\n", (char *)(e->name), (ANTLR3_INT32)(e->index), e->line, e->charPositionInLine);
+	sprintf(buffer, "exception\t%s\t%d\t%d\t%d\n", (char *)(e->name), (ANTLR3_INT32)(e->index), e->line, e->charPositionInLine);
 
 	// Transmit the message and wait for ack
 	//

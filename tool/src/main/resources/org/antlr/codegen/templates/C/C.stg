@@ -1587,6 +1587,7 @@ if  (HASEXCEPTION())
 if (HASFAILED())
 {
     <scopeClean()>
+    <@debugClean()>
     return <ruleReturnValue()>;
 }
 <endif>
@@ -2389,7 +2390,7 @@ dfaAcceptState(alt) ::= "alt<decisionNumber>=<alt>;"
  *  have to evaluate some predicates for this edge.
  */
 dfaEdge(labelExpr, targetState, predicates) ::= <<
-if ( (<labelExpr>) <if(predicates)>&& (<predicates>)<endif>) 
+if ( <if(predicates)>(<predicates>) && <endif>(<labelExpr>)) 
 {
     <targetState>
 }
@@ -2599,7 +2600,7 @@ break;
  *  state to jump to next if successful.
  */
 cyclicDFAEdge(labelExpr, targetStateNumber, edgeNumber, predicates) ::= <<
-if ( (<labelExpr>) <if(predicates)>&& (<predicates>)<endif>)
+if ( <if(predicates)>(<predicates>) && <endif>(<labelExpr>) )
 {
     s = <targetStateNumber>;
 }<\n>

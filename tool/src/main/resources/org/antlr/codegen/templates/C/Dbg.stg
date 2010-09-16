@@ -131,11 +131,11 @@ createListenerAndHandshake() ::= <<
 
 
 @rule.preamble() ::= <<
-DBG->enterRule(DBG, getGrammarFileName(), (const char *)"<ruleName>");
 if ( getRuleLevel()==0 ) 
 {
 	DBG->commence(DBG);
 }
+DBG->enterRule(DBG, getGrammarFileName(), (const char *)"<ruleName>");
 incRuleLevel();
 DBG->location(DBG, <ruleDescriptor.tree.line>, <ruleDescriptor.tree.column>);<\n>
 >>
@@ -149,6 +149,11 @@ if ( getRuleLevel()==0 )
 	DBG->terminate(DBG);
 }
 <\n>
+>>
+
+@checkRuleBacktrackFailure.debugClean() ::= <<
+DBG->exitRule(DBG, getGrammarFileName(), (const char *)"<ruleName>");
+decRuleLevel();
 >>
 
 @synpred.start() ::= "DBG->beginBacktrack(DBG, BACKTRACKING);"

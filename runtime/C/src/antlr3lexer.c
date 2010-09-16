@@ -239,6 +239,10 @@ nextTokenStr	    (pANTLR3_TOKEN_SOURCE toksource)
             state->tokenStartCharPositionInLine     = input->charPositionInLine;
             state->tokenStartLine		    = input->line;
             state->text			            = NULL;
+            state->custom                           = NULL;
+            state->user1                            = 0;
+            state->user2                            = 0;
+            state->user3                            = 0;
 
             if  (istream->_LA(istream, 1) == ANTLR3_CHARSTREAM_EOF)
             {
