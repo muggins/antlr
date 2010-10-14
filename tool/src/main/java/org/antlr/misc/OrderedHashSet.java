@@ -28,7 +28,8 @@
 package org.antlr.misc;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /** A HashMap that remembers the order that the elements were added.
@@ -36,7 +37,7 @@ import java.util.List;
  *  I need the replace/set-element-i functionality so I'm subclassing
  *  OrderedHashSet.
  */
-public class OrderedHashSet<T> extends HashSet {
+public class OrderedHashSet<T> extends LinkedHashSet {
     /** Track the elements as they are added to the set */
     protected List<T> elements = new ArrayList<T>();
 
@@ -86,6 +87,10 @@ public class OrderedHashSet<T> extends HashSet {
     public List<T> elements() {
         return elements;
     }
+
+	public Iterator<T> iterator() {
+		return elements.iterator();
+	}
 
 	public Object[] toArray() {
 		return elements.toArray();
