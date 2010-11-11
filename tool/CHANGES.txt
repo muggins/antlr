@@ -7,6 +7,23 @@ University of San Francisco
 
 CHANGES
 
+* October 20, 2010
+
+Added boolean couldBacktrack to enterDecision in dbg interface. Breaks AW
+interface and other tools! [BREAKS BACKWARD COMPATIBILITY]
+
+October 17, 2010
+
+* Missing -trace in help msg
+
+October 16, 2010
+
+* Doesn't write profile data to file anymore; emits decision data to stderr
+
+October 14, 2010
+
+* Make OrderedHashSet have deterministic iteration
+
 July 20, 2010
 
 * greedy=true option shuts off nondeterminism warning.
