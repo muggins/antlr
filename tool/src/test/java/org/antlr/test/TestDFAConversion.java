@@ -213,6 +213,49 @@ public class TestDFAConversion extends BaseTest {
 					  nonDetAlts, ambigInput, danglingAlts, numWarnings);
 	}
 
+	@Test public void testSynPredMissingInMiddle() throws Exception {
+		Grammar g = new Grammar(
+			"parser grammar t;\n"+
+			"x   : (A)=> X\n" +
+			"    | X\n" +  // assume missing synpred is true also
+			"	 | (C)=> X" +
+			"    ;\n");
+		String expecting =
+			".s0-X->.s1\n" +
+			".s1-{synpred1_t}?->:s2=>1\n" +
+			".s1-{synpred2_t}?->:s4=>3\n" +
+			".s1-{true}?->:s3=>2\n";
+		int[] unreachableAlts = null;
+		int[] nonDetAlts = null;
+		String ambigInput = null;
+		int[] danglingAlts = null;
+		int numWarnings = 0;
+		checkDecision(g, 1, expecting, unreachableAlts,
+					  nonDetAlts, ambigInput, danglingAlts, numWarnings);
+	}
+
+	@Test public void testAutoBacktrackAndPredMissingInMiddle() throws Exception {
+		Grammar g = new Grammar(
+			"parser grammar t;\n" +
+			"options {backtrack=true;}\n"+
+			"x   : (A)=> X\n" +
+			"    | X\n" +  // assume missing synpred is true also
+			"	 | (C)=> X" +
+			"    ;\n");
+		String expecting =
+			".s0-X->.s1\n" +
+			".s1-{synpred1_t}?->:s2=>1\n" +  // gen code should have this as (A)=>
+			".s1-{synpred2_t}?->:s3=>2\n" + // gen code should have this as (X)=>
+			".s1-{synpred3_t}?->:s4=>3\n"; // gen code should have this as (C)=>
+		int[] unreachableAlts = null;
+		int[] nonDetAlts = null;
+		String ambigInput = null;
+		int[] danglingAlts = null;
+		int numWarnings = 0;
+		checkDecision(g, 1, expecting, unreachableAlts,
+					  nonDetAlts, ambigInput, danglingAlts, numWarnings);
+	}
+
 	@Test public void testSemPredResolvesRecursion() throws Exception {
 		Grammar g = new Grammar(
 			"parser grammar t;\n"+
@@ -1379,6 +1422,30 @@ As a result, alternative(s) 2 were disabled for that input
 		String expecting =
 			".s0-X->.s1\n" +
 			".s1-{synpred1_t}?->:s2=>1\n" + // hoists into decision
+			".s1-{true}?->:s3=>2\n";
+		int[] unreachableAlts = null;
+		int[] nonDetAlts = null;
+		String ambigInput = null;
+		int[] danglingAlts = null;
+		int numWarnings = 0;
+		checkDecision(g, 1, expecting, unreachableAlts,
+					  nonDetAlts, ambigInput, danglingAlts, numWarnings);
+
+		Set<String> preds = g.synPredNamesUsedInDFA;
+		Set<String> expectedPreds = new HashSet<String>() {{add("synpred1_t");}};
+		assertEquals("predicate names not recorded properly in grammar", expectedPreds, preds);
+	}
+
+	@Test public void testHoistedGatedSynPred2() throws Exception {
+		Grammar g = new Grammar(
+			"parser grammar t;\n"+
+			"x   : (X)=> (X|Y)\n" +
+			"    | X\n" +
+			"    ;\n");
+		String expecting =
+			".s0-X->.s1\n" +
+			".s0-Y&&{synpred1_t}?->:s2=>1\n" +
+			".s1-{synpred1_t}?->:s2=>1\n" +
 			".s1-{true}?->:s3=>2\n";
 		int[] unreachableAlts = null;
 		int[] nonDetAlts = null;

@@ -102,10 +102,10 @@ public class DebugEventHub implements DebugEventListener {
 		}
 	}
 
-	public void enterDecision(int decisionNumber) {
+	public void enterDecision(int decisionNumber, boolean couldBacktrack) {
 		for (int i = 0; i < listeners.size(); i++) {
 			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.enterDecision(decisionNumber);
+			listener.enterDecision(decisionNumber, couldBacktrack);
 		}
 	}
 

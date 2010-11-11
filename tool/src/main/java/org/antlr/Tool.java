@@ -459,10 +459,12 @@ public class Tool {
                 }
 
                 if (isReport()) {
-                    GrammarReport greport = new GrammarReport(grammar);
-                    System.out.println(greport.toString());
-                    // print out a backtracking report too (that is not encoded into log)
-                    System.out.println(greport.getBacktrackingReport());
+					GrammarReport2 greport = new GrammarReport2(grammar);
+					System.out.print(greport.toString());
+//                    GrammarReport greport = new GrammarReport(grammar);
+//                    System.out.println(greport.toString());
+//                    // print out a backtracking report too (that is not encoded into log)
+//                    System.out.println(greport.getBacktrackingReport());
                 }
                 if (isProfile()) {
                     GrammarReport greport = new GrammarReport(grammar);
@@ -717,7 +719,8 @@ public class Tool {
         System.err.println("  -report               print out a report about the grammar(s) processed");
         System.err.println("  -print                print out the grammar without actions");
         System.err.println("  -debug                generate a parser that emits debugging events");
-        System.err.println("  -profile              generate a parser that computes profiling information");
+		System.err.println("  -profile              generate a parser that computes profiling information");
+		System.err.println("  -trace                generate a recognizer that traces rule entry/exit");
         System.err.println("  -nfa                  generate an NFA for each rule");
         System.err.println("  -dfa                  generate a DFA for each decision point");
         System.err.println("  -message-format name  specify output style for messages");

@@ -40,7 +40,7 @@ public class BlankDebugEventListener implements DebugEventListener {
 	public void enterAlt(int alt) {}
 	public void enterSubRule(int decisionNumber) {}
 	public void exitSubRule(int decisionNumber) {}
-	public void enterDecision(int decisionNumber) {}
+	public void enterDecision(int decisionNumber, boolean couldBacktrack) {}
 	public void exitDecision(int decisionNumber) {}
 	public void location(int line, int pos) {}
 	public void consumeToken(Token token) {}

@@ -92,6 +92,7 @@ public class DebugParser extends Parser {
 	}
 
 	public void reportError(RecognitionException e) {
+		super.reportError(e);
 		dbg.recognitionException(e);
 	}
 }

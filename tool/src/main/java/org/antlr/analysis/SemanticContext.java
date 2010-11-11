@@ -78,6 +78,7 @@ public abstract class SemanticContext {
 										   StringTemplateGroup templates,
 										   DFA dfa);
 
+	public abstract boolean hasUserSemanticPredicate(); // user-specified sempred {}? or {}?=>
 	public abstract boolean isSyntacticPredicate();
 
 	/** Notify the indicated grammar of any syn preds used within this context */
@@ -200,6 +201,13 @@ public abstract class SemanticContext {
 			return null;
 		}
 
+		@Override
+		public boolean hasUserSemanticPredicate() { // user-specified sempred
+			return predicateAST !=null &&
+				   ( predicateAST.getType()==ANTLRParser.GATED_SEMPRED ||
+					 predicateAST.getType()==ANTLRParser.SEMPRED );
+		}
+
 		public boolean isSyntacticPredicate() {
 			return predicateAST !=null &&
 				( predicateAST.getType()==ANTLRParser.SYN_SEMPRED ||
@@ -234,6 +242,11 @@ public abstract class SemanticContext {
 				return templates.getInstanceOf("true");
 			}
 			return new StringTemplate("true");
+		}
+
+		@Override
+		public boolean hasUserSemanticPredicate() {
+			return false; // not user specified.
 		}
 
 		public String toString() {
@@ -294,6 +307,12 @@ public abstract class SemanticContext {
 			}
 			return new AND(gatedLeft, gatedRight);
 		}
+
+		@Override
+		public boolean hasUserSemanticPredicate() {
+			return left.hasUserSemanticPredicate()||right.hasUserSemanticPredicate();
+		}
+
 		public boolean isSyntacticPredicate() {
 			return left.isSyntacticPredicate()||right.isSyntacticPredicate();
 		}
@@ -351,6 +370,16 @@ public abstract class SemanticContext {
 				}
 			}
 			return result;
+		}
+		@Override
+		public boolean hasUserSemanticPredicate() {
+			for (Iterator it = operands.iterator(); it.hasNext();) {
+				SemanticContext semctx = (SemanticContext) it.next();
+				if ( semctx.hasUserSemanticPredicate() ) {
+					return true;
+				}
+			}
+			return false;
 		}
 		public boolean isSyntacticPredicate() {
 			for (Iterator it = operands.iterator(); it.hasNext();) {
@@ -410,6 +439,12 @@ public abstract class SemanticContext {
 			}
 			return new NOT(p);
 		}
+
+		@Override
+		public boolean hasUserSemanticPredicate() {
+			return ctx.hasUserSemanticPredicate();
+		}
+
 		public boolean isSyntacticPredicate() {
 			return ctx.isSyntacticPredicate();
 		}

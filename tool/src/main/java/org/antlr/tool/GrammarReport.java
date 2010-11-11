@@ -28,6 +28,8 @@
 package org.antlr.tool;
 
 import org.antlr.analysis.DFA;
+import org.antlr.analysis.DFAState;
+import org.antlr.analysis.NFAState;
 import org.antlr.grammar.v2.ANTLRParser;
 import org.antlr.misc.Utils;
 import org.antlr.runtime.misc.Stats;
@@ -85,26 +87,26 @@ public class GrammarReport {
 		this.grammar = grammar;
 	}
 
-	public ReportData getReportData() {
+	public static ReportData getReportData(Grammar g) {
 		ReportData data = new ReportData();
 		data.version = Version;
-		data.gname = grammar.name;
+		data.gname = g.name;
 
-		data.gtype = grammar.getGrammarTypeString();
+		data.gtype = g.getGrammarTypeString();
 
-		data.language = (String)grammar.getOption("language");
-		data.output = (String)grammar.getOption("output");
+		data.language = (String) g.getOption("language");
+		data.output = (String) g.getOption("output");
 		if ( data.output==null ) {
 			data.output = "none";
 		}
 
-		String k = (String)grammar.getOption("k");
+		String k = (String) g.getOption("k");
 		if ( k==null ) {
 			k = "none";
 		}
 		data.grammarLevelk = k;
 
-		String backtrack = (String)grammar.getOption("backtrack");
+		String backtrack = (String) g.getOption("backtrack");
 		if ( backtrack==null ) {
 			backtrack = "false";
 		}
@@ -112,7 +114,7 @@ public class GrammarReport {
 
 		int totalNonSynPredProductions = 0;
 		int totalNonSynPredRules = 0;
-		Collection rules = grammar.getRules();
+		Collection rules = g.getRules();
 		for (Iterator it = rules.iterator(); it.hasNext();) {
 			Rule r = (Rule) it.next();
 			if ( !r.name.toUpperCase()
@@ -127,10 +129,10 @@ public class GrammarReport {
 		data.numOuterProductions = totalNonSynPredProductions;
 
 		int numACyclicDecisions =
-			grammar.getNumberOfDecisions()-grammar.getNumberOfCyclicDecisions();
+			g.getNumberOfDecisions()- g.getNumberOfCyclicDecisions();
 		List<Integer> depths = new ArrayList<Integer>();
 		int[] acyclicDFAStates = new int[numACyclicDecisions];
-		int[] cyclicDFAStates = new int[grammar.getNumberOfCyclicDecisions()];
+		int[] cyclicDFAStates = new int[g.getNumberOfCyclicDecisions()];
 		int acyclicIndex = 0;
 		int cyclicIndex = 0;
 		int numLL1 = 0;
@@ -138,8 +140,8 @@ public class GrammarReport {
 		int dfaWithSynPred = 0;
 		int numDecisions = 0;
 		int numCyclicDecisions = 0;
-		for (int i=1; i<=grammar.getNumberOfDecisions(); i++) {
-			Grammar.Decision d = grammar.getDecision(i);
+		for (int i=1; i<= g.getNumberOfDecisions(); i++) {
+			Grammar.Decision d = g.getDecision(i);
 			if( d.dfa==null ) {
 				//System.out.println("dec "+d.decision+" has no AST");
 				continue;
@@ -154,7 +156,9 @@ public class GrammarReport {
 
 			numDecisions++;
 			if ( blockHasSynPred(d.blockAST) ) blocksWithSynPreds++;
-			if ( grammar.decisionsWhoseDFAsUsesSynPreds.contains(d.dfa) ) dfaWithSynPred++;
+			//if ( g.decisionsWhoseDFAsUsesSynPreds.contains(d.dfa) ) dfaWithSynPred++;
+			if ( d.dfa.hasSynPred() ) dfaWithSynPred++;
+			
 //			NFAState decisionStartState = grammar.getDecisionNFAStartState(d.decision);
 //			int nalts = grammar.getNumberOfAltsForDecisionNFA(decisionStartState);
 //			for (int alt = 1; alt <= nalts; alt++) {
@@ -194,7 +198,7 @@ public class GrammarReport {
 		data.avgk = Stats.avg(depths);
 
 		data.numberOfDecisionsInRealRules = numDecisions;
-		data.numberOfDecisions = grammar.getNumberOfDecisions();
+		data.numberOfDecisions = g.getNumberOfDecisions();
 		data.numberOfCyclicDecisions = numCyclicDecisions;
 
 //		Map synpreds = grammar.getSyntacticPredicates();
@@ -226,27 +230,27 @@ public class GrammarReport {
 //
 //		data. = Stats.sum(cyclicDFAStates);
 
-		data.numTokens = grammar.getTokenTypes().size();
+		data.numTokens = g.getTokenTypes().size();
 
-		data.DFACreationWallClockTimeInMS = grammar.DFACreationWallClockTimeInMS;
+		data.DFACreationWallClockTimeInMS = g.DFACreationWallClockTimeInMS;
 
 		// includes true ones and preds in synpreds I think; strip out. 
-		data.numberOfSemanticPredicates = grammar.numberOfSemanticPredicates;
+		data.numberOfSemanticPredicates = g.numberOfSemanticPredicates;
 
-		data.numberOfManualLookaheadOptions = grammar.numberOfManualLookaheadOptions;
+		data.numberOfManualLookaheadOptions = g.numberOfManualLookaheadOptions;
 
-		data.numNonLLStarDecisions = grammar.numNonLLStar;
-		data.numNondeterministicDecisions = grammar.setOfNondeterministicDecisionNumbers.size();
+		data.numNonLLStarDecisions = g.numNonLLStar;
+		data.numNondeterministicDecisions = g.setOfNondeterministicDecisionNumbers.size();
 		data.numNondeterministicDecisionNumbersResolvedWithPredicates =
-			grammar.setOfNondeterministicDecisionNumbersResolvedWithPredicates.size();
+			g.setOfNondeterministicDecisionNumbersResolvedWithPredicates.size();
 
 		data.errors = ErrorManager.getErrorState().errors;
 		data.warnings = ErrorManager.getErrorState().warnings;
 		data.infos = ErrorManager.getErrorState().infos;
 
-		data.blocksWithSemPreds = grammar.blocksWithSemPreds.size();
+		data.blocksWithSemPreds = g.blocksWithSemPreds.size();
 
-		data.decisionsWhoseDFAsUsesSemPreds = grammar.decisionsWhoseDFAsUsesSemPreds.size();
+		data.decisionsWhoseDFAsUsesSemPreds = g.decisionsWhoseDFAsUsesSemPreds.size();
 
 		return data;
 	}
@@ -256,7 +260,7 @@ public class GrammarReport {
 	 */
 	public String toNotifyString() {
 		StringBuffer buf = new StringBuffer();
-		ReportData data = getReportData();
+		ReportData data = getReportData(grammar);
 		Field[] fields = ReportData.class.getDeclaredFields();
 		int i = 0;
 		for (Field f : fields) {
@@ -472,13 +476,11 @@ public class GrammarReport {
 	}
 
 	public static boolean blockHasSynPred(GrammarAST blockAST) {
-		for (int c=0; c<blockAST.getNumberOfChildren(); c++) {
-			GrammarAST child = blockAST.getChild(c);
-			GrammarAST c1 = child.getFirstChildWithType(ANTLRParser.SYN_SEMPRED);
-			GrammarAST c2 = child.getFirstChildWithType(ANTLRParser.BACKTRACK_SEMPRED);
-			if ( c1!=null || c2!=null ) return true;
-			//System.out.println("no preds AST="+child.toStringTree());
-		}
+		GrammarAST c1 = blockAST.findFirstType(ANTLRParser.SYN_SEMPRED);
+		GrammarAST c2 = blockAST.findFirstType(ANTLRParser.BACKTRACK_SEMPRED);
+		if ( c1!=null || c2!=null ) return true;
+//		System.out.println(blockAST.enclosingRuleName+
+//						   " "+blockAST.getLine()+":"+blockAST.getColumn()+" no preds AST="+blockAST.toStringTree());
 		return false;
 	}
 

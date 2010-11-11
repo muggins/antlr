@@ -80,7 +80,7 @@ public interface DebugEventListener {
 	 *  subrule but multiple enter/exit decision events, one for each
 	 *  loop iteration.
 	 */
-	public void enterDecision(int decisionNumber);
+	public void enterDecision(int decisionNumber, boolean couldBacktrack);
 
 	public void exitDecision(int decisionNumber);
 

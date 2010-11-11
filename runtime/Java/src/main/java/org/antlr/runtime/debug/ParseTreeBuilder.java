@@ -66,7 +66,7 @@ public class ParseTreeBuilder extends BlankDebugEventListener {
 	}
 
 	/** Backtracking or cyclic DFA, don't want to add nodes to tree */
-	public void enterDecision(int d) { backtracking++; }
+	public void enterDecision(int d, boolean couldBacktrack) { backtracking++; }
 	public void exitDecision(int i) { backtracking--; }
 
 	public void enterRule(String filename, String ruleName) {

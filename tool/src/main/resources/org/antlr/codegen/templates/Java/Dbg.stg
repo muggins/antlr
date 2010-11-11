@@ -42,6 +42,12 @@ public static final String[] ruleNames = new String[] {
     "invalidRule", <grammar.allImportedRules:{rST | "<rST.name>"}; wrap="\n    ", separator=", ">
 };<\n>
 <endif>
+<if(profile)>
+public static final boolean[] decisionCanBacktrack = new boolean[] {
+    false, // invalid decision
+    <grammar.decisions:{d | <d.dfa.hasSynPred; null="false">}; wrap="\n    ", separator=", ">
+};<\n>
+<endif>
 <if(grammar.grammarIsRoot)> <! grammar imports other grammar(s) !>
     public int ruleLevel = 0;
     public int getRuleLevel() { return ruleLevel; }
@@ -61,7 +67,8 @@ public static final String[] ruleNames = new String[] {
 <endif>
 <if(profile)>
 public boolean alreadyParsedRule(IntStream input, int ruleIndex) {
-    ((Profiler)dbg).examineRuleMemoization(input, ruleIndex, <grammar.composite.rootGrammar.recognizerName>.ruleNames[ruleIndex]);
+	int stopIndex = getRuleMemoization(ruleIndex, input.index());
+    ((Profiler)dbg).examineRuleMemoization(input, ruleIndex, stopIndex, <grammar.composite.rootGrammar.recognizerName>.ruleNames[ruleIndex]);
     return super.alreadyParsedRule(input, ruleIndex);
 }<\n>
 public void memoize(IntStream input,
@@ -182,7 +189,7 @@ exitSubRule() ::=
     "} finally {dbg.exitSubRule(<decisionNumber>);}<\n>"
 
 enterDecision() ::=
-    "try { dbg.enterDecision(<decisionNumber>);<\n>"
+    "try { dbg.enterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);<\n>"
 
 exitDecision() ::=
     "} finally {dbg.exitDecision(<decisionNumber>);}<\n>"

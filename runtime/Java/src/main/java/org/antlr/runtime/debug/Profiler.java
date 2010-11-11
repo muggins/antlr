@@ -29,9 +29,7 @@ package org.antlr.runtime.debug;
 
 import org.antlr.runtime.*;
 import org.antlr.runtime.misc.DoubleKeyMap;
-import org.antlr.runtime.misc.Stats;
 
-import java.io.IOException;
 import java.util.*;
 
 /** Using the debug event interface, track what is happening in the parser
@@ -39,6 +37,9 @@ import java.util.*;
  */
 public class Profiler extends BlankDebugEventListener {
 	public static final String DATA_SEP = "\t";
+	public static final String newline = System.getProperty("line.separator");
+
+	static boolean dump = false;
 
 	public static class ProfileStats {
 		public String Version;
@@ -46,7 +47,15 @@ public class Profiler extends BlankDebugEventListener {
 		public int numRuleInvocations;
 		public int numUniqueRulesInvoked;
 		public int numDecisionEvents;
+		public int numDecisionsCovered;
+		public int numDecisionsThatPotentiallyBacktrack;
+		public int numDecisionsThatDoBacktrack;
 		public int maxRuleInvocationDepth;
+		public float avgkPerDecisionEvent;
+		public float avgkPerBacktrackingDecisionEvent;
+		public float averageDecisionPercentBacktracks;
+		public int numBacktrackOccurrences; // doesn't count gated DFA edges
+
 		public int numFixedDecisions;
 		public int minDecisionMaxFixedLookaheads;
 		public int maxDecisionMaxFixedLookaheads;
@@ -57,7 +66,6 @@ public class Profiler extends BlankDebugEventListener {
 		public int maxDecisionMaxCyclicLookaheads;
 		public int avgDecisionMaxCyclicLookaheads;
 		public int stddevDecisionMaxCyclicLookaheads;
-		public int numBacktrackDecisions;
 //		int Stats.min(toArray(decisionMaxSynPredLookaheads);
 //		int Stats.max(toArray(decisionMaxSynPredLookaheads);
 //		int Stats.avg(toArray(decisionMaxSynPredLookaheads);
@@ -80,10 +88,12 @@ public class Profiler extends BlankDebugEventListener {
 		public String ruleName;
 		public int line;
 		public int pos;
+		public boolean couldBacktrack;
 
 		public int n;
+		public float avgk; // avg across all decision events
 		public int maxk;
-		public int numSynPredEvals;
+		public int numBacktrackOccurrences;
 		public int numSemPredEvals;
 	}
 
@@ -91,8 +101,8 @@ public class Profiler extends BlankDebugEventListener {
 	public static class DecisionEvent {
 		public DecisionDescriptor decision;
 		public int startIndex;
-		public int maxk;
-		public boolean evalSynPred;
+		public int k;
+		public boolean backtracks; // doesn't count gated DFA edges
 		public boolean evalSemPred;
 		public long startTime;
 		public long stopTime;
@@ -106,6 +116,9 @@ public class Profiler extends BlankDebugEventListener {
 	public static final String Version = "3";
 	public static final String RUNTIME_STATS_FILENAME = "runtime.stats";
 
+	/** Ack, should not store parser; can't do remote stuff.  Well, we pass
+	 *  input stream around too so I guess it's ok.
+	 */
 	public DebugParser parser = null;
 
 	// working variables
@@ -128,6 +141,8 @@ public class Profiler extends BlankDebugEventListener {
 	protected List<DecisionEvent> decisionEvents = new ArrayList<DecisionEvent>();
 	protected Stack<DecisionEvent> decisionStack = new Stack<DecisionEvent>();
 
+	protected int backtrackDepth;
+	
 	ProfileStats stats = new ProfileStats();
 
 	public Profiler() {
@@ -138,7 +153,7 @@ public class Profiler extends BlankDebugEventListener {
 	}
 
 	public void enterRule(String grammarFileName, String ruleName) {
-		//System.out.println("enterRule "+grammarFileName+":"+ruleName);
+//		System.out.println("enterRule "+grammarFileName+":"+ruleName);
 		ruleLevel++;
 		stats.numRuleInvocations++;
 		uniqueRules.add(grammarFileName+":"+ruleName);
@@ -156,13 +171,14 @@ public class Profiler extends BlankDebugEventListener {
 	/** Track memoization; this is not part of standard debug interface
 	 *  but is triggered by profiling.  Code gen inserts an override
 	 *  for this method in the recognizer, which triggers this method.
+	 *  Called from alreadyParsedRule().
 	 */
 	public void examineRuleMemoization(IntStream input,
 									   int ruleIndex,
+									   int stopIndex, // index or MEMO_RULE_UNKNOWN...
 									   String ruleName)
 	{
-		//System.out.println("examine memo "+ruleName);
-		int stopIndex = parser.getRuleMemoization(ruleIndex, input.index());
+		if (dump) System.out.println("examine memo "+ruleName+" at "+input.index()+": "+stopIndex);
 		if ( stopIndex==BaseRecognizer.MEMO_RULE_UNKNOWN ) {
 			//System.out.println("rule "+ruleIndex+" missed @ "+input.index());
 			stats.numMemoizationCacheMisses++;
@@ -177,13 +193,14 @@ public class Profiler extends BlankDebugEventListener {
 		}
 	}
 
+	/** Warning: doesn't track success/failure, just unique recording event */
 	public void memoize(IntStream input,
 						int ruleIndex,
 						int ruleStartIndex,
 						String ruleName)
 	{
 		// count how many entries go into table
-		//System.out.println("memoize "+ruleName);
+		if (dump) System.out.println("memoize "+ruleName);
 		stats.numMemoizationCacheEntries++;
 	}
 
@@ -193,17 +210,18 @@ public class Profiler extends BlankDebugEventListener {
 		currentPos.push(pos);
 	}
 
-	public void enterDecision(int decisionNumber) {
+	public void enterDecision(int decisionNumber, boolean couldBacktrack) {
 		lastRealTokenTouchedInDecision = null;
 		stats.numDecisionEvents++;
 		int startingLookaheadIndex = parser.getTokenStream().index();
 		TokenStream input = parser.getTokenStream();
-		System.out.println("enterDecision " + decisionNumber + " depth " + decisionStack.size() +
+		if ( dump ) System.out.println("enterDecision canBacktrack="+couldBacktrack+" "+ decisionNumber +
+						   " backtrack depth " + backtrackDepth +
 						   " @ " + input.get(input.index()) +
 						   " rule " +locationDescription());
 		String g = (String) currentGrammarFileName.peek();
 		DecisionDescriptor descriptor = decisions.get(g, decisionNumber);
-		if ( descriptor ==null ) {
+		if ( descriptor == null ) {
 			descriptor = new DecisionDescriptor();
 			decisions.put(g, decisionNumber, descriptor);
 			descriptor.decision = decisionNumber;
@@ -211,6 +229,7 @@ public class Profiler extends BlankDebugEventListener {
 			descriptor.ruleName = (String)currentRuleName.peek();
 			descriptor.line = (Integer)currentLine.peek();
 			descriptor.pos = (Integer)currentPos.peek();
+			descriptor.couldBacktrack = couldBacktrack;
 		}
 		descriptor.n++;
 
@@ -228,17 +247,20 @@ public class Profiler extends BlankDebugEventListener {
 		int lastTokenIndex = lastRealTokenTouchedInDecision.getTokenIndex();
 		int numHidden = getNumberOfHiddenTokens(d.startIndex, lastTokenIndex);
 		int depth = lastTokenIndex - d.startIndex - numHidden + 1; // +1 counts consuming start token as 1
-		d.maxk = depth;
+		d.k = depth;
 		d.decision.maxk = Math.max(d.decision.maxk, depth);
 
-		System.out.println("exitDecision "+decisionNumber+" in "+d.decision.ruleName+
-						   " depth "+d.maxk+" max token "+lastRealTokenTouchedInDecision);
+		if (dump) System.out.println("exitDecision "+decisionNumber+" in "+d.decision.ruleName+
+						   " lookahead "+d.k +" max token "+lastRealTokenTouchedInDecision);
 		decisionEvents.add(d); // done with decision; track all
 	}
 
 	public void consumeToken(Token token) {
-		//System.out.println("consume token "+token);
-		if ( !inDecision() ) return;
+		if (dump) System.out.println("consume token "+token);
+		if ( !inDecision() ) {
+			stats.numTokens++;
+			return;
+		}
 		if ( lastRealTokenTouchedInDecision==null ||
 			 lastRealTokenTouchedInDecision.getTokenIndex() < token.getTokenIndex() )
 		{
@@ -250,7 +272,7 @@ public class Profiler extends BlankDebugEventListener {
 		int numHidden = getNumberOfHiddenTokens(d.startIndex, thisRefIndex);
 		int depth = thisRefIndex - d.startIndex - numHidden + 1; // +1 counts consuming start token as 1
 		//d.maxk = Math.max(d.maxk, depth);
-		System.out.println("consume to "+thisRefIndex+" "+depth+" tokens ahead in "+
+		if (dump) System.out.println("consume "+thisRefIndex+" "+depth+" tokens ahead in "+
 						   d.decision.ruleName+"-"+d.decision.decision+" start index "+d.startIndex);		
 	}
 
@@ -263,21 +285,22 @@ public class Profiler extends BlankDebugEventListener {
 
 	public void consumeHiddenToken(Token token) {
 		//System.out.println("consume hidden token "+token);
+		if ( !inDecision() ) stats.numHiddenTokens++;
 	}
 
 	/** Track refs to lookahead if in a fixed/nonfixed decision.
 	 */
 	public void LT(int i, Token t) {
 		if ( inDecision() && i>0 ) {
+			DecisionEvent d = currentDecision();
+			if (dump) System.out.println("LT("+i+")="+t+" index "+t.getTokenIndex()+" relative to "+d.decision.ruleName+"-"+
+							   d.decision.decision+" start index "+d.startIndex);
 			if ( lastRealTokenTouchedInDecision==null ||
 				 lastRealTokenTouchedInDecision.getTokenIndex() < t.getTokenIndex() )
 			{
 				lastRealTokenTouchedInDecision = t;
-				System.out.println("last token "+lastRealTokenTouchedInDecision);
+				if (dump) System.out.println("set last token "+lastRealTokenTouchedInDecision);
 			}
-			DecisionEvent d = currentDecision();
-			System.out.println("LT("+i+")="+t+" index "+t.getTokenIndex()+" relative to "+d.decision.ruleName+"-"+
-							   d.decision.decision+" start index "+d.startIndex);			
 			// get starting index off stack
 //			int stackTop = lookaheadStack.size()-1;
 //			Integer startingIndex = (Integer)lookaheadStack.get(stackTop);
@@ -313,32 +336,38 @@ public class Profiler extends BlankDebugEventListener {
 	 * 		exit rule
 	 */
 	public void beginBacktrack(int level) {
-		System.out.println("enter backtrack "+level);
-		stats.numBacktrackDecisions++;
-		DecisionEvent d = currentDecision();
-		d.evalSynPred = true;
-		d.decision.numSynPredEvals++;
+		if (dump) System.out.println("enter backtrack "+level);
+		backtrackDepth++;
+		DecisionEvent e = currentDecision();
+		if ( e.decision.couldBacktrack ) {
+			stats.numBacktrackOccurrences++;
+			e.decision.numBacktrackOccurrences++;
+			e.backtracks = true;
+		}
 	}
 
 	/** Successful or not, track how much lookahead synpreds use */
 	public void endBacktrack(int level, boolean successful) {
-		System.out.println("exit backtrack "+level+": "+successful);
+		if (dump) System.out.println("exit backtrack "+level+": "+successful);
+		backtrackDepth--;		
 	}
 
 	@Override
 	public void mark(int i) {
-		System.out.println("mark "+i);
+		if (dump) System.out.println("mark "+i);
 	}
 
 	@Override
 	public void rewind(int i) {
-		System.out.println("rewind "+i);
+		if (dump) System.out.println("rewind "+i);
 	}
 
 	@Override
 	public void rewind() {
-		System.out.println("rewind");
+		if (dump) System.out.println("rewind");
 	}
+
+
 
 	protected DecisionEvent currentDecision() {
 		return decisionStack.peek();
@@ -354,21 +383,51 @@ public class Profiler extends BlankDebugEventListener {
 			DecisionEvent d = currentDecision();
 			d.evalSemPred = true;
 			d.decision.numSemPredEvals++;
-			System.out.println("eval "+predicate+" in "+d.decision.ruleName+"-"+
+			if (dump) System.out.println("eval "+predicate+" in "+d.decision.ruleName+"-"+
 							   d.decision.decision);
 		}
 	}
 
 	public void terminate() {
-		String stats = toNotifyString();
-		try {
-			Stats.writeReport(RUNTIME_STATS_FILENAME,stats);
+		for (DecisionEvent e : decisionEvents) {
+			//System.out.println("decision "+e.decision.decision+": k="+e.k);
+			e.decision.avgk += e.k;
+			stats.avgkPerDecisionEvent += e.k;
+			if ( e.backtracks ) { // doesn't count gated syn preds on DFA edges
+				stats.avgkPerBacktrackingDecisionEvent += e.k;
+			}
 		}
-		catch (IOException ioe) {
-			System.err.println(ioe);
-			ioe.printStackTrace(System.err);
+		stats.averageDecisionPercentBacktracks = 0.0f;
+		for (DecisionDescriptor d : decisions.values()) {
+			stats.numDecisionsCovered++;
+			d.avgk /= (double)d.n;
+			if ( d.couldBacktrack ) {
+				stats.numDecisionsThatPotentiallyBacktrack++;
+				float percentBacktracks = d.numBacktrackOccurrences / (float)d.n;
+				//System.out.println("dec "+d.decision+" backtracks "+percentBacktracks*100+"%");
+				stats.averageDecisionPercentBacktracks += percentBacktracks;
+			}
+			// ignore rules that backtrack along gated DFA edges
+			if ( d.numBacktrackOccurrences > 0 ) {
+				stats.numDecisionsThatDoBacktrack++;
+			}
 		}
-		System.out.println(toString());
+		stats.averageDecisionPercentBacktracks /= stats.numDecisionsThatPotentiallyBacktrack;
+		stats.averageDecisionPercentBacktracks *= 100; // it's a percentage
+		stats.avgkPerDecisionEvent /= stats.numDecisionEvents;
+		stats.avgkPerBacktrackingDecisionEvent /= (double)stats.numBacktrackOccurrences;
+
+		System.err.println(toString());
+		System.err.println(getDecisionStatsDump());
+
+//		String stats = toNotifyString();
+//		try {
+//			Stats.writeReport(RUNTIME_STATS_FILENAME,stats);
+//		}
+//		catch (IOException ioe) {
+//			System.err.println(ioe);
+//			ioe.printStackTrace(System.err);
+//		}
 	}
 
 	public void setParser(DebugParser parser) {
@@ -444,14 +503,14 @@ public class Profiler extends BlankDebugEventListener {
 	}
 
 	public ProfileStats getReport() {
-		TokenStream input = parser.getTokenStream();
-		for (int i=0; i<input.size()&& lastRealTokenTouchedInDecision !=null&&i<= lastRealTokenTouchedInDecision.getTokenIndex(); i++) {
-			Token t = input.get(i);
-			if ( t.getChannel()!=Token.DEFAULT_CHANNEL ) {
-				stats.numHiddenTokens++;
-				stats.numHiddenCharsMatched += t.getText().length();
-			}
-		}
+//		TokenStream input = parser.getTokenStream();
+//		for (int i=0; i<input.size()&& lastRealTokenTouchedInDecision !=null&&i<= lastRealTokenTouchedInDecision.getTokenIndex(); i++) {
+//			Token t = input.get(i);
+//			if ( t.getChannel()!=Token.DEFAULT_CHANNEL ) {
+//				stats.numHiddenTokens++;
+//				stats.numHiddenCharsMatched += t.getText().length();
+//			}
+//		}
 		stats.Version = Version;
 		stats.name = parser.getClass().getName();
 		stats.numUniqueRulesInvoked = uniqueRules.size();
@@ -471,25 +530,50 @@ public class Profiler extends BlankDebugEventListener {
 		StringBuffer buf = new StringBuffer();
 		buf.append("ANTLR Runtime Report; Profile Version ");
 		buf.append(stats.Version);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("parser name ");
 		buf.append(stats.name);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("Number of rule invocations ");
 		buf.append(stats.numRuleInvocations);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("Number of unique rules visited ");
 		buf.append(stats.numUniqueRulesInvoked);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("Number of decision events ");
 		buf.append(stats.numDecisionEvents);
-		buf.append('\n');
+		buf.append(newline);
+		buf.append("Overall average k per decision event ");
+		buf.append(stats.avgkPerDecisionEvent);
+		buf.append(newline);
+		buf.append("Number of backtracking occurrences (can be multiple per decision) ");
+		buf.append(stats.numBacktrackOccurrences);
+		buf.append(newline);
+		buf.append("Overall average k per decision event that backtracks ");
+		buf.append(stats.avgkPerBacktrackingDecisionEvent);
+		buf.append(newline);
 		buf.append("Number of rule invocations while backtracking ");
 		buf.append(stats.numGuessingRuleInvocations);
-		buf.append('\n');
+		buf.append(newline);
+		buf.append("num decisions that potentially backtrack ");
+		buf.append(stats.numDecisionsThatPotentiallyBacktrack);
+		buf.append(newline);
+		buf.append("num decisions that do backtrack ");
+		buf.append(stats.numDecisionsThatDoBacktrack);
+		buf.append(newline);
+		buf.append("num decisions that potentially backtrack but don't ");
+		buf.append(stats.numDecisionsThatPotentiallyBacktrack - stats.numDecisionsThatDoBacktrack);
+		buf.append(newline);
+		buf.append("average % of time a potentially backtracking decision backtracks ");
+		buf.append(stats.averageDecisionPercentBacktracks);
+		buf.append(newline);
+		buf.append("num unique decisions covered ");
+		buf.append(stats.numDecisionsCovered);
+		buf.append(newline);
 		buf.append("max rule invocation nesting depth ");
 		buf.append(stats.maxRuleInvocationDepth);
-		buf.append('\n');
+		buf.append(newline);
+
 //		buf.append("number of fixed lookahead decisions ");
 //		buf.append();
 //		buf.append('\n');
@@ -537,31 +621,31 @@ public class Profiler extends BlankDebugEventListener {
 //		buf.append('\n');
 		buf.append("rule memoization cache size ");
 		buf.append(stats.numMemoizationCacheEntries);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("number of rule memoization cache hits ");
 		buf.append(stats.numMemoizationCacheHits);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("number of rule memoization cache misses ");
 		buf.append(stats.numMemoizationCacheMisses);
-		buf.append('\n');
+		buf.append(newline);
 //		buf.append("number of evaluated semantic predicates ");
 //		buf.append();
-//		buf.append('\n');
+//		buf.append(newline);
 		buf.append("number of tokens ");
 		buf.append(stats.numTokens);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("number of hidden tokens ");
 		buf.append(stats.numHiddenTokens);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("number of char ");
 		buf.append(stats.numCharsMatched);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("number of hidden char ");
 		buf.append(stats.numHiddenCharsMatched);
-		buf.append('\n');
+		buf.append(newline);
 		buf.append("number of syntax errors ");
 		buf.append(stats.numReportedErrors);
-		buf.append('\n');
+		buf.append(newline);
 		return buf.toString();
 	}
 
@@ -571,11 +655,15 @@ public class Profiler extends BlankDebugEventListener {
 		buf.append(DATA_SEP);
 		buf.append("n");
 		buf.append(DATA_SEP);
+		buf.append("avgk");
+		buf.append(DATA_SEP);
 		buf.append("maxk");
 		buf.append(DATA_SEP);
 		buf.append("synpred");
 		buf.append(DATA_SEP);
 		buf.append("sempred");
+		buf.append(DATA_SEP);
+		buf.append("canbacktrack");
 		buf.append("\n");
 		for (String fileName : decisions.keySet()) {
 			for (int d : decisions.keySet(fileName)) {
@@ -586,12 +674,16 @@ public class Profiler extends BlankDebugEventListener {
 				buf.append(DATA_SEP);
 				buf.append(s.n);
 				buf.append(DATA_SEP);
+				buf.append(String.format("%.2f",s.avgk));
+				buf.append(DATA_SEP);
 				buf.append(s.maxk);
 				buf.append(DATA_SEP);
-				buf.append(s.numSynPredEvals);
+				buf.append(s.numBacktrackOccurrences);
 				buf.append(DATA_SEP);
 				buf.append(s.numSemPredEvals);
-				buf.append('\n');
+				buf.append(DATA_SEP);
+				buf.append(s.couldBacktrack ?"1":"0");
+				buf.append(newline);
 			}
 		}
 		return buf.toString();

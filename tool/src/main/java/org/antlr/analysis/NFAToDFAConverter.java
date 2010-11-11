@@ -316,7 +316,6 @@ public class NFAToDFAConverter {
 		}
 
 		//System.out.println("DFA after reach / closures:\n"+dfa);
-
 		if ( !d.isResolvedWithPredicates() && numberOfEdgesEmanating==0 ) {
 			//System.out.println("dangling DFA state "+d+"\nAfter reach / closures:\n"+dfa);
 			// TODO: can fixed lookahead hit a dangling state case?
@@ -336,6 +335,7 @@ public class NFAToDFAConverter {
 		}
 
 		// Check to see if we need to add any semantic predicate transitions
+		// might have both token and predicated edges from d
 		if ( d.isResolvedWithPredicates() ) {
 			addPredicateTransitions(d);
 		}
@@ -1364,7 +1364,6 @@ public class NFAToDFAConverter {
 
 		if ( nondeterministicAlts.size()-altToPredMap.size()>1 ) {
 			// too few predicates to resolve; just return
-			// TODO: actually do we need to gen error here?
 			return false;
 		}
 
@@ -1392,8 +1391,13 @@ public class NFAToDFAConverter {
 			}
 			else {
 				// pretend naked alternative is covered with !(union other preds)
-				// unless it's a synpred since those have precedence same
-				// as alt order
+				// unless one of preds from other alts is a manually specified synpred
+				// since those have precedence same as alt order.  Missing synpred
+				// is true so that alt wins (or is at least attempted).
+				// Note: can't miss any preds on alts (can't be here) if auto backtrack
+				// since it prefixes all.
+				// In LL(*) paper, i'll just have algorithm emit warning about uncovered
+				// pred
 				SemanticContext unionOfPredicatesFromAllAlts =
 					getUnionOfPredicates(altToPredMap);
 				//System.out.println("all predicates "+unionOfPredicatesFromAllAlts);
@@ -1411,7 +1415,8 @@ public class NFAToDFAConverter {
 			altToPredMap.put(Utils.integer(nakedAlt), nakedAltPred);
 			// set all config with alt=nakedAlt to have the computed predicate
 			int numConfigs = d.nfaConfigurations.size();
-			for (int i = 0; i < numConfigs; i++) {
+			for (int i = 0; i < numConfigs; i++) { // TODO: I don't think we need to do this; altToPredMap has it
+			 //7/27/10  theok, I removed it and it still seems to work with everything; leave in anyway just in case
 				NFAConfiguration configuration = (NFAConfiguration)d.nfaConfigurations.get(i);
 				if ( configuration.alt == nakedAlt ) {
 					configuration.semanticContext = nakedAltPred;
@@ -1428,6 +1433,7 @@ public class NFAToDFAConverter {
 				d.dfa.probe.removeRecursiveOverflowState(d);
 			}
 			int numConfigs = d.nfaConfigurations.size();
+			//System.out.println("pred map="+altToPredMap);
 			for (int i = 0; i < numConfigs; i++) {
 				NFAConfiguration configuration = (NFAConfiguration)d.nfaConfigurations.get(i);
 				SemanticContext semCtx = (SemanticContext)
@@ -1435,7 +1441,9 @@ public class NFAToDFAConverter {
 				if ( semCtx!=null ) {
 					// resolve (first found) with pred
 					// and remove alt from problem list
+					//System.out.println("c="+configuration);
 					configuration.resolveWithPredicate = true;
+					// altToPredMap has preds from all alts; store into "annointed" config
 					configuration.semanticContext = semCtx; // reset to combined
 					altToPredMap.remove(Utils.integer(configuration.alt));
 
@@ -1482,11 +1490,11 @@ public class NFAToDFAConverter {
 		Map<Integer, SemanticContext> altToPredicateContextMap =
 			new HashMap<Integer, SemanticContext>();
 		// init the alt to predicate set map
-		Map<Integer, Set<SemanticContext>> altToSetOfContextsMap =
-			new HashMap<Integer, Set<SemanticContext>>();
+		Map<Integer, OrderedHashSet<SemanticContext>> altToSetOfContextsMap =
+			new HashMap<Integer, OrderedHashSet<SemanticContext>>();
 		for (Iterator it = nondeterministicAlts.iterator(); it.hasNext();) {
 			Integer altI = (Integer) it.next();
-			altToSetOfContextsMap.put(altI, new HashSet<SemanticContext>());
+			altToSetOfContextsMap.put(altI, new OrderedHashSet<SemanticContext>());
 		}
 
 		/*

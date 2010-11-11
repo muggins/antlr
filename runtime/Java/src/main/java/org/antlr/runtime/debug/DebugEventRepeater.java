@@ -51,7 +51,7 @@ public class DebugEventRepeater implements DebugEventListener {
 	public void enterAlt(int alt) { listener.enterAlt(alt); }
 	public void enterSubRule(int decisionNumber) { listener.enterSubRule(decisionNumber); }
 	public void exitSubRule(int decisionNumber) { listener.exitSubRule(decisionNumber); }
-	public void enterDecision(int decisionNumber) { listener.enterDecision(decisionNumber); }
+	public void enterDecision(int decisionNumber, boolean couldBacktrack) { listener.enterDecision(decisionNumber, couldBacktrack); }
 	public void exitDecision(int decisionNumber) { listener.exitDecision(decisionNumber); }
 	public void location(int line, int pos) { listener.location(line, pos); }
 	public void consumeToken(Token token) { listener.consumeToken(token); }

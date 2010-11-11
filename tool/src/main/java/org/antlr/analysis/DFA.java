@@ -47,6 +47,10 @@ public class DFA {
 	public static final int REACHABLE_NO = 0;
 	public static final int REACHABLE_YES = 1;
 
+	public static final int CYCLIC_UNKNOWN = -2;
+	public static final int CYCLIC_BUSY = -1; // in process of computing
+	public static final int CYCLIC_DONE = 0;
+	
 	/** Prevent explosion of DFA states during conversion. The max number
 	 *  of states per alt in a single decision's DFA.
 	public static final int MAX_STATES_PER_ALT_IN_DFA = 450;
@@ -773,24 +777,114 @@ public class DFA {
 	/** Return k if decision is LL(k) for some k else return max int
      */
 	public int getMaxLookaheadDepth() {
-		if ( !isClassicDFA() ) return Integer.MAX_VALUE;
+		if ( hasCycle() ) return Integer.MAX_VALUE;
 		// compute to be sure
 		return _getMaxLookaheadDepth(startState, 0);
 	}
 
-	public int _getMaxLookaheadDepth(DFAState d, int depth) {
+	int _getMaxLookaheadDepth(DFAState d, int depth) {
 		// not cyclic; don't worry about termination
-		// it counts pred edges, don't call if not pure DFA
-		//if ( d.getNumberOfTransitions()==0 || d.acceptState ) return depth;
+		// fail if pred edge.
 		int max = depth;
 		for (int i=0; i<d.getNumberOfTransitions(); i++) {
 			Transition t = d.transition(i);
-			DFAState edgeTarget = (DFAState)t.target;
-			int m = _getMaxLookaheadDepth(edgeTarget, depth+1);
-			max = Math.max(max, m);
+//			if ( t.isSemanticPredicate() ) return Integer.MAX_VALUE;
+			if ( !t.isSemanticPredicate() ) {
+				// if pure pred not gated, it must target stop state; don't count
+				DFAState edgeTarget = (DFAState)t.target;
+				int m = _getMaxLookaheadDepth(edgeTarget, depth+1);
+				max = Math.max(max, m);
+			}
 		}
 		return max;
 	}
+
+	/** Count all disambiguating syn preds (ignore synpred tests
+	 *  for gated edges, which occur for nonambig input sequences).
+	 *  E.g.,
+	 *  x  : (X)=> (X|Y)\n" +
+	 *     | X\n" +
+	 *     ;
+	 *
+	 *  gives
+	 * 
+	 * .s0-X->.s1
+	 * .s0-Y&&{synpred1_t}?->:s2=>1
+	 * .s1-{synpred1_t}?->:s2=>1
+	 * .s1-{true}?->:s3=>2
+	 */
+	public boolean hasSynPred() {
+		boolean has = _hasSynPred(startState, new HashSet<DFAState>());
+//		if ( !has ) {
+//			System.out.println("no synpred in dec "+decisionNumber);
+//			FASerializer serializer = new FASerializer(nfa.grammar);
+//			String result = serializer.serialize(startState);
+//			System.out.println(result);
+//		}
+		return has;
+	}
+
+	public boolean getHasSynPred() { return hasSynPred(); } // for ST	
+
+	boolean _hasSynPred(DFAState d, Set<DFAState> busy) {
+		busy.add(d);
+		for (int i=0; i<d.getNumberOfTransitions(); i++) {
+			Transition t = d.transition(i);
+			if ( t.isSemanticPredicate() ) {
+				SemanticContext ctx = t.label.getSemanticContext();
+//				if ( ctx.toString().indexOf("synpred")>=0 ) {
+//					System.out.println("has pred "+ctx.toString()+" "+ctx.isSyntacticPredicate());
+//					System.out.println(((SemanticContext.Predicate)ctx).predicateAST.token);
+//				}
+				if ( ctx.isSyntacticPredicate() ) return true;
+			}
+			DFAState edgeTarget = (DFAState)t.target;
+			if ( !busy.contains(edgeTarget) && _hasSynPred(edgeTarget, busy) ) return true;
+		}
+
+		return false;
+	}
+
+	public boolean hasSemPred() { // has user-defined sempred
+		boolean has = _hasSemPred(startState, new HashSet<DFAState>());
+		return has;
+	}
+
+	boolean _hasSemPred(DFAState d, Set<DFAState> busy) {
+		busy.add(d);
+		for (int i=0; i<d.getNumberOfTransitions(); i++) {
+			Transition t = d.transition(i);
+			if ( t.isSemanticPredicate() ) {
+				SemanticContext ctx = t.label.getSemanticContext();
+				if ( ctx.hasUserSemanticPredicate() ) return true;
+			}
+			DFAState edgeTarget = (DFAState)t.target;
+			if ( !busy.contains(edgeTarget) && _hasSemPred(edgeTarget, busy) ) return true;
+		}
+
+		return false;
+	}
+
+	/** Compute cyclic w/o relying on state computed during analysis. just check. */
+	public boolean hasCycle() {
+		boolean cyclic = _hasCycle(startState, new HashMap<DFAState, Integer>());
+		return cyclic;
+	}
+
+	boolean _hasCycle(DFAState d, Map<DFAState, Integer> busy) {
+		busy.put(d, CYCLIC_BUSY);
+		for (int i=0; i<d.getNumberOfTransitions(); i++) {
+			Transition t = d.transition(i);
+			DFAState target = (DFAState)t.target;
+			int cond = CYCLIC_UNKNOWN;
+			if ( busy.get(target)!=null ) cond = busy.get(target);
+			if ( cond==CYCLIC_BUSY ) return true;
+			if ( cond!=CYCLIC_DONE && _hasCycle(target, busy) ) return true;
+		}
+		busy.put(d, CYCLIC_DONE);
+		return false;
+	}
+
 
     /** Return a list of Integer alt numbers for which no lookahead could
      *  be computed or for which no single DFA accept state predicts those

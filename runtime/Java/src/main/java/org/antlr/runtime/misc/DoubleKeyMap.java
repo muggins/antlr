@@ -1,9 +1,6 @@
 package org.antlr.runtime.misc;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Sometimes we need to map a key to a value but key is two pieces of data.
  *  This nested hash table saves creating a single key each time we access
@@ -51,5 +48,15 @@ public class DoubleKeyMap<Key1, Key2, Value> {
 		Map<Key2, Value> data2 = data.get(k1);
 		if ( data2==null ) return null;
 		return data2.keySet();
+	}
+
+	public Collection<Value> values() {
+		Set<Value> s = new HashSet<Value>();
+		for (Map<Key2, Value> k2 : data.values()) {
+			for (Value v : k2.values()) {
+				s.add(v);
+			}
+		}
+		return s;
 	}
 }

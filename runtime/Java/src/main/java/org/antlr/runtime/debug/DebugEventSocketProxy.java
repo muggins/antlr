@@ -138,7 +138,7 @@ public class DebugEventSocketProxy extends BlankDebugEventListener {
 		transmit("exitSubRule\t"+decisionNumber);
 	}
 
-	public void enterDecision(int decisionNumber) {
+	public void enterDecision(int decisionNumber, boolean couldBacktrack) {
 		transmit("enterDecision\t"+decisionNumber);
 	}
 
