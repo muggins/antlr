@@ -139,16 +139,6 @@ public class Antlr3Mojo
      * @parameter default-value="true"
      */
     protected boolean verbose;
-    /**
-     * The number of milliseconds ANTLR will wait for analysis of each
-     * alternative in the grammar to complete before giving up. You may raise
-     * this value if ANTLR gives up on a complicated alt and tells you that
-     * there are lots of ambiguties, but you know that it just needed to spend
-     * more time on it. Note that this is an absolute time and not CPU time.
-     *
-     * @parameter default-value="10000"
-     */
-    private int conversionTimeout;
 
     /**
      * The number of alts, beyond which ANTLR will not generate a switch statement
@@ -294,7 +284,6 @@ public class Antlr3Mojo
             log.debug("ANTLR: dfa                 : " + dfa);
             log.debug("ANTLR: trace               : " + trace);
             log.debug("ANTLR: messageFormat       : " + messageFormat);
-            log.debug("ANTLR: conversionTimeout   : " + conversionTimeout);
             log.debug("ANTLR: maxSwitchCaseLabels : " + maxSwitchCaseLabels);
             log.debug("ANTLR: minSwitchAlts       : " + minSwitchAlts);
             log.debug("ANTLR: verbose             : " + verbose);
@@ -324,7 +313,6 @@ public class Antlr3Mojo
         // Next we need to set the options given to us in the pom into the
         // tool instance we have created.
         //
-        tool.setConversionTimeout(conversionTimeout);
         tool.setDebug(debug);
         tool.setGenerate_DFA_dot(dfa);
         tool.setGenerate_NFA_dot(nfa);
