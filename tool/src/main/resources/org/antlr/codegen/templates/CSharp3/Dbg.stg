@@ -66,15 +66,15 @@ public static readonly string[] ruleNames =
 	<ctorForDelegateGrammar()>
 <endif>
 <if(profile)>
-public virtual bool AlreadyParsedRule( IIntStream input, int ruleIndex )
+public override bool AlreadyParsedRule( IIntStream input, int ruleIndex )
 {
 	((Profiler)dbg).ExamineRuleMemoization(input, ruleIndex, <grammar.composite.rootGrammar.recognizerName>.ruleNames[ruleIndex]);
-	return super.AlreadyParsedRule(input, ruleIndex);
+	return base.AlreadyParsedRule(input, ruleIndex);
 }<\n>
-public virtual void Memoize( IIntStream input, int ruleIndex, int ruleStartIndex )
+public override void Memoize( IIntStream input, int ruleIndex, int ruleStartIndex )
 {
 	((Profiler)dbg).Memoize(input, ruleIndex, ruleStartIndex, <grammar.composite.rootGrammar.recognizerName>.ruleNames[ruleIndex]);
-	super.Memoize(input, ruleIndex, ruleStartIndex);
+	base.Memoize(input, ruleIndex, ruleStartIndex);
 }<\n>
 <endif>
 protected virtual bool EvalPredicate( bool result, string predicate )
