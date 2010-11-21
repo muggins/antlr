@@ -130,7 +130,7 @@ namespace Antlr.Runtime.Misc
         /** <summary>add n elements to buffer</summary> */
         public virtual void Fill( int n )
         {
-            for ( int i = 1; i <= n; i++ )
+            for ( int i = 0; i < n; i++ )
             {
                 T o = NextElement();
                 if ( IsEndOfFile(o) )
