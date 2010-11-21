@@ -30,13 +30,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Collections.Generic;
+using IDictionary = System.Collections.IDictionary;
+using ObsoleteAttribute = System.ObsoleteAttribute;
+
 #if DEBUG
 using System.Linq;
 #endif
-
-using IDictionary = System.Collections.IDictionary;
 
 namespace Antlr.Runtime.JavaExtensions
 {

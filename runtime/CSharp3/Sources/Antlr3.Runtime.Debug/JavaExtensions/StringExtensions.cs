@@ -30,11 +30,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-using System.Text;
-
 namespace Antlr.Runtime.JavaExtensions
 {
+    using ObsoleteAttribute = System.ObsoleteAttribute;
+    using Regex = System.Text.RegularExpressions.Regex;
+    using StringBuilder = System.Text.StringBuilder;
+
     public static class StringExtensions
     {
 #if DEBUG
@@ -91,27 +92,22 @@ namespace Antlr.Runtime.JavaExtensions
         {
             return str.Length;
         }
-#endif
 
-        public static string replace( this string str, char oldValue, char newValue )
+        [Obsolete]
+        public static string replace(this string str, char oldValue, char newValue)
         {
-            int index = str.IndexOf( oldValue );
-            if ( index == -1 )
-                return str;
-
-            System.Text.StringBuilder builder = new StringBuilder( str );
-            builder[index] = newValue;
-            return builder.ToString();
+            return str.Replace(oldValue, newValue);
         }
+#endif
 
         public static string replaceAll( this string str, string regex, string newValue )
         {
-            return System.Text.RegularExpressions.Regex.Replace( str, regex, newValue );
+            return Regex.Replace( str, regex, newValue );
         }
 
         public static string replaceFirst( this string str, string regex, string replacement )
         {
-            return System.Text.RegularExpressions.Regex.Replace( str, regex, replacement );
+            return Regex.Replace( str, regex, replacement );
         }
 
 #if DEBUG
@@ -120,7 +116,6 @@ namespace Antlr.Runtime.JavaExtensions
         {
             return str.StartsWith( value );
         }
-#endif
 
         [Obsolete]
         public static string substring( this string str, int startOffset )
@@ -128,12 +123,12 @@ namespace Antlr.Runtime.JavaExtensions
             return str.Substring( startOffset );
         }
 
-        public static string substring( this string str, int startOffset, int endOffset )
+        [Obsolete]
+        public static string substring(this string str, int startOffset, int endOffset)
         {
             return str.Substring( startOffset, endOffset - startOffset );
         }
 
-#if DEBUG
         [Obsolete]
         public static char[] toCharArray( this string str )
         {
