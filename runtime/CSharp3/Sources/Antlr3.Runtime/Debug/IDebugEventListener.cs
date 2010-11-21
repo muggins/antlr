@@ -89,7 +89,7 @@ namespace Antlr.Runtime.Debug
          *  loop iteration.
          *  </summary>
          */
-        void EnterDecision( int decisionNumber );
+        void EnterDecision(int decisionNumber, bool couldBacktrack);
 
         void ExitDecision( int decisionNumber );
 

@@ -70,6 +70,7 @@
     <Compile Include="JavaExtensions\SubList.cs" />
     <Compile Include="JavaExtensions\TreeExtensions.cs" />
     <Compile Include="JavaExtensions\TypeExtensions.cs" />
+    <Compile Include="Misc\DoubleKeyMap`3.cs" />
     <Compile Include="Misc\Stats.cs" />
     <None Include="ParserDebugger.cs" />
     <Compile Include="ParseTreeBuilder.cs" />

@@ -279,6 +279,16 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 
 	<scopes:{<if(it.isDynamicGlobalScope)><globalAttributeScope(scope=it)><endif>}>
 	<@members>
+#if ANTLR_DEBUG
+	private static readonly bool[] decisionCanBacktrack =
+		new bool[]
+		{
+			false, // invalid decision
+			<grammar.decisions:{d | <d.dfa.hasSynPred; null="false">}; wrap="\n    ", separator=", ">
+		};
+#else
+	private static readonly bool[] decisionCanBacktrack = new bool[0];
+#endif
 <! WARNING. bug in ST: this is cut-n-paste into Dbg.stg !>
 public <grammar.recognizerName>( <inputStreamType> input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}> )
 	: this( input, new RecognizerSharedState()<grammar.delegators:{g|, <g:delegateName()>}> )
@@ -674,7 +684,7 @@ int alt<decisionNumber>=<maxAlt>;
 <decls>
 <@predecision()>
 try { DebugEnterSubRule(<decisionNumber>);
-try { DebugEnterDecision(<decisionNumber>);
+try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
 <decision>
 } finally { DebugExitDecision(<decisionNumber>); }
 <@postdecision()>
@@ -693,7 +703,7 @@ ruleBlock(alts,decls,decision,enclosingBlockLevel,blockLevel,decisionNumber,maxK
 int alt<decisionNumber>=<maxAlt>;
 <decls>
 <@predecision()>
-try { DebugEnterDecision(<decisionNumber>);
+try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
 <decision>
 } finally { DebugExitDecision(<decisionNumber>); }
 <@postdecision()>
@@ -733,7 +743,7 @@ while (true)
 {
 	int alt<decisionNumber>=<maxAlt>;
 	<@predecision()>
-	try { DebugEnterDecision(<decisionNumber>);
+	try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
 	<decision>
 	} finally { DebugExitDecision(<decisionNumber>); }
 	<@postdecision()>
@@ -771,7 +781,7 @@ while (true)
 {
 	int alt<decisionNumber>=<maxAlt>;
 	<@predecision()>
-	try { DebugEnterDecision(<decisionNumber>);
+	try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
 	<decision>
 	} finally { DebugExitDecision(<decisionNumber>); }
 	<@postdecision()>

@@ -33,8 +33,6 @@
 namespace Antlr.Runtime.Debug
 {
     using System.Collections.Generic;
-    using Antlr.Runtime.JavaExtensions;
-
     using ParseTree = Antlr.Runtime.Tree.ParseTree;
 
     /** <summary>
@@ -79,7 +77,7 @@ namespace Antlr.Runtime.Debug
         }
 
         /** <summary>Backtracking or cyclic DFA, don't want to add nodes to tree</summary> */
-        public override void EnterDecision( int d )
+        public override void EnterDecision( int d, bool couldBacktrack )
         {
             backtracking++;
         }

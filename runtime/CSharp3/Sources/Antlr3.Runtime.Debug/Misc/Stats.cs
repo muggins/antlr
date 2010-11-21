@@ -34,9 +34,16 @@ namespace Antlr.Runtime.Misc
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Antlr.Runtime.JavaExtensions;
 
+    using Directory = System.IO.Directory;
+    using Environment = System.Environment;
+    using File = System.IO.File;
     using Math = System.Math;
+    using Path = System.IO.Path;
+
+#if DEBUG
+    using ObsoleteAttribute = System.ObsoleteAttribute;
+#endif
 
     /** <summary>Stats routines needed by profiler etc...</summary>
      *
@@ -99,26 +106,26 @@ namespace Antlr.Runtime.Misc
 
 #if DEBUG
         /** <summary>Compute the sample mean</summary> */
-        [System.Obsolete]
-        public static double avg( int[] X )
+        [Obsolete]
+        public static double avg( IList<int> X )
         {
             return X.DefaultIfEmpty( 0 ).Average();
         }
 
-        [System.Obsolete]
-        public static int min( int[] X )
+        [Obsolete]
+        public static int min( IList<int> X )
         {
             return X.DefaultIfEmpty( int.MaxValue ).Min();
         }
 
-        [System.Obsolete]
-        public static int max( int[] X )
+        [Obsolete]
+        public static int max( IList<int> X )
         {
             return X.DefaultIfEmpty( int.MinValue ).Max();
         }
 
-        [System.Obsolete]
-        public static int sum( int[] X )
+        [Obsolete]
+        public static int sum( IList<int> X )
         {
             return X.Sum();
         }
@@ -128,15 +135,15 @@ namespace Antlr.Runtime.Misc
         {
             string absoluteFilename = GetAbsoluteFileName( filename );
 
-            System.IO.Directory.CreateDirectory( System.IO.Path.GetDirectoryName( absoluteFilename ) );
-            System.IO.File.AppendAllText( absoluteFilename, data );
+            Directory.CreateDirectory( Path.GetDirectoryName( absoluteFilename ) );
+            File.AppendAllText( absoluteFilename, data );
         }
 
         public static string GetAbsoluteFileName( string filename )
         {
-            string personalFolder = System.Environment.GetFolderPath( System.Environment.SpecialFolder.Personal );
-            return personalFolder + System.IO.Path.DirectorySeparatorChar +
-                        ANTLRWORKS_DIR + System.IO.Path.DirectorySeparatorChar +
+            string personalFolder = Environment.GetFolderPath( Environment.SpecialFolder.Personal );
+            return personalFolder + Path.DirectorySeparatorChar +
+                        ANTLRWORKS_DIR + Path.DirectorySeparatorChar +
                         filename;
         }
     }

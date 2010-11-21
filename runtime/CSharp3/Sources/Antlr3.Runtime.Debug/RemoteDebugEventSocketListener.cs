@@ -33,17 +33,15 @@
 namespace Antlr.Runtime.Debug
 {
     using Antlr.Runtime.JavaExtensions;
-
     using BaseTree = Antlr.Runtime.Tree.BaseTree;
     using Console = System.Console;
-    using SocketException = System.Net.Sockets.SocketException;
     using Exception = System.Exception;
     using IOException = System.IO.IOException;
-    using Socket = System.Net.Sockets.Socket;
     using ITree = Antlr.Runtime.Tree.ITree;
-
-    using TextWriter = System.IO.TextWriter;
+    using Socket = System.Net.Sockets.Socket;
+    using SocketException = System.Net.Sockets.SocketException;
     using TextReader = System.IO.TextReader;
+    using TextWriter = System.IO.TextWriter;
 
     public class RemoteDebugEventSocketListener
     {
@@ -444,7 +442,7 @@ namespace Antlr.Runtime.Debug
             }
             else if ( elements[0].Equals( "enterDecision" ) )
             {
-                listener.EnterDecision( int.Parse( elements[1] ) );
+                listener.EnterDecision(int.Parse(elements[1]), elements[2].Equals("true"));
             }
             else if ( elements[0].Equals( "exitDecision" ) )
             {

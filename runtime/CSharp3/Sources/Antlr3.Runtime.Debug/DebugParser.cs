@@ -122,6 +122,7 @@ namespace Antlr.Runtime.Debug
 
         public override void ReportError( RecognitionException e )
         {
+            base.ReportError(e);
             dbg.RecognitionException( e );
         }
     }

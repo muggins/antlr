@@ -77,9 +77,9 @@ namespace Antlr.Runtime.Debug
         {
             _listener.ExitSubRule( decisionNumber );
         }
-        public virtual void EnterDecision( int decisionNumber )
+        public virtual void EnterDecision(int decisionNumber, bool couldBacktrack)
         {
-            _listener.EnterDecision( decisionNumber );
+            _listener.EnterDecision( decisionNumber, couldBacktrack );
         }
         public virtual void ExitDecision( int decisionNumber )
         {

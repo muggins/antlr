@@ -1123,11 +1123,11 @@ namespace Antlr.Runtime
         }
 
         [Conditional("ANTLR_DEBUG")]
-        protected virtual void DebugEnterDecision(int decisionNumber)
+        protected virtual void DebugEnterDecision(int decisionNumber, bool couldBacktrack)
         {
             IDebugEventListener dbg = DebugListener;
             if (dbg != null)
-                dbg.EnterDecision(decisionNumber);
+                dbg.EnterDecision(decisionNumber, couldBacktrack);
         }
 
         [Conditional("ANTLR_DEBUG")]
