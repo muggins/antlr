@@ -57,7 +57,7 @@ namespace Antlr.Runtime.Debug
         public DebugParser( ITokenStream input, IDebugEventListener dbg, RecognizerSharedState state )
             : base( input is DebugTokenStream ? input : new DebugTokenStream( input, dbg ), state )
         {
-            DebugListener = dbg;
+            SetDebugListener(dbg);
         }
 
         public DebugParser( ITokenStream input, RecognizerSharedState state )
@@ -70,25 +70,26 @@ namespace Antlr.Runtime.Debug
         {
         }
 
-        /** <summary>
-         *  Provide a new debug event listener for this parser.  Notify the
-         *  input stream too that it should send events to this listener.
-         *  </summary>
-         */
-        public virtual IDebugEventListener DebugListener
+        public override IDebugEventListener DebugListener
         {
             get
             {
                 return dbg;
             }
-            set
-            {
-                DebugTokenStream debugTokenStream = input as DebugTokenStream;
-                if ( debugTokenStream != null )
-                    debugTokenStream.DebugListener = value;
+        }
 
-                dbg = value;
-            }
+        /** <summary>
+         *  Provide a new debug event listener for this parser.  Notify the
+         *  input stream too that it should send events to this listener.
+         *  </summary>
+         */
+        public virtual void SetDebugListener(IDebugEventListener value)
+        {
+            DebugTokenStream debugTokenStream = input as DebugTokenStream;
+            if (debugTokenStream != null)
+                debugTokenStream.DebugListener = value;
+
+            dbg = value;
         }
 
         public virtual void ReportError( IOException e )

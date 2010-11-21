@@ -32,6 +32,7 @@
 
 namespace Antlr.Runtime.Tree
 {
+    using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
     using Regex = System.Text.RegularExpressions.Regex;
     using RegexOptions = System.Text.RegularExpressions.RegexOptions;
 
@@ -192,11 +193,13 @@ namespace Antlr.Runtime.Tree
             return base.GetErrorMessage( e, tokenNames );
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceIn( string ruleName, int ruleIndex )
         {
             base.TraceIn( ruleName, ruleIndex, input.LT( 1 ) );
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceOut( string ruleName, int ruleIndex )
         {
             base.TraceOut( ruleName, ruleIndex, input.LT( 1 ) );

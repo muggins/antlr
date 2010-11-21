@@ -60,11 +60,13 @@
     <Compile Include="DFA.cs" />
     <Compile Include="EarlyExitException.cs" />
     <Compile Include="FailedPredicateException.cs" />
+    <Compile Include="GrammarRuleAttribute.cs" />
     <Compile Include="ICharStream.cs" />
     <Compile Include="IIntStream.cs" />
     <Compile Include="IToken.cs" />
     <Compile Include="ITokenSource.cs" />
     <Compile Include="ITokenStream.cs" />
+    <Compile Include="ITokenStreamInformation.cs" />
     <Compile Include="LegacyCommonTokenStream.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Misc\FastQueue.cs" />

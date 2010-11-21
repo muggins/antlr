@@ -32,6 +32,8 @@
 
 namespace Antlr.Runtime
 {
+    using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
+
     /** <summary>
      *  A parser for TokenStreams.  "parser grammars" result in a subclass
      *  of this.
@@ -113,11 +115,13 @@ namespace Antlr.Runtime
             }
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceIn( string ruleName, int ruleIndex )
         {
             base.TraceIn( ruleName, ruleIndex, input.LT( 1 ) );
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceOut( string ruleName, int ruleIndex )
         {
             base.TraceOut( ruleName, ruleIndex, input.LT( 1 ) );

@@ -34,15 +34,18 @@ namespace Antlr.Runtime
 {
     using System.Collections.Generic;
 
+    using ArgumentNullException = System.ArgumentNullException;
     using Array = System.Array;
     using Conditional = System.Diagnostics.ConditionalAttribute;
     using Exception = System.Exception;
     using IDebugEventListener = Antlr.Runtime.Debug.IDebugEventListener;
+    using MethodBase = System.Reflection.MethodBase;
     using NotSupportedException = System.NotSupportedException;
     using Regex = System.Text.RegularExpressions.Regex;
     using StackFrame = System.Diagnostics.StackFrame;
     using StackTrace = System.Diagnostics.StackTrace;
     using TextWriter = System.IO.TextWriter;
+    using Type = System.Type;
 
     /** <summary>
      *  A generic recognizer that can handle recognizers generated from
@@ -833,49 +836,32 @@ namespace Antlr.Runtime
          */
         public virtual IList<string> GetRuleInvocationStack()
         {
-            string parserClassName = this.GetType().Name;
-            return GetRuleInvocationStack( new Exception(), parserClassName );
+            return GetRuleInvocationStack( new StackTrace(true) );
         }
 
         /** <summary>
-         *  A more general version of getRuleInvocationStack where you can
-         *  pass in, for example, a RecognitionException to get it's rule
-         *  stack trace.  This routine is shared with all recognizers, hence,
-         *  static.
+         *  A more general version of GetRuleInvocationStack where you can
+         *  pass in the StackTrace of, for example, a RecognitionException
+         *  to get it's rule stack trace.
          *  </summary>
-         *
-         *  <remarks>
-         *  TODO: move to a utility class or something; weird having lexer call this
-         *  </remarks>
          */
-        public static IList<string> GetRuleInvocationStack( Exception e,
-                                                  string recognizerClassName )
+        public static IList<string> GetRuleInvocationStack(StackTrace trace)
         {
-            IList<string> rules = new List<string>();
+            if (trace == null)
+                throw new ArgumentNullException("trace");
 
-            StackTrace trace = new StackTrace( e, true );
-            StackFrame[] stack = trace.GetFrames();
-            if ( stack == null )
-                stack = new StackTrace( true ).GetFrames();
+            List<string> rules = new List<string>();
+            StackFrame[] stack = trace.GetFrames() ?? new StackFrame[0];
 
-            int i = 0;
-            for ( i = stack.Length - 1; i >= 0; i-- )
+            for (int i = stack.Length - 1; i >= 0; i--)
             {
-                StackFrame t = stack[i];
-                if ( t.GetMethod().DeclaringType.Name.StartsWith( "Antlr.Runtime." ) )
-                {
-                    continue; // skip support code such as this method
-                }
-                if ( t.GetMethod().Name.Equals( NextTokenRuleName ) )
-                {
-                    continue;
-                }
-                if ( !t.GetMethod().DeclaringType.Name.Equals( recognizerClassName ) )
-                {
-                    continue; // must not be part of this parser
-                }
-                rules.Add( t.GetMethod().Name );
+                StackFrame frame = stack[i];
+                MethodBase method = frame.GetMethod();
+                GrammarRuleAttribute[] attributes = (GrammarRuleAttribute[])method.GetCustomAttributes(typeof(GrammarRuleAttribute), true);
+                if (attributes != null && attributes.Length > 0)
+                    rules.Add(attributes[0].Name);
             }
+
             return rules;
         }
 
@@ -1055,6 +1041,7 @@ namespace Antlr.Runtime
             return n;
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceIn(string ruleName, int ruleIndex, object inputSymbol)
         {
             if (TraceDestination == null)
@@ -1068,6 +1055,7 @@ namespace Antlr.Runtime
             TraceDestination.WriteLine();
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceOut(string ruleName, int ruleIndex, object inputSymbol)
         {
             if (TraceDestination == null)
@@ -1085,74 +1073,110 @@ namespace Antlr.Runtime
             TraceDestination.WriteLine();
         }
 
-#if NEW_DEBUGGER
         #region Debugging support
         public virtual IDebugEventListener DebugListener
         {
-            get;
-            set;
+            get
+            {
+                return null;
+            }
         }
 
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugEnterRule( IDebugEventListener dbg, string grammarFileName, string ruleName )
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugEnterRule(string grammarFileName, string ruleName)
         {
-            if ( dbg != null )
-                dbg.EnterRule( grammarFileName, ruleName );
-        }
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugExitRule( IDebugEventListener dbg, string grammarFileName, string ruleName )
-        {
-            if ( dbg != null )
-                dbg.ExitRule( grammarFileName, ruleName );
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.EnterRule(grammarFileName, ruleName);
         }
 
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugEnterSubRule( IDebugEventListener dbg, int decisionNumber )
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugExitRule(string grammarFileName, string ruleName)
         {
-            if ( dbg != null )
-                dbg.EnterSubRule( decisionNumber );
-        }
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugExitSubRule( IDebugEventListener dbg, int decisionNumber )
-        {
-            if ( dbg != null )
-                dbg.ExitSubRule( decisionNumber );
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.ExitRule(grammarFileName, ruleName);
         }
 
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugEnterAlt( IDebugEventListener dbg, int alt )
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugEnterSubRule(int decisionNumber)
         {
-            if ( dbg != null )
-                dbg.EnterAlt( alt );
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.EnterSubRule(decisionNumber);
         }
 
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugEnterDecision( IDebugEventListener dbg, int decisionNumber )
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugExitSubRule(int decisionNumber)
         {
-            if ( dbg != null )
-                dbg.EnterDecision( decisionNumber );
-        }
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugExitDecision( IDebugEventListener dbg, int decisionNumber )
-        {
-            if ( dbg != null )
-                dbg.ExitDecision( decisionNumber );
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.ExitSubRule(decisionNumber);
         }
 
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugLocation( IDebugEventListener dbg, int line, int charPositionInLine )
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugEnterAlt(int alt)
         {
-            if ( dbg != null )
-                dbg.Location( line, charPositionInLine );
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.EnterAlt(alt);
         }
 
-        [Conditional( "DEBUG_GRAMMAR" )]
-        protected static void DebugSemanticPredicate( IDebugEventListener dbg, bool result, string predicate )
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugEnterDecision(int decisionNumber)
         {
-            if ( dbg != null )
-                dbg.SemanticPredicate( result, predicate );
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.EnterDecision(decisionNumber);
+        }
+
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugExitDecision(int decisionNumber)
+        {
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.ExitDecision(decisionNumber);
+        }
+
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugLocation(int line, int charPositionInLine)
+        {
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.Location(line, charPositionInLine);
+        }
+
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugSemanticPredicate(bool result, string predicate)
+        {
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.SemanticPredicate(result, predicate);
+        }
+
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugBeginBacktrack(int level)
+        {
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.BeginBacktrack(level);
+        }
+
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugEndBacktrack(int level, bool successful)
+        {
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.EndBacktrack(level, successful);
+        }
+
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugRecognitionException(RecognitionException ex)
+        {
+            IDebugEventListener dbg = DebugListener;
+            if (dbg != null)
+                dbg.RecognitionException(ex);
         }
         #endregion
-#endif
     }
 }
