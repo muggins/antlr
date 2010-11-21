@@ -135,6 +135,8 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 	}
 	public override string GrammarFileName { get { return "<fileName>"; } }
 
+	private static readonly bool[] decisionCanBacktrack = new bool[0];
+
 <if(grammar.hasDelegates)>
 	public override ICharStream CharStream
 	{
