@@ -42,12 +42,10 @@ public static final String[] ruleNames = new String[] {
     "invalidRule", <grammar.allImportedRules:{rST | "<rST.name>"}; wrap="\n    ", separator=", ">
 };<\n>
 <endif>
-<if(profile)>
 public static final boolean[] decisionCanBacktrack = new boolean[] {
     false, // invalid decision
     <grammar.decisions:{d | <d.dfa.hasSynPred; null="false">}; wrap="\n    ", separator=", ">
 };<\n>
-<endif>
 <if(grammar.grammarIsRoot)> <! grammar imports other grammar(s) !>
     public int ruleLevel = 0;
     public int getRuleLevel() { return ruleLevel; }
