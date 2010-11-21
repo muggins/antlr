@@ -28,22 +28,18 @@
 package org.antlr.test;
 
 import org.antlr.Tool;
-import org.antlr.grammar.v3.ActionTranslator;
 import org.antlr.codegen.CodeGenerator;
+import org.antlr.grammar.v2.ANTLRParser;
+import org.antlr.grammar.v3.ActionTranslator;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
 import org.antlr.tool.*;
+import org.junit.Test;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import org.antlr.grammar.v2.ANTLRParser;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /** Check the $x, $x.y attributes.  For checking the actual
  *  translation, assume the Java target.  This is still a great test
@@ -439,9 +435,19 @@ public class TestAttributes extends BaseTest {
 		ErrorManager.setErrorListener(equeue);
 		Grammar g = new Grammar(
 			"parser grammar t;\n"+
-			"a : x=b {"+action+"} ;\n" +
+			"a : x=b {###"+action+"!!!} ;\n" +
 			"b : B ;\n");
 		Tool antlr = newTool();
+
+		CodeGenerator generator = new CodeGenerator(antlr, g, "Java");
+		g.setCodeGenerator(generator);
+		generator.genRecognizer(); // codegen phase sets some vars we need
+		StringTemplate codeST = generator.getRecognizerST();
+		String code = codeST.toString();
+		String found = code.substring(code.indexOf("###")+3,code.indexOf("!!!"));
+		assertEquals(expecting, found);
+
+/*
 		CodeGenerator generator = new CodeGenerator(antlr, g, "Java");
 		g.setCodeGenerator(generator);
 		generator.genRecognizer(); // forces load of templates
@@ -454,6 +460,7 @@ public class TestAttributes extends BaseTest {
 		StringTemplate actionST = new StringTemplate(templates, rawTranslation);
 		String found = actionST.toString();
 		assertEquals(expecting, found);
+		 */
 
 		assertEquals("unexpected errors: "+equeue, 0, equeue.errors.size());
 	}
@@ -1771,20 +1778,15 @@ public class TestAttributes extends BaseTest {
 		Grammar g = new Grammar(
 			"parser grammar t;\n" +
 			"options {output=template;}\n"+
-			"a : {"+action+"}\n" +
+			"a : {###"+action+"!!!}\n" +
 			"  ;\n");
 		Tool antlr = newTool();
 		CodeGenerator generator = new CodeGenerator(antlr, g, "Java");
 		g.setCodeGenerator(generator);
-		generator.genRecognizer(); // forces load of templates
-		ActionTranslator translator = new ActionTranslator(generator,"a",
-																	 new antlr.CommonToken(ANTLRParser.ACTION,action),1);
-		String rawTranslation =
-			translator.translate();
-		StringTemplateGroup templates =
-			new StringTemplateGroup(".", AngleBracketTemplateLexer.class);
-		StringTemplate actionST = new StringTemplate(templates, rawTranslation);
-		String found = actionST.toString();
+		generator.genRecognizer(); // codegen phase sets some vars we need
+		StringTemplate codeST = generator.getRecognizerST();
+		String code = codeST.toString();
+		String found = code.substring(code.indexOf("###")+3,code.indexOf("!!!"));
 		assertEquals(expecting, found);
 
 		assertEquals("unexpected errors: "+equeue, 0, equeue.errors.size());
@@ -1869,36 +1871,20 @@ public class TestAttributes extends BaseTest {
 		ErrorManager.setErrorListener(equeue);
 		Grammar g = new Grammar(
 			"grammar t;\n"+
-			"a : b {"+action+"}\n" +
-			"  | c {"+action2+"}\n" +
+			"a : b {###"+action+"!!!}\n" +
+			"  | c {^^^"+action2+"&&&}\n" +
 			"  ;\n" +
 			"b : 'a';\n" +
 			"c : '0';\n");
 		Tool antlr = newTool();
 		CodeGenerator generator = new CodeGenerator(antlr, g, "Java");
 		g.setCodeGenerator(generator);
-		generator.genRecognizer(); // forces load of templates
-		ActionTranslator translator = new ActionTranslator(generator,"a",
-																	 new antlr.CommonToken(ANTLRParser.ACTION,action),1);
-		String rawTranslation =
-			translator.translate();
-		StringTemplateGroup templates =
-			new StringTemplateGroup(".", AngleBracketTemplateLexer.class);
-		StringTemplate actionST = new StringTemplate(templates, rawTranslation);
-		String found = actionST.toString();
+		generator.genRecognizer(); // codegen phase sets some vars we need
+		StringTemplate codeST = generator.getRecognizerST();
+		String code = codeST.toString();
+		String found = code.substring(code.indexOf("###")+3,code.indexOf("!!!"));
 		assertEquals(expecting, found);
-
-		assertEquals("unexpected errors: "+equeue, 0, equeue.errors.size());
-		translator = new ActionTranslator(generator,
-											   "a",
-											   new antlr.CommonToken(ANTLRParser.ACTION,action2),2);
-		rawTranslation =
-			translator.translate();
-		templates =
-			new StringTemplateGroup(".", AngleBracketTemplateLexer.class);
-		actionST = new StringTemplate(templates, rawTranslation);
-		found = actionST.toString();
-
+		found = code.substring(code.indexOf("^^^")+3,code.indexOf("&&&"));
 		assertEquals(expecting2, found);
 
 		assertEquals("unexpected errors: "+equeue, 0, equeue.errors.size());
@@ -3208,7 +3194,7 @@ public class TestAttributes extends BaseTest {
 
 	@Test public void testAssignToTreeNodeAttribute() throws Exception {
 		String action = "$tree.scope = localScope;";
-		String expecting = "(()retval.tree).scope = localScope;";
+		String expecting = "((Object)retval.tree).scope = localScope;";
 		ErrorQueue equeue = new ErrorQueue();
 		ErrorManager.setErrorListener(equeue);
 		Grammar g = new Grammar(
@@ -3219,25 +3205,20 @@ public class TestAttributes extends BaseTest {
 			"   Scope localScope=null;\n" +
 			"}\n" +
 			"@after {\n" +
-			"   $tree.scope = localScope;\n" +
+			"   ###$tree.scope = localScope;!!!\n" +
 			"}\n" +
 			"   : 'a' -> ^('a')\n" +
 			";");
 		Tool antlr = newTool();
+
 		CodeGenerator generator = new CodeGenerator(antlr, g, "Java");
 		g.setCodeGenerator(generator);
-		generator.genRecognizer(); // forces load of templates
-		ActionTranslator translator = new ActionTranslator(generator,
-																	 "rule",
-																	 new antlr.CommonToken(ANTLRParser.ACTION,action),1);
-		String rawTranslation =
-			translator.translate();
-		StringTemplateGroup templates =
-			new StringTemplateGroup(".", AngleBracketTemplateLexer.class);
-		StringTemplate actionST = new StringTemplate(templates, rawTranslation);
-		String found = actionST.toString();
-		assertEquals("unexpected errors: "+equeue, 0, equeue.errors.size());
+		generator.genRecognizer(); // codegen phase sets some vars we need
+		StringTemplate codeST = generator.getRecognizerST();
+		String code = codeST.toString();
+		String found = code.substring(code.indexOf("###")+3,code.indexOf("!!!"));
 		assertEquals(expecting, found);
+		
 	}
 
 	@Test public void testDoNotTranslateAttributeCompare() throws Exception {
