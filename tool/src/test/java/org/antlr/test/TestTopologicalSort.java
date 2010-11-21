@@ -27,8 +27,8 @@
  */
 package org.antlr.test;
 
-import org.junit.Test;
 import org.antlr.misc.Graph;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class TestTopologicalSort extends BaseTest {
         g.addEdge("F", "H");
         g.addEdge("E", "F");
 
-        String expecting = "[H, F, E, D, A, G, B, C]";
+        String expecting = "[H, F, E, D, G, A, B, C]";
         List nodes = g.sort();
         String result = nodes.toString();
         assertEquals(expecting, result);
@@ -91,7 +91,7 @@ public class TestTopologicalSort extends BaseTest {
         g.addEdge("Def.g", "Java.tokens");    // walkers feed off generated tokens
         g.addEdge("Ref.g", "Java.tokens");
 
-        String expecting = "[MyJava.tokens, Java.g, Java.tokens, Def.g, Ref.g]";
+        String expecting = "[MyJava.tokens, Java.g, Java.tokens, Ref.g, Def.g]";
         List nodes = g.sort();
         String result = nodes.toString();
         assertEquals(expecting, result);
@@ -105,7 +105,7 @@ public class TestTopologicalSort extends BaseTest {
         g.addEdge("Def.g", "JavaLexer.tokens");
         g.addEdge("Ref.g", "JavaLexer.tokens");
 
-        String expecting = "[JavaLexer.g, JavaLexer.tokens, JavaParser.g, Def.g, Ref.g]";
+        String expecting = "[JavaLexer.g, JavaLexer.tokens, JavaParser.g, Ref.g, Def.g]";
         List nodes = g.sort();
         String result = nodes.toString();
         assertEquals(expecting, result);

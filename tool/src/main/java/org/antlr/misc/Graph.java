@@ -79,7 +79,7 @@ public class Graph {
      *  I want.
      */
     public List<Object> sort() {
-        Set<Node> visited = new HashSet<Node>();
+        Set<Node> visited = new OrderedHashSet<Node>();
         ArrayList<Object> sorted = new ArrayList<Object>();
         while ( visited.size() < nodes.size() ) {
             // pick any unvisited node, n
