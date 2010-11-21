@@ -34,6 +34,7 @@ namespace Antlr.Runtime.Misc
 {
     using System.Collections.Generic;
     using ArgumentException = System.ArgumentException;
+    using InvalidOperationException = System.InvalidOperationException;
 
     /** A queue that can dequeue and get(i) in O(1) and grow arbitrarily large.
      *  A linked list is fast at dequeue but slow at get(i).  An array is
@@ -95,6 +96,9 @@ namespace Antlr.Runtime.Misc
         /** <summary>Get and remove first element in queue</summary> */
         public virtual T Dequeue()
         {
+            if (Count == 0)
+                throw new InvalidOperationException();
+
             T o = this[0];
             _p++;
             // have we hit end of buffer?
