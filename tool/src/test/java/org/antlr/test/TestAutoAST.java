@@ -735,7 +735,7 @@ public class TestAutoAST extends BaseTest {
 		String found = execParser("foo.g", grammar, "fooParser", "fooLexer",
 								  "a", "abc", debug);
 		assertEquals("line 1:3 mismatched input '<EOF>' expecting INT\n", this.stderrDuringParse);
-		assertEquals("<mismatched token: [@-1,3:3='<no text>',<-1>,0:-1], resync=abc>\n", found);
+		assertEquals("<mismatched token: [@1,3:3='<EOF>',<-1>,1:3], resync=abc>\n", found);
 	}
 
 	@Test public void testExtraTokenGivesErrorNode() throws Exception {
