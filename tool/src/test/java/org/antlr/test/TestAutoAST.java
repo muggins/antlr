@@ -29,7 +29,6 @@ package org.antlr.test;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestAutoAST extends BaseTest {
 	protected boolean debug = false;
@@ -720,7 +719,7 @@ public class TestAutoAST extends BaseTest {
 			"WS : (' '|'\\n') {$channel=HIDDEN;} ;\n";
 		String found = execParser("foo.g", grammar, "fooParser", "fooLexer",
 								  "a", "abc", debug);
-		assertEquals("line 0:-1 missing INT at '<EOF>'\n", this.stderrDuringParse);
+		assertEquals("line 1:3 missing INT at '<EOF>'\n", this.stderrDuringParse);
 		assertEquals("abc <missing INT>\n", found);
 	}
 
@@ -735,7 +734,7 @@ public class TestAutoAST extends BaseTest {
 			"WS : (' '|'\\n') {$channel=HIDDEN;} ;\n";
 		String found = execParser("foo.g", grammar, "fooParser", "fooLexer",
 								  "a", "abc", debug);
-		assertEquals("line 0:-1 mismatched input '<EOF>' expecting INT\n", this.stderrDuringParse);
+		assertEquals("line 1:3 mismatched input '<EOF>' expecting INT\n", this.stderrDuringParse);
 		assertEquals("<mismatched token: [@-1,0:0='<no text>',<-1>,0:-1], resync=abc>\n", found);
 	}
 

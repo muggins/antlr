@@ -27,15 +27,13 @@
  */
 package org.antlr.test;
 
-import org.antlr.tool.ErrorManager;
-import org.antlr.tool.GrammarSemanticsMessage;
-import org.antlr.tool.Grammar;
 import org.antlr.Tool;
 import org.antlr.codegen.CodeGenerator;
-
+import org.antlr.tool.ErrorManager;
+import org.antlr.tool.Grammar;
+import org.antlr.tool.GrammarSemanticsMessage;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestRewriteAST extends BaseTest {
 	protected boolean debug = false;
@@ -1384,7 +1382,7 @@ public class TestRewriteAST extends BaseTest {
 			"WS : (' '|'\\n') {$channel=HIDDEN;} ;\n";
 		String found = execParser("foo.g", grammar, "fooParser", "fooLexer",
 								  "a", "abc", debug);
-		assertEquals("line 0:-1 missing INT at '<EOF>'\n", this.stderrDuringParse);
+		assertEquals("line 1:3 missing INT at '<EOF>'\n", this.stderrDuringParse);
 		// doesn't do in-line recovery for sets (yet?)
 		assertEquals("abc <missing INT>\n", found);
 	}
