@@ -37,7 +37,6 @@ namespace Antlr.Runtime.Tree
     [System.Serializable]
     public class RewriteRuleSubtreeStream : RewriteRuleElementStream
     {
-
         public RewriteRuleSubtreeStream( ITreeAdaptor adaptor, string elementDescription )
             : base( adaptor, elementDescription )
         {
@@ -74,6 +73,7 @@ namespace Antlr.Runtime.Tree
          */
         public virtual object NextNode()
         {
+            //System.Console.WriteLine("nextNode: elements={0}, singleElement={1}", elements, ((ITree)singleElement).ToStringTree());
             int n = Count;
             if ( dirty || ( cursor >= n && n == 1 ) )
             {
@@ -83,7 +83,11 @@ namespace Antlr.Runtime.Tree
                 return adaptor.DupNode( el );
             }
             // test size above then fetch
-            object el2 = NextCore();
+            object tree = NextCore();
+            while (adaptor.IsNil(tree) && adaptor.GetChildCount(tree) == 1)
+                tree = adaptor.GetChild(tree, 0);
+            //System.Console.WriteLine("_next={0}", ((ITree)tree).ToStringTree());
+            object el2 = adaptor.DupNode(tree); // dup just the root (want node here)
             return el2;
         }
 
