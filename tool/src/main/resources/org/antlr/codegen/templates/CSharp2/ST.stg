@@ -47,7 +47,7 @@ using Hashtable = System.Collections.Hashtable;
 private StringTemplate st;
 public StringTemplate ST    { get { return st; } set { st = value; } }
 public override object Template 		{ get { return st; } }
-public override string ToString() 		{ return (st == null) ? null : st.ToString(); }
+public override string ToString() 		{ return (st == null) ? string.Empty : st.ToString(); }
 >>
 
 @genericParser.members() ::= <<

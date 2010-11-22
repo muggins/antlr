@@ -170,7 +170,7 @@ namespace Antlr.Runtime.Debug {
             Transmit("exitSubRule\t" + decisionNumber);
         }
 
-        public override void EnterDecision(int decisionNumber) {
+        public override void EnterDecision(int decisionNumber, bool couldBacktrack) {
             Transmit("enterDecision\t" + decisionNumber);
         }
 

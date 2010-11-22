@@ -53,7 +53,7 @@ namespace Antlr.Runtime {
      *  to confuse small moving window of tokens it uses for the full buffer.
      */
     [System.Serializable]
-    public class BufferedTokenStream : ITokenStream {
+    public class BufferedTokenStream : ITokenStream, ITokenStreamInformation {
         private ITokenSource _tokenSource;
 
         /** Record every single token pulled from the source so we can reproduce
@@ -116,6 +116,31 @@ namespace Antlr.Runtime {
         public virtual string SourceName {
             get {
                 return _tokenSource.SourceName;
+            }
+        }
+
+        public virtual IToken LastToken {
+            get {
+                return LB(1);
+            }
+        }
+
+        public virtual IToken LastRealToken {
+            get {
+                int i = 0;
+                IToken token;
+                do {
+                    i++;
+                    token = LB(i);
+                } while (token != null && token.Line <= 0);
+
+                return token;
+            }
+        }
+
+        public virtual int MaxLookBehind {
+            get {
+                return int.MaxValue;
             }
         }
 

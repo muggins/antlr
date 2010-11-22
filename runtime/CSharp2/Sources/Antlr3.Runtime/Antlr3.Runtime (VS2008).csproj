@@ -86,6 +86,7 @@
     <Compile Include="Antlr.Runtime.JavaExtensions\LexerExtensions.cs" />
     <Compile Include="Antlr.Runtime.JavaExtensions\StringExtensions.cs" />
     <Compile Include="Antlr.Runtime.JavaExtensions\StringTokenizer.cs" />
+    <Compile Include="Antlr.Runtime.Misc\DoubleKeyMap.cs" />
     <Compile Include="Antlr.Runtime.Misc\FastQueue.cs" />
     <Compile Include="Antlr.Runtime.Misc\LookaheadStream.cs" />
     <Compile Include="Antlr.Runtime.Tree\BufferedTreeNodeStream.cs" />
@@ -95,6 +96,8 @@
     <Compile Include="Antlr.Runtime\ANTLRStringStream.cs" />
     <Compile Include="Antlr.Runtime\BufferedTokenStream.cs" />
     <Compile Include="Antlr.Runtime\CharStreamConstants.cs" />
+    <Compile Include="Antlr.Runtime\GrammarRuleAttribute.cs" />
+    <Compile Include="Antlr.Runtime\ITokenStreamInformation.cs" />
     <Compile Include="Antlr.Runtime\LegacyCommonTokenStream.cs" />
     <Compile Include="Antlr.Runtime\TokenConstants.cs" />
     <Compile Include="Antlr.Runtime\UnbufferedTokenStream.cs" />

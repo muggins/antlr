@@ -31,7 +31,9 @@
  */
 
 namespace Antlr.Runtime {
+    using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
     using Console = System.Console;
+    using IDebugEventListener = Antlr.Runtime.Debug.IDebugEventListener;
 
     public delegate int SpecialStateTransitionHandler(DFA dfa, int s, IIntStream input);
 
@@ -250,6 +252,13 @@ namespace Antlr.Runtime {
                 }
             }
             return data;
+        }
+
+        [Conditional("ANTLR_DEBUG")]
+        protected virtual void DebugRecognitionException(RecognitionException ex) {
+            IDebugEventListener dbg = recognizer.DebugListener;
+            if (dbg != null)
+                dbg.RecognitionException(ex);
         }
     }
 }

@@ -98,6 +98,7 @@ namespace Antlr.Runtime.Tree {
             get {
                 return _adaptor;
             }
+
             set {
                 _adaptor = value;
             }
@@ -113,6 +114,7 @@ namespace Antlr.Runtime.Tree {
             get {
                 return false;
             }
+
             set {
             }
         }
@@ -142,7 +144,7 @@ namespace Antlr.Runtime.Tree {
                 _level++;
             }
 
-            if (_level == 0 && _adaptor.IsNil(t)) {
+            if (_level == 0 && TreeAdaptor.IsNil(t)) {
                 // if nil root, scarf nil, DOWN
                 _hasNilRoot = true;
                 _it.MoveNext();
@@ -151,15 +153,16 @@ namespace Antlr.Runtime.Tree {
                 _it.MoveNext();
                 t = _it.Current;
             }
+
             return t;
         }
 
         public override bool IsEndOfFile(object o) {
-            return _adaptor.GetType(o) == CharStreamConstants.EndOfFile;
+            return TreeAdaptor.GetType(o) == CharStreamConstants.EndOfFile;
         }
 
         public virtual int LA(int i) {
-            return _adaptor.GetType(LT(i));
+            return TreeAdaptor.GetType(LT(i));
         }
 
         /** Make stream jump to a new location, saving old location.
@@ -186,7 +189,7 @@ namespace Antlr.Runtime.Tree {
 
         public virtual void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t) {
             if (parent != null) {
-                _adaptor.ReplaceChildren(parent, startChildIndex, stopChildIndex, t);
+                TreeAdaptor.ReplaceChildren(parent, startChildIndex, stopChildIndex, t);
             }
         }
 
@@ -203,13 +206,13 @@ namespace Antlr.Runtime.Tree {
             Reset();
             StringBuilder buf = new StringBuilder();
             object o = LT(1);
-            int type = _adaptor.GetType(o);
+            int type = TreeAdaptor.GetType(o);
             while (type != TokenTypes.EndOfFile) {
                 buf.Append(" ");
                 buf.Append(type);
                 Consume();
                 o = LT(1);
-                type = _adaptor.GetType(o);
+                type = TreeAdaptor.GetType(o);
             }
             return buf.ToString();
         }

@@ -104,10 +104,10 @@ namespace Antlr.Runtime.Debug {
             }
         }
 
-        public virtual void EnterDecision(int decisionNumber) {
+        public virtual void EnterDecision(int decisionNumber, bool couldBacktrack) {
             for (int i = 0; i < _listeners.Count; i++) {
                 IDebugEventListener listener = _listeners[i];
-                listener.EnterDecision(decisionNumber);
+                listener.EnterDecision(decisionNumber, couldBacktrack);
             }
         }
 

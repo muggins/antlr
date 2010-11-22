@@ -1,4 +1,6 @@
 /*
+ * Note to JL: Refactored extension methods
+ * 
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
@@ -56,7 +58,7 @@ namespace Antlr.Runtime.Debug {
          */
         public DebugTreeParser(ITreeNodeStream input, IDebugEventListener dbg, RecognizerSharedState state)
             : base(input is DebugTreeNodeStream ? input : new DebugTreeNodeStream(input, dbg), state) {
-            DebugListener = dbg;
+            SetDebugListener(dbg);
         }
 
         public DebugTreeParser(ITreeNodeStream input, RecognizerSharedState state)
@@ -67,21 +69,22 @@ namespace Antlr.Runtime.Debug {
             : this(input is DebugTreeNodeStream ? input : new DebugTreeNodeStream(input, dbg), dbg, null) {
         }
 
+        public override IDebugEventListener DebugListener {
+            get {
+                return dbg;
+            }
+        }
+
         /** <summary>
          *  Provide a new debug event listener for this parser.  Notify the
          *  input stream too that it should send events to this listener.
          *  </summary>
          */
-        public virtual IDebugEventListener DebugListener {
-            get {
-                return dbg;
-            }
-            set {
-                if (input is DebugTreeNodeStream)
-                    ((DebugTreeNodeStream)input).DebugListener = value;
+        public virtual void SetDebugListener(IDebugEventListener value) {
+            if (input is DebugTreeNodeStream)
+                ((DebugTreeNodeStream)input).DebugListener = value;
 
-                this.dbg = value;
-            }
+            this.dbg = value;
         }
 
         public virtual void ReportError(IOException e) {

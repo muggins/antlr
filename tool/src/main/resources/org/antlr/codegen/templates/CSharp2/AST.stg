@@ -41,9 +41,18 @@ using Antlr.Runtime.Tree;<\n>
 <parserMembers()>
 >>
 
+parserCtorBody() ::= <<
+<super.parserCtorBody()>
+ITreeAdaptor treeAdaptor = null;
+CreateTreeAdaptor(ref treeAdaptor);
+TreeAdaptor = treeAdaptor ?? new CommonTreeAdaptor();
+>>
+
 /** Add an adaptor property that knows how to build trees */
 parserMembers() ::= <<
-protected ITreeAdaptor adaptor = new CommonTreeAdaptor();<\n>
+partial void CreateTreeAdaptor(ref ITreeAdaptor adaptor);
+
+private ITreeAdaptor adaptor;
 public ITreeAdaptor TreeAdaptor
 {
     get { return this.adaptor; }
@@ -298,6 +307,7 @@ rewriteElementList(elements) ::= "<elements:rewriteElement()>"
 
 rewriteElement(e) ::= <<
 <@pregen()>
+DebugLocation(<e.line>, <e.pos>);
 <e.el>
 >>
 

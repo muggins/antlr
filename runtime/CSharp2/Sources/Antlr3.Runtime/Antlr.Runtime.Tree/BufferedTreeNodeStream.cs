@@ -60,7 +60,7 @@ namespace Antlr.Runtime.Tree {
      *
      *  @see CommonTreeNodeStream
      */
-    public class BufferedTreeNodeStream : ITreeNodeStream {
+    public class BufferedTreeNodeStream : ITreeNodeStream, ITokenStreamInformation {
         public const int DEFAULT_INITIAL_BUFFER_SIZE = 100;
         public const int INITIAL_CALL_STACK_SIZE = 10;
 
@@ -214,6 +214,31 @@ namespace Antlr.Runtime.Tree {
             }
             set {
                 uniqueNavigationNodes = value;
+            }
+        }
+
+        public virtual IToken LastToken {
+            get {
+                return TreeAdaptor.GetToken(LB(1));
+            }
+        }
+
+        public virtual IToken LastRealToken {
+            get {
+                int i = 0;
+                IToken token;
+                do {
+                    i++;
+                    token = TreeAdaptor.GetToken(LB(i));
+                } while (token != null && token.Line <= 0);
+
+                return token;
+            }
+        }
+
+        public virtual int MaxLookBehind {
+            get {
+                return int.MaxValue;
             }
         }
 

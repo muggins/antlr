@@ -276,42 +276,54 @@ namespace Antlr.Runtime {
         }
 
         protected virtual void ExtractInformationFromTreeNodeStream(IIntStream input) {
-            ITreeNodeStream nodes = (ITreeNodeStream)input;
-            this._node = nodes.LT(1);
-            ITreeAdaptor adaptor = nodes.TreeAdaptor;
-            IToken payload = adaptor.GetToken(_node);
-            if (payload != null) {
-                this._token = payload;
-                if (payload.Line <= 0) {
-                    // imaginary node; no line/pos info; scan backwards
-                    int i = -1;
-                    object priorNode = nodes.LT(i);
-                    while (priorNode != null) {
-                        IToken priorPayload = adaptor.GetToken(priorNode);
-                        if (priorPayload != null && priorPayload.Line > 0) {
-                            // we found the most recent real line / pos info
-                            this._line = priorPayload.Line;
-                            this._charPositionInLine = priorPayload.CharPositionInLine;
-                            this._approximateLineInfo = true;
-                            break;
-                        }
-                        --i;
-                        priorNode = nodes.LT(i);
-                    }
-                } else { // node created from real token
-                    this._line = payload.Line;
-                    this._charPositionInLine = payload.CharPositionInLine;
-                }
-            } else if (this._node is Tree.ITree) {
-                this._line = ((Tree.ITree)this._node).Line;
-                this._charPositionInLine = ((Tree.ITree)this._node).CharPositionInLine;
-                if (this._node is CommonTree) {
-                    this._token = ((CommonTree)this._node).Token;
+            ITokenStreamInformation streamInformation = input as ITokenStreamInformation;
+            if (streamInformation != null) {
+                IToken lastToken = streamInformation.LastToken;
+                IToken lastRealToken = streamInformation.LastRealToken;
+                if (lastRealToken != null) {
+                    this._token = lastRealToken;
+                    this._line = lastRealToken.Line;
+                    this._charPositionInLine = lastRealToken.CharPositionInLine;
+                    this._approximateLineInfo = lastRealToken.Equals(lastToken);
                 }
             } else {
-                int type = adaptor.GetType(this._node);
-                string text = adaptor.GetText(this._node);
-                this._token = new CommonToken(type, text);
+                ITreeNodeStream nodes = (ITreeNodeStream)input;
+                this._node = nodes.LT(1);
+                ITreeAdaptor adaptor = nodes.TreeAdaptor;
+                IToken payload = adaptor.GetToken(_node);
+                if (payload != null) {
+                    this._token = payload;
+                    if (payload.Line <= 0) {
+                        // imaginary node; no line/pos info; scan backwards
+                        int i = -1;
+                        object priorNode = nodes.LT(i);
+                        while (priorNode != null) {
+                            IToken priorPayload = adaptor.GetToken(priorNode);
+                            if (priorPayload != null && priorPayload.Line > 0) {
+                                // we found the most recent real line / pos info
+                                this._line = priorPayload.Line;
+                                this._charPositionInLine = priorPayload.CharPositionInLine;
+                                this._approximateLineInfo = true;
+                                break;
+                            }
+                            --i;
+                            priorNode = nodes.LT(i);
+                        }
+                    } else { // node created from real token
+                        this._line = payload.Line;
+                        this._charPositionInLine = payload.CharPositionInLine;
+                    }
+                } else if (this._node is Tree.ITree) {
+                    this._line = ((Tree.ITree)this._node).Line;
+                    this._charPositionInLine = ((Tree.ITree)this._node).CharPositionInLine;
+                    if (this._node is CommonTree) {
+                        this._token = ((CommonTree)this._node).Token;
+                    }
+                } else {
+                    int type = adaptor.GetType(this._node);
+                    string text = adaptor.GetText(this._node);
+                    this._token = new CommonToken(type, text);
+                }
             }
         }
     }

@@ -82,7 +82,6 @@ dbg.TreeAdaptor = adap;
 @ctorForProfilingRootGrammar.finally() ::=<<
 ITreeAdaptor adap = new CommonTreeAdaptor();
 TreeAdaptor = adap;
-dbg.TreeAdaptor = adap;
 >>
 
 @ctorForPredefinedListener.superClassRef() ::= "base(input, dbg)"
@@ -94,4 +93,4 @@ TreeAdaptor = adap;<\n>
 <endif>
 >>
 
-@rewriteElement.pregen() ::= "dbg.Location(<e.line>,<e.pos>);"
+//@rewriteElement.pregen() ::= "dbg.Location(<e.line>,<e.pos>);"

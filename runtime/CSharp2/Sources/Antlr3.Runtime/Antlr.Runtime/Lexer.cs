@@ -31,6 +31,8 @@
  */
 
 namespace Antlr.Runtime {
+    using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
+
     /** <summary>
      *  A lexer is recognizer that draws input symbols from a character stream.
      *  lexer grammars result in a subclass of this object. A Lexer object
@@ -338,11 +340,13 @@ namespace Antlr.Runtime {
             input.Consume();
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceIn(string ruleName, int ruleIndex) {
             string inputSymbol = ((char)input.LT(1)) + " line=" + Line + ":" + CharPositionInLine;
             base.TraceIn(ruleName, ruleIndex, inputSymbol);
         }
 
+        [Conditional("ANTLR_TRACE")]
         public virtual void TraceOut(string ruleName, int ruleIndex) {
             string inputSymbol = ((char)input.LT(1)) + " line=" + Line + ":" + CharPositionInLine;
             base.TraceOut(ruleName, ruleIndex, inputSymbol);

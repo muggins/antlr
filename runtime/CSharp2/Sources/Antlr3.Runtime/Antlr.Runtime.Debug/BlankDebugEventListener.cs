@@ -31,7 +31,6 @@
  */
 
 namespace Antlr.Runtime.Debug {
-
     /** <summary>
      *  A blank listener that does nothing; useful for real classes so
      *  they don't have to have lots of blank methods and are less
@@ -63,7 +62,7 @@ namespace Antlr.Runtime.Debug {
         }
         public virtual void ExitSubRule(int decisionNumber) {
         }
-        public virtual void EnterDecision(int decisionNumber) {
+        public virtual void EnterDecision(int decisionNumber, bool couldBacktrack) {
         }
         public virtual void ExitDecision(int decisionNumber) {
         }

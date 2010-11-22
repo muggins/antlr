@@ -1,4 +1,6 @@
 /*
+ * Note to JL: Refactored extension methods
+ * 
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
@@ -32,17 +34,15 @@
 
 namespace Antlr.Runtime.Debug {
     using Antlr.Runtime.JavaExtensions;
-
     using BaseTree = Antlr.Runtime.Tree.BaseTree;
     using Console = System.Console;
-    using SocketException = System.Net.Sockets.SocketException;
     using Exception = System.Exception;
     using IOException = System.IO.IOException;
-    using Socket = System.Net.Sockets.Socket;
     using ITree = Antlr.Runtime.Tree.ITree;
-
-    using TextWriter = System.IO.TextWriter;
+    using Socket = System.Net.Sockets.Socket;
+    using SocketException = System.Net.Sockets.SocketException;
     using TextReader = System.IO.TextReader;
+    using TextWriter = System.IO.TextWriter;
 
     public class RemoteDebugEventSocketListener {
         const int MAX_EVENT_ELEMENTS = 8;
@@ -350,7 +350,7 @@ namespace Antlr.Runtime.Debug {
             } else if (elements[0].Equals("exitSubRule")) {
                 listener.ExitSubRule(int.Parse(elements[1]));
             } else if (elements[0].Equals("enterDecision")) {
-                listener.EnterDecision(int.Parse(elements[1]));
+                listener.EnterDecision(int.Parse(elements[1]), elements[2].Equals("true"));
             } else if (elements[0].Equals("exitDecision")) {
                 listener.ExitDecision(int.Parse(elements[1]));
             } else if (elements[0].Equals("location")) {

@@ -96,14 +96,13 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 
     public <grammar.recognizerName>() <! needed by subclasses !>
     {
-		InitializeCyclicDFAs();
+		OnCreated();
     }
     public <grammar.recognizerName>(ICharStream input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>)
 		: this(input, null<grammar.delegators:{g|, <g:delegateName()>}>) {
     }
     public <grammar.recognizerName>(ICharStream input, RecognizerSharedState state<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>)
 		: base(input, state) {
-		InitializeCyclicDFAs(); <! Necessary in C#??? Not removed yet. !>
 <if(memoize)>
 <if(grammar.grammarIsRoot)>
         state.ruleMemo = new System.Collections.Generic.Dictionary\<int, int>[<numRules>+1];<\n> <! index from 1..n !>
@@ -114,13 +113,19 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
         <grammar.delegators:
          {g|this.<g:delegateName()> = <g:delegateName()>;}; separator="\n">
         <last(grammar.delegators):{g|gParent = <g:delegateName()>;}>
-    }
+ 
+		OnCreated();
+   }
     
     override public string GrammarFileName
     {
     	get { return "<fileName>";} 
     }
 
+	private static readonly bool[] decisionCanBacktrack = new bool[0];
+
+
+<! Doesn't exist in Java templates - either really outdated or swiped from CSharp3 :S
 <if(grammar.hasDelegates)>
 	public override ICharStream CharStream
 	{
@@ -140,20 +145,21 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 	}
 
 <endif>
-	
+!>
+
 <if(filterMode)>
     <filteringNextToken()>
 <endif>
-    <rules; separator="\n\n">
+ 
+	virtual void OnCreated() {};
+	virtual void EnterRule(string ruleName, int ruleIndex) {};
+	virtual void LeaveRule(string ruleName, int ruleIndex) {};
+
+   <rules; separator="\n\n">
 
    	<synpreds:{p | <lexerSynpred(p)>}>
 
     <cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
-	private void InitializeCyclicDFAs(<@debugInitializeCyclicDFAs()>)
-	{
-	    <cyclicDFAs:{dfa | this.dfa<dfa.decisionNumber> = new DFA<dfa.decisionNumber>(this<@debugAddition()>);}; separator="\n">
-	    <cyclicDFAs:{dfa | <if(dfa.specialStateSTs)>this.dfa<dfa.decisionNumber>.specialStateTransitionHandler = new DFA.SpecialStateTransitionHandler(DFA<dfa.decisionNumber>_SpecialStateTransition);<endif>}; separator="\n">
-	}
 
     <cyclicDFAs:cyclicDFA()> <! dump tables for all DFA !>
     
@@ -265,6 +271,16 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 
     <scopes:{<if(it.isDynamicGlobalScope)><globalAttributeScope(scope=it)><endif>}>
     <@members>
+#if ANTLR_DEBUG
+	private static readonly bool[] decisionCanBacktrack =
+		new bool[]
+		{
+			false, // invalid decision
+			<grammar.decisions:{d | <d.dfa.hasSynPred; null="false">}; wrap="\n    ", separator=", ">
+		};
+#else
+	private static readonly bool[] decisionCanBacktrack = new bool[0];
+#endif
     <! WARNING. bug in ST: this is cut-n-paste into Dbg.stg !>
 
     public <grammar.recognizerName>(<inputStreamType> input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>)
@@ -278,7 +294,9 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
          {g|<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this);}; separator="\n">         
         <grammar.indirectDelegates:{g | <g:delegateName()> = <g.delegator:delegateName()>.<g:delegateName()>;}; separator="\n">
         <last(grammar.delegators):{g|gParent = <g:delegateName()>;}>
-    }
+ 
+        OnCreated();
+   }
     <@end>
 
     override public string[] TokenNames {
@@ -291,7 +309,11 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 
     <members>
 
-    <rules; separator="\n\n">
+ 	virtual void OnCreated() {};
+	virtual void EnterRule(string ruleName, int ruleIndex) {};
+	virtual void LeaveRule(string ruleName, int ruleIndex) {};
+
+   <rules; separator="\n\n">
 
 <! generate rule/method definitions for imported rules so they
    appear to be defined in this recognizer. !>
@@ -349,21 +371,28 @@ treeParser(grammar, name, scopes, tokens, tokenNames, globalAction, rules, numRu
  */
 synpredRule(ruleName, ruleDescriptor, block, description, nakedBlock) ::=
 <<
+virtual void Enter<ruleName>_fragment() {};
+virtual void Leave<ruleName>_fragment() {};
+
 // $ANTLR start "<ruleName>"
 public void <ruleName>_fragment(<ruleDescriptor.parameterScope:parameterScope(scope=it)>) {
     <ruleLabelDefs()>
 <if(trace)>
-    TraceIn("<ruleName>_fragment", <ruleDescriptor.index>);
+	Enter<ruleName>_fragment();
+	EnterRule("<ruleName>_fragment", <ruleDescriptor.index>);
+	TraceIn("<ruleName>_fragment", <ruleDescriptor.index>);
     try
     {
         <block>
     }
     finally
     {
-        TraceOut("<ruleName>_fragment", <ruleDescriptor.index>);
+		TraceOut("<ruleName>_fragment", <ruleDescriptor.index>);
+		LeaveRule("<ruleName>_fragment", <ruleDescriptor.index>);
+		Leave<ruleName>_fragment();
     }
 <else>
-    <block>
+	<block>
 <endif>
 }
 // $ANTLR end "<ruleName>"
@@ -376,8 +405,10 @@ SynPredPointer <name>;<\n>
 synpred(name) ::= <<
 public bool <name>() 
 {
+	bool success = false;
     state.backtracking++;
     <@start()>
+	try { DebugBeginBacktrack(state.backtracking);
     int start = input.Mark();
     try 
     {
@@ -387,9 +418,10 @@ public bool <name>()
     {
         Console.Error.WriteLine("impossible: "+re);
     }
-    bool success = !state.failed;
+ 	success = !state.failed;
     input.Rewind(start);
     <@stop()>
+ 	} finally { DebugEndBacktrack(state.backtracking, success); }
     state.backtracking--;
     state.failed = false;
     return success;
@@ -426,15 +458,25 @@ rule(ruleName,ruleDescriptor,block,emptyRule,description,exceptions,finally,memo
 <ruleAttributeScope(scope=ruleDescriptor.ruleScope)>
 <returnScope(scope=ruleDescriptor.returnScope)>
 
+virtual void Enter<ruleName>() {};
+virtual void Leave<ruleName>() {};
+
 // $ANTLR start "<ruleName>"
 // <fileName>:<description>
+[GrammarRule("<ruleName>")]
 public <returnType()> <ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>) // throws RecognitionException [1]
 {   
-    <if(trace)>TraceIn("<ruleName>", <ruleDescriptor.index>);<endif>
+<if(trace)>
+	Enter<ruleName>();
+	EnterRule("<ruleName>", <ruleDescriptor.index>);
+	TraceIn("<ruleName>", <ruleDescriptor.index>);
+<endif>
     <ruleScopeSetUp()>
     <ruleDeclarations()>
     <ruleLabelDefs()>
     <ruleDescriptor.actions.init>
+	try { DebugEnterRule(GrammarFileName, "<ruleName>");
+	DebugLocation(<ruleDescriptor.tree.line>, <ruleDescriptor.EORNode.charPositionInLine>);
     <@preamble()>
     try 
 	{
@@ -461,12 +503,18 @@ public <returnType()> <ruleName>(<ruleDescriptor.parameterScope:parameterScope(s
 <endif>
     finally 
 	{
-        <if(trace)>TraceOut("<ruleName>", <ruleDescriptor.index>);<endif>
+    <if(trace)>
+		TraceOut("<ruleName>", <ruleDescriptor.index>);
+		LeaveRule("<ruleName>", <ruleDescriptor.index>);
+		Leave<ruleName>();
+	<endif>
         <memoize()>
         <ruleScopeCleanUp()>
         <finally>
     }
-    <@postamble()>
+ 	DebugLocation(<ruleDescriptor.EORNode.line>, <ruleDescriptor.EORNode.charPositionInLine>);
+	} finally { DebugExitRule(GrammarFileName, "<ruleName>"); }
+   <@postamble()>
     return <ruleReturnValue()>;
 }
 // $ANTLR end "<ruleName>"
@@ -564,11 +612,19 @@ if ( state.backtracking > 0 )
  *  fragment rules.
  */
 lexerRule(ruleName,nakedBlock,ruleDescriptor,block,memoize) ::= <<
+virtual void Enter<ruleName>() {};
+virtual void Leave<ruleName>() {};
+
 // $ANTLR start "<ruleName>"
+[GrammarRule("<ruleName>")]
 public void m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>) // throws RecognitionException [2]
 {
  	<ruleAttributeScope(scope=ruleDescriptor.ruleScope)>
-	<if(trace)>TraceIn("<ruleName>", <ruleDescriptor.index>);<endif>
+<if(trace)>
+	Enter<ruleName>();
+	EnterRule("<ruleName>", <ruleDescriptor.index>);
+	TraceIn("<ruleName>", <ruleDescriptor.index>);
+<endif>
     <ruleScopeSetUp()>
     <ruleDeclarations()>
 		try
@@ -593,7 +649,11 @@ public void m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>
     }
     finally 
 	{
-        <if(trace)>TraceOut("<ruleName>", <ruleDescriptor.index>);<endif>
+    <if(trace)>
+		TraceOut("<ruleName>", <ruleDescriptor.index>);
+		LeaveRule("<ruleName>", <ruleDescriptor.index>);
+		Leave<ruleName>();
+	<endif>
         <ruleScopeCleanUp()>
         <memoize()>
     }
@@ -619,13 +679,17 @@ block(alts,decls,decision,enclosingBlockLevel,blockLevel,decisionNumber,maxK,max
 int alt<decisionNumber> = <maxAlt>;
 <decls>
 <@predecision()>
+try { DebugEnterSubRule(<decisionNumber>);
+try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
 <decision>
+} finally { DebugExitDecision(<decisionNumber>); }
 <@postdecision()>
 <@prebranch()>
 switch (alt<decisionNumber>) 
 {
     <alts:altSwitchCase()>
 }
+} finally { DebugExitSubRule(<decisionNumber>); }
 <@postbranch()>
 >>
 
@@ -635,7 +699,9 @@ ruleBlock(alts,decls,decision,enclosingBlockLevel,blockLevel,decisionNumber,maxK
 int alt<decisionNumber> = <maxAlt>;
 <decls>
 <@predecision()>
+try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
 <decision>
+} finally { DebugExitDecision(<decisionNumber>); }
 <@postdecision()>
 switch (alt<decisionNumber>) 
 {
@@ -647,6 +713,7 @@ ruleBlockSingleAlt(alts,decls,decision,enclosingBlockLevel,blockLevel,decisionNu
 // <fileName>:<description>
 <decls>
 <@prealt()>
+DebugEnterAlt(1);
 <alts>
 <@postalt()>
 >>
@@ -656,6 +723,7 @@ blockSingleAlt(alts,decls,decision,enclosingBlockLevel,blockLevel,decisionNumber
 // <fileName>:<description>
 <decls>
 <@prealt()>
+DebugEnterAlt(1);
 <alts>
 <@postalt()>
 >>
@@ -665,12 +733,15 @@ positiveClosureBlock(alts,decls,decision,enclosingBlockLevel,blockLevel,decision
 // <fileName>:<description>
 int cnt<decisionNumber> = 0;
 <decls>
+try { DebugEnterSubRule(<decisionNumber>);
 <@preloop()>
 do 
 {
     int alt<decisionNumber> = <maxAlt>;
     <@predecision()>
+	try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
     <decision>
+	} finally { DebugExitDecision(<decisionNumber>); }
     <@postdecision()>
     switch (alt<decisionNumber>) 
 	{
@@ -680,6 +751,7 @@ do
 		    <ruleBacktrackFailure()>
 	            EarlyExitException eee<decisionNumber> =
 	                new EarlyExitException(<decisionNumber>, input);
+				DebugRecognitionException(eee<decisionNumber>);
 	            <@earlyExitException()>
 	            throw eee<decisionNumber>;
     }
@@ -688,6 +760,7 @@ do
 
 loop<decisionNumber>:
 	;	// Stops C# compiler whining that label 'loop<decisionNumber>' has no statements
+} finally { DebugExitSubRule(<decisionNumber>); }
 <@postloop()>
 >>
 
@@ -698,11 +771,14 @@ closureBlock(alts,decls,decision,enclosingBlockLevel,blockLevel,decisionNumber,m
 // <fileName>:<description>
 <decls>
 <@preloop()>
+try { DebugEnterSubRule(<decisionNumber>);
 do 
 {
     int alt<decisionNumber> = <maxAlt>;
     <@predecision()>
+	try { DebugEnterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);
     <decision>
+	} finally { DebugExitDecision(<decisionNumber>); }
     <@postdecision()>
     switch (alt<decisionNumber>) 
 	{
@@ -714,6 +790,8 @@ do
 
 loop<decisionNumber>:
 	;	// Stops C# compiler whining that label 'loop<decisionNumber>' has no statements
+
+} finally { DebugExitSubRule(<decisionNumber>); }
 <@postloop()>
 >>
 
@@ -733,7 +811,8 @@ optionalBlockSingleAlt ::= block
 altSwitchCase() ::= <<
 case <i> :
     <@prealt()>
-    <it>
+ 	DebugEnterAlt(<i>);
+   <it>
     break;<\n>
 >>
 
@@ -758,6 +837,7 @@ noRewrite(rewriteBlockLevel, treeLevel) ::= ""
 /** Dump the elements one per line */
 element() ::= <<
 <@prematch()>
+DebugLocation(<it.line>, <it.pos>);
 <it.el><\n>
 >>
 
@@ -815,6 +895,7 @@ else
 {
     <ruleBacktrackFailure()>
     MismatchedSetException mse = new MismatchedSetException(null,input);
+	DebugRecognitionException(mse);
     <@mismatchedSetException()>
 <if(LEXER)>
     Recover(mse);
@@ -982,6 +1063,7 @@ else
     <ruleBacktrackFailure()>
     NoViableAltException nvae_d<decisionNumber>s<stateNumber> =
         new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);<\n>
+	DebugRecognitionException(nvae);
     <@noViableAltException()>
     throw nvae_d<decisionNumber>s<stateNumber>;<\n>
 <endif>
@@ -1050,6 +1132,7 @@ switch ( input.LA(<k>) )
 	    <ruleBacktrackFailure()>
 	    NoViableAltException nvae_d<decisionNumber>s<stateNumber> =
 	        new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);<\n>
+		DebugRecognitionException(nvae);
 	    <@noViableAltException()>
 	    throw nvae_d<decisionNumber>s<stateNumber>;<\n>
 <endif>
@@ -1090,7 +1173,15 @@ dfaEdgeSwitch(labels, targetState) ::= <<
  *  The <name> attribute is inherited via the parser, lexer, ...
  */
 dfaDecision(decisionNumber,description) ::= <<
-alt<decisionNumber> = dfa<decisionNumber>.Predict(input);
+try
+{
+	alt<decisionNumber> = dfa<decisionNumber>.Predict(input);
+}
+catch (NoViableAltException nvae)
+{
+	DebugRecognitionException(nvae);
+	throw;
+}
 >>
 
 /* Dump DFA tables.
@@ -1153,7 +1244,10 @@ protected class DFA<dfa.decisionNumber> : DFA
         get { return "<dfa.description>"; }
     }
 
-    <@errorMethod()>
+	public override void Error(NoViableAltException nvae)
+	{
+		DebugRecognitionException(nvae);
+	}
 }<\n>
 <if(dfa.specialStateSTs)>
 

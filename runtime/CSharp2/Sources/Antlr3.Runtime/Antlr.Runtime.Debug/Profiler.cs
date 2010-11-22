@@ -1,4 +1,6 @@
 /*
+ * Note to JL: Replaced Hashset with Dictionary.
+ * 
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
@@ -32,467 +34,612 @@
 
 namespace Antlr.Runtime.Debug {
     using System.Collections.Generic;
-    using Antlr.Runtime.JavaExtensions;
+    using System.Collections.ObjectModel;
+    using Antlr.Runtime.Debug.Misc;
 
     using Array = System.Array;
+    using CLSCompliantAttribute = System.CLSCompliantAttribute;
     using Console = System.Console;
-    using IOException = System.IO.IOException;
-    using Stats = Antlr.Runtime.Misc.Stats;
+    using DateTime = System.DateTime;
+    using Environment = System.Environment;
+    using Math = System.Math;
     using StringBuilder = System.Text.StringBuilder;
 
     /** <summary>Using the debug event interface, track what is happening in the parser
      *  and record statistics about the runtime.
      */
     public class Profiler : BlankDebugEventListener {
-        /** <summary>Because I may change the stats, I need to track that for later
+        public static readonly string DataSeparator = "\t";
+        public static readonly string NewLine = Environment.NewLine;
+
+        internal static bool dump = false;
+
+        /** Because I may change the stats, I need to track that for later
          *  computations to be consistent.
          */
-        public const string Version = "2";
-        public const string RuntimeStatsFileName = "runtime.stats";
-        public const int NumRuntimeStats = 29;
+        public static readonly string Version = "3";
+        public static readonly string RuntimeStatsFilename = "runtime.stats";
 
-        DebugParser _parser = null;
+        /** Ack, should not store parser; can't do remote stuff.  Well, we pass
+         *  input stream around too so I guess it's ok.
+         */
+        public DebugParser parser = null;
 
-        #region working variables
+        // working variables
 
-        int _ruleLevel = 0;
-        int _decisionLevel = 0;
-        int _maxLookaheadInCurrentDecision = 0;
-        CommonToken _lastTokenConsumed = null;
+        [CLSCompliant(false)]
+        protected int ruleLevel = 0;
+        //protected int decisionLevel = 0;
+        protected IToken lastRealTokenTouchedInDecision;
+        protected Dictionary<string, string> uniqueRules = new Dictionary<string, string>();
+        protected Stack<string> currentGrammarFileName = new Stack<string>();
+        protected Stack<string> currentRuleName = new Stack<string>();
+        protected Stack<int> currentLine = new Stack<int>();
+        protected Stack<int> currentPos = new Stack<int>();
 
-        protected Stack<int> lookaheadStack = new Stack<int>();
+        // Vector<DecisionStats>
+        //protected Vector decisions = new Vector(200); // need setSize
+        protected DoubleKeyMap<string, int, DecisionDescriptor> decisions = new DoubleKeyMap<string, int, DecisionDescriptor>();
 
-        #endregion
+        // Record a DecisionData for each decision we hit while parsing
+        private List<DecisionEvent> decisionEvents = new List<DecisionEvent>();
+        protected Stack<DecisionEvent> decisionStack = new Stack<DecisionEvent>();
 
+        protected int backtrackDepth;
 
-        #region stats variables
-
-        public int numRuleInvocations = 0;
-        public int numGuessingRuleInvocations = 0;
-        public int maxRuleInvocationDepth = 0;
-        public int numFixedDecisions = 0;
-        public int numCyclicDecisions = 0;
-        public int numBacktrackDecisions = 0;
-        public int[] decisionMaxFixedLookaheads = new int[200]; // TODO: make List
-        public int[] decisionMaxCyclicLookaheads = new int[200];
-        public List<int> decisionMaxSynPredLookaheads = new List<int>();
-        public int numHiddenTokens = 0;
-        public int numCharsMatched = 0;
-        public int numHiddenCharsMatched = 0;
-        public int numSemanticPredicates = 0;
-        public int numSyntacticPredicates = 0;
-        protected int numberReportedErrors = 0;
-        public int numMemoizationCacheMisses = 0;
-        public int numMemoizationCacheHits = 0;
-        public int numMemoizationCacheEntries = 0;
-
-        #endregion
+        ProfileStats stats = new ProfileStats();
 
         public Profiler() {
         }
 
         public Profiler(DebugParser parser) {
-            this._parser = parser;
+            this.parser = parser;
         }
 
         public override void EnterRule(string grammarFileName, string ruleName) {
-            //System.out.println("enterRule "+ruleName);
-            _ruleLevel++;
-            numRuleInvocations++;
-            if (_ruleLevel > maxRuleInvocationDepth) {
-                maxRuleInvocationDepth = _ruleLevel;
-            }
-
+            //System.out.println("enterRule "+grammarFileName+":"+ruleName);
+            ruleLevel++;
+            stats.numRuleInvocations++;
+            uniqueRules[ruleName] = (grammarFileName + ":" + ruleName);
+            stats.maxRuleInvocationDepth = Math.Max(stats.maxRuleInvocationDepth, ruleLevel);
+            currentGrammarFileName.Push(grammarFileName);
+            currentRuleName.Push(ruleName);
         }
 
-        /** <summary>
-         *  Track memoization; this is not part of standard debug interface
+        public override void ExitRule(string grammarFileName, string ruleName) {
+            ruleLevel--;
+            currentGrammarFileName.Pop();
+            currentRuleName.Pop();
+        }
+
+        /** Track memoization; this is not part of standard debug interface
          *  but is triggered by profiling.  Code gen inserts an override
          *  for this method in the recognizer, which triggers this method.
-         *  </summary>
+         *  Called from alreadyParsedRule().
          */
         public virtual void ExamineRuleMemoization(IIntStream input,
                                            int ruleIndex,
+                                           int stopIndex, // index or MEMO_RULE_UNKNOWN...
                                            string ruleName) {
-            //System.out.println("examine memo "+ruleName);
-            int stopIndex = _parser.GetRuleMemoization(ruleIndex, input.Index);
+            if (dump)
+                Console.WriteLine("examine memo " + ruleName + " at " + input.Index + ": " + stopIndex);
             if (stopIndex == BaseRecognizer.MemoRuleUnknown) {
                 //System.out.println("rule "+ruleIndex+" missed @ "+input.index());
-                numMemoizationCacheMisses++;
-                numGuessingRuleInvocations++; // we'll have to enter
+                stats.numMemoizationCacheMisses++;
+                stats.numGuessingRuleInvocations++; // we'll have to enter
+                CurrentDecision().numMemoizationCacheMisses++;
             } else {
                 // regardless of rule success/failure, if in cache, we have a cache hit
                 //System.out.println("rule "+ruleIndex+" hit @ "+input.index());
-                numMemoizationCacheHits++;
+                stats.numMemoizationCacheHits++;
+                CurrentDecision().numMemoizationCacheHits++;
             }
         }
 
+        /** Warning: doesn't track success/failure, just unique recording event */
         public virtual void Memoize(IIntStream input,
                             int ruleIndex,
                             int ruleStartIndex,
                             string ruleName) {
             // count how many entries go into table
-            //System.out.println("memoize "+ruleName);
-            numMemoizationCacheEntries++;
+            if (dump)
+                Console.WriteLine("memoize " + ruleName);
+            stats.numMemoizationCacheEntries++;
         }
 
-        public override void ExitRule(string grammarFileName, string ruleName) {
-            _ruleLevel--;
+        public override void Location(int line, int pos) {
+            currentLine.Push(line);
+            currentPos.Push(pos);
         }
 
-        public override void EnterDecision(int decisionNumber) {
-            _decisionLevel++;
-            int startingLookaheadIndex = _parser.TokenStream.Index;
-            //System.out.println("enterDecision "+decisionNumber+" @ index "+startingLookaheadIndex);
-            lookaheadStack.Push(startingLookaheadIndex);
+        public override void EnterDecision(int decisionNumber, bool couldBacktrack) {
+            lastRealTokenTouchedInDecision = null;
+            stats.numDecisionEvents++;
+            int startingLookaheadIndex = parser.TokenStream.Index;
+            ITokenStream input = parser.TokenStream;
+            if (dump) {
+                Console.WriteLine("enterDecision canBacktrack=" + couldBacktrack + " " + decisionNumber +
+                      " backtrack depth " + backtrackDepth +
+                      " @ " + input.Get(input.Index) +
+                      " rule " + LocationDescription());
+            }
+            string g = currentGrammarFileName.Peek();
+            DecisionDescriptor descriptor = decisions.Get(g, decisionNumber);
+            if (descriptor == null) {
+                descriptor = new DecisionDescriptor();
+                decisions.Put(g, decisionNumber, descriptor);
+                descriptor.decision = decisionNumber;
+                descriptor.fileName = currentGrammarFileName.Peek();
+                descriptor.ruleName = currentRuleName.Peek();
+                descriptor.line = currentLine.Peek();
+                descriptor.pos = currentPos.Peek();
+                descriptor.couldBacktrack = couldBacktrack;
+            }
+            descriptor.n++;
+
+            DecisionEvent d = new DecisionEvent();
+            decisionStack.Push(d);
+            d.decision = descriptor;
+            d.startTime = DateTime.Now;
+            d.startIndex = startingLookaheadIndex;
         }
 
         public override void ExitDecision(int decisionNumber) {
-            //System.out.println("exitDecision "+decisionNumber);
-            // track how many of acyclic, cyclic here as we don't know what kind
-            // yet in enterDecision event.
-            if (_parser.isCyclicDecision) {
-                numCyclicDecisions++;
-            } else {
-                numFixedDecisions++;
+            DecisionEvent d = decisionStack.Pop();
+            d.stopTime = DateTime.Now;
+
+            int lastTokenIndex = lastRealTokenTouchedInDecision.TokenIndex;
+            int numHidden = GetNumberOfHiddenTokens(d.startIndex, lastTokenIndex);
+            int depth = lastTokenIndex - d.startIndex - numHidden + 1; // +1 counts consuming start token as 1
+            d.k = depth;
+            d.decision.maxk = Math.Max(d.decision.maxk, depth);
+
+            if (dump) {
+                Console.WriteLine("exitDecision " + decisionNumber + " in " + d.decision.ruleName +
+                                   " lookahead " + d.k + " max token " + lastRealTokenTouchedInDecision);
             }
-            lookaheadStack.Pop(); // pop lookahead depth counter
-            _decisionLevel--;
-            if (_parser.isCyclicDecision) {
-                if (numCyclicDecisions >= decisionMaxCyclicLookaheads.Length) {
-                    Array.Resize(ref decisionMaxCyclicLookaheads, decisionMaxCyclicLookaheads.Length * 2);
-                }
-                decisionMaxCyclicLookaheads[numCyclicDecisions - 1] = _maxLookaheadInCurrentDecision;
-            } else {
-                if (numFixedDecisions >= decisionMaxFixedLookaheads.Length) {
-                    Array.Resize(ref decisionMaxFixedLookaheads, decisionMaxFixedLookaheads.Length * 2);
-                }
-                decisionMaxFixedLookaheads[numFixedDecisions - 1] = _maxLookaheadInCurrentDecision;
-            }
-            _parser.isCyclicDecision = false; // can't nest so just reset to false
-            _maxLookaheadInCurrentDecision = 0;
+
+            decisionEvents.Add(d); // done with decision; track all
         }
 
         public override void ConsumeToken(IToken token) {
-            //System.out.println("consume token "+token);
-            _lastTokenConsumed = (CommonToken)token;
+            if (dump)
+                Console.WriteLine("consume token " + token);
+
+            if (!InDecision) {
+                stats.numTokens++;
+                return;
+            }
+
+            if (lastRealTokenTouchedInDecision == null ||
+                 lastRealTokenTouchedInDecision.TokenIndex < token.TokenIndex) {
+                lastRealTokenTouchedInDecision = token;
+            }
+            DecisionEvent d = CurrentDecision();
+            // compute lookahead depth
+            int thisRefIndex = token.TokenIndex;
+            int numHidden = GetNumberOfHiddenTokens(d.startIndex, thisRefIndex);
+            int depth = thisRefIndex - d.startIndex - numHidden + 1; // +1 counts consuming start token as 1
+            //d.maxk = Math.max(d.maxk, depth);
+            if (dump) {
+                Console.WriteLine("consume " + thisRefIndex + " " + depth + " tokens ahead in " +
+                                   d.decision.ruleName + "-" + d.decision.decision + " start index " + d.startIndex);
+            }
         }
 
-        /** <summary>
-         *  The parser is in a decision if the decision depth > 0.  This
+        /** The parser is in a decision if the decision depth > 0.  This
          *  works for backtracking also, which can have nested decisions.
-         *  </summary>
          */
         public virtual bool InDecision {
             get {
-                return _decisionLevel > 0;
+                return decisionStack.Count > 0;
             }
         }
 
         public override void ConsumeHiddenToken(IToken token) {
             //System.out.println("consume hidden token "+token);
-            _lastTokenConsumed = (CommonToken)token;
+            if (!InDecision)
+                stats.numHiddenTokens++;
         }
 
-        /** <summary>Track refs to lookahead if in a fixed/nonfixed decision.</summary> */
+        /** Track refs to lookahead if in a fixed/nonfixed decision.
+         */
         public override void LT(int i, IToken t) {
-            if (InDecision) {
-                // get starting index off stack
-                int startingIndex = lookaheadStack.Peek();
-                // compute lookahead depth
-                int thisRefIndex = _parser.TokenStream.Index;
-                int numHidden = GetNumberOfHiddenTokens(startingIndex, thisRefIndex);
-                int depth = i + thisRefIndex - startingIndex - numHidden;
-                /*
-                System.out.println("LT("+i+") @ index "+thisRefIndex+" is depth "+depth+
-                    " max is "+maxLookaheadInCurrentDecision);
-                */
-                if (depth > _maxLookaheadInCurrentDecision) {
-                    _maxLookaheadInCurrentDecision = depth;
+            if (InDecision && i > 0) {
+                DecisionEvent d = CurrentDecision();
+                if (dump) {
+                    Console.WriteLine("LT(" + i + ")=" + t + " index " + t.TokenIndex + " relative to " + d.decision.ruleName + "-" +
+                             d.decision.decision + " start index " + d.startIndex);
                 }
+
+                if (lastRealTokenTouchedInDecision == null ||
+                     lastRealTokenTouchedInDecision.TokenIndex < t.TokenIndex) {
+                    lastRealTokenTouchedInDecision = t;
+                    if (dump)
+                        Console.WriteLine("set last token " + lastRealTokenTouchedInDecision);
+                }
+                // get starting index off stack
+                //			int stackTop = lookaheadStack.size()-1;
+                //			Integer startingIndex = (Integer)lookaheadStack.get(stackTop);
+                //			// compute lookahead depth
+                //			int thisRefIndex = parser.getTokenStream().index();
+                //			int numHidden =
+                //				getNumberOfHiddenTokens(startingIndex.intValue(), thisRefIndex);
+                //			int depth = i + thisRefIndex - startingIndex.intValue() - numHidden;
+                //			/*
+                //			System.out.println("LT("+i+") @ index "+thisRefIndex+" is depth "+depth+
+                //				" max is "+maxLookaheadInCurrentDecision);
+                //			*/
+                //			if ( depth>maxLookaheadInCurrentDecision ) {
+                //				maxLookaheadInCurrentDecision = depth;
+                //			}
+                //			d.maxk = currentDecision()/
             }
         }
 
-        /** <summary>
-         *  Track backtracking decisions.  You'll see a fixed or cyclic decision
+        /** Track backtracking decisions.  You'll see a fixed or cyclic decision
          *  and then a backtrack.
-         *  </summary>
          *
-         *  <remarks>
-         *      enter rule
-         *      ...
-         *      enter decision
-         *      LA and possibly consumes (for cyclic DFAs)
-         *      begin backtrack level
-         *      mark m
-         *      rewind m
-         *      end backtrack level, success
-         *      exit decision
-         *      ...
-         *      exit rule
-         *  </remarks>
+         * 		enter rule
+         * 		...
+         * 		enter decision
+         * 		LA and possibly consumes (for cyclic DFAs)
+         * 		begin backtrack level
+         * 		mark m
+         * 		rewind m
+         * 		end backtrack level, success
+         * 		exit decision
+         * 		...
+         * 		exit rule
          */
         public override void BeginBacktrack(int level) {
-            //System.out.println("enter backtrack "+level);
-            numBacktrackDecisions++;
+            if (dump)
+                Console.WriteLine("enter backtrack " + level);
+            backtrackDepth++;
+            DecisionEvent e = CurrentDecision();
+            if (e.decision.couldBacktrack) {
+                stats.numBacktrackOccurrences++;
+                e.decision.numBacktrackOccurrences++;
+                e.backtracks = true;
+            }
         }
 
-        /** <summary>Successful or not, track how much lookahead synpreds use</summary> */
+        /** Successful or not, track how much lookahead synpreds use */
         public override void EndBacktrack(int level, bool successful) {
-            //System.out.println("exit backtrack "+level+": "+successful);
-            decisionMaxSynPredLookaheads.Add(
-                _maxLookaheadInCurrentDecision
-            );
+            if (dump)
+                Console.WriteLine("exit backtrack " + level + ": " + successful);
+            backtrackDepth--;
         }
 
-#if false
-        public void mark( int marker )
-        {
-            int i = parser.TokenStream.Index;
-            JSystem.@out.println( "mark @ index " + i );
-            synPredLookaheadStack.Push( i );
+        public override void Mark(int i) {
+            if (dump)
+                Console.WriteLine("mark " + i);
         }
 
-        public void rewind( int marker )
-        {
-            // pop starting index off stack
-            int startingIndex = synPredLookaheadStack.Pop();
-            // compute lookahead depth
-            int stopIndex = parser.TokenStream.Index;
-            JSystem.@out.println( "rewind @ index " + stopIndex );
-            int depth = stopIndex - startingIndex;
-            JSystem.@out.println( "depth of lookahead for synpred: " + depth );
-            decisionMaxSynPredLookaheads.Add( depth );
+        public override void Rewind(int i) {
+            if (dump)
+                Console.WriteLine("rewind " + i);
         }
-#endif
+
+        public override void Rewind() {
+            if (dump)
+                Console.WriteLine("rewind");
+        }
+
+        protected virtual DecisionEvent CurrentDecision() {
+            return decisionStack.Peek();
+        }
 
         public override void RecognitionException(RecognitionException e) {
-            numberReportedErrors++;
+            stats.numReportedErrors++;
         }
 
         public override void SemanticPredicate(bool result, string predicate) {
+            stats.numSemanticPredicates++;
             if (InDecision) {
-                numSemanticPredicates++;
+                DecisionEvent d = CurrentDecision();
+                d.evalSemPred = true;
+                d.decision.numSemPredEvals++;
+                if (dump) {
+                    Console.WriteLine("eval " + predicate + " in " + d.decision.ruleName + "-" +
+                                       d.decision.decision);
+                }
             }
         }
 
         public override void Terminate() {
-            string stats = ToNotifyString();
-            try {
-                Stats.WriteReport(RuntimeStatsFileName, stats);
-            } catch (IOException ioe) {
-                Console.Error.WriteLine(ioe);
-                ExceptionExtensions.PrintStackTrace(ioe, Console.Error);
+            foreach (DecisionEvent e in decisionEvents) {
+                //System.out.println("decision "+e.decision.decision+": k="+e.k);
+                e.decision.avgk += e.k;
+                stats.avgkPerDecisionEvent += e.k;
+                if (e.backtracks) { // doesn't count gated syn preds on DFA edges
+                    stats.avgkPerBacktrackingDecisionEvent += e.k;
+                }
             }
-            Console.Out.WriteLine(ToString(stats));
+            stats.averageDecisionPercentBacktracks = 0.0f;
+            foreach (DecisionDescriptor d in decisions.Values()) {
+                stats.numDecisionsCovered++;
+                d.avgk /= (float)d.n;
+                if (d.couldBacktrack) {
+                    stats.numDecisionsThatPotentiallyBacktrack++;
+                    float percentBacktracks = d.numBacktrackOccurrences / (float)d.n;
+                    //System.out.println("dec "+d.decision+" backtracks "+percentBacktracks*100+"%");
+                    stats.averageDecisionPercentBacktracks += percentBacktracks;
+                }
+                // ignore rules that backtrack along gated DFA edges
+                if (d.numBacktrackOccurrences > 0) {
+                    stats.numDecisionsThatDoBacktrack++;
+                }
+            }
+            stats.averageDecisionPercentBacktracks /= stats.numDecisionsThatPotentiallyBacktrack;
+            stats.averageDecisionPercentBacktracks *= 100; // it's a percentage
+            stats.avgkPerDecisionEvent /= stats.numDecisionEvents;
+            stats.avgkPerBacktrackingDecisionEvent /= (float)stats.numBacktrackOccurrences;
+
+            Console.Error.WriteLine(ToString());
+            Console.Error.WriteLine(GetDecisionStatsDump());
+
+            //		String stats = toNotifyString();
+            //		try {
+            //			Stats.writeReport(RUNTIME_STATS_FILENAME,stats);
+            //		}
+            //		catch (IOException ioe) {
+            //			System.err.println(ioe);
+            //			ioe.printStackTrace(System.err);
+            //		}
         }
 
         public virtual void SetParser(DebugParser parser) {
-            this._parser = parser;
+            this.parser = parser;
         }
 
-        #region Reporting
+        // R E P O R T I N G
 
         public virtual string ToNotifyString() {
-            ITokenStream input = _parser.TokenStream;
-            for (int i = 0; i < input.Count && _lastTokenConsumed != null && i <= _lastTokenConsumed.TokenIndex; i++) {
-                IToken t = input.Get(i);
-                if (t.Channel != TokenChannels.Default) {
-                    numHiddenTokens++;
-                    numHiddenCharsMatched += t.Text.Length;
-                }
-            }
-            numCharsMatched = _lastTokenConsumed.StopIndex + 1;
-            decisionMaxFixedLookaheads = Trim(decisionMaxFixedLookaheads, numFixedDecisions);
-            decisionMaxCyclicLookaheads = Trim(decisionMaxCyclicLookaheads, numCyclicDecisions);
             StringBuilder buf = new StringBuilder();
             buf.Append(Version);
             buf.Append('\t');
-            buf.Append(_parser.GetType().Name);
-            buf.Append('\t');
-            buf.Append(numRuleInvocations);
-            buf.Append('\t');
-            buf.Append(maxRuleInvocationDepth);
-            buf.Append('\t');
-            buf.Append(numFixedDecisions);
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Min(EnumerableExtensions.DefaultIfEmpty(decisionMaxFixedLookaheads, int.MaxValue)));
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Max(EnumerableExtensions.DefaultIfEmpty(decisionMaxFixedLookaheads, int.MinValue)));
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Average(EnumerableExtensions.DefaultIfEmpty(decisionMaxFixedLookaheads, 0)));
-            buf.Append('\t');
-            buf.Append(Stats.Stddev(decisionMaxFixedLookaheads));
-            buf.Append('\t');
-            buf.Append(numCyclicDecisions);
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Min(EnumerableExtensions.DefaultIfEmpty(decisionMaxCyclicLookaheads, int.MaxValue)));
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Max(EnumerableExtensions.DefaultIfEmpty(decisionMaxCyclicLookaheads, int.MinValue)));
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Average(EnumerableExtensions.DefaultIfEmpty(decisionMaxCyclicLookaheads, 0)));
-            buf.Append('\t');
-            buf.Append(Stats.Stddev(decisionMaxCyclicLookaheads));
-            buf.Append('\t');
-            buf.Append(numBacktrackDecisions);
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Min(EnumerableExtensions.DefaultIfEmpty(decisionMaxSynPredLookaheads, int.MaxValue)));
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Max(EnumerableExtensions.DefaultIfEmpty(decisionMaxSynPredLookaheads, int.MinValue)));
-            buf.Append('\t');
-            buf.Append(EnumerableExtensions.Average(EnumerableExtensions.DefaultIfEmpty(decisionMaxSynPredLookaheads, 0)));
-            buf.Append('\t');
-            buf.Append(Stats.Stddev(decisionMaxSynPredLookaheads));
-            buf.Append('\t');
-            buf.Append(numSemanticPredicates);
-            buf.Append('\t');
-            buf.Append(_parser.TokenStream.Count);
-            buf.Append('\t');
-            buf.Append(numHiddenTokens);
-            buf.Append('\t');
-            buf.Append(numCharsMatched);
-            buf.Append('\t');
-            buf.Append(numHiddenCharsMatched);
-            buf.Append('\t');
-            buf.Append(numberReportedErrors);
-            buf.Append('\t');
-            buf.Append(numMemoizationCacheHits);
-            buf.Append('\t');
-            buf.Append(numMemoizationCacheMisses);
-            buf.Append('\t');
-            buf.Append(numGuessingRuleInvocations);
-            buf.Append('\t');
-            buf.Append(numMemoizationCacheEntries);
+            buf.Append(parser.GetType().Name);
+            //		buf.Append('\t');
+            //		buf.Append(numRuleInvocations);
+            //		buf.Append('\t');
+            //		buf.Append(maxRuleInvocationDepth);
+            //		buf.Append('\t');
+            //		buf.Append(numFixedDecisions);
+            //		buf.Append('\t');
+            //		buf.Append(Stats.min(decisionMaxFixedLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.max(decisionMaxFixedLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.avg(decisionMaxFixedLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.stddev(decisionMaxFixedLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(numCyclicDecisions);
+            //		buf.Append('\t');
+            //		buf.Append(Stats.min(decisionMaxCyclicLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.max(decisionMaxCyclicLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.avg(decisionMaxCyclicLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.stddev(decisionMaxCyclicLookaheads));
+            //		buf.Append('\t');
+            //		buf.Append(numBacktrackDecisions);
+            //		buf.Append('\t');
+            //		buf.Append(Stats.min(toArray(decisionMaxSynPredLookaheads)));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.max(toArray(decisionMaxSynPredLookaheads)));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.avg(toArray(decisionMaxSynPredLookaheads)));
+            //		buf.Append('\t');
+            //		buf.Append(Stats.stddev(toArray(decisionMaxSynPredLookaheads)));
+            //		buf.Append('\t');
+            //		buf.Append(numSemanticPredicates);
+            //		buf.Append('\t');
+            //		buf.Append(parser.getTokenStream().size());
+            //		buf.Append('\t');
+            //		buf.Append(numHiddenTokens);
+            //		buf.Append('\t');
+            //		buf.Append(numCharsMatched);
+            //		buf.Append('\t');
+            //		buf.Append(numHiddenCharsMatched);
+            //		buf.Append('\t');
+            //		buf.Append(numberReportedErrors);
+            //		buf.Append('\t');
+            //		buf.Append(numMemoizationCacheHits);
+            //		buf.Append('\t');
+            //		buf.Append(numMemoizationCacheMisses);
+            //		buf.Append('\t');
+            //		buf.Append(numGuessingRuleInvocations);
+            //		buf.Append('\t');
+            //		buf.Append(numMemoizationCacheEntries);
             return buf.ToString();
         }
 
         public override string ToString() {
-            return ToString(ToNotifyString());
+            return ToString(GetReport());
         }
 
-        protected static string[] DecodeReportData(string data) {
-            string[] fields = new string[NumRuntimeStats];
-            StringTokenizer st = new StringTokenizer(data, "\t");
-            int i = 0;
-            while (st.hasMoreTokens()) {
-                fields[i] = st.nextToken();
-                i++;
-            }
-            if (i != NumRuntimeStats) {
-                return null;
-            }
-            return fields;
+        public virtual ProfileStats GetReport() {
+            //ITokenStream input = parser.TokenStream;
+            //for (int i = 0; i < input.Count && lastRealTokenTouchedInDecision != null && i <= lastRealTokenTouchedInDecision.TokenIndex; i++)
+            //{
+            //    IToken t = input.Get(i);
+            //    if (t.Channel != TokenChannels.Default)
+            //    {
+            //        stats.numHiddenTokens++;
+            //        stats.numHiddenCharsMatched += t.Text.Length;
+            //    }
+            //}
+            stats.Version = Version;
+            stats.name = parser.GetType().Name;
+            stats.numUniqueRulesInvoked = uniqueRules.Count;
+            //stats.numCharsMatched = lastTokenConsumed.getStopIndex() + 1;
+            return stats;
         }
 
-        public static string ToString(string notifyDataLine) {
-            string[] fields = DecodeReportData(notifyDataLine);
-            if (fields == null) {
-                return null;
+        public virtual DoubleKeyMap<string, int, DecisionDescriptor> GetDecisionStats() {
+            return decisions;
+        }
+
+        public virtual ReadOnlyCollection<DecisionEvent> DecisionEvents {
+            get {
+                return decisionEvents.AsReadOnly();
             }
+        }
+
+        public static string ToString(ProfileStats stats) {
             StringBuilder buf = new StringBuilder();
             buf.Append("ANTLR Runtime Report; Profile Version ");
-            buf.Append(fields[0]);
-            buf.Append('\n');
+            buf.Append(stats.Version);
+            buf.Append(NewLine);
             buf.Append("parser name ");
-            buf.Append(fields[1]);
-            buf.Append('\n');
+            buf.Append(stats.name);
+            buf.Append(NewLine);
             buf.Append("Number of rule invocations ");
-            buf.Append(fields[2]);
-            buf.Append('\n');
-            buf.Append("Number of rule invocations in \"guessing\" mode ");
-            buf.Append(fields[27]);
-            buf.Append('\n');
+            buf.Append(stats.numRuleInvocations);
+            buf.Append(NewLine);
+            buf.Append("Number of unique rules visited ");
+            buf.Append(stats.numUniqueRulesInvoked);
+            buf.Append(NewLine);
+            buf.Append("Number of decision events ");
+            buf.Append(stats.numDecisionEvents);
+            buf.Append(NewLine);
+            buf.Append("Number of rule invocations while backtracking ");
+            buf.Append(stats.numGuessingRuleInvocations);
+            buf.Append(NewLine);
             buf.Append("max rule invocation nesting depth ");
-            buf.Append(fields[3]);
-            buf.Append('\n');
-            buf.Append("number of fixed lookahead decisions ");
-            buf.Append(fields[4]);
-            buf.Append('\n');
-            buf.Append("min lookahead used in a fixed lookahead decision ");
-            buf.Append(fields[5]);
-            buf.Append('\n');
-            buf.Append("max lookahead used in a fixed lookahead decision ");
-            buf.Append(fields[6]);
-            buf.Append('\n');
-            buf.Append("average lookahead depth used in fixed lookahead decisions ");
-            buf.Append(fields[7]);
-            buf.Append('\n');
-            buf.Append("standard deviation of depth used in fixed lookahead decisions ");
-            buf.Append(fields[8]);
-            buf.Append('\n');
-            buf.Append("number of arbitrary lookahead decisions ");
-            buf.Append(fields[9]);
-            buf.Append('\n');
-            buf.Append("min lookahead used in an arbitrary lookahead decision ");
-            buf.Append(fields[10]);
-            buf.Append('\n');
-            buf.Append("max lookahead used in an arbitrary lookahead decision ");
-            buf.Append(fields[11]);
-            buf.Append('\n');
-            buf.Append("average lookahead depth used in arbitrary lookahead decisions ");
-            buf.Append(fields[12]);
-            buf.Append('\n');
-            buf.Append("standard deviation of depth used in arbitrary lookahead decisions ");
-            buf.Append(fields[13]);
-            buf.Append('\n');
-            buf.Append("number of evaluated syntactic predicates ");
-            buf.Append(fields[14]);
-            buf.Append('\n');
-            buf.Append("min lookahead used in a syntactic predicate ");
-            buf.Append(fields[15]);
-            buf.Append('\n');
-            buf.Append("max lookahead used in a syntactic predicate ");
-            buf.Append(fields[16]);
-            buf.Append('\n');
-            buf.Append("average lookahead depth used in syntactic predicates ");
-            buf.Append(fields[17]);
-            buf.Append('\n');
-            buf.Append("standard deviation of depth used in syntactic predicates ");
-            buf.Append(fields[18]);
-            buf.Append('\n');
+            buf.Append(stats.maxRuleInvocationDepth);
+            buf.Append(NewLine);
+            //		buf.Append("number of fixed lookahead decisions ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("min lookahead used in a fixed lookahead decision ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("max lookahead used in a fixed lookahead decision ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("average lookahead depth used in fixed lookahead decisions ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("standard deviation of depth used in fixed lookahead decisions ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("number of arbitrary lookahead decisions ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("min lookahead used in an arbitrary lookahead decision ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("max lookahead used in an arbitrary lookahead decision ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("average lookahead depth used in arbitrary lookahead decisions ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("standard deviation of depth used in arbitrary lookahead decisions ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("number of evaluated syntactic predicates ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("min lookahead used in a syntactic predicate ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("max lookahead used in a syntactic predicate ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("average lookahead depth used in syntactic predicates ");
+            //		buf.Append();
+            //		buf.Append(newline);
+            //		buf.Append("standard deviation of depth used in syntactic predicates ");
+            //		buf.Append();
+            //		buf.Append(newline);
             buf.Append("rule memoization cache size ");
-            buf.Append(fields[28]);
-            buf.Append('\n');
+            buf.Append(stats.numMemoizationCacheEntries);
+            buf.Append(NewLine);
             buf.Append("number of rule memoization cache hits ");
-            buf.Append(fields[25]);
-            buf.Append('\n');
+            buf.Append(stats.numMemoizationCacheHits);
+            buf.Append(NewLine);
             buf.Append("number of rule memoization cache misses ");
-            buf.Append(fields[26]);
-            buf.Append('\n');
-            buf.Append("number of evaluated semantic predicates ");
-            buf.Append(fields[19]);
-            buf.Append('\n');
+            buf.Append(stats.numMemoizationCacheMisses);
+            buf.Append(NewLine);
+            //		buf.Append("number of evaluated semantic predicates ");
+            //		buf.Append();
+            //		buf.Append(newline);
             buf.Append("number of tokens ");
-            buf.Append(fields[20]);
-            buf.Append('\n');
+            buf.Append(stats.numTokens);
+            buf.Append(NewLine);
             buf.Append("number of hidden tokens ");
-            buf.Append(fields[21]);
-            buf.Append('\n');
+            buf.Append(stats.numHiddenTokens);
+            buf.Append(NewLine);
             buf.Append("number of char ");
-            buf.Append(fields[22]);
-            buf.Append('\n');
+            buf.Append(stats.numCharsMatched);
+            buf.Append(NewLine);
             buf.Append("number of hidden char ");
-            buf.Append(fields[23]);
-            buf.Append('\n');
+            buf.Append(stats.numHiddenCharsMatched);
+            buf.Append(NewLine);
             buf.Append("number of syntax errors ");
-            buf.Append(fields[24]);
-            buf.Append('\n');
+            buf.Append(stats.numReportedErrors);
+            buf.Append(NewLine);
             return buf.ToString();
         }
 
-        #endregion
+        public virtual string GetDecisionStatsDump() {
+            StringBuilder buf = new StringBuilder();
+            buf.Append("location");
+            buf.Append(DataSeparator);
+            buf.Append("n");
+            buf.Append(DataSeparator);
+            buf.Append("avgk");
+            buf.Append(DataSeparator);
+            buf.Append("maxk");
+            buf.Append(DataSeparator);
+            buf.Append("synpred");
+            buf.Append(DataSeparator);
+            buf.Append("sempred");
+            buf.Append(DataSeparator);
+            buf.Append("canbacktrack");
+            buf.Append("\n");
+            foreach (string fileName in decisions.KeySet()) {
+                foreach (int d in decisions.KeySet(fileName)) {
+                    DecisionDescriptor s = decisions.Get(fileName, d);
+                    buf.Append(s.decision);
+                    buf.Append("@");
+                    buf.Append(LocationDescription(s.fileName, s.ruleName, s.line, s.pos)); // decision number
+                    buf.Append(DataSeparator);
+                    buf.Append(s.n);
+                    buf.Append(DataSeparator);
+                    buf.Append(string.Format("{0}", s.avgk));
+                    buf.Append(DataSeparator);
+                    buf.Append(s.maxk);
+                    buf.Append(DataSeparator);
+                    buf.Append(s.numBacktrackOccurrences);
+                    buf.Append(DataSeparator);
+                    buf.Append(s.numSemPredEvals);
+                    buf.Append(DataSeparator);
+                    buf.Append(s.couldBacktrack ? "1" : "0");
+                    buf.Append(NewLine);
+                }
+            }
+            return buf.ToString();
+        }
 
         protected virtual int[] Trim(int[] X, int n) {
             if (n < X.Length) {
-                Array.Resize(ref X, n);
+                int[] trimmed = new int[n];
+                Array.Copy(X, 0, trimmed, 0, n);
+                X = trimmed;
             }
             return X;
         }
 
-        /** <summary>Get num hidden tokens between i..j inclusive</summary> */
+        /** Get num hidden tokens between i..j inclusive */
         public virtual int GetNumberOfHiddenTokens(int i, int j) {
             int n = 0;
-            ITokenStream input = _parser.TokenStream;
+            ITokenStream input = parser.TokenStream;
             for (int ti = i; ti < input.Count && ti <= j; ti++) {
                 IToken t = input.Get(ti);
                 if (t.Channel != TokenChannels.Default) {
@@ -500,6 +647,87 @@ namespace Antlr.Runtime.Debug {
                 }
             }
             return n;
+        }
+
+        protected virtual string LocationDescription() {
+            return LocationDescription(
+                currentGrammarFileName.Peek(),
+                currentRuleName.Peek(),
+                currentLine.Peek(),
+                currentPos.Peek());
+        }
+
+        protected virtual string LocationDescription(string file, string rule, int line, int pos) {
+            return file + ":" + line + ":" + pos + "(" + rule + ")";
+        }
+
+        public class ProfileStats {
+            public string Version;
+            public string name;
+            public int numRuleInvocations;
+            public int numUniqueRulesInvoked;
+            public int numDecisionEvents;
+            public int numDecisionsCovered;
+            public int numDecisionsThatPotentiallyBacktrack;
+            public int numDecisionsThatDoBacktrack;
+            public int maxRuleInvocationDepth;
+            public float avgkPerDecisionEvent;
+            public float avgkPerBacktrackingDecisionEvent;
+            public float averageDecisionPercentBacktracks;
+            public int numBacktrackOccurrences; // doesn't count gated DFA edges
+
+            public int numFixedDecisions;
+            public int minDecisionMaxFixedLookaheads;
+            public int maxDecisionMaxFixedLookaheads;
+            public int avgDecisionMaxFixedLookaheads;
+            public int stddevDecisionMaxFixedLookaheads;
+            public int numCyclicDecisions;
+            public int minDecisionMaxCyclicLookaheads;
+            public int maxDecisionMaxCyclicLookaheads;
+            public int avgDecisionMaxCyclicLookaheads;
+            public int stddevDecisionMaxCyclicLookaheads;
+            //		int Stats.min(toArray(decisionMaxSynPredLookaheads);
+            //		int Stats.max(toArray(decisionMaxSynPredLookaheads);
+            //		int Stats.avg(toArray(decisionMaxSynPredLookaheads);
+            //		int Stats.stddev(toArray(decisionMaxSynPredLookaheads);
+            public int numSemanticPredicates;
+            public int numTokens;
+            public int numHiddenTokens;
+            public int numCharsMatched;
+            public int numHiddenCharsMatched;
+            public int numReportedErrors;
+            public int numMemoizationCacheHits;
+            public int numMemoizationCacheMisses;
+            public int numGuessingRuleInvocations;
+            public int numMemoizationCacheEntries;
+        }
+
+        public class DecisionDescriptor {
+            public int decision;
+            public string fileName;
+            public string ruleName;
+            public int line;
+            public int pos;
+            public bool couldBacktrack;
+
+            public int n;
+            public float avgk; // avg across all decision events
+            public int maxk;
+            public int numBacktrackOccurrences;
+            public int numSemPredEvals;
+        }
+
+        // all about a specific exec of a single decision
+        public class DecisionEvent {
+            public DecisionDescriptor decision;
+            public int startIndex;
+            public int k;
+            public bool backtracks; // doesn't count gated DFA edges
+            public bool evalSemPred;
+            public DateTime startTime;
+            public DateTime stopTime;
+            public int numMemoizationCacheHits;
+            public int numMemoizationCacheMisses;
         }
     }
 }
