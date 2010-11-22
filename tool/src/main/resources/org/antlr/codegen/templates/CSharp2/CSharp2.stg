@@ -923,7 +923,7 @@ int <label>Start = CharIndex;
 Match(<string>); <checkRuleBacktrackFailure()>
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
-<label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, TokenConstants.Default, <label>Start, CharIndex-1);
+<label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, TokenChannels.Default, <label>Start, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -991,7 +991,7 @@ int <label>Start<elementIndex> = CharIndex;
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
 <if(scope)><scope:delegateName()>.<endif>m<rule.name>(<args; separator=", ">); <checkRuleBacktrackFailure()>
-<label> = new CommonToken(input, Token.INVALID_TOKEN_TYPE, TokenConstants.Default, <label>Start<elementIndex>, CharIndex-1);
+<label> = new CommonToken(input, Token.INVALID_TOKEN_TYPE, TokenChannels.Default, <label>Start<elementIndex>, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -1012,7 +1012,7 @@ int <label>Start<elementIndex> = CharIndex;
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
 Match(EOF); <checkRuleBacktrackFailure()>
-<labelType> <label> = new <labelType>(input, EOF, TokenConstants.Default, <label>Start<elementIndex>, CharIndex-1);
+<labelType> <label> = new <labelType>(input, EOF, TokenChannels.Default, <label>Start<elementIndex>, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -1026,16 +1026,16 @@ tree(root, actionsAfterRoot, children, nullableChildList,
 <root:element()>
 <actionsAfterRoot:element()>
 <if(nullableChildList)>
-if ( input.LA(1) == TokenConstants.Down )
+if ( input.LA(1) == TokenTypes.Down )
 {
-    Match(input, TokenConstants.Down, null); <checkRuleBacktrackFailure()>
+    Match(input, TokenTypes.Down, null); <checkRuleBacktrackFailure()>
     <children:element()>
-    Match(input, TokenConstants.Up, null); <checkRuleBacktrackFailure()>
+    Match(input, TokenTypes.Up, null); <checkRuleBacktrackFailure()>
 }
 <else>
-Match(input, TokenConstants.Down, null); <checkRuleBacktrackFailure()>
+Match(input, TokenTypes.Down, null); <checkRuleBacktrackFailure()>
 <children:element()>
-Match(input, TokenConstants.Up, null); <checkRuleBacktrackFailure()>
+Match(input, TokenTypes.Up, null); <checkRuleBacktrackFailure()>
 <endif>
 >>
 
@@ -1063,7 +1063,7 @@ else
     <ruleBacktrackFailure()>
     NoViableAltException nvae_d<decisionNumber>s<stateNumber> =
         new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);<\n>
-	DebugRecognitionException(nvae);
+	DebugRecognitionException(nvae_d<decisionNumber>s<stateNumber>);
     <@noViableAltException()>
     throw nvae_d<decisionNumber>s<stateNumber>;<\n>
 <endif>
@@ -1132,7 +1132,7 @@ switch ( input.LA(<k>) )
 	    <ruleBacktrackFailure()>
 	    NoViableAltException nvae_d<decisionNumber>s<stateNumber> =
 	        new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);<\n>
-		DebugRecognitionException(nvae);
+		DebugRecognitionException(nvae_d<decisionNumber>s<stateNumber>);
 	    <@noViableAltException()>
 	    throw nvae_d<decisionNumber>s<stateNumber>;<\n>
 <endif>

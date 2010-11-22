@@ -179,7 +179,7 @@ namespace Antlr.Runtime {
                 return;
             }
             NoViableAltException nvae =
-                new NoViableAltException(GetDescription(),
+                new NoViableAltException(Description,
                                          decisionNumber,
                                          s,
                                          input);
@@ -204,8 +204,10 @@ namespace Antlr.Runtime {
             return -1;
         }
 
-        public virtual string GetDescription() {
-            return "n/a";
+        public virtual string Description {
+            get {
+                return "n/a";
+            }
         }
 
         /** <summary>
