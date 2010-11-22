@@ -1203,20 +1203,19 @@ static readonly char[] DFA<dfa.decisionNumber>_min = DFA.UnpackEncodedStringToUn
 static readonly char[] DFA<dfa.decisionNumber>_max = DFA.UnpackEncodedStringToUnsignedChars(DFA<dfa.decisionNumber>_maxS);
 static readonly short[] DFA<dfa.decisionNumber>_accept = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_acceptS);
 static readonly short[] DFA<dfa.decisionNumber>_special = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_specialS);
-static readonly short[][] DFA<dfa.decisionNumber>_transition;
-
-static DFA<dfa.decisionNumber>()
-{
-	int numStates = DFA<dfa.decisionNumber>_transitionS.Length;
-	DFA<dfa.decisionNumber>_transition = new short[numStates][];
-	for ( int i=0; i \< numStates; i++ )
-	{
-		DFA<dfa.decisionNumber>_transition[i] = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_transitionS[i]);
-	}
-}
+static readonly short[][] DFA<dfa.decisionNumber>_transition = new short[DFA<dfa.decisionNumber>_transitionS.Length][];
 
 protected class DFA<dfa.decisionNumber> : DFA
 {
+	static DFA<dfa.decisionNumber>()
+	{
+		int numStates = DFA<dfa.decisionNumber>_transitionS.Length;
+		for ( int i=0; i \< numStates; i++ )
+		{
+			DFA<dfa.decisionNumber>_transition[i] = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_transitionS[i]);
+		}
+	}
+
     <@debugMember()>
     public DFA<dfa.decisionNumber>(BaseRecognizer recognizer)
     {
