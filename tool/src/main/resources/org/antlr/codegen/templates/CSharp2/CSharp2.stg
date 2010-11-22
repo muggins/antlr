@@ -151,11 +151,11 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
     <filteringNextToken()>
 <endif>
  
-	virtual void OnCreated() {};
-	virtual void EnterRule(string ruleName, int ruleIndex) {};
-	virtual void LeaveRule(string ruleName, int ruleIndex) {};
+	protected virtual void OnCreated() {}
+	protected virtual void EnterRule(string ruleName, int ruleIndex) {}
+	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
 
-   <rules; separator="\n\n">
+    <rules; separator="\n\n">
 
    	<synpreds:{p | <lexerSynpred(p)>}>
 
@@ -309,11 +309,11 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 
     <members>
 
- 	virtual void OnCreated() {};
-	virtual void EnterRule(string ruleName, int ruleIndex) {};
-	virtual void LeaveRule(string ruleName, int ruleIndex) {};
+ 	protected virtual void OnCreated() {}
+	protected virtual void EnterRule(string ruleName, int ruleIndex) {}
+	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
 
-   <rules; separator="\n\n">
+    <rules; separator="\n\n">
 
 <! generate rule/method definitions for imported rules so they
    appear to be defined in this recognizer. !>
@@ -371,8 +371,8 @@ treeParser(grammar, name, scopes, tokens, tokenNames, globalAction, rules, numRu
  */
 synpredRule(ruleName, ruleDescriptor, block, description, nakedBlock) ::=
 <<
-virtual void Enter<ruleName>_fragment() {};
-virtual void Leave<ruleName>_fragment() {};
+protected virtual void Enter<ruleName>_fragment() {}
+protected virtual void Leave<ruleName>_fragment() {}
 
 // $ANTLR start "<ruleName>"
 public void <ruleName>_fragment(<ruleDescriptor.parameterScope:parameterScope(scope=it)>) {
@@ -458,8 +458,8 @@ rule(ruleName,ruleDescriptor,block,emptyRule,description,exceptions,finally,memo
 <ruleAttributeScope(scope=ruleDescriptor.ruleScope)>
 <returnScope(scope=ruleDescriptor.returnScope)>
 
-virtual void Enter<ruleName>() {};
-virtual void Leave<ruleName>() {};
+protected virtual void Enter<ruleName>() {}
+protected virtual void Leave<ruleName>() {}
 
 // $ANTLR start "<ruleName>"
 // <fileName>:<description>
@@ -612,8 +612,8 @@ if ( state.backtracking > 0 )
  *  fragment rules.
  */
 lexerRule(ruleName,nakedBlock,ruleDescriptor,block,memoize) ::= <<
-virtual void Enter<ruleName>() {};
-virtual void Leave<ruleName>() {};
+protected virtual void Enter<ruleName>() {}
+protected virtual void Leave<ruleName>() {}
 
 // $ANTLR start "<ruleName>"
 [GrammarRule("<ruleName>")]
@@ -1211,18 +1211,18 @@ static readonly short[] DFA<dfa.decisionNumber>_accept = DFA.UnpackEncodedString
 static readonly short[] DFA<dfa.decisionNumber>_special = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_specialS);
 static readonly short[][] DFA<dfa.decisionNumber>_transition;
 
-static DFA<dfa.decisionNumber>()
-{
-	int numStates = DFA<dfa.decisionNumber>_transitionS.Length;
-	DFA<dfa.decisionNumber>_transition = new short[numStates][];
-	for ( int i=0; i \< numStates; i++ )
-	{
-		DFA<dfa.decisionNumber>_transition[i] = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_transitionS[i]);
-	}
-}
-
 protected class DFA<dfa.decisionNumber> : DFA
 {
+	static DFA<dfa.decisionNumber>()
+	{
+		int numStates = DFA<dfa.decisionNumber>_transitionS.Length;
+		DFA<dfa.decisionNumber>_transition = new short[numStates][];
+		for ( int i=0; i \< numStates; i++ )
+		{
+			DFA<dfa.decisionNumber>_transition[i] = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_transitionS[i]);
+		}
+	}
+
     <@debugMember()>
     public DFA<dfa.decisionNumber>(BaseRecognizer recognizer)
     {
