@@ -79,8 +79,10 @@ public class AttributeScope {
 	public boolean isPredefinedLexerRuleScope;
 
 	/** The list of Attribute objects */
-
 	protected LinkedHashMap<String,Attribute> attributes = new LinkedHashMap();
+
+	/* Placeholder for compatibility with the CSharp3 target. */
+	public LinkedHashMap<String, GrammarAST> actions = new LinkedHashMap();
 
 	public AttributeScope(String name, Token derivedFromToken) {
 		this(null,name,derivedFromToken);
