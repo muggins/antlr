@@ -33,11 +33,14 @@ import antlr.TokenWithIndex;
 import antlr.collections.AST;
 import org.antlr.analysis.DFA;
 import org.antlr.analysis.NFAState;
+import org.antlr.grammar.v2.ANTLRParser;
 import org.antlr.misc.IntSet;
 import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.grammar.v2.ANTLRParser;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /** Grammars are first converted to ASTs using this class and then are
  *  converted to NFAs via a tree walker.
@@ -301,6 +304,8 @@ public class GrammarAST extends BaseAST {
 		}
         return col;
     }
+
+	public int getCharPositionInLine() { return getColumn()-1; }
 
     public void setLine(int line) {
         token.setLine(line);
