@@ -2590,6 +2590,10 @@ outer:
 		return composite.getDelegates(this);
 	}
 
+	public boolean getHasDelegates() {
+	   return !getDelegates().isEmpty();
+	}
+
 	public List<String> getDelegateNames() {
 		// compute delegates:{Grammar g | return g.name;}
 		List<String> names = new ArrayList<String>();

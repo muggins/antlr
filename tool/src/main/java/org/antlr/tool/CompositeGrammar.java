@@ -79,13 +79,13 @@ public class CompositeGrammar {
 	protected int maxTokenType = Label.MIN_TOKEN_TYPE-1;
 
 	/** Map token like ID (but not literals like "while") to its token type */
-	public Map tokenIDToTypeMap = new HashMap();
+	public Map tokenIDToTypeMap = new LinkedHashMap();
 
 	/** Map token literals like "while" to its token type.  It may be that
 	 *  WHILE="while"=35, in which case both tokenIDToTypeMap and this
 	 *  field will have entries both mapped to 35.
 	 */
-	public Map<String, Integer> stringLiteralToTypeMap = new HashMap<String, Integer>();
+	public Map<String, Integer> stringLiteralToTypeMap = new LinkedHashMap<String, Integer>();
 	/** Reverse index for stringLiteralToTypeMap */
 	public Vector<String> typeToStringLiteralList = new Vector<String>();
 
