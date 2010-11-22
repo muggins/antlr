@@ -1,11 +1,13 @@
-ANTLR 3.2 Release
-September 23, 2009
+ANTLR 3.3 Release
+November 29, 2010
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
 University of San Francisco
 
 CHANGES
+
+November 29, 2010 -- ANTLR v3.3
 
 * October 20, 2010
 
@@ -15,6 +17,11 @@ interface and other tools! [BREAKS BACKWARD COMPATIBILITY]
 October 17, 2010
 
 * Missing -trace in help msg
+
+November 22, 2010
+
+* Added GrammarAST: public int getCharPositionInLine() { return getColumn()-1; }
+  and Grammar.getHasDelegates() for C# guys
 
 October 16, 2010
 

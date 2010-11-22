@@ -1,5 +1,5 @@
-ANTLR v3.2
-September 23, 2009
+ANTLR v3.3
+November 29, 2010
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
@@ -14,7 +14,7 @@ descriptions containing actions in a variety of target
 languages. ANTLR provides excellent support for tree construction,
 tree walking, translation, error recovery, and error reporting. I've
 been working on parser generators for 20 years and on this particular
-version of ANTLR for 5 years.
+version of ANTLR for 7 years.
 
 You should use v3 in conjunction with ANTLRWorks:
 
@@ -29,7 +29,7 @@ can also buy the PDF:
 
     http://www.pragmaticprogrammer.com/titles/tpantlr/index.html
 
-New book coming out in November 2009: (available in PDF beta now)
+2nd book, Language Implementation Patterns:
 
     http://pragprog.com/titles/tpdsl/language-implementation-patterns
 
@@ -76,6 +76,10 @@ ANTLR v3 sample grammars:
 
     http://www.antlr.org/download/examples-v3.tar.gz
 
+Examples from Language Implementation Patterns:
+
+    http://www.pragprog.com/titles/tpdsl/source_code
+
 Also check out Mantra Programming Language for a prototype (work in
 progress) using v3:
 
@@ -85,10 +89,11 @@ progress) using v3:
 
 What is ANTLR?
 
-ANTLR stands for (AN)other (T)ool for (L)anguage (R)ecognition and was
-originally known as PCCTS.  ANTLR is a language tool that provides a
-framework for constructing recognizers, compilers, and translators
-from grammatical descriptions containing actions.  Target language list:
+ANTLR stands for (AN)other (T)ool for (L)anguage (R)ecognition
+and generates LL(*) recursive-descent parsers. ANTLR is a language tool
+that provides a framework for constructing recognizers, compilers, and
+translators from grammatical descriptions containing actions.
+Target language list:
 
 http://www.antlr.org/wiki/display/ANTLR3/Code+Generation+Targets
 
@@ -108,21 +113,24 @@ See migration guide:
 
 How do I install this damn thing?
 
-Just untar and you'll get:
+Just untar antlr-3.3.tar.gz and you'll get:
 
-antlr-3.2/BUILD.txt
-antlr-3.2/antlr3-maven-plugin
-antlr-3.2/antlrjar.xml
-antlr-3.2/antlrsources.xml
-antlr-3.2/gunit
-antlr-3.2/gunit-maven-plugin
-antlr-3.2/pom.xml
-antlr-3.2/runtime
-antlr-3.2/tool
+antlr-3.3/BUILD.txt
+antlr-3.3/antlr3-maven-plugin
+antlr-3.3/antlrjar.xml
+antlr-3.3/antlrsources.xml
+antlr-3.3/gunit
+antlr-3.3/gunit-maven-plugin
+antlr-3.3/pom.xml
+antlr-3.3/runtime
+antlr-3.3/tool
 
-You should also grab the antlr-3.2.jar file from the website
-because it has all of the jars unique combined into one.
-Then you need to add it to your CLASSPATH.
+This is the source.  You should also grab the antlr-3.3.jar
+file from the website because it has all of the jars you need
+combined into one. Then you need to add antlr-3.3.jar to your CLASSPATH or
+add to arg list; e.g., on unix:
+
+$ java -cp "/usr/local/lib/antlr-3.3.jar:$CLASSPATH" org.antlr.Tool Test.g
 
 Please see the FAQ
 
