@@ -1,6 +1,6 @@
 /*
  [The "BSD license"]
- Copyright (c) 2005-2009 Terence Parr
+ Copyright (c) 2010 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 lexer grammar ActionTranslator;
 options {
   filter=true;  // try all non-fragment rules in order specified

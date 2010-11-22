@@ -1,7 +1,7 @@
 header {
 /*
- [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2010 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,7 @@ header {
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package org.antlr.grammar.v2;
+*/package org.antlr.grammar.v2;
 import java.util.*;
 import java.io.*;
 import org.antlr.analysis.*;

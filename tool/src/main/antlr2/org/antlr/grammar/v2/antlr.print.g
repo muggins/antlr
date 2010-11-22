@@ -1,7 +1,7 @@
 header {
 /*
- [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2010 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without

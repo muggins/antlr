@@ -1,6 +1,6 @@
 /*
  [The "BSD license"]
- Copyright (c) 2005-2009 Terence Parr
+ Copyright (c) 2010 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 /** ANTLR v3 grammar written in ANTLR v3 with AST construction */
 grammar ANTLRv3;
 
