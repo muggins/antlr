@@ -125,7 +125,6 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 	private static readonly bool[] decisionCanBacktrack = new bool[0];
 
 
-<! Doesn't exist in Java templates - either really outdated or swiped from CSharp3 :S
 <if(grammar.hasDelegates)>
 	public override ICharStream CharStream
 	{
@@ -145,7 +144,6 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 	}
 
 <endif>
-!>
 
 <if(filterMode)>
     <filteringNextToken()>
@@ -159,10 +157,18 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 
    	<synpreds:{p | <lexerSynpred(p)>}>
 
-    <cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
+	#region DFA
+    //<cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
+	<cyclicDFAs:{dfa | DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
 
-    <cyclicDFAs:cyclicDFA()> <! dump tables for all DFA !>
-    
+	protected override void InitDFAs()
+	{
+		base.InitDFAs();
+		<cyclicDFAs:{dfa | dfa<dfa.decisionNumber> = new DFA<dfa.decisionNumber>(this<if(dfa.specialStateSTs)>, SpecialStateTransition<dfa.decisionNumber><endif>);}; separator="\n">
+	}
+
+	<cyclicDFAs:cyclicDFA()> <! dump tables for all DFA !>
+	#endregion
 }
 >>
 
