@@ -158,7 +158,7 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
    	<synpreds:{p | <lexerSynpred(p)>}>
 
 	#region DFA
-    //<cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
+    <!<cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n"> !>
 	<cyclicDFAs:{dfa | DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
 
 	protected override void InitDFAs()
@@ -332,9 +332,21 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 
    	<synpreds:{p | <synpred(p)>}>
 
-   	<cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
+<if(cyclicDFAs)>
+	#region DFA
+   	<!<cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">!>
+	<cyclicDFAs:{dfa | DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
 
-    <cyclicDFAs:cyclicDFA()> <! dump tables for all DFA !>
+	protected override void InitDFAs()
+	{
+		base.InitDFAs();
+		<cyclicDFAs:{dfa | dfa<dfa.decisionNumber> = new DFA<dfa.decisionNumber>( this<if(dfa.specialStateSTs)>, SpecialStateTransition<dfa.decisionNumber><endif> );}; separator="\n">
+	}
+
+	<cyclicDFAs:cyclicDFA()><! dump tables for all DFA !>
+	#endregion DFA<\n>
+<endif>
+
 
     <bitsets:bitset(name={FOLLOW_<it.name>_in_<it.inName><it.tokenIndex>},
                     words64=it.bits)>
@@ -1223,8 +1235,10 @@ protected class DFA<dfa.decisionNumber> : DFA
 	}
 
     <@debugMember()>
-    public DFA<dfa.decisionNumber>(BaseRecognizer recognizer)
-    {
+	public DFA<dfa.decisionNumber>( BaseRecognizer recognizer<if(dfa.specialStateSTs)>, SpecialStateTransitionHandler specialStateTransition<endif> )
+<if(dfa.specialStateSTs)>
+		: base(specialStateTransition)<\n>
+<endif>
         this.recognizer = recognizer;
         this.decisionNumber = <dfa.decisionNumber>;
         this.eot = DFA<dfa.decisionNumber>_eot;
@@ -1250,33 +1264,31 @@ protected class DFA<dfa.decisionNumber> : DFA
 }<\n>
 <if(dfa.specialStateSTs)>
 
-protected internal int DFA<dfa.decisionNumber>_SpecialStateTransition(DFA dfa, int s, IIntStream _input) //throws NoViableAltException
+private int SpecialStateTransition<dfa.decisionNumber>(DFA dfa, int s, IIntStream _input)<! throws NoViableAltException!>
 {
-        <if(LEXER)>
-        IIntStream input = _input;
-        <endif>
-        <if(PARSER)>
-        ITokenStream input = (ITokenStream)_input;
-        <endif>
-        <if(TREE_PARSER)>
-        ITreeNodeStream input = (ITreeNodeStream)_input;
-        <endif>
+	<if(LEXER)>
+	IIntStream input = _input;
+	<endif>
+	<if(PARSER)>
+	ITokenStream input = (ITokenStream)_input;
+	<endif>
+	<if(TREE_PARSER)>
+	ITreeNodeStream input = (ITreeNodeStream)_input;
+	<endif>
 	int _s = s;
-    switch ( s )
-    {
-    <dfa.specialStateSTs:{state |
-       	case <i0> : <! compressed special state numbers 0..n-1 !>
-           	<state>}; separator="\n">
-    }
+	switch (s)
+	{
+	<dfa.specialStateSTs:{state |
+	case <i0>:<! compressed special state numbers 0..n-1 !>
+		<state>}; separator="\n">
+	}
 <if(backtracking)>
-    if (state.backtracking > 0) {state.failed = true; return -1;}<\n>
+	if (state.backtracking > 0) {state.failed=true; return -1;}<\n>
 <endif>
-    NoViableAltException nvae<dfa.decisionNumber> =
-        new NoViableAltException(dfa.Description, <dfa.decisionNumber>, _s, input);
-    dfa.Error(nvae<dfa.decisionNumber>);
-    throw nvae<dfa.decisionNumber>;
+	NoViableAltException nvae = new NoViableAltException(dfa.GetDescription(), <dfa.decisionNumber>, _s, input);
+	dfa.Error(nvae);
+	throw nvae;
 }<\n>
-<endif>
 >>
 
 /** A state in a cyclic DFA; it's a special state and part of a big switch on
