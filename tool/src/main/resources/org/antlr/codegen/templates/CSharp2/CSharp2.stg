@@ -327,11 +327,6 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
    	<synpreds:{p | <synpred(p)>}>
 
    	<cyclicDFAs:{dfa | protected DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
-	private void InitializeCyclicDFAs(<@debugInitializeCyclicDFAs()>)
-	{
-    	<cyclicDFAs:{dfa | this.dfa<dfa.decisionNumber> = new DFA<dfa.decisionNumber>(this<@debugAddition()>);}; separator="\n">
-	    <cyclicDFAs:{dfa | <if(dfa.specialStateSTs)>this.dfa<dfa.decisionNumber>.specialStateTransitionHandler = new DFA.SpecialStateTransitionHandler(DFA<dfa.decisionNumber>_SpecialStateTransition);<endif>}; separator="\n">
-	}
 
     <cyclicDFAs:cyclicDFA()> <! dump tables for all DFA !>
 
@@ -341,7 +336,6 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 >>
 
 parserCtorBody() ::= <<
-<@initializeCyclicDFAs>InitializeCyclicDFAs();<@end>
 <if(memoize)>
 <if(grammar.grammarIsRoot)>
 this.state.ruleMemo = new System.Collections.Generic.Dictionary\<int, int>[<length(grammar.allImportedRules)>+1];<\n> <! index from 1..n !>
@@ -923,7 +917,7 @@ int <label>Start = CharIndex;
 Match(<string>); <checkRuleBacktrackFailure()>
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
-<label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, TokenChannels.Default, <label>Start, CharIndex-1);
+<label> = new <labelType>(input, TokenTypes.Invalid, TokenChannels.Default, <label>Start, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -991,7 +985,7 @@ int <label>Start<elementIndex> = CharIndex;
 int <label>StartLine<elementIndex> = Line;
 int <label>StartCharPos<elementIndex> = CharPositionInLine;
 <if(scope)><scope:delegateName()>.<endif>m<rule.name>(<args; separator=", ">); <checkRuleBacktrackFailure()>
-<label> = new CommonToken(input, Token.INVALID_TOKEN_TYPE, TokenChannels.Default, <label>Start<elementIndex>, CharIndex-1);
+<label> = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, <label>Start<elementIndex>, CharIndex-1);
 <label>.Line = <label>StartLine<elementIndex>;
 <label>.CharPositionInLine = <label>StartCharPos<elementIndex>;
 <else>
@@ -1211,18 +1205,18 @@ static readonly short[] DFA<dfa.decisionNumber>_accept = DFA.UnpackEncodedString
 static readonly short[] DFA<dfa.decisionNumber>_special = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_specialS);
 static readonly short[][] DFA<dfa.decisionNumber>_transition;
 
+static DFA<dfa.decisionNumber>()
+{
+	int numStates = DFA<dfa.decisionNumber>_transitionS.Length;
+	DFA<dfa.decisionNumber>_transition = new short[numStates][];
+	for ( int i=0; i \< numStates; i++ )
+	{
+		DFA<dfa.decisionNumber>_transition[i] = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_transitionS[i]);
+	}
+}
+
 protected class DFA<dfa.decisionNumber> : DFA
 {
-	static DFA<dfa.decisionNumber>()
-	{
-		int numStates = DFA<dfa.decisionNumber>_transitionS.Length;
-		DFA<dfa.decisionNumber>_transition = new short[numStates][];
-		for ( int i=0; i \< numStates; i++ )
-		{
-			DFA<dfa.decisionNumber>_transition[i] = DFA.UnpackEncodedString(DFA<dfa.decisionNumber>_transitionS[i]);
-		}
-	}
-
     <@debugMember()>
     public DFA<dfa.decisionNumber>(BaseRecognizer recognizer)
     {
