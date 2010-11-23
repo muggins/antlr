@@ -1251,9 +1251,9 @@ private class DFA<dfa.decisionNumber> : DFA
 		this.special = DFA<dfa.decisionNumber>_special;
 		this.transition = DFA<dfa.decisionNumber>_transition;
 	}
-	public override string GetDescription()
+	public override string Description
 	{
-		return "<dfa.description>";
+		get { return "<dfa.description>"; }
 	}
 
 	public override void Error(NoViableAltException nvae)
@@ -1283,7 +1283,7 @@ private int SpecialStateTransition<dfa.decisionNumber>(DFA dfa, int s, IIntStrea
 <if(backtracking)>
 	if (state.backtracking > 0) {state.failed=true; return -1;}<\n>
 <endif>
-	NoViableAltException nvae = new NoViableAltException(dfa.GetDescription(), <dfa.decisionNumber>, _s, input);
+	NoViableAltException nvae = new NoViableAltException(dfa.Description, <dfa.decisionNumber>, _s, input);
 	dfa.Error(nvae);
 	throw nvae;
 }<\n>
