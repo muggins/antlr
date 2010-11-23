@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,17 +25,22 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRToken.h>
+#import "ANTLRToken.h"
+#import "ANTLRRuleReturnScope.h"
 
-@interface ANTLRParserRuleReturnScope : NSObject {
-	id<ANTLRToken> start;
-	id<ANTLRToken> stop;
+@interface ANTLRParserRuleReturnScope : ANTLRRuleReturnScope {
+	id<ANTLRToken> startToken;
+	id<ANTLRToken> stopToken;
 }
+@property (retain, getter=getStart, setter=setStart:) id<ANTLRToken> startToken;
+@property (retain, getter=getStop, setter=setStop:)   id<ANTLRToken> stopToken;
 
-- (id<ANTLRToken>) start;
+- (id<ANTLRToken>) getStart;
 - (void) setStart: (id<ANTLRToken>) aStart;
 
-- (id<ANTLRToken>) stop;
+- (id<ANTLRToken>) getStop;
 - (void) setStop: (id<ANTLRToken>) aStop;
+
+- (id) copyWithZone:(NSZone *)theZone;
 
 @end

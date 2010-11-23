@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,17 +26,19 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRRecognitionException.h>
+#import "ANTLRRecognitionException.h"
 
 @interface ANTLRMismatchedSetException : ANTLRRecognitionException {
-	NSSet *expectedSet;
+	NSSet *expecting;
 }
+
+@property (retain, getter=getExpecting, setter=setExpecting:) NSSet *expecting;
 
 + (id) exceptionWithSet:(NSSet *) theExpectedSet stream:(id<ANTLRIntStream>) theStream;
 - (id) initWithSet:(NSSet *) theExpectedSet stream:(id<ANTLRIntStream>) theStream;
 
-- (NSSet *) expectedSet;
-- (void) setExpectedSet: (NSSet *) anExpectedSet;
+- (NSSet *) getExpecting;
+- (void) setExpecting: (NSSet *) anExpectedSet;
 
 
 @end

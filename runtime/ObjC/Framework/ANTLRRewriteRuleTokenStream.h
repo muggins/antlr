@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,11 +25,42 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import "ANTLR/ANTLRRewriteRuleElementStream.h"
+#import "ANTLRRewriteRuleElementStream.h"
 
 
 @interface ANTLRRewriteRuleTokenStream : ANTLRRewriteRuleElementStream {
 
 }
+
++ (id) newANTLRRewriteRuleTokenStream:(id<ANTLRTreeAdaptor>)anAdaptor
+                     description:(NSString *)elementDescription;
+/** Create a stream with one element */
++ (id) newANTLRRewriteRuleTokenStream:(id<ANTLRTreeAdaptor>)adaptor
+                     description:(NSString *)elementDescription
+                         element:(id) oneElement;
+/** Create a stream, but feed off an existing list */
++ (id) ANTLRRewriteRuleTokenStream:(id<ANTLRTreeAdaptor>)adaptor
+                  description:(NSString *)elementDescription
+                     elements:(NSMutableArray *)elements;
+
+- (id) init;
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)anAdaptor
+               description:(NSString *)aDescription;
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)anAdaptor 
+               description:(NSString *)aDescription
+                   element:(id)element;
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)anAdaptor
+               description:(NSString *)aDescription
+                  elements:(NSMutableArray *)elements;
+                               
+/** Get next token from stream and make a node for it */
+- (id) nextNode;
+
+- (id) nextToken;
+
+/** Don't convert to a tree unless they explicitly call nextTree.
+ *  This way we can do hetero tree nodes in rewrite.
+ */
+- (id<ANTLRTree>) toTree:(id<ANTLRToken>)element;
 
 @end

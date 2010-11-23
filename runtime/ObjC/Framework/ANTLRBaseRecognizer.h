@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 
-#import <ANTLR/ANTLRIntStream.h>
+#import "ANTLRIntStream.h"
 
 // This is an abstract superclass for lexers and parsers.
 
@@ -36,106 +36,148 @@
 #define ANTLR_MEMO_RULE_UNKNOWN -1
 #define ANTLR_INITIAL_FOLLOW_STACK_SIZE 100
 
-@class ANTLRBitSet;
-#import <ANTLR/ANTLRRecognitionException.h>
-#import <ANTLR/ANTLRMismatchedTokenException.h>
-#import <ANTLR/ANTLRToken.h>
-#import <ANTLR/ANTLRBaseRecognizerState.h>
+#import "ANTLRMapElement.h"
+#import "ANTLRBitSet.h"
+#import "ANTLRToken.h"
+#import "ANTLRRecognizerSharedState.h"
+#import "ANTLRRecognitionException.h"
+#import "ANTLRMissingTokenException.h"
+#import "ANTLRMismatchedTokenException.h"
+#import "ANTLRMismatchedTreeNodeException.h"
+#import "ANTLRUnwantedTokenException.h"
+#import "ANTLRNoViableAltException.h"
+#import "ANTLREarlyExitException.h"
+#import "ANTLRMismatchedSetException.h"
+#import "ANTLRMismatchedNotSetException.h"
+#import "ANTLRFailedPredicateException.h"
 
 @interface ANTLRBaseRecognizer : NSObject {
-	ANTLRBaseRecognizerState *state;	// the state of this recognizer. Might be shared with other recognizers, e.g. in grammar import scenarios.
+	ANTLRRecognizerSharedState *state;	// the state of this recognizer. Might be shared with other recognizers, e.g. in grammar import scenarios.
 	NSString *grammarFileName;			// where did the grammar come from. filled in by codegeneration
+//    BOOL failed;
+    NSString *sourceName;
+//    NSInteger numberOfSyntaxErrors;
+    NSArray *tokenNames;
 }
 
-// simple accessors
-- (BOOL) isFailed;
-- (void) setIsFailed: (BOOL) flag;
+@property (retain, getter=getState, setter=setState) ANTLRRecognizerSharedState *state;
+@property (retain, getter=getGrammarFileName, setter=setGrammarFileName) NSString *grammarFileName;
+//@property (assign, getter=getFailed, setter=setFailed) BOOL failed;
+@property (retain, getter=getTokenNames, setter=setTokenNames) NSArray *tokenNames;
+@property (retain, getter=getSourceName, setter=setSourceName) NSString *sourceName;
+//@property (assign, getter=getNumberOfSyntaxErrors, setter=setNumberOfSyntaxErrors) NSInteger numberOfSyntaxErrors;
 
-- (BOOL) isBacktracking;
-- (int) backtrackingLevel;
-- (void) setBacktrackingLevel:(int) level;
++ (void) initialize;
+
++ (ANTLRBaseRecognizer *) newANTLRBaseRecognizer;
++ (ANTLRBaseRecognizer *) newANTLRBaseRecognizerWithRuleLen:(NSInteger)aLen;
++ (ANTLRBaseRecognizer *) newANTLRBaseRecognizer:(ANTLRRecognizerSharedState *)aState;
+
++ (NSArray *)getTokenNames;
++ (void)setTokenNames:(NSArray *)aTokNamArray;
++ (void)setGrammarFileName:(NSString *)aFileName;
 
 - (id) init;
+- (id) initWithLen:(NSInteger)aLen;
+- (id) initWithState:(ANTLRRecognizerSharedState *)aState;
 
-- (ANTLRBaseRecognizerState *) state;
-- (void) setState:(ANTLRBaseRecognizerState *) theState;
-- (Class) stateClass;
+- (void) dealloc;
+
+// simple accessors
+- (NSInteger) getBacktrackingLevel;
+- (void) setBacktrackingLevel:(NSInteger) level;
+
+- (BOOL) getFailed;
+- (void) setFailed: (BOOL) flag;
+
+- (ANTLRRecognizerSharedState *) getState;
+- (void) setState:(ANTLRRecognizerSharedState *) theState;
 
 // reset this recognizer - might be extended by codegeneration/grammar
 - (void) reset;
 
-// where do we get our input from - subclass responsibility
-- (id) input;
-- (void) setInput:(id)theInput;
+/** Match needs to return the current input symbol, which gets put
+ *  into the label for the associated token ref; e.g., x=ID.  Token
+ *  and tree parsers need to return different objects. Rather than test
+ *  for input stream type or change the IntStream interface, I use
+ *  a simple method to ask the recognizer to tell me what the current
+ *  input symbol is.
+ * 
+ *  This is ignored for lexers.
+ */
+- (id) getInput;
+
+- (void)skip;
 
 // do actual matching of tokens/characters
-- (void) match:(id<ANTLRIntStream>)input tokenType:(ANTLRTokenType) ttype follow:(ANTLRBitSet *)follow;
-- (void) matchAny:(id<ANTLRIntStream>)input;
+- (id) match:(id<ANTLRIntStream>)anInput TokenType:(NSInteger)ttype Follow:(ANTLRBitSet *)follow;
+- (void) matchAny:(id<ANTLRIntStream>)anInput;
+- (BOOL) mismatchIsUnwantedToken:(id<ANTLRIntStream>)anInput TokenType:(NSInteger) ttype;
+- (BOOL) mismatchIsMissingToken:(id<ANTLRIntStream>)anInput Follow:(ANTLRBitSet *)follow;
 
 // error reporting and recovery
-- (void) reportError:(NSException *)e;
-- (void) displayRecognitionError:(NSString *)name tokenNames:(NSArray *)tokenNames exception:(NSException *)e;
-- (void) recover:(id<ANTLRIntStream>)input exception:(NSException *)e;
+- (void) reportError:(ANTLRRecognitionException *)e;
+- (void) displayRecognitionError:(NSArray *)theTokNams Exception:(ANTLRRecognitionException *)e;
+- (NSString *)getErrorMessage:(ANTLRRecognitionException *)e TokenNames:(NSArray *)theTokNams;
+- (NSInteger) getNumberOfSyntaxErrors;
+- (NSString *)getErrorHeader:(ANTLRRecognitionException *)e;
+- (NSString *)getTokenErrorDisplay:(id<ANTLRToken>)t;
+- (void) emitErrorMessage:(NSString *)msg;
+- (void) recover:(id<ANTLRIntStream>)anInput Exception:(ANTLRRecognitionException *)e;
+
 // begin hooks for debugger
 - (void) beginResync;
 - (void) endResync;
-- (void) beginBacktracking:(int)level;
-- (void) endBacktracking:(int)level wasSuccessful:(BOOL)successful;
-// end hoos for debugger
+// end hooks for debugger
 
 // compute the bitsets necessary to do matching and recovery
-- (ANTLRBitSet *)computeContextSensitiveRuleFOLLOW;
-- (ANTLRBitSet *)combineFollowsExact:(BOOL) exact;
 - (ANTLRBitSet *)computeErrorRecoverySet;
+- (ANTLRBitSet *)computeContextSensitiveRuleFOLLOW;
+- (ANTLRBitSet *)combineFollows:(BOOL) exact;
 
-- (void) mismatch:(id<ANTLRIntStream>)aStream tokenType:(int)aTType follow:(ANTLRBitSet *)aBitset;
-- (void) recoverFromMismatchedToken:(id<ANTLRIntStream>)input 
-						  exception:(NSException *)e 
-						  tokenType:(ANTLRTokenType)ttype 
-							 follow:(ANTLRBitSet *)follow;
+- (id<ANTLRToken>) recoverFromMismatchedToken:(id<ANTLRIntStream>)anInput 
+                                    TokenType:(NSInteger)ttype 
+                                       Follow:(ANTLRBitSet *)follow;
+                                    
+- (id<ANTLRToken>)recoverFromMismatchedSet:(id<ANTLRIntStream>)anInput
+                                    Exception:(ANTLRRecognitionException *)e
+                                    Follow:(ANTLRBitSet *)follow;
 
-- (void) recoverFromMismatchedSet:(id<ANTLRIntStream>)input
-						exception:(NSException *)e
-						   follow:(ANTLRBitSet *)follow;
-
-- (BOOL) recoverFromMismatchedElement:(id<ANTLRIntStream>)input
-							exception:(NSException *)e
-							   follow:(ANTLRBitSet *)follow;
+- (id) getCurrentInputSymbol:(id<ANTLRIntStream>)anInput;
+- (id) getMissingSymbol:(id<ANTLRIntStream>)anInput
+              Exception:(ANTLRRecognitionException *)e
+              TokenType:(NSInteger) expectedTokenType
+                Follow:(ANTLRBitSet *)follow;
 
 // helper methods for recovery. try to resync somewhere
-- (void) consumeUntil:(id<ANTLRIntStream>)input
-			tokenType:(ANTLRTokenType)ttype;
-- (void) consumeUntil:(id<ANTLRIntStream>)input
-			   bitSet:(ANTLRBitSet *)bitSet;
+- (void) consumeUntilTType:(id<ANTLRIntStream>)anInput TokenType:(NSInteger)ttype;
+- (void) consumeUntilFollow:(id<ANTLRIntStream>)anInput Follow:(ANTLRBitSet *)bitSet;
+- (void) pushFollow:(ANTLRBitSet *)fset;
+- (ANTLRBitSet *)popFollow;
 
 // to be used by the debugger to do reporting. maybe hook in incremental stuff here, too.
-- (NSArray *) ruleInvocationStack;
-- (NSArray *) ruleInvocationStack:(id) exception
-					   recognizer:(Class) recognizerClass;
+- (NSMutableArray *) getRuleInvocationStack;
+- (NSMutableArray *) getRuleInvocationStack:(ANTLRRecognitionException *)exception
+					             Recognizer:(NSString *)recognizerClassName;
 
-+ (NSString *) tokenNameForType:(int)aTokenType;
-- (NSString *) tokenNameForType:(int)aTokenType;
-+ (NSArray *) tokenNames;
-- (NSArray *) tokenNames;
-- (NSString *) grammarFileName;
-
-- (NSArray *) toStrings:(NSArray *)tokens;
-- (NSArray *) toTemplates:(NSArray *)retvals;
-
+- (NSArray *) getTokenNames;
+- (NSString *)getGrammarFileName;
+- (NSString *)getSourceName;
+- (NSMutableArray *) toStrings:(NSArray *)tokens;
 // support for memoization
-- (int) ruleMemoization:(unsigned int)ruleIndex startIndex:(int)ruleStartIndex;
+- (NSInteger) getRuleMemoization:(NSInteger)ruleIndex StartIndex:(NSInteger)ruleStartIndex;
+- (BOOL) alreadyParsedRule:(id<ANTLRIntStream>)anInput RuleIndex:(NSInteger)ruleIndex;
+- (void) memoize:(id<ANTLRIntStream>)anInput
+	     RuleIndex:(NSInteger)ruleIndex
+	    StartIndex:(NSInteger)ruleStartIndex;
+- (NSInteger) getRuleMemoizationCacheSize;
+- (void)traceIn:(NSString *)ruleName Index:(NSInteger)ruleIndex Object:(id)inputSymbol;
+- (void)traceOut:(NSString *)ruleName Index:(NSInteger)ruleIndex Object:(id)inputSymbol;
 
-- (BOOL) alreadyParsedRule:(id<ANTLRIntStream>)input ruleIndex:(unsigned int)ruleIndex;
 
-- (void) memoize:(id<ANTLRIntStream>)input
-	   ruleIndex:(int)ruleIndex
-	  startIndex:(int)ruleStartIndex;
-
-- (int) ruleMemoizationCacheSize;
-
-
-// support for syntactic predicates. these are called indirectly to support funky stuff in grammars, like
-// supplying selectors instead of writing code directly into the actions of the grammar.
-- (BOOL) evaluateSyntacticPredicate:(SEL)synpredFragment; // stream:(id<ANTLRIntStream>)input;
+// support for syntactic predicates. these are called indirectly to support funky stuff in grammars,
+// like supplying selectors instead of writing code directly into the actions of the grammar.
+- (BOOL) evaluateSyntacticPredicate:(SEL)synpredFragment;
+// stream:(id<ANTLRIntStream>)anInput;
 
 @end

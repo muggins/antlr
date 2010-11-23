@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,41 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRTokenSource.h>
-#import <ANTLR/ANTLRBaseRecognizer.h>
-#import <ANTLR/ANTLRCharStream.h>
-#import <ANTLR/ANTLRToken.h>
-#import <ANTLR/ANTLRCommonToken.h>
-#import <ANTLR/ANTLRRecognitionException.h>
-#import <ANTLR/ANTLRMismatchedTokenException.h>
-#import <ANTLR/ANTLRMismatchedRangeException.h>
-#import <ANTLR/ANTLRLexerState.h>
+#import "ANTLRTokenSource.h"
+#import "ANTLRBaseRecognizer.h"
+#import "ANTLRRecognizerSharedState.h"
+#import "ANTLRCharStream.h"
+#import "ANTLRToken.h"
+#import "ANTLRCommonToken.h"
+#import "ANTLRRecognitionException.h"
+#import "ANTLRMismatchedTokenException.h"
+#import "ANTLRMismatchedRangeException.h"
 
 @interface ANTLRLexer : ANTLRBaseRecognizer <ANTLRTokenSource> {
 	id<ANTLRCharStream> input;      ///< The character stream we pull tokens out of.
-	unsigned int ruleNestingLevel;
+	NSUInteger ruleNestingLevel;
 }
 
-#pragma mark Initializer
-- (id) initWithCharStream:(id<ANTLRCharStream>)anInput;
+@property (retain, getter=getInput, setter=setInput:) id<ANTLRCharStream> input;
+@property (getter=getRuleNestingLevel, setter=setRuleNestingLevel) NSUInteger ruleNestingLevel;
 
-- (ANTLRLexerState *) state;
+#pragma mark Initializer
+- (id) initWithCharStream:(id<ANTLRCharStream>) anInput;
+- (id) initWithCharStream:(id<ANTLRCharStream>)anInput State:(ANTLRRecognizerSharedState *)state;
+
+- (id) copyWithZone:(NSZone *)zone;
+
+- (void) reset;
+
+// - (ANTLRRecognizerSharedState *) state;
 
 #pragma mark Tokens
-- (id<ANTLRToken>) token;
+- (id<ANTLRToken>)getToken;
 - (void) setToken: (id<ANTLRToken>) aToken;
 - (id<ANTLRToken>) nextToken;
 - (void) mTokens;		// abstract, defined in generated sources
-- (id<ANTLRCharStream>) input;
+- (void) skip;
+- (id<ANTLRCharStream>) getInput;
 - (void) setInput:(id<ANTLRCharStream>)aCharStream;
 
 - (void) emit;
@@ -64,14 +73,18 @@
 - (void) matchRangeFromChar:(unichar)fromChar to:(unichar)toChar;
 
 #pragma mark Informational
-- (unsigned int) line;
-- (unsigned int) charPositionInLine;
-- (int) charIndex;
-- (NSString *) text;
+- (NSUInteger) getLine;
+- (NSUInteger) getCharPositionInLine;
+- (NSInteger) getIndex;
+- (NSString *) getText;
 - (void) setText:(NSString *) theText;
 
 // error handling
 - (void) reportError:(ANTLRRecognitionException *)e;
+- (NSString *)getErrorMessage:(ANTLRRecognitionException *)e TokenNames:(NSMutableArray *)tokenNames;
+- (NSString *)getCharErrorDisplay:(NSInteger)c;
 - (void) recover:(ANTLRRecognitionException *)e;
+- (void)traceIn:(NSString *)ruleName Index:(NSInteger)ruleIndex;
+- (void)traceOut:(NSString *)ruleName Index:(NSInteger)ruleIndex;
 
 @end

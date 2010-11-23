@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,45 +25,56 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRTreeAdaptor.h>
+#import "ANTLRTreeAdaptor.h"
+
+typedef union {
+    id single;
+    NSMutableArray *multiple;
+} Elements;
 
 // TODO: this should be separated into stream and enumerator classes
 @interface ANTLRRewriteRuleElementStream : NSObject {
-    @public
-    int cursor;
-    BOOL shouldCopyElements;        ///< indicates whether the stream should return copies of its elements, set to true after a call to -reset
-    
+    NSInteger cursor;
+    BOOL dirty;        ///< indicates whether the stream should return copies of its elements, set to true after a call to -reset
     BOOL isSingleElement;
-    union {
-        id single;
-        NSMutableArray *multiple;
-    } elements;
+    Elements elements;
     
     NSString *elementDescription;
     id<ANTLRTreeAdaptor> treeAdaptor;
 }
 
+@property (assign, getter=GetCursor, setter=SetCursor:) NSInteger cursor;
+@property (assign, getter=Getdirty, setter=Setdirty:) BOOL dirty;
+@property (assign, getter=GetIsSingleElement, setter=SetIsSingleElement:) BOOL isSingleElement;
+@property (assign, getter=GetElement, setter=SetElement:) Elements elements;
+@property (assign, getter=GetElementDescription, setter=SetElementDescription:) NSString *elementDescription;
+@property (retain, getter=GetTreeAdaptor, setter=SetTreeAdaptor:) id<ANTLRTreeAdaptor> treeAdaptor;
+
++ (ANTLRRewriteRuleElementStream*) newANTLRRewriteRuleElementStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription;
++ (ANTLRRewriteRuleElementStream*) newANTLRRewriteRuleElementStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription element:(id)anElement;
++ (ANTLRRewriteRuleElementStream*) newANTLRRewriteRuleElementStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription elements:(NSArray *)theElements;
+
 - (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription;
 - (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription element:(id)anElement;
 - (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription elements:(NSArray *)theElements;
 
-- (void) reset;
+- (void)reset;
 
-- (id<ANTLRTreeAdaptor>) treeAdaptor;
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor;
 - (void) setTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor;
 
 - (void) addElement:(id)anElement;
-- (unsigned int) count;
+- (NSInteger) size;
  
 - (BOOL) hasNext;
-- (id) next;
-- (id) _next;       // internal: TODO: redesign if necessary. maybe delegate
+- (id<ANTLRTree>) nextTree;
+- (id<ANTLRTree>) _next;       // internal: TODO: redesign if necessary. maybe delegate
 
 - (id) copyElement:(id)element;
 - (id) toTree:(id)element;
 
-- (NSString *) description;
-- (void) setDescription:(NSString *) description;
+- (NSString *) getDescription;
+- (void) setDescription:(NSString *)description;
 
 @end
 

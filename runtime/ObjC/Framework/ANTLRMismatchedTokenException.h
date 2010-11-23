@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,33 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRRecognitionException.h>
+#import "ANTLRRecognitionException.h"
+#import "ANTLRBitSet.h"
+
 @protocol ANTLRIntStream;
 
 @interface ANTLRMismatchedTokenException : ANTLRRecognitionException {
-	int expecting;
+	NSInteger expecting;
 	unichar expectingChar;
 	BOOL isTokenType;
 }
 
-+ (id) exceptionWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) input;
-+ (id) exceptionWithCharacter:(unichar) expectedCharacter stream:(id<ANTLRIntStream>) input;
-- (id) initWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) input;
-- (id) initWithCharacter:(unichar) expectedCharacter stream:(id<ANTLRIntStream>) anInput;
+@property (assign, getter=getExpecting, setter=setExpecting:) NSInteger expecting;
+@property (assign, getter=getExpectingChar, setter=setExpectingChar:) unichar expectingChar;
+@property (assign, getter=getIsTokenType, setter=setIsTokenType:) BOOL isTokenType;
+
++ (id) newANTLRMismatchedTokenException:(NSInteger)expectedTokenType Stream:(id<ANTLRIntStream>)anInput;
++ (id) newANTLRMismatchedTokenExceptionMissing:(NSInteger)expectedTokenType
+                                        Stream:(id<ANTLRIntStream>)anInput
+                                         Token:(id<ANTLRToken>)inserted;
++ (id) newANTLRMismatchedTokenExceptionChar:(unichar)expectedCharacter Stream:(id<ANTLRIntStream>)anInput;
++ (id) newANTLRMismatchedTokenExceptionStream:(id<ANTLRIntStream>)anInput
+                                    Exception:(NSException *)e
+                                       Follow:(ANTLRBitSet *)follow;
+- (id) initWithTokenType:(NSInteger)expectedTokenType Stream:(id<ANTLRIntStream>)anInput;
+-(id) initWithTokenType:(NSInteger)expectedTokenType
+                 Stream:(id<ANTLRIntStream>)anInput
+                  Token:(id<ANTLRToken>)inserted;
+- (id) initWithCharacter:(unichar)expectedCharacter Stream:(id<ANTLRIntStream>)anInput;
 
 @end

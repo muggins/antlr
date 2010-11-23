@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,191 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "ANTLRCommonTreeNodeStream.h"
-
+#import "ANTLRTokenStream.h"
+#import "ANTLRIntStream.h"
+#import "ANTLRCharStream.h"
 
 @implementation ANTLRCommonTreeNodeStream
 
+@synthesize root;
+@synthesize tokens;
+@synthesize adaptor;
+
+/** Tree (nil A B C) trees like flat A B C streams */
+BOOL hasNilRoot = NO;
+
+/** Tracks tree depth.  Level=0 means we're at root node level. */
+NSInteger level = 0;
+
++ (ANTLRCommonTreeNodeStream *) newANTLRCommonTreeNodeStream:(ANTLRCommonTree *)theTree
+{
+    return [[ANTLRCommonTreeNodeStream alloc] initWithTree:theTree];
+}
+
++ (ANTLRCommonTreeNodeStream *) newANTLRCommonTreeNodeStream:(id<ANTLRTreeAdaptor>)anAdaptor Tree:(ANTLRCommonTree *)theTree
+{
+    return [[ANTLRCommonTreeNodeStream alloc] initWithTreeAdaptor:anAdaptor Tree:theTree];
+}
+
+- (id) initWithTree:(ANTLRCommonTree *)theTree
+{
+    if ((self = [super init]) != nil ) {
+        root = theTree;
+        adaptor = [ANTLRCommonTreeAdaptor newANTLRCommonTreeAdaptor];
+        it = [ANTLRTreeIterator newANTRLTreeIteratorWithAdaptor:adaptor andTree:root];
+        calls = [ANTLRIntArray newANTLRIntArray];
+    }
+    return self;
+}
+
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)anAdaptor Tree:(ANTLRCommonTree *)theTree
+{
+    [adaptor createTree:ANTLRTokenTypeEOF Text:@"EOF"]; // set EOF
+    root = theTree;
+    adaptor = anAdaptor;
+    //    it = [root objectEnumerator];
+    it = [ANTLRTreeIterator newANTRLTreeIteratorWithAdaptor:adaptor andTree:root];
+    calls = [ANTLRIntArray newANTLRIntArray];
+    //    eof = [self isEOF]; // make sure tree iterator returns the EOF we want
+    return self;
+}
+
+- (void) reset
+{
+    [super reset];
+    [it reset];
+    hasNilRoot = false;
+    level = 0;
+    if ( calls != nil )
+        [calls reset];
+}
+
+/** Pull elements from tree iterator.  Track tree level 0..max_level.
+ *  If nil rooted tree, don't give initial nil and DOWN nor final UP.
+ */
+- (id) nextElement
+{
+    id t = [it nextObject];
+    //System.out.println("pulled "+adaptor.getType(t));
+    if ( t == [it up] ) {
+        level--;
+        if ( level==0 && hasNilRoot ) return [it nextObject]; // don't give last UP; get EOF
+    }
+    else if ( t == [it down] )
+        level++;
+    if ( level == 0 && [adaptor isNil:t] ) { // if nil root, scarf nil, DOWN
+        hasNilRoot = true;
+        t = [it nextObject]; // t is now DOWN, so get first real node next
+        level++;
+        t = [it nextObject];
+    }
+    return t;
+}
+
+- (BOOL) isEOF:(id<ANTLRTree>) aTree
+{
+    return [adaptor getType:aTree] == ANTLRTokenTypeEOF;
+}
+
+- (void) setUniqueNavigationNodes:(BOOL) uniqueNavigationNodes
+{
+}
+
+- (id) getTreeSource
+{
+    return root;
+}
+
+- (NSString *) getSourceName
+{
+    return [[self getTokenStream] getSourceName];
+}
+
+- (id<ANTLRTokenStream>) getTokenStream
+{
+    return tokens;
+}
+
+- (void) setTokenStream:(id<ANTLRTokenStream>)theTokens
+{
+    tokens = theTokens;
+}
+
+- (ANTLRCommonTreeAdaptor *) getTreeAdaptor
+{
+    return adaptor;
+}
+
+- (void) setTreeAdaptor:(ANTLRCommonTreeAdaptor *) anAdaptor
+{
+    adaptor = anAdaptor;
+}
+
+- (ANTLRCommonTree *)getNode:(NSInteger) i
+{
+    @throw [ANTLRRuntimeException newANTLRRuntimeException:@"Absolute node indexes are meaningless in an unbuffered stream"];
+    return nil;
+}
+
+- (NSInteger) LA:(NSInteger) i
+{
+    return [adaptor getType:[self LT:i]];
+}
+
+/** Make stream jump to a new location, saving old location.
+ *  Switch back with pop().
+ */
+- (void) push:(NSInteger) index
+{
+    if ( calls == nil ) {
+        calls = [ANTLRIntArray newANTLRIntArrayWithLen:10];
+    }
+    [calls push:p]; // save current index
+    [self seek:index];
+}
+
+/** Seek back to previous index saved during last push() call.
+ *  Return top of stack (return index).
+ */
+- (NSInteger) pop
+{
+    int ret = [calls pop];
+    [self seek:ret];
+    return ret;
+}    
+
+// TREE REWRITE INTERFACE
+
+- (void) replaceChildren:(id) parent From:(NSInteger)startChildIndex To:(NSInteger)stopChildIndex With:(id) aTree
+{
+    if ( parent != nil ) {
+        [adaptor replaceChildren:parent From:startChildIndex To:stopChildIndex With:aTree];
+    }
+}
+
+- (NSString *) toStringFromNode:(id<ANTLRTree>)startNode ToNode:(id<ANTLRTree>)stopNode
+{
+    // we'll have to walk from start to stop in tree; we're not keeping
+    // a complete node stream buffer
+    return @"n/a";
+}
+
+/** For debugging; destructive: moves tree iterator to end. */
+- (NSString *) toTokenTypeString
+{
+    [self reset];
+    NSMutableString *buf = [NSMutableString stringWithCapacity:5];
+    id o = [self LT:1];
+    NSInteger type = [adaptor getType:o];
+    while ( type != ANTLRTokenTypeEOF ) {
+        [buf appendString:@" "];
+        [buf appendString:[NSString stringWithFormat:@"%d", type]];
+        [self consume];
+        o = [self LT:1];
+        type = [adaptor getType:o];
+    }
+    return buf;
+}
+
 @end
+

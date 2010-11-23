@@ -25,8 +25,8 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRParser.h>
-#import <ANTLR/ANTLRDebugEventListener.h>
+#import "ANTLRParser.h"
+#import "ANTLRDebugEventListener.h"
 #import <sys/socket.h>
 #import <netinet/in.h>
 #import <netinet/tcp.h>
@@ -48,23 +48,23 @@
 }
 
 - (id) init;
-- (id) initWithGrammarName:(NSString *)aGrammarName debuggerPort:(int)aPort;
+- (id) initWithGrammarName:(NSString *)aGrammarName debuggerPort:(NSInteger)aPort;
 - (void) waitForDebuggerConnection;
 - (void) waitForAck;
 - (void) sendToDebugger:(NSString *)message;
 - (void) sendToDebugger:(NSString *)message waitForResponse:(BOOL)wait;
 
-- (int) serverSocket;
-- (void) setServerSocket: (int) aServerSocket;
+- (NSInteger) serverSocket;
+- (void) setServerSocket: (NSInteger) aServerSocket;
 
-- (int) debuggerSocket;
-- (void) setDebuggerSocket: (int) aDebuggerSocket;
+- (NSInteger) debuggerSocket;
+- (void) setDebuggerSocket: (NSInteger) aDebuggerSocket;
 
 - (NSString *) grammarName;
 - (void) setGrammarName: (NSString *) aGrammarName;
 
-- (int) debuggerPort;
-- (void) setDebuggerPort: (int) aDebuggerPort;
+- (NSInteger) debuggerPort;
+- (void) setDebuggerPort: (NSInteger) aDebuggerPort;
 
 - (NSString *) escapeNewlines:(NSString *)aString;
 
@@ -72,21 +72,21 @@
 
 #pragma mark DebugEventListener Protocol
 - (void) enterRule:(NSString *)ruleName;
-- (void) enterAlt:(int)alt;
+- (void) enterAlt:(NSInteger)alt;
 - (void) exitRule:(NSString *)ruleName;
-- (void) enterSubRule:(int)decisionNumber;
-- (void) exitSubRule:(int)decisionNumber;
-- (void) enterDecision:(int)decisionNumber;
-- (void) exitDecision:(int)decisionNumber;
+- (void) enterSubRule:(NSInteger)decisionNumber;
+- (void) exitSubRule:(NSInteger)decisionNumber;
+- (void) enterDecision:(NSInteger)decisionNumber;
+- (void) exitDecision:(NSInteger)decisionNumber;
 - (void) consumeToken:(id<ANTLRToken>)t;
 - (void) consumeHiddenToken:(id<ANTLRToken>)t;
-- (void) LT:(int)i foundToken:(id<ANTLRToken>)t;
-- (void) mark:(int)marker;
-- (void) rewind:(int)marker;
+- (void) LT:(NSInteger)i foundToken:(id<ANTLRToken>)t;
+- (void) mark:(NSInteger)marker;
+- (void) rewind:(NSInteger)marker;
 - (void) rewind;
-- (void) beginBacktrack:(int)level;
-- (void) endBacktrack:(int)level wasSuccessful:(BOOL)successful;
-- (void) locationLine:(int)line column:(int)pos;
+- (void) beginBacktrack:(NSInteger)level;
+- (void) endBacktrack:(NSInteger)level wasSuccessful:(BOOL)successful;
+- (void) locationLine:(NSInteger)line column:(NSInteger)pos;
 - (void) recognitionException:(ANTLRRecognitionException *)e;
 - (void) beginResync;
 - (void) endResync;
@@ -96,17 +96,17 @@
 
 
 #pragma mark Tree Parsing
-- (void) consumeNode:(unsigned)nodeHash ofType:(int)type text:(NSString *)text;
-- (void) LT:(int)i foundNode:(unsigned)nodeHash ofType:(int)type text:(NSString *)text;
+- (void) consumeNode:(unsigned)nodeHash ofType:(NSInteger)type text:(NSString *)text;
+- (void) LT:(NSInteger)i foundNode:(unsigned)nodeHash ofType:(NSInteger)type text:(NSString *)text;
 
 
 #pragma mark AST Events
 
 - (void) createNilNode:(unsigned)hash;
-- (void) createNode:(unsigned)hash text:(NSString *)text type:(int)type;
-- (void) createNode:(unsigned)hash fromTokenAtIndex:(int)tokenIndex;
+- (void) createNode:(unsigned)hash text:(NSString *)text type:(NSInteger)type;
+- (void) createNode:(unsigned)hash fromTokenAtIndex:(NSInteger)tokenIndex;
 - (void) makeNode:(unsigned)newRootHash parentOf:(unsigned)oldRootHash;
 - (void) addChild:(unsigned)childHash toTree:(unsigned)treeHash;
-- (void) setTokenBoundariesForTree:(unsigned)nodeHash start:(int)tokenStartIndex stop:(int)tokenStopIndex;
+- (void) setTokenBoundariesForTree:(unsigned)nodeHash From:(NSInteger)tokenStartIndex To:(NSInteger)tokenStopIndex;
 
 @end

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,15 +25,18 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRRecognitionException.h>
+#import "ANTLRRecognitionException.h"
+
 @protocol ANTLRIntStream;
 
 @interface ANTLRMismatchedTreeNodeException : ANTLRRecognitionException {
-	int expecting;
+	NSInteger expecting;
 }
 
-+ (id) exceptionWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) input;
-- (id) initWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) input;
+@property (getter=getExpecting, setter=setExpecting) NSInteger expecting;
+
++ (id) newANTLRMismatchedTreeNodeException:(NSInteger)expectedTokenType Stream:(id<ANTLRIntStream>)anInput;
+- (id) initWithTokenType:(NSInteger) expectedTokenType Stream:(id<ANTLRIntStream>)anInput;
 
 
 @end

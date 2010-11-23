@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,62 +25,66 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRTokenStream.h>
-#import <ANTLR/ANTLRToken.h>
-#import <ANTLR/ANTLRCommonToken.h>
-#import <ANTLR/ANTLRTokenSource.h>
-#import <ANTLR/ANTLRBitSet.h>
+#import "ANTLRTokenStream.h"
+#import "ANTLRToken.h"
+#import "ANTLRCommonToken.h"
+#import "ANTLRTokenSource.h"
+#import "ANTLRBitSet.h"
+#import "ANTLRBufferedTokenStream.h"
 
-@interface ANTLRCommonTokenStream : NSObject < ANTLRTokenStream > {
-	id<ANTLRTokenSource> tokenSource;
-	NSMutableArray *tokens;
-
+@interface ANTLRCommonTokenStream : ANTLRBufferedTokenStream < ANTLRTokenStream >
+{
 	NSMutableDictionary *channelOverride;
-	NSMutableSet *discardSet;
-	unsigned int channel;
-	BOOL discardOffChannelTokens;
-	int lastMarker;
-    int p;
+	NSInteger channel;
 }
 
-- (id) initWithTokenSource:(id<ANTLRTokenSource>)theTokenSource;
+@property (retain, getter=getChannelOverride,setter=setChannelOverride) NSMutableDictionary *channelOverride;
+@property (assign, getter=getChannel,setter=setChannel) NSInteger channel;
 
-- (id<ANTLRTokenSource>) tokenSource;
++ (ANTLRCommonTokenStream *)newANTLRCommonTokenStream;
++ (ANTLRCommonTokenStream *)newANTLRCommonTokenStreamWithTokenSource:(id<ANTLRTokenSource>)theTokenSource;
++ (ANTLRCommonTokenStream *)newANTLRCommonTokenStreamWithTokenSource:(id<ANTLRTokenSource>)theTokenSource
+                                                               Channel:(NSInteger)aChannel;
+
+- (id) init;
+- (id) initWithTokenSource:(id<ANTLRTokenSource>)theTokenSource;
+- (id) initWithTokenSource:(id<ANTLRTokenSource>)theTokenSource Channel:(NSInteger)aChannel;
+
+- (id<ANTLRTokenSource>) getTokenSource;
 - (void) setTokenSource: (id<ANTLRTokenSource>) aTokenSource;
 
-- (void) fillBuffer;
 - (void) consume;
+- (id<ANTLRToken>) LT:(NSInteger)k;
+- (id<ANTLRToken>) LB:(NSInteger)k;
 
-- (int) skipOffChannelTokens:(int) i;
-- (int) skipOffChannelTokensReverse:(int) i;
+- (NSInteger) skipOffChannelTokens:(NSInteger) i;
+- (NSInteger) skipOffChannelTokensReverse:(NSInteger) i;
 
-- (void) setTokenType:(int)ttype toChannel:(int)channel;
-- (void) discardTokenType:(int)ttype;
-- (void) discardOffChannelTokens:(BOOL)flag;
+- (void)setup;
 
-- (NSArray *) tokens;
 - (NSArray *) tokensInRange:(NSRange)aRange;
 - (NSArray *) tokensInRange:(NSRange)aRange inBitSet:(ANTLRBitSet *)aBitSet;
 - (NSArray *) tokensInRange:(NSRange)aRange withTypes:(NSArray *)tokenTypes;
-- (NSArray *) tokensInRange:(NSRange)aRange withType:(int)tokenType;
+- (NSArray *) tokensInRange:(NSRange)aRange withType:(NSInteger)tokenType;
 
-- (id<ANTLRToken>) LT:(int)k;
-- (id<ANTLRToken>) LB:(int)k;
-- (int) LA:(int)k;
+- (id<ANTLRToken>) getToken:(NSInteger)i;
 
-- (id<ANTLRToken>) tokenAtIndex:(int)i;
-
-- (int) mark;
-- (void) release:(int)marker;
-
-- (int) count;
-- (int) index;
+- (NSInteger) size;
+- (NSInteger) getIndex;
 - (void) rewind;
-- (void) rewind:(int)marker;
-- (void) seek:(int)index;
+- (void) rewind:(NSInteger)marker;
+- (void) seek:(NSInteger)index;
 
-- (NSString *) stringValue;
-- (NSString *) stringValueWithRange:(NSRange) aRange;
-- (NSString *) stringValueFromToken:(id<ANTLRToken>)startToken toToken:(id<ANTLRToken>)stopToken;
+- (NSString *) toString;
+- (NSString *) toStringFromStart:(NSInteger)startIndex ToEnd:(NSInteger)stopIndex;
+- (NSString *) toStringFromToken:(id<ANTLRToken>)startToken ToToken:(id<ANTLRToken>)stopToken;
+
+- (id) copyWithZone:(NSZone *)aZone;
+
+- (NSInteger)getChannel;
+- (void)setChannel:(NSInteger)aChannel;
+
+- (NSMutableDictionary *)getChannelOverride;
+- (void)setChannelOverride:(NSMutableDictionary *)anOverride;
 
 @end

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,27 +32,27 @@
 //---------------------------------------------------------- 
 //  start 
 //---------------------------------------------------------- 
-- (int) start
+- (NSInteger) getStart
 {
-    return start;
+    return startToken;
 }
 
-- (void) setStart: (int) aStart
+- (void) setStart: (NSInteger) aStart
 {
-    start = aStart;
+    startToken = aStart;
 }
 
 //---------------------------------------------------------- 
 //  stop 
 //---------------------------------------------------------- 
-- (int) stop
+- (NSInteger) getStop
 {
-    return stop;
+    return stopToken;
 }
 
-- (void) setStop: (int) aStop
+- (void) setStop: (NSInteger) aStop
 {
-    stop = aStop;
+    stopToken = aStop;
 }
 
 

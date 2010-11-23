@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,12 +25,21 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import "ANTLR/ANTLRRewriteRuleElementStream.h"
+#import "ANTLRRewriteRuleElementStream.h"
 
 @interface ANTLRRewriteRuleSubtreeStream : ANTLRRewriteRuleElementStream {
 
 }
 
++ (ANTLRRewriteRuleSubtreeStream *) newANTLRRewriteRuleSubtreeStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription;
++ (ANTLRRewriteRuleSubtreeStream *) newANTLRRewriteRuleSubtreeStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription element:(id)anElement;
++ (ANTLRRewriteRuleSubtreeStream *) newANTLRRewriteRuleSubtree:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription elements:(NSArray *)theElements;
+
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription;
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription element:(id)anElement;
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription elements:(NSArray *)theElements;
+
 - (id) nextNode;
+- (id) dup:(id)element;
 
 @end

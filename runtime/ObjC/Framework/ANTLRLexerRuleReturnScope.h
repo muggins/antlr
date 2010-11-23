@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,15 @@
 #import <Cocoa/Cocoa.h>
 
 @interface ANTLRLexerRuleReturnScope : NSObject {
-	int start;
-	int stop;
+	int startToken;
+	int stopToken;
 }
 
-- (int) start;
-- (void) setStart: (int) aStart;
+- (NSInteger) getStart;
+- (void) setStart: (NSInteger) aStart;
 
-- (int) stop;
-- (void) setStop: (int) aStop;
+- (NSInteger) getStop;
+- (void) setStop: (NSInteger) aStop;
 
 
 

@@ -29,12 +29,12 @@
 
 @implementation ANTLREarlyExitException
 
-+ (ANTLREarlyExitException *) exceptionWithStream:(id<ANTLRIntStream>) anInputStream decisionNumber:(int) aDecisionNumber
++ (ANTLREarlyExitException *) exceptionWithStream:(id<ANTLRIntStream>) anInputStream decisionNumber:(NSInteger) aDecisionNumber
 {
-	return [[[self alloc] initWithStream:anInputStream decisionNumber:aDecisionNumber] autorelease];
+	return [[self alloc] initWithStream:anInputStream decisionNumber:aDecisionNumber];
 }
 
-- (id) initWithStream:(id<ANTLRIntStream>)anInputStream decisionNumber:(int) aDecisionNumber
+- (id) initWithStream:(id<ANTLRIntStream>)anInputStream decisionNumber:(NSInteger) aDecisionNumber
 {
 	if ((self = [super initWithStream:anInputStream]) != nil) {
 		decisionNumber = aDecisionNumber;

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,12 @@
 
 + (id) exceptionWithRange:(NSRange) aRange stream:(id<ANTLRIntStream>) theInput
 {
-	return [[[self alloc] initWithRange:aRange stream:theInput] autorelease];
+	return [[ANTLRMismatchedRangeException alloc] initWithRange:aRange stream:theInput];
 }
 
 - (id) initWithRange:(NSRange) aRange stream:(id<ANTLRIntStream>) theInput
 {
-	if (nil != (self = [super initWithStream:theInput])) {
+	if ((self = [super initWithStream:theInput]) != nil) {
 		range = aRange;
 	}
 	return self;

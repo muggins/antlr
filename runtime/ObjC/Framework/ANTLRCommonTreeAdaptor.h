@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,11 +26,37 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRTreeAdaptor.h>
-#import <ANTLR/ANTLRCommonTree.h>
+#import "ANTLRTree.h"
+#import "ANTLRCommonToken.h"
+#import "ANTLRCommonTree.h"
+#import "ANTLRBaseTreeAdaptor.h"
 
-@interface ANTLRCommonTreeAdaptor : ANTLRTreeAdaptor {
-
+@interface ANTLRCommonTreeAdaptor : ANTLRBaseTreeAdaptor {
 }
+
++ (id<ANTLRTree>) newEmptyTree;
++ (ANTLRCommonTreeAdaptor *)newANTLRCommonTreeAdaptor;
+- (id) init;
+- (id<ANTLRTree>)dupNode:(id<ANTLRTree>)t;    
+- (ANTLRCommonTree *)createTree:(ANTLRCommonToken *)aToken;
+- (ANTLRCommonTree *)createTree:(NSInteger)tokenType Text:(NSString *)text;
+- (id<ANTLRToken>)createToken:(NSInteger)tokenType Text:(NSString *)text;
+- (void) setTokenBoundaries:(id<ANTLRTree>)t From:(id<ANTLRToken>)startToken To:(id<ANTLRToken>)stopToken;
+- (NSInteger)getTokenStartIndex:(id<ANTLRTree>)t;
+- (NSInteger)getTokenStopIndex:(id<ANTLRTree>)t;
+- (NSString *)getText:(id<ANTLRTree>)t;
+- (void)setText:(id<ANTLRTree>)t Text:(NSString *)text;
+- (NSInteger)getType:(id<ANTLRTree>)t;
+- (void) setType:(id<ANTLRTree>)t Type:(NSInteger)tokenType;
+- (id<ANTLRToken>)getToken:(id<ANTLRTree>)t;
+- (id<ANTLRTree>)getChild:(id<ANTLRTree>)t At:(NSInteger)i;
+- (void) setChild:(id<ANTLRTree>)t At:(NSInteger)i Child:(id<ANTLRTree>)child;
+- (NSInteger)getChildCount:(id<ANTLRTree>)t;
+- (id<ANTLRTree>)getParent:(id<ANTLRTree>)t;
+- (void)setParent:(id<ANTLRTree>)t With:(id<ANTLRTree>)parent;
+- (NSInteger)getChildIndex:(id<ANTLRTree>)t;
+- (void)setChildIndex:(id<ANTLRTree>)t With:(NSInteger)index;
+- (void)replaceChildren:(id<ANTLRTree>)parent From:(NSInteger)startChildIndex To:(NSInteger)stopChildIndex With:(id<ANTLRTree>)t;
+- (id)copyWithZone:(NSZone *)zone;
 
 @end

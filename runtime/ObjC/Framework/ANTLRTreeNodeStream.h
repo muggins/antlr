@@ -26,27 +26,25 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRIntStream.h>
-#import <ANTLR/ANTLRTokenStream.h>
-#import <ANTLR/ANTLRTreeAdaptor.h>
-#import <ANTLR/ANTLRCommonTree.h>
-#import <ANTLR/ANTLRCommonTreeAdaptor.h>
+#import "ANTLRIntStream.h"
+#import "ANTLRCharStream.h"
+#import "ANTLRTokenStream.h"
+#import "ANTLRCommonTree.h"
+#import "ANTLRCommonTreeAdaptor.h"
 
 @protocol ANTLRTreeNodeStream < ANTLRIntStream > 
 
 - (id) initWithTree:(ANTLRCommonTree *)theTree;
-- (id) initWithTree:(ANTLRCommonTree *)theTree treeAdaptor:(ANTLRCommonTreeAdaptor *)theAdaptor;
+- (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)theAdaptor Tree:(ANTLRCommonTree *)theTree;
 
-- (id) LT:(int)k;
-- (id) treeSource;
-- (id<ANTLRTreeAdaptor>) treeAdaptor;
-- (id<ANTLRTokenStream>) tokenStream; 
-- (void) setUsesUniqueNavigationNodes:(BOOL)flag;
+- (id) LT:(NSInteger)k;
+- (id) getTreeSource;
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor;
+- (id<ANTLRTokenStream>) getTokenStream; 
+- (void) setUniqueNavigationNodes:(BOOL)flag;
 
-- (id) nodeAtIndex:(unsigned int) idx;
+- (id) getNode:(NSInteger) idx;
 
-- (NSString *) stringValue;
-- (NSString *) stringValueWithRange:(NSRange) aRange;
-- (NSString *) stringValueFromNode:(id)startNode toNode:(id)stopNode;
+- (NSString *) toStringFromNode:(id)startNode ToNode:(id)stopNode;
 
 @end

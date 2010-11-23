@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,33 @@
 
 #import "ANTLRTreeParser.h"
 
-
 @implementation ANTLRTreeParser
 
-- (id) initWithTreeNodeStream:(id<ANTLRTreeNodeStream>)theInput
+@synthesize input;
+
++ (id) newANTLRTreeParser:(id<ANTLRTreeNodeStream>)anInput
+{
+    return [[ANTLRTreeParser alloc] initWithStream:anInput];
+}
+
++ (id) newANTLRTreeParser:(id<ANTLRTreeNodeStream>)anInput State:(ANTLRRecognizerSharedState *)theState
+{
+    return [[ANTLRTreeParser alloc] initWithStream:anInput State:theState];
+}
+
+- (id) initWithStream:(id<ANTLRTreeNodeStream>)theInput
 {
 	if ((self = [super init]) != nil) {
 		[self setInput:theInput];
+	}
+	return self;
+}
+
+- (id) initWithStream:(id<ANTLRTreeNodeStream>)theInput State:(ANTLRRecognizerSharedState *)theState
+{
+	if ((self = [super init]) != nil) {
+		[self setInput:theInput];
+        state = theState;
 	}
 	return self;
 }
@@ -43,25 +63,126 @@
 	[super dealloc];
 }
 
-- (void) mismatch:(id<ANTLRIntStream>)aStream tokenType:(int)aTType follow:(ANTLRBitSet *)aBitset
+- (void) reset
 {
-	ANTLRMismatchedTreeNodeException *mte = [ANTLRMismatchedTreeNodeException exceptionWithTokenType:aTType stream:aStream];
-    [mte setNode:[((id<ANTLRTreeNodeStream>)aStream) LT:1]];
-	[self recoverFromMismatchedToken:aStream exception:mte tokenType:aTType follow:aBitset];
-}
-
-- (id<ANTLRTreeNodeStream>) input
-{
-    return input; 
-}
-
-- (void) setInput: (id<ANTLRTreeNodeStream>) anInput
-{
-    if (input != anInput) {
-        [anInput retain];
-        [input release];
-        input = anInput;
+    [super reset]; // reset all recognizer state variables
+    if ( input != nil ) {
+        [input seek:0]; // rewind the input
     }
+}
+
+- (void) mismatch:(id<ANTLRIntStream>)aStream tokenType:(ANTLRTokenType)aTType follow:(ANTLRBitSet *)aBitset
+{
+	ANTLRMismatchedTreeNodeException *mte = [ANTLRMismatchedTreeNodeException newANTLRMismatchedTreeNodeException:aTType Stream:aStream];
+    [mte setNode:[((id<ANTLRTreeNodeStream>)aStream) LT:1]];
+	[self recoverFromMismatchedToken:aStream Type:aTType Follow:aBitset];
+}
+
+- (void) setTreeNodeStream:(id<ANTLRTreeNodeStream>) anInput
+{
+    input = anInput;
+}
+
+- (id<ANTLRTreeNodeStream>) getTreeNodeStream
+{
+    return input;
+}
+
+- (NSString *)getSourceName
+{
+    return [input getSourceName];
+}
+
+- (id) getCurrentInputSymbol:(id<ANTLRIntStream>) anInput
+{
+    return [(id<ANTLRTreeNodeStream>)anInput LT:1];
+}
+
+- (id) getMissingSymbol:(id<ANTLRIntStream>)anInput
+              Exception:(ANTLRRecognitionException *)e
+          ExpectedToken:(NSInteger)expectedTokenType
+                 BitSet:(ANTLRBitSet *)follow
+{
+    NSString *tokenText =[NSString stringWithFormat:@"<missing %@ %d>", [self getTokenNames], expectedTokenType];
+    //id<ANTLRTreeAdaptor> anAdaptor = (id<ANTLRTreeAdaptor>)[((id<ANTLRTreeNodeStream>)e.input) getTreeAdaptor];
+    //return [anAdaptor createToken:expectedTokenType Text:tokenText];
+    return [ANTLRCommonToken newANTLRCommonToken:expectedTokenType Text:tokenText];
+}
+
+/** Match '.' in tree parser has special meaning.  Skip node or
+ *  entire tree if node has children.  If children, scan until
+ *  corresponding UP node.
+ */
+- (void) matchAny:(id<ANTLRIntStream>)ignore
+{ // ignore stream, copy of input
+    state.errorRecovery = NO;
+    state.failed = NO;
+    id look = [input LT:1];
+    if ( [((ANTLRCommonTreeAdaptor *)[input getTreeAdaptor]) getChildCount:look] == 0) {
+        [input consume]; // not subtree, consume 1 node and return
+        return;
+    }
+    // current node is a subtree, skip to corresponding UP.
+    // must count nesting level to get right UP
+    int level=0;
+    int tokenType = [((id<ANTLRTreeAdaptor>)[input getTreeAdaptor]) getType:look];
+    while ( tokenType != ANTLRTokenTypeEOF && !( tokenType == ANTLRTokenTypeUP && level == 0) ) {
+        [input consume];
+        look = [input LT:1];
+        tokenType = [((id<ANTLRTreeAdaptor>)[input getTreeAdaptor]) getType:look];
+        if ( tokenType == ANTLRTokenTypeDOWN ) {
+            level++;
+        }
+        else if ( tokenType == ANTLRTokenTypeUP ) {
+            level--;
+        }
+    }
+    [input consume]; // consume UP
+}
+
+/** We have DOWN/UP nodes in the stream that have no line info; override.
+ *  plus we want to alter the exception type.  Don't try to recover
+ *  from tree parser errors inline...
+ */
+- (id) recoverFromMismatchedToken:(id<ANTLRIntStream>)anInput Type:(NSInteger)ttype Follow:(ANTLRBitSet *)follow
+{
+    @throw [ANTLRMismatchedTreeNodeException newANTLRMismatchedTreeNodeException:ttype Stream:anInput];
+}
+
+/** Prefix error message with the grammar name because message is
+ *  always intended for the programmer because the parser built
+ *  the input tree not the user.
+ */
+- (NSString *)getErrorHeader:(ANTLRRecognitionException *)e
+{
+     return [NSString stringWithFormat:@"%@: node after line %@:%@",
+            [self getGrammarFileName], e.line, e.charPositionInLine];
+}
+
+/** Tree parsers parse nodes they usually have a token object as
+ *  payload. Set the exception token and do the default behavior.
+ */
+- (NSString *)getErrorMessage:(ANTLRRecognitionException *)e  TokenNames:(NSArray *) theTokNams
+{
+    if ( [self isKindOfClass:[ANTLRTreeParser class]] ) {
+        id<ANTLRTreeAdaptor> adaptor = (id<ANTLRTreeAdaptor>)[((id<ANTLRTreeNodeStream>)e.input) getTreeAdaptor];
+        e.token = [adaptor getToken:((id<ANTLRTree>)e.node)];
+        if ( e.token == nil ) { // could be an UP/DOWN node
+            e.token = [ANTLRCommonToken newANTLRCommonToken:[adaptor getType:e.node]
+                                                        Text:[adaptor getText:e.node]];
+        }
+    }
+    return [super getErrorMessage:e TokenNames:theTokNams];
+}
+
+- (void) traceIn:(NSString *)ruleName Index:(NSInteger)ruleIndex
+{
+    [super traceIn:ruleName Index:ruleIndex Object:[input LT:1]];
+}
+
+- (void) traceOut:(NSString *)ruleName Index:(NSInteger)ruleIndex
+{
+    [super traceOut:ruleName Index:ruleIndex  Object:[input LT:1]];
 }
 
 

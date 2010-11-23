@@ -25,24 +25,30 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
+#import "ANTLRCharStream.h"
 
 // encapsulates a stream's state, so we can put it into an NSArray.
 // No magic is happening here.
 
-@interface ANTLRStringStreamState : NSObject {
-	unsigned int index;
-	unsigned int line;
-	unsigned int charPositionInLine;
+@interface ANTLRCharStreamState : NSObject <ANTLRCharStream>
+{
+	NSUInteger index;
+	NSUInteger line;
+	NSUInteger charPositionInLine;
 }
 
-- (unsigned int) index;
-- (void) setIndex: (unsigned int) anIndex;
++ newANTLRCharStreamState;
 
-- (unsigned int) line;
-- (void) setLine: (unsigned int) aLine;
+- (id) init;
 
-- (unsigned int) charPositionInLine;
-- (void) setCharPositionInLine: (unsigned int) aCharPositionInLine;
+- (NSUInteger) getIndex;
+- (void) setIndex: (NSUInteger) anIndex;
+
+- (NSUInteger) getLine;
+- (void) setLine: (NSUInteger) aLine;
+
+- (NSUInteger) getCharPositionInLine;
+- (void) setCharPositionInLine: (NSUInteger) aCharPositionInLine;
 
 
 

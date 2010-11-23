@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,9 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRBaseRecognizer.h>
-#import <ANTLR/ANTLRIntStream.h>
-#import <ANTLR/ANTLRNoViableAltException.h>
+#import "ANTLRBaseRecognizer.h"
+#import "ANTLRCharStream.h"
+#import "ANTLRNoViableAltException.h"
 
 @interface ANTLRDFA : NSObject {
 	// the tables are set by subclasses to their own static versions.
@@ -39,17 +39,23 @@
 	const int *special;
 	const int **transition;
 	
-	int decisionNumber;
 	ANTLRBaseRecognizer *recognizer;
+	NSInteger decisionNumber;
+    NSInteger len;
 }
 
-- (id) initWithRecognizer:(ANTLRBaseRecognizer *) theRecognizer;
-// simulate the DFA using the static tables and predict an alternative
-- (int) predict;
-- (void) noViableAlt:(int) state;
+@property (retain, getter=getRecognizer,setter=setRecognizer:) ANTLRBaseRecognizer *recognizer;
+@property (assign, getter=getDecision,setter=setDecision:) NSInteger decisionNumber;
+@property (assign, getter=getLen,setter=setLen:) NSInteger len;
 
-- (int) specialStateTransition:(int) state;
-//- (unichar) specialTransition:(unichar) state symbol:(int) symbol;
+- (id) initWithRecognizer:(id) theRecognizer;
+// simulate the DFA using the static tables and predict an alternative
+- (NSInteger) predict:(id<ANTLRCharStream>)anInput;
+- (void) noViableAlt:(NSInteger)state Stream:(id<ANTLRIntStream>)anInput;
+
+- (NSInteger) specialStateTransition:(NSInteger)state Stream:(id<ANTLRIntStream>)anInput;
+// - (NSInteger) specialStateTransition:(NSInteger) state;
+//- (unichar) specialTransition:(unichar) state symbol:(NSInteger) symbol;
 
 // hook for debugger support
 - (void) error:(ANTLRNoViableAltException *)nvae;
@@ -58,5 +64,12 @@
 - (BOOL) evaluateSyntacticPredicate:(SEL)synpredFragment;
 
 + (void) setIsEmittingDebugInfo:(BOOL) shouldEmitDebugInfo;
+
+- (NSInteger)getDecision;
+- (void)setDecision:(NSInteger)aDecison;
+
+- (ANTLRBaseRecognizer *)getRecognizer;
+- (void)setRecognizer:(ANTLRBaseRecognizer *)aRecognizer;
+- (NSInteger)length;
 
 @end

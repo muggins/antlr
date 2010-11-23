@@ -24,12 +24,10 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <ANTLR/ANTLR.h>
-
-#import <ANTLR/ANTLRDebugEventListener.h>
-#import <ANTLR/ANTLRDebugEventProxy.h>
-#import <ANTLR/ANTLRDebugParser.h>
-#import <ANTLR/ANTLRDebugTokenStream.h>
-#import <ANTLR/ANTLRDebugTreeParser.h>
-#import <ANTLR/ANTLRDebugTreeNodeStream.h>
-#import <ANTLR/ANTLRDebugTreeAdaptor.h>
+#import "ANTLRDebugEventListener.h"
+#import "ANTLRDebugEventProxy.h"
+#import "ANTLRDebugParser.h"
+#import "ANTLRDebugTokenStream.h"
+#import "ANTLRDebugTreeParser.h"
+#import "ANTLRDebugTreeNodeStream.h"
+#import "ANTLRDebugTreeAdaptor.h"

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,56 @@
 
 @implementation ANTLRMismatchedTokenException
 
-+ (id) exceptionWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) anInput
+@synthesize expecting;
+@synthesize expectingChar;
+@synthesize isTokenType;
+
+
++ (id) newANTLRMismatchedTokenException:(NSInteger)expectedTokenType Stream:(id<ANTLRIntStream>)anInput
 {
-	return [[[self alloc] initWithTokenType:expectedTokenType stream:anInput] autorelease];
+	return [[ANTLRMismatchedTokenException alloc] initWithTokenType:expectedTokenType Stream:anInput];
 }
 
-+ (id) exceptionWithCharacter:(unichar) expectedCharacter stream:(id<ANTLRIntStream>) input
++ (id) newANTLRMismatchedTokenExceptionMissing:(NSInteger)expectedTokenType
+                                        Stream:(id<ANTLRIntStream>)anInput
+                                         Token:(id<ANTLRToken>)inserted
 {
-	return [[[self alloc] initWithCharacter:expectedCharacter stream:input] autorelease];
+	return [[ANTLRMismatchedTokenException alloc] initWithTokenType:expectedTokenType Stream:anInput Token:inserted];
 }
 
--(id) initWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) anInput
++ (id) newANTLRMismatchedTokenExceptionChar:(unichar) expectedCharacter Stream:(id<ANTLRIntStream>)anInput
 {
-	if (nil != (self = [super initWithStream:anInput])) {
+	return [[ANTLRMismatchedTokenException alloc] initWithCharacter:expectedCharacter Stream:anInput];
+}
+
++ (id) newANTLRMismatchedTokenExceptionStream:(id<ANTLRIntStream>)anInput Exception:(NSException *)e Follow:(ANTLRBitSet *) follow
+{
+	return [[ANTLRMismatchedTokenException alloc] initWithStream:anInput];
+}
+
+-(id) initWithTokenType:(NSInteger)expectedTokenType Stream:(id<ANTLRIntStream>)anInput
+{
+	if ((self = [super initWithStream:anInput]) != nil) {
 		expecting = expectedTokenType;
 		isTokenType = YES;
 	}
 	return self;
 }
 
-- (id) initWithCharacter:(unichar) expectedCharacter stream:(id<ANTLRIntStream>) anInput
+-(id) initWithTokenType:(NSInteger)expectedTokenType
+                 Stream:(id<ANTLRIntStream>)anInput
+                  Token:(id<ANTLRToken>)inserted
 {
-	if (nil != (self = [super initWithStream:anInput])) {
+	if ((self = [super initWithStream:anInput]) != nil) {
+		expecting = expectedTokenType;
+		isTokenType = YES;
+	}
+	return self;
+}
+
+- (id) initWithCharacter:(unichar) expectedCharacter Stream:(id<ANTLRIntStream>)anInput
+{
+	if ((self = [super initWithStream:anInput]) != nil) {
 		expectingChar = expectedCharacter;
 		isTokenType = NO;
 	}

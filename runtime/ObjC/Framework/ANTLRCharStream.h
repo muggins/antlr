@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,8 +24,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <ANTLR/ANTLRIntStream.h>
-
+#import "ANTLRIntStream.h"
 
 #define	ANTLRCharStreamEOF -1
 
@@ -34,16 +33,23 @@
 
 - (NSString *) substringWithRange:(NSRange) theRange;
 
+/** Get the ith character of lookahead.  This is the same usually as
+ *  LA(i).  This will be used for labels in the generated
+ *  lexer code.  I'd prefer to return a char here type-wise, but it's
+ *  probably better to be 32-bit clean and be consistent with LA.
+ */
+- (NSInteger)LT:(NSInteger) i;
+
 // ANTLR tracks the line information automatically
-- (unsigned int) line;
+- (NSInteger) getLine;
 
 // Because this stream can rewind, we need to be able to reset the line
-- (void) setLine:(unsigned int) theLine;
-
-- (void) setCharPositionInLine:(unsigned int) thePos;
+- (void) setLine:(NSInteger) theLine;
 
 // The index of the character relative to the beginning of the line 0..n-1
-- (unsigned int) charPositionInLine;
+- (NSInteger) getCharPositionInLine;
+
+- (void) setCharPositionInLine:(NSInteger) thePos;
 
 
 @end

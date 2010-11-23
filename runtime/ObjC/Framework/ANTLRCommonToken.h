@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,80 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRToken.h>
-#import <ANTLR/ANTLRCharStream.h>
+#import "ANTLRToken.h"
+#import "ANTLRCharStream.h"
 
 @interface ANTLRCommonToken : NSObject < ANTLRToken > {
 	NSString *text;
-	
-	int type;
+	NSInteger type;
 	// information about the Token's position in the input stream
-	unsigned int line;
-	unsigned int charPositionInLine;
-	unsigned int channel;
+	NSUInteger line;
+	NSUInteger charPositionInLine;
+	NSUInteger channel;
+	// this token's position in the TokenStream
+	NSUInteger index;
 	
-	// the actual input stream this token was found in
-	id<ANTLRCharStream> input;
 	// indices into the CharStream to avoid copying the text
 	// can manually override the text by using -setText:
-	unsigned int start;
-	unsigned int stop;
-	// this token's position in the TokenStream
-	unsigned int index;
+	NSUInteger startIndex;
+	NSUInteger stopIndex;
+	// the actual input stream this token was found in
+	id<ANTLRCharStream> input;
 }
 
-// designated initializer. This is used as the default way to initialize a Token in the generated code.
-- (ANTLRCommonToken *) initWithInput:(id<ANTLRCharStream>)anInput tokenType:(int)aTType channel:(int)aChannel start:(int)theStart stop:(int)theStop;
-- (ANTLRCommonToken *) initWithToken:(ANTLRCommonToken *)aToken;
+@property (retain, getter=getText, setter=setText:) NSString *text;
+@property (assign, getter=getType, setter=setType:) NSInteger type;
+@property (assign, getter=getLine, setter=setLine:) NSUInteger line;
+@property (assign, getter=getCharPositionInLine, setter=setCharPositionInLine:) NSUInteger charPositionInLine;
+@property (assign, getter=getChannel, setter=setChannel:) NSUInteger channel;
+@property (assign, getter=getTokenIndex, setter=setTokenIndex:) NSUInteger index;
+@property (assign, getter=getStart, setter=setStart:) NSUInteger startIndex;
+@property (assign, getter=getStop, setter=setStop:) NSUInteger stopIndex;
+@property (retain, getter=getInput, setter=setInput:) id<ANTLRCharStream> input;
 
-- (id<ANTLRCharStream>) input;
++ (void) initialize;
++ (ANTLRCommonToken *) newANTLRCommonToken;
++ (ANTLRCommonToken *) newANTLRCommonToken:(id<ANTLRCharStream>)anInput
+                                      Type:(NSInteger)aTType
+                                   Channel:(NSInteger)aChannel
+                                     Start:(NSInteger)aStart
+                                      Stop:(NSInteger)aStop;
++ (ANTLRCommonToken *) newANTLRCommonToken:(ANTLRTokenType)aType;
++ (id<ANTLRToken>) newANTLRCommonToken:(NSInteger)tokenType Text:(NSString *)tokenText;
++ (id<ANTLRToken>) newANTLRCommonTokenWithToken:(id<ANTLRToken>)fromToken;
++ (id<ANTLRToken>) eofToken;
++ (id<ANTLRToken>) skipToken;
++ (id<ANTLRToken>) invalidToken;
++ (ANTLRTokenChannel) defaultChannel;
+
+// designated initializer. This is used as the default way to initialize a Token in the generated code.
+- (ANTLRCommonToken *) init;
+- (ANTLRCommonToken *) initWithInput:(id<ANTLRCharStream>)anInput
+                                Type:(NSInteger)aTType
+                             Channel:(NSInteger)aChannel
+                               Start:(NSInteger)theStart
+                                Stop:(NSInteger)theStop;
+- (ANTLRCommonToken *) initWithToken:(ANTLRCommonToken *)aToken;
+- (ANTLRCommonToken *) initWithType:(ANTLRTokenType)aType;
+- (ANTLRCommonToken *) initWithType:(ANTLRTokenType)aTType Text:(NSString *)tokenText;
+
+- (id<ANTLRCharStream>) getInput;
 - (void) setInput: (id<ANTLRCharStream>) anInput;
 
-- (unsigned int) start;
-- (void) setStart: (unsigned int) aStart;
+- (NSUInteger) getStart;
+- (void) setStart: (NSUInteger) aStart;
 
-- (unsigned int) stop;
-- (void) setStop: (unsigned int) aStop;
+- (NSUInteger) getStop;
+- (void) setStop: (NSUInteger) aStop;
 
 // the index of this Token into the TokenStream
-- (unsigned int) tokenIndex;
-- (void) setTokenIndex: (unsigned int) aTokenIndex;
+- (NSUInteger) getTokenIndex;
+- (void) setTokenIndex: (NSUInteger) aTokenIndex;
 
 // conform to NSCopying
 - (id) copyWithZone:(NSZone *)theZone;
+
+- (NSString *) description;
+- (NSString *) toString;
 
 @end

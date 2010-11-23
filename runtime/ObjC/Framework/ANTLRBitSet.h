@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,65 @@
 
 #import <Cocoa/Cocoa.h>
 #import <CoreFoundation/CoreFoundation.h>
+#import "ANTLRToken.h"
+
+#define BITS (sizeof(NSUInteger) * 8)
+#define LOG_BITS ((sizeof(NSUInteger)==8)?6:5)
 
 // A simple wrapper around CoreFoundation bit vectors to shield the rest of the implementation
 // from the specifics of the BitVector initialization and query functions.
 // This is fast, so there is no need to reinvent the wheel just yet.
 
-@interface ANTLRBitSet : NSObject < NSCopying > {
+@interface ANTLRBitSet : NSObject < NSMutableCopying > {
 	CFMutableBitVectorRef bitVector;
 }
+
+#pragma mark Class Methods
+
++ (ANTLRBitSet *) newANTLRBitSet;
++ (ANTLRBitSet *) newANTLRBitSetWithType:(ANTLRTokenType)type;
+/** Construct a ANTLRBitSet given the size
+ * @param nbits The size of the ANTLRBitSet in bits
+ */
++ (ANTLRBitSet *) newANTLRBitSetWithNBits:(NSUInteger)nbits;
++ (ANTLRBitSet *) newANTLRBitSetWithArray:(NSMutableArray *)types;
++ (ANTLRBitSet *) newANTLRBitSetWithBits:(const unsigned long long *)theBits Count:(NSUInteger)longCount;
+
++ (ANTLRBitSet *) of:(NSUInteger)el;
++ (ANTLRBitSet *) of:(NSUInteger)a And2:(NSUInteger)b;
++ (ANTLRBitSet *) of:(NSUInteger)a And2:(NSUInteger)b And3:(NSUInteger)c;
++ (ANTLRBitSet *) of:(NSUInteger)a And2:(NSUInteger)b And3:(NSUInteger)c And4:(NSUInteger)d;
 
 #pragma mark Initializer
 
 - (ANTLRBitSet *) init;
+- (ANTLRBitSet *) initWithType:(ANTLRTokenType)type;
+- (ANTLRBitSet *) initWithNBits:(NSUInteger)nbits;
 - (ANTLRBitSet *) initWithBitVector:(CFMutableBitVectorRef)theBitVector;
-- (ANTLRBitSet *) initWithBits:(const unsigned long long const*)theBits count:(unsigned int)theCount;
+- (ANTLRBitSet *) initWithBits:(const unsigned long long const*)theBits Count:(NSUInteger)theCount;
 - (ANTLRBitSet *) initWithArrayOfBits:(NSArray *)theArray;
 
 #pragma mark Operations
 - (ANTLRBitSet *) or:(ANTLRBitSet *) aBitSet;
 - (void) orInPlace:(ANTLRBitSet *) aBitSet;
-- (void) add:(unsigned int) bit;
-- (void) remove:(unsigned int) bit;
+- (void) add:(NSUInteger) bit;
+- (void) remove:(NSUInteger) bit;
+- (void) setAllBits:(BOOL) aState;
 
-- (unsigned int) size;
-- (void) setSize:(unsigned int) noOfWords;
+- (NSInteger) numBits;
+- (NSUInteger) size;
+- (void) setSize:(NSUInteger) noOfWords;
 
 #pragma mark Informational
-- (unsigned long long) bitMask:(unsigned int) bitNumber;
-- (BOOL) isMember:(unsigned int) bitNumber;
+- (unsigned long long) bitMask:(NSUInteger) bitNumber;
+- (BOOL) member:(NSUInteger)bitNumber;
 - (BOOL) isNil;
 - (NSString *) toString;
 - (NSString *) description;
 
 #pragma mark NSCopying support
 
-- (id) copyWithZone:(NSZone *) theZone;
+- (id) mutableCopyWithZone:(NSZone *) theZone;
 
 
 //private

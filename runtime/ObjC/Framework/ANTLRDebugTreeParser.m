@@ -35,32 +35,32 @@
 }
 
 - (id) initWithTreeNodeStream:(id<ANTLRTreeNodeStream>)theStream
-				 debuggerPort:(int)portNumber
+				 debuggerPort:(NSInteger)portNumber
 {
 	return [self initWithTreeNodeStream:theStream debugListener:nil debuggerPort:portNumber];
 }
 
 - (id) initWithTreeNodeStream:(id<ANTLRTreeNodeStream>)theStream
 				debugListener:(id<ANTLRDebugEventListener>)theDebugListener
-				 debuggerPort:(int)portNumber
+				 debuggerPort:(NSInteger)portNumber
 {
 	id<ANTLRDebugEventListener,NSObject> debugger = nil;
 	id<ANTLRTreeNodeStream> treeNodeStream = nil;
 	if (theDebugListener) {
-		debugger = [(id<ANTLRDebugEventListener,NSObject>)theDebugListener retain];
+		debugger = (id<ANTLRDebugEventListener>)theDebugListener;
 	} else {
 		debugger = [[ANTLRDebugEventProxy alloc] initWithGrammarName:[self grammarFileName] debuggerPort:portNumber];
 	}
 	if (theStream && ![theStream isKindOfClass:[ANTLRDebugTreeNodeStream class]]) {
 		treeNodeStream = [[ANTLRDebugTreeNodeStream alloc] initWithTreeNodeStream:theStream debugListener:debugger];
 	} else {
-		treeNodeStream = [theStream retain];
+		treeNodeStream = theStream;
 	}
 	self = [super initWithTreeNodeStream:treeNodeStream];
 	if (self) {
 		[self setDebugListener:debugger];
-		[debugger release];
-		[treeNodeStream release];
+		//[debugger release];
+		//[treeNodeStream release];
 		[debugListener waitForDebuggerConnection];
 	}
 	return self;
@@ -98,12 +98,12 @@
 {
 	[debugListener endResync];
 }
-- (void)beginBacktracking:(int)level
+- (void)beginBacktracking:(NSInteger)level
 {
 	[debugListener beginBacktrack:level];
 }
 
-- (void)endBacktracking:(int)level wasSuccessful:(BOOL)successful
+- (void)endBacktracking:(NSInteger)level wasSuccessful:(BOOL)successful
 {
 	[debugListener endBacktrack:level wasSuccessful:successful];
 }

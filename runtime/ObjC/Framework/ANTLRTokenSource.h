@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,13 +25,14 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#import <ANTLR/ANTLRToken.h>
+#import "ANTLRToken.h"
 
 // Anything that responds to -nextToken can be treated as a lexer.
 // For instance this can be a flex lexer or a handwritten one or even
 // a proxy for a remotely running token source (database, lexer, whatever).
-@protocol ANTLRTokenSource
+@protocol ANTLRTokenSource <NSObject, NSCopying>
 
 - (id<ANTLRToken>) nextToken;
+- (NSString *)getSourceName;
 
 @end

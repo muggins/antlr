@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,21 +26,51 @@
 
 #import "ANTLRRewriteRuleElementStream.h"
 
-
 @implementation ANTLRRewriteRuleElementStream
+
+@synthesize cursor;
+@synthesize dirty;
+@synthesize isSingleElement;
+@synthesize elements;
+@synthesize elementDescription;
+@synthesize treeAdaptor;
+
++ (ANTLRRewriteRuleElementStream *) newANTLRRewriteRuleElementStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription
+{
+    return [[ANTLRRewriteRuleElementStream alloc] initWithTreeAdaptor:aTreeAdaptor description:anElementDescription];
+}
+
++ (ANTLRRewriteRuleElementStream *) newANTLRRewriteRuleElementStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription element:(id)anElement
+{
+    return [[ANTLRRewriteRuleElementStream alloc] initWithTreeAdaptor:aTreeAdaptor description:anElementDescription element:anElement];
+}
+
++ (ANTLRRewriteRuleElementStream *) newANTLRRewriteRuleElementStream:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription elements:(NSArray *)theElements;
+{
+    return [[ANTLRRewriteRuleElementStream alloc] initWithTreeAdaptor:aTreeAdaptor description:anElementDescription elements:theElements];
+}
 
 - (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription
 {
-    return [self initWithTreeAdaptor:aTreeAdaptor description:anElementDescription element:nil];
+    if ((self = [super init]) != nil) {
+        cursor = 0;
+        dirty = NO;
+        [self setDescription:anElementDescription];
+        [self setTreeAdaptor:aTreeAdaptor];
+        dirty = NO;
+        isSingleElement = YES;
+    }
+    return self;
 }
 
 - (id) initWithTreeAdaptor:(id<ANTLRTreeAdaptor>)aTreeAdaptor description:(NSString *)anElementDescription element:(id)anElement
 {
-    self = [super init];
-    if (self) {
+    if ((self = [super init]) != nil) {
+        cursor = 0;
+        dirty = NO;
         [self setDescription:anElementDescription];
         [self setTreeAdaptor:aTreeAdaptor];
-        shouldCopyElements = NO;
+        dirty = NO;
         isSingleElement = YES;
         [self addElement:anElement];
     }
@@ -51,9 +81,11 @@
 {
     self = [super init];
     if (self) {
+        cursor = 0;
+        dirty = NO;
         [self setDescription:anElementDescription];
         [self setTreeAdaptor:aTreeAdaptor];
-        shouldCopyElements = NO;
+        dirty = NO;
         isSingleElement = NO;
         elements.multiple = [[NSMutableArray alloc] initWithArray:theElements];
     }
@@ -71,13 +103,13 @@
     [super dealloc];
 }
 
-- (void) reset
+- (void)reset
 {
     cursor = 0;
-    shouldCopyElements = YES;
+    dirty = YES;
 }
 
-- (id<ANTLRTreeAdaptor>) treeAdaptor
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor
 {
     return treeAdaptor;
 }
@@ -86,24 +118,26 @@
 {
     if (treeAdaptor != aTreeAdaptor) {
         [treeAdaptor release];
-        treeAdaptor = [aTreeAdaptor retain];
+        [treeAdaptor retain];
+        treeAdaptor = aTreeAdaptor;
     }
 }
 
-
 - (void) addElement: (id)anElement
 {
+    if (anElement == nil)
+        return;
     if (isSingleElement) {
         
         if (elements.single == nil) {
             elements.single = [anElement retain];
+            elements.single = anElement;
             return;
         }
-        
         isSingleElement = NO;
-        NSMutableArray *newArray = [[NSMutableArray alloc] initWithCapacity:5];
+        NSMutableArray *newArray = [[NSMutableArray arrayWithCapacity:5] retain];
         [newArray addObject:elements.single];
-        [elements.single release];  // balance previous retain in initializer/addElement
+        // [elements.single release];  // balance previous retain in initializer/addElement
         [newArray addObject:anElement];
         elements.multiple = newArray;
     } else {
@@ -111,7 +145,28 @@
     }
 }
 
-- (unsigned int) count
+- (void) setElement: (id)anElement
+{
+    if (anElement == nil)
+        return;
+    if (isSingleElement) {
+        if (elements.single == nil) {
+            elements.single = [anElement retain];
+            elements.single = anElement;
+            return;
+        }
+        isSingleElement = NO;
+        NSMutableArray *newArray = [[NSMutableArray arrayWithCapacity:5] retain];
+        [newArray addObject:elements.single];
+        // [elements.single release];  // balance previous retain in initializer/addElement
+        [newArray addObject:anElement];
+        elements.multiple = newArray;
+    } else {
+        [elements.multiple addObject:anElement];
+    }
+}
+
+- (NSInteger) size
 {
     if (isSingleElement && elements.single != nil)
         return 1;
@@ -120,30 +175,34 @@
     return 0;
 }
 
-
 - (BOOL) hasNext
 {
     return (isSingleElement && elements.single != nil && cursor < 1) ||
             (isSingleElement == NO && elements.multiple != nil && cursor < [elements.multiple count]);
 }
 
-- (id) next
+- (id<ANTLRTree>) nextTree
 {
-    if (shouldCopyElements || (cursor>=[self count] && [self count]==1)) {
+    NSInteger n;
+
+    n = [self size];
+    if ( dirty && (cursor>=0 && n == 1)) {
+        // if out of elements and size is 1, dup
         id element = [self _next];
-        return [[self copyElement:element] autorelease];
+        return [self copyElement:element];
     }
+    // test size above then fetch
     id element = [self _next];
     return element;
 }
 
 - (id) _next       // internal: TODO: redesign if necessary. maybe delegate
 {
-    if ([self count] == 0) {
+    if ([self size] == 0) {
         @throw [NSException exceptionWithName:@"RewriteEmptyStreamException" reason:nil userInfo:nil];// TODO: fill in real exception
     }
-    if ( cursor >= [self count] ) {
-        if ( [self count] == 1 ) {
+    if ( cursor >= [self size] ) {
+        if ( [self size] == 1 ) {
             return [self toTree:elements.single]; // will be dup'ed in -next
         }
         @throw [NSException exceptionWithName:@"RewriteCardinalityException" reason:nil userInfo:nil];// TODO: fill in real exception
@@ -163,25 +222,23 @@
     return nil;
 }
 
-- (id) toTree:(id)element
+- (id<ANTLRTree>) toTree:(id)element
 {
     return element;
 }
 
-
-- (NSString *) description
+- (NSString *) getDescription
 {
     return elementDescription;
 }
 
 - (void) setDescription:(NSString *) description
 {
-    if (description != elementDescription) {
-        [elementDescription release];
-        elementDescription = [description retain];
+    if ( description != nil && description != elementDescription ) {
+        if (elementDescription != nil) [elementDescription release];
+        elementDescription = [NSString stringWithString:description];
+        [description release];
     }
 }
-
-
 
 @end

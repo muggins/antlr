@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,12 +24,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@protocol ANTLRIntStream < NSObject >
+@protocol ANTLRIntStream < NSObject, NSCopying >
 
 - (void) consume;
 
 // Get unichar at current input pointer + i ahead where i=1 is next character as int for including ANTLRCharStreamEOF (-1) in the data range
-- (int) LA:(int) i;
+- (NSInteger) LA:(NSInteger) i;
 
 // Tell the stream to start buffering if it hasn't already.  Return
 // current input position, index(), or some other marker so that
@@ -37,12 +37,12 @@
 // rewind(mark()) should not affect the input cursor.
 // TODO: problem in that lexer stream returns not index but some marker 
 
-- (int) mark;
+- (NSInteger) mark;
 
 // Return the current input symbol index 0..n where n indicates the
 // last symbol has been read.
 
-- (int) index;
+- (NSInteger) getIndex;
 
 // Reset the stream so that next call to index would return marker.
 // The marker will usually be -index but it doesn't have to be.  It's
@@ -53,14 +53,14 @@
 // was created.
 
 - (void) rewind;
-- (void) rewind:(int) marker;
+- (void) rewind:(NSInteger) marker;
 
 // You may want to commit to a backtrack but don't want to force the
 // stream to keep bookkeeping objects around for a marker that is
 // no longer necessary.  This will have the same behavior as
 // rewind() except it releases resources without the backward seek.
 
-- (void) release:(int) marker;
+- (void) release:(NSInteger) marker;
 
 // Set the input cursor to the position indicated by index.  This is
 // normally used to seek ahead in the input stream.  No buffering is
@@ -77,12 +77,17 @@
 // Currently, this method is only used for efficient backtracking, but
 // in the future it may be used for incremental parsing.
 
-- (void) seek:(int) index;
+- (void) seek:(NSInteger) index;
 
-// Only makes sense for streams that buffer everything up probably, but
-// might be useful to display the entire stream or for testing.
-
-- (unsigned int) count;
-
+/** Only makes sense for streams that buffer everything up probably, but
+ *  might be useful to display the entire stream or for testing.  This
+ *  value includes a single EOF.
+ */
+- (NSUInteger) size;
+/** Where are you getting symbols from?  Normally, implementations will
+ *  pass the buck all the way to the lexer who can ask its input stream
+ *  for the file name or whatever.
+ */
+- (NSString *)getSourceName;
 
 @end

@@ -35,8 +35,8 @@
 	self = [super init];
 	if (self) {
 		[self setDebugListener:debugger];
-		[self setTokenStream:theStream];
-		[[self tokenStream] LT:1];	// force reading first on-channel token
+		[self setInput:theStream];
+		[[self getInput] LT:1];	// force reading first on-channel token
 		initialStreamState = YES;
 	}
 	return self;
@@ -44,8 +44,8 @@
 
 - (void) dealloc
 {
-    [self setDebugListener: nil];
-    [self setTokenStream: nil];
+    [self setDebugListener:nil];
+    [self setInput:nil];
     [super dealloc];
 }
 
@@ -64,25 +64,25 @@
     }
 }
 
-- (id<ANTLRTokenStream>) tokenStream
+- (id<ANTLRTokenStream>) getInput
 {
-    return tokenStream; 
+    return input; 
 }
 
-- (void) setTokenStream: (id<ANTLRTokenStream>) aTokenStream
+- (void) setInput: (id<ANTLRTokenStream>) aTokenStream
 {
-    if (tokenStream != aTokenStream) {
+    if (input != aTokenStream) {
         [aTokenStream retain];
-        [tokenStream release];
-        tokenStream = aTokenStream;
+        [input release];
+        input = aTokenStream;
     }
 }
 
 - (void) consumeInitialHiddenTokens
 {
-	int firstIdx = [tokenStream index];
+	int firstIdx = [input getIndex];
 	for (int i = 0; i<firstIdx; i++)
-		[debugListener consumeHiddenToken:[tokenStream tokenAtIndex:i]];
+		[debugListener consumeHiddenToken:[input getToken:i]];
 	initialStreamState = NO;
 }
 
@@ -93,26 +93,26 @@
 // forwarded to the actual token stream
 - (void) forwardInvocation:(NSInvocation *)anInvocation
 {
-	[anInvocation invokeWithTarget:[self tokenStream]];
+	[anInvocation invokeWithTarget:[self getInput]];
 }
 
 - (void) consume
 {
 	if ( initialStreamState )
 		[self consumeInitialHiddenTokens];
-	int a = [tokenStream index];
-	id<ANTLRToken> token = [tokenStream LT:1];
-	[tokenStream consume];
-	int b = [tokenStream index];
+	int a = [input getIndex];
+	id<ANTLRToken> token = [input LT:1];
+	[input consume];
+	int b = [input getIndex];
 	[debugListener consumeToken:token];
 	if (b > a+1) // must have consumed hidden tokens
 		for (int i = a+1; i < b; i++)
-			[debugListener consumeHiddenToken:[tokenStream tokenAtIndex:i]];
+			[debugListener consumeHiddenToken:[input getToken:i]];
 }
 
-- (int) mark
+- (NSInteger) mark
 {
-	int lastMarker = [tokenStream mark];
+	lastMarker = [input mark];
 	[debugListener mark:lastMarker];
 	return lastMarker;
 }
@@ -120,29 +120,80 @@
 - (void) rewind
 {
 	[debugListener rewind];
-	[tokenStream rewind];
+	[input rewind];
 }
 
-- (void) rewind:(int)marker
+- (void) rewind:(NSInteger)marker
 {
 	[debugListener rewind:marker];
-	[tokenStream rewind:marker];
+	[input rewind:marker];
 }
 
-- (id<ANTLRToken>) LT:(int)k
+- (id<ANTLRToken>) LT:(NSInteger)k
 {
 	if ( initialStreamState )
 		[self consumeInitialHiddenTokens];
-	[debugListener LT:k foundToken:[tokenStream LT:k]];
-	return [tokenStream LT:k];
+	[debugListener LT:k foundToken:[input LT:k]];
+	return [input LT:k];
 }
 
-- (int) LA:(int)k
+- (NSInteger) LA:(NSInteger)k
 {
 	if ( initialStreamState )
 		[self consumeInitialHiddenTokens];
-	[debugListener LT:k foundToken:[tokenStream LT:k]];
-	return [tokenStream LA:k];
+	[debugListener LT:k foundToken:[input LT:k]];
+	return [input LA:k];
+}
+
+- (id<ANTLRToken>) getToken:(NSInteger)i
+{
+    return [input getToken:i];
+}
+
+- (NSInteger) getIndex
+{
+    return [input getIndex];
+}
+
+- (void) release:(NSInteger) marker
+{
+}
+
+- (void) seek:(NSInteger)index
+{
+    // TODO: implement seek in dbg interface
+    // db.seek(index);
+    [input seek:index];
+}
+
+- (NSInteger) size
+{
+    return [input size];
+}
+
+- (id<ANTLRTokenSource>) getTokenSource
+{
+    return [input getTokenSource];
+}
+
+- (NSString *) getSourceName
+{
+    return [[input getTokenSource] getSourceName];
+}
+
+- (NSString *) toString
+{
+    return [input toString];
+}
+
+- (NSString *) toStringFromStart:(NSInteger)startIndex ToEnd:(NSInteger)stopIndex
+{
+    return [input toStringFromStart:startIndex ToEnd:stopIndex];
+}
+
+- (NSString *) toStringFromToken:(id<ANTLRToken>)startToken ToToken:(id<ANTLRToken>)stopToken
+{
+    return [input toStringFromStart:[startToken getStartIndex] ToEnd:[stopToken getStopIndex]];
 }
 
 @end

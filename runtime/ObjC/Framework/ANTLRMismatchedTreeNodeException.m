@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,14 +29,16 @@
 
 @implementation ANTLRMismatchedTreeNodeException
 
-+ (id) exceptionWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) anInput
+@synthesize expecting;
+
++ (id) newANTLRMismatchedTreeNodeException:(NSInteger)expectedTokenType Stream:(id<ANTLRIntStream>)anInput
 {
-	return [[[self alloc] initWithTokenType:expectedTokenType stream:anInput] autorelease];
+	return [[ANTLRMismatchedTreeNodeException alloc] initWithTokenType:expectedTokenType Stream:anInput];
 }
 
--(id) initWithTokenType:(int) expectedTokenType stream:(id<ANTLRIntStream>) anInput
+-(id) initWithTokenType:(NSInteger)expectedTokenType Stream:(id<ANTLRIntStream>)anInput
 {
-	if (nil != (self = [super initWithStream:anInput])) {
+	if ((self = [super initWithStream:anInput]) != nil) {
 		expecting = expectedTokenType;
 	}
 	return self;

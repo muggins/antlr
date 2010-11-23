@@ -25,14 +25,14 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRDebugEventListener.h>
-#import <ANTLR/ANTLRTreeAdaptor.h>
-#import <ANTLR/ANTLRTreeNodeStream.h>
+#import "ANTLRDebugEventListener.h"
+#import "ANTLRTreeAdaptor.h"
+#import "ANTLRTreeNodeStream.h"
 
 @interface ANTLRDebugTreeNodeStream : NSObject <ANTLRTreeNodeStream> {
 	id<ANTLRDebugEventListener> debugListener;
 	id<ANTLRTreeAdaptor> treeAdaptor;
-	id<ANTLRTreeNodeStream> treeNodeStream;
+	id<ANTLRTreeNodeStream> input;
 	BOOL initialStreamState;
 }
 
@@ -41,27 +41,27 @@
 - (id<ANTLRDebugEventListener>) debugListener;
 - (void) setDebugListener: (id<ANTLRDebugEventListener>) aDebugListener;
 
-- (id<ANTLRTreeNodeStream>) treeNodeStream;
-- (void) setTreeNodeStream: (id<ANTLRTreeNodeStream>) aTreeNodeStream;
+- (id<ANTLRTreeNodeStream>) getInput;
+- (void) setInput: (id<ANTLRTreeNodeStream>) aTreeNodeStream;
 
-- (id<ANTLRTreeAdaptor>) treeAdaptor;
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor;
 - (void) setTreeAdaptor: (id<ANTLRTreeAdaptor>) aTreeAdaptor;
 
 #pragma mark ANTLRTreeNodeStream conformance
 
-- (id) LT:(int)k;
-- (id<ANTLRTreeAdaptor>) treeAdaptor;
-- (void) setUsesUniqueNavigationNodes:(BOOL)flag;
+- (id) LT:(NSInteger)k;
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor;
+- (void) setUniqueNavigationNodes:(BOOL)flag;
 
 #pragma mark ANTLRIntStream conformance
 - (void) consume;
-- (int) LA:(unsigned int) i;
-- (unsigned int) mark;
-- (unsigned int) index;
-- (void) rewind:(unsigned int) marker;
+- (NSInteger) LA:(NSUInteger) i;
+- (NSUInteger) mark;
+- (NSUInteger) getIndex;
+- (void) rewind:(NSUInteger) marker;
 - (void) rewind;
-- (void) release:(unsigned int) marker;
-- (void) seek:(unsigned int) index;
-- (unsigned int) count;
+- (void) release:(NSUInteger) marker;
+- (void) seek:(NSUInteger) index;
+- (NSUInteger) size;
 
 @end

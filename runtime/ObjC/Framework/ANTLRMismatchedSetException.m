@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,29 +29,31 @@
 
 @implementation ANTLRMismatchedSetException
 
+@synthesize expecting;
+
 + (id) exceptionWithSet:(NSSet *) theExpectedSet stream:(id<ANTLRIntStream>) theStream
 {
-	return [[[self alloc] initWithSet:theExpectedSet stream:theStream] autorelease];
+	return [[ANTLRMismatchedSetException alloc] initWithSet:theExpectedSet stream:theStream];
 }
 
 - (id) initWithSet:(NSSet *) theExpectedSet stream:(id<ANTLRIntStream>) theStream
 {
-	if (nil != (self = [super initWithStream:theStream])) {
-		[self setExpectedSet:theExpectedSet];
+	if ((self = [super initWithStream:theStream]) != nil) {
+		[self setExpecting:theExpectedSet];
 	}
 	return self;
 }
 
 - (void) dealloc
 {
-	[self setExpectedSet:nil];
+	[self setExpecting:nil];
 	[super dealloc];
 }
 
 - (NSString *) description
 {
 	NSMutableString *desc =(NSMutableString *)[super description];
-	[desc appendFormat:@" set:%@", expectedSet];
+	[desc appendFormat:@" set:%@", expecting];
 	return desc;
 }
 
@@ -59,17 +61,17 @@
 //---------------------------------------------------------- 
 //  expectedSet 
 //---------------------------------------------------------- 
-- (NSSet *) expectedSet
+- (NSSet *) getExpecting
 {
-    return expectedSet; 
+    return expecting; 
 }
 
-- (void) setExpectedSet: (NSSet *) anExpectedSet
+- (void) setExpecting: (NSSet *) anExpectedSet
 {
-    if (expectedSet != anExpectedSet) {
+    if (expecting != anExpectedSet) {
+        [expecting release];
         [anExpectedSet retain];
-        [expectedSet release];
-        expectedSet = anExpectedSet;
+        expecting = anExpectedSet;
     }
 }
 

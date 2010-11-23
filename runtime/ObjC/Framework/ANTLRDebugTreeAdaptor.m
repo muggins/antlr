@@ -61,7 +61,7 @@
     }
 }
 
-- (id<ANTLRTreeAdaptor>) treeAdaptor
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor
 {
     return treeAdaptor; 
 }
@@ -82,17 +82,17 @@
 // forwarded to the actual token stream
 - (void) forwardInvocation:(NSInvocation *)anInvocation
 {
-	[anInvocation invokeWithTarget:[self treeAdaptor]];
+	[anInvocation invokeWithTarget:[self getTreeAdaptor]];
 }
 
 #pragma mark -
 
 #pragma mark Construction
 
-- (id<ANTLRTree>) newTreeWithToken:(id<ANTLRToken>) payload
+- (id<ANTLRTree>) newANTLRTreeWithToken:(id<ANTLRToken>) payload
 {
-	id<ANTLRTree> newTree = [treeAdaptor newTreeWithToken:payload];
-	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] fromTokenAtIndex:[payload tokenIndex]];
+	id<ANTLRTree> newTree = [ANTLRTreeAdaptor newANTLRTreeWithToken:payload];
+	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] fromTokenAtIndex:[payload getTokenIndex]];
 	return newTree;
 }
 
@@ -118,15 +118,15 @@
 	[debugListener addChild:[treeAdaptor uniqueIdForTree:child] toTree:[self uniqueIdForTree:aTree]];
 }
 
-- (id<ANTLRTree>) makeNode:(id<ANTLRTree>)newRoot parentOf:(id<ANTLRTree>)oldRoot
+- (id<ANTLRTree>) becomeRoot:(id<ANTLRTree>)newRoot old:(id<ANTLRTree>)oldRoot
 {
-	id<ANTLRTree> newTree = [treeAdaptor makeNode:newRoot parentOf:oldRoot];
-	[debugListener makeNode:[treeAdaptor uniqueIdForTree:newTree] parentOf:[self uniqueIdForTree:oldRoot]];
+	id<ANTLRTree> newTree = [treeAdaptor becomeRoot:newRoot old:oldRoot];
+	[debugListener becomeRoot:[treeAdaptor uniqueIdForTree:newTree] old:[self uniqueIdForTree:oldRoot]];
 	return newTree;
 }
 
 /* handle by forwardInvocation: 
-- (unsigned int) uniqueIdForTree:(id<ANTLRTree>)aNode
+- (NSUInteger) uniqueIdForTree:(id<ANTLRTree>)aNode
 {
 }
 */
@@ -135,63 +135,65 @@
 
  - (void) addTokenAsChild:(id<ANTLRToken>)child toTree:(id<ANTLRTree>)aTree
 {
-	id<ANTLRTree> newChild = [self newTreeWithToken:child];
+	id<ANTLRTree> newChild = [self newANTLRTreeWithToken:child];
 	[self addChild:newChild toTree:aTree];
 }
 
 - (id<ANTLRTree>) makeToken:(id<ANTLRToken>)newRoot parentOf:(id<ANTLRTree>)oldRoot
 {
-	id<ANTLRTree> newNode = [self newTreeWithToken:newRoot];
-	return [self makeNode:newNode parentOf:oldRoot];
+	id<ANTLRTree> newNode = [self newANTLRTreeWithToken:newRoot];
+	return [self becomeRoot:newNode old:oldRoot];
 }
 
-- (id<ANTLRTree>) newTreeWithTokenType:(int)tokenType
+- (id<ANTLRTree>) newANTLRTreeWithTokenType:(NSInteger)tokenType
 {
-	id<ANTLRTree> newTree = [treeAdaptor newTreeWithTokenType:tokenType];
+	id<ANTLRTree> newTree = [treeAdaptor newANTLRTreeWithTokenType:tokenType];
 	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] text:nil type:tokenType];
 	return newTree;
 }
 
-- (id<ANTLRTree>) newTreeWithTokenType:(int)tokenType text:(NSString *)tokenText
+- (id<ANTLRTree>) newANTLRTreeWithTokenType:(NSInteger)tokenType text:(NSString *)tokenText
 {
-	id<ANTLRTree> newTree = [treeAdaptor newTreeWithTokenType:tokenType text:tokenText];
+	id<ANTLRTree> newTree = [treeAdaptor newANTLRTreeWithTokenType:tokenType text:tokenText];
 	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] text:tokenText type:tokenType];
 	return newTree;
 }
-- (id<ANTLRTree>) newTreeWithToken:(id<ANTLRToken>)fromToken tokenType:(int)tokenType
+- (id<ANTLRTree>) newANTLRTreeWithToken:(id<ANTLRToken>)fromToken tokenType:(NSInteger)tokenType
 {
-	id<ANTLRTree> newTree = [treeAdaptor newTreeWithToken:fromToken tokenType:tokenType];
-	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] text:[fromToken text] type:tokenType];
+	id<ANTLRTree> newTree = [treeAdaptor newANTLRTreeWithToken:fromToken tokenType:tokenType];
+	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] text:[fromToken getText] type:tokenType];
 	return newTree;
 }
 
-- (id<ANTLRTree>) newTreeWithToken:(id<ANTLRToken>)fromToken tokenType:(int)tokenType text:(NSString *)tokenText
+- (id<ANTLRTree>) newANTLRTreeWithToken:(id<ANTLRToken>)fromToken tokenType:(NSInteger)tokenType text:(NSString *)tokenText
 {
-	id<ANTLRTree> newTree = [treeAdaptor newTreeWithToken:fromToken tokenType:tokenType text:tokenText];
+	id<ANTLRTree> newTree = [treeAdaptor newANTLRTreeWithToken:fromToken tokenType:tokenType text:tokenText];
 	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] text:tokenText type:tokenType];
 	return newTree;
 }
 
-- (id<ANTLRTree>) newTreeWithToken:(id<ANTLRToken>)fromToken text:(NSString *)tokenText
+- (id<ANTLRTree>) newANTLRTreeWithToken:(id<ANTLRToken>)fromToken text:(NSString *)tokenText
 {
-	id<ANTLRTree> newTree = [treeAdaptor newTreeWithToken:fromToken text:tokenText];
-	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] text:tokenText type:[fromToken type]];
+	id<ANTLRTree> newTree = [treeAdaptor newANTLRTreeWithToken:fromToken text:tokenText];
+	[debugListener createNode:[treeAdaptor uniqueIdForTree:newTree] text:tokenText type:[fromToken getType]];
 	return newTree;
 }
 
 #pragma mark Content
 
 /* handled by forwardInvocation:
-- (int) tokenTypeForNode:(id<ANTLRTree>)aNode
+- (NSInteger) tokenTypeForNode:(id<ANTLRTree>)aNode
 {
 }
-- (void) setTokenType:(int)tokenType forNode:(id)aNode
+ 
+- (void) setTokenType:(NSInteger)tokenType forNode:(id)aNode
 {
 }
 
 - (NSString *) textForNode:(id<ANTLRTree>)aNode
 {
 }
+ 
 - (void) setText:(NSString *)tokenText forNode:(id<ANTLRTree>)aNode
 {
 }
@@ -200,24 +202,26 @@
 {
 	[treeAdaptor setBoundariesForTree:aTree fromToken:startToken toToken:stopToken];
 	if (aTree && startToken && stopToken) {
-		[debugListener setTokenBoundariesForTree:[aTree hash] start:[startToken tokenIndex] stop:[stopToken tokenIndex]];
+		[debugListener setTokenBoundariesForTree:[aTree hash] From:[startToken getTokenIndex] To:[stopToken getTokenIndex]];
 	}
 }
 /* handled by forwardInvocation:
-- (int) tokenStartIndexForTree:(id<ANTLRTree>)aTree
+- (NSInteger) tokenStartIndexForTree:(id<ANTLRTree>)aTree
 {
 }
-- (int) tokenStopIndexForTree:(id<ANTLRTree>)aTree
+ 
+- (NSInteger) tokenStopIndexForTree:(id<ANTLRTree>)aTree
 {
 }
 */
 
 #pragma mark Navigation / Tree Parsing
 /* handled by forwardInvocation:
-- (id<ANTLRTree>) childForNode:(id<ANTLRTree>) aNode atIndex:(int) i
+- (id<ANTLRTree>) childForNode:(id<ANTLRTree>) aNode atIndex:(NSInteger) i
 {
 }
-- (int) childCountForTree:(id<ANTLRTree>) aTree
+ 
+- (NSInteger) childCountForTree:(id<ANTLRTree>) aTree
 {
 }
 */

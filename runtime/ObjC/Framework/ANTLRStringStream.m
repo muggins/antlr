@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,45 +26,139 @@
 
 
 #import "ANTLRStringStream.h"
-#import "ANTLRStringStreamState.h"
 
 @implementation ANTLRStringStream
 
+@synthesize data;
+@synthesize n;
+@synthesize p;
+@synthesize line;
+@synthesize charPositionInLine;
+@synthesize markDepth;
+@synthesize lastMarker;
+@synthesize markers;
+@synthesize name;
+@synthesize charState;
+
++ newANTLRStringStream
+{
+    return [[ANTLRStringStream alloc] init];
+}
+
++ newANTLRStringStream:(NSString *)aString;
+{
+    return [[ANTLRStringStream alloc] initWithString:aString];
+}
+
+
++ newANTLRStringStream:(char *)myData Count:(NSInteger)numBytes;
+{
+    return [[ANTLRStringStream alloc] initWithData:myData Count:numBytes];
+}
+
+
 - (id) init
 {
-	if (nil != (self = [super init])) {
-		markers = [[NSMutableArray alloc] init];
-		[self reset];			// rely on internal implementation to reset the state, instead of duplicating here.
+	if ((self = [super init]) != nil) {
+        n = 0;
+        p = 0;
+        line = 1;
+        charPositionInLine = 0;
+        markDepth = 0;
+		markers = [ANTLRPtrBuffer newANTLRPtrBufferWithLen:10];
+        [markers retain];
+        [markers addObject:[NSNull null]]; // ANTLR generates code that assumes markers to be 1-based,
+        charState = [[ANTLRCharStreamState newANTLRCharStreamState] retain];
 	}
 	return self;
 }
 
 - (id) initWithString:(NSString *) theString
 {
-	if (nil != (self = [self init])) {
-		[self setData:[theString copy]];
+	if ((self = [super init]) != nil) {
+		//[self setData:[NSString stringWithString:theString]];
+        data = [theString retain];
+        n = [data length];
+        p = 0;
+        line = 1;
+        charPositionInLine = 0;
+        markDepth = 0;
+		markers = [[ANTLRPtrBuffer newANTLRPtrBufferWithLen:10] retain];
+        [markers addObject:[NSNull null]]; // ANTLR generates code that assumes markers to be 1-based,
+        charState = [[ANTLRCharStreamState newANTLRCharStreamState] retain];
 	}
 	return self;
 }
 
 - (id) initWithStringNoCopy:(NSString *) theString
 {
-	if (nil != (self = [self init])) {
-		[self setData:theString];
+	if ((self = [super init]) != nil) {
+		//[self setData:theString];
+        data = [theString retain];
+        n = [data length];
+        p = 0;
+        line = 1;
+        charPositionInLine = 0;
+        markDepth = 0;
+		markers = [ANTLRPtrBuffer newANTLRPtrBufferWithLen:100];
+        [markers retain];
+        [markers addObject:[NSNull null]]; // ANTLR generates code that assumes markers to be 1-based,
+        charState = [[ANTLRCharStreamState newANTLRCharStreamState] retain];
 	}
 	return self;
 }
 
+- (id) initWithData:(char *)myData Count:(NSInteger)numBytes
+{
+    if ((self = [super init]) != nil) {
+        data = [NSString stringWithCString:myData encoding:NSASCIIStringEncoding];
+        n = numBytes;
+        p = 0;
+        line = 1;
+        charPositionInLine = 0;
+        markDepth = 0;
+		markers = [ANTLRPtrBuffer newANTLRPtrBufferWithLen:100];
+        [markers retain];
+        [markers addObject:[NSNull null]]; // ANTLR generates code that assumes markers to be 1-based,
+        charState = [[ANTLRCharStreamState newANTLRCharStreamState] retain];
+    }
+    return( self );
+}
+
 - (void) dealloc
 {
-	[markers release];
+    if (markers != nil) {
+        [markers removeAllObjects];
+        [markers release];
+    }
+    if (data != nil) [data release];
 	markers = nil;
-    [self setData:nil];
+    data = nil;
 	[super dealloc];
 }
 
+- (id) copyWithZone:(NSZone *)aZone
+{
+    ANTLRStringStream *copy;
+	
+    copy = [[[self class] allocWithZone:aZone] init];
+    //    copy = [super copyWithZone:aZone]; // allocation occurs here
+    if ( data != nil )
+        copy.data = [self.data copyWithZone:aZone];
+    copy.n = n;
+    copy.p = p;
+    copy.line = line;
+    copy.charPositionInLine = charPositionInLine;
+    copy.markDepth = markDepth;
+    if ( markers != nil )
+        copy.markers = [markers copyWithZone:nil];
+    copy.lastMarker = lastMarker;
+    if ( name != nil )
+        copy.name = [self.name copyWithZone:aZone];
+    return copy;
+}
 
-// reset the streams state
+// reset the streams charState
 // the streams content is not reset!
 - (void) reset
 {
@@ -73,7 +167,7 @@
 	charPositionInLine = 0;
 	markDepth = 0;
 	[markers removeAllObjects];
-	[markers addObject:[NSNull null]];		// ANTLR generates code that assumes markers to be 1-based,
+    [markers addObject:[NSNull null]]; // ANTLR generates code that assumes markers to be 1-based,
 											// thus the initial null in the array!
 }
 
@@ -83,7 +177,7 @@
 // handling. Do not call super in that case.
 - (void) consume 
 {
-	if ( p < [data length] ) {
+	if ( p < n ) {
 		charPositionInLine++;
 		if ( [data characterAtIndex:p] == '\n' ) {
 			line++;
@@ -94,45 +188,93 @@
 }
 
 // implement the lookahead method used in lexers
-- (int) LA:(int) i 
+- (NSInteger) LA:(NSInteger) i 
 {
-	if ( (p+i-1) >= [data length] ) {
+    NSInteger c;
+    if ( i == 0 )
+        return 0; // undefined
+    if ( i < 0 ) {
+        i++;
+        if ( p+i-1 < 0 ) {
+		    return ANTLRCharStreamEOF;
+		}
+	}
+    if ( (p+i-1) >= n ) {
 		return ANTLRCharStreamEOF;
 	}
-	return (int)[data characterAtIndex:p+i-1];
+    c = [data characterAtIndex:p+i-1];
+	return (NSInteger)c;
+}
+
+- (NSInteger) LT:(NSInteger)i
+{
+    return [self LA:i];
 }
 
 // current input position
-- (unsigned int) index 
+- (NSInteger) getIndex 
 {
 	return p;
 }
 
-- (unsigned int) count 
+- (NSInteger) size 
 {
-	return [data length];
+	return n;
 }
 
-// push the current state of the stream onto a stack
+// push the current charState of the stream onto a stack
 // returns the depth of the stack, to be used as a marker to rewind the stream.
 // Note: markers are 1-based!
-- (unsigned int) mark 
+- (NSInteger) mark 
 {
-	markDepth++;
-	ANTLRStringStreamState *state = nil;
-	if ( markDepth >= [markers count] ) {
-		state = [[ANTLRStringStreamState alloc] init];
-		[markers addObject:state];
-		[state release];
+    // NSLog(@"mark entry -- markers=%x, markDepth=%d\n", markers, markDepth);
+    if ( markers == nil ) {
+        markers = [ANTLRPtrBuffer newANTLRPtrBufferWithLen:100];
+		[markers addObject:[NSNull null]]; // ANTLR generates code that assumes markers to be 1-based,
+        markDepth = markers.ptr;
+    }
+    markDepth++;
+	ANTLRCharStreamState *State = nil;
+	if ( (markDepth) >= [markers count] ) {
+        if ( markDepth > 1 ) {
+            State = [ANTLRCharStreamState newANTLRCharStreamState];
+            [State retain];
+        }
+        if ( markDepth == 1 )
+            State = charState;
+		[markers insertObject:State atIndex:markDepth];
+        // NSLog(@"mark save State %x at %d, p=%d, line=%d, charPositionInLine=%d\n", State, markDepth, State.p, State.line, State.charPositionInLine);
 	}
 	else {
-		state = (ANTLRStringStreamState *)[markers objectAtIndex:markDepth];
+        // NSLog(@"mark retrieve markers=%x markDepth=%d\n", markers, markDepth);
+        State = [markers objectAtIndex:markDepth];
+        [State retain];
+        State = (ANTLRCharStreamState *)[markers objectAtIndex:markDepth];
+        // NSLog(@"mark retrieve charState %x from %d, p=%d, line=%d, charPositionInLine=%d\n", charState, markDepth, charState.p, charState.line, charState.charPositionInLine);
 	}
-	[state setIndex:p];
-	[state setLine:line];
-	[state setCharPositionInLine:charPositionInLine];
+    State.p = p;
+	State.line = line;
+	State.charPositionInLine = charPositionInLine;
 	lastMarker = markDepth;
+    // NSLog(@"mark exit -- markers=%x, charState=%x, p=%d, line=%d, charPositionInLine=%d\n", markers, charState, charState.p, charState.line, charState.charPositionInLine);
 	return markDepth;
+}
+
+- (void) rewind:(NSInteger) marker 
+{
+    ANTLRCharStreamState *State;
+    // NSLog(@"rewind entry -- markers=%x marker=%d\n", markers, marker);
+    if ( marker == 1 )
+        State = charState;
+    else
+        State = (ANTLRCharStreamState *)[markers objectAtIndex:marker];
+    // NSLog(@"rewind entry -- marker=%d charState=%x, p=%d, line=%d, charPositionInLine=%d\n", marker, charState, charState.p, charState.line, charState.charPositionInLine);
+	// restore stream charState
+	[self seek:State.p];
+	line = State.line;
+	charPositionInLine = charState.charPositionInLine;
+	[self release:marker];
+    // NSLog(@"rewind exit -- marker=%d charState=%x, p=%d, line=%d, charPositionInLine=%d\n", marker, charState, charState.p, charState.line, charState.charPositionInLine);
 }
 
 - (void) rewind
@@ -140,39 +282,40 @@
 	[self rewind:lastMarker];
 }
 
-- (void) rewind:(unsigned int) marker 
-{
-	[self release:marker];
-	ANTLRStringStreamState *state = (ANTLRStringStreamState *)[markers objectAtIndex:marker];
-	// restore stream state
-	[self seek:[state index]];
-	line = [state line];
-	charPositionInLine = [state charPositionInLine];
-}
-
 // remove stream states on top of 'marker' from the marker stack
 // returns the new markDepth of the stack.
 // Note: unfortunate naming for Objective-C, but to keep close to the Java target this is named release:
-- (void) release:(unsigned int) marker 
+- (void) release:(NSInteger) marker 
 {
 	// unwind any other markers made after marker and release marker
 	markDepth = marker;
 	markDepth--;
+    // NSLog(@"release:marker= %d, markDepth = %d\n", marker, markDepth);
 }
 
 // when seeking forward we must handle character position and line numbers.
 // seeking backward already has the correct line information on the markers stack, 
 // so we just take it from there.
-- (void) seek:(unsigned int) index 
+- (void) seek:(NSInteger) index 
 {
-	if ( index<=p ) {
-		p = index; // just jump; don't update stream state (line, ...)
+    // NSLog(@"seek entry -- index=%d p=%d\n", index, p);
+	if ( index <= p ) {
+		p = index; // just jump; don't update stream charState (line, ...)
+        // NSLog(@"seek exit return -- index=%d p=%d\n", index, p);
 		return;
 	}
 	// seek forward, consume until p hits index
-	while ( p<index ) {
+	while ( p < index ) {
 		[self consume];
 	}
+    // NSLog(@"seek exit end -- index=%d p=%d\n", index, p);
+}
+
+// get a substring from our raw data.
+- (NSString *) substring:(NSInteger)startIndex To:(NSInteger)stopIndex 
+{
+    NSRange theRange = NSMakeRange(startIndex, stopIndex-startIndex);
+	return [data substringWithRange:theRange];
 }
 
 // get a substring from our raw data.
@@ -181,24 +324,81 @@
 	return [data substringWithRange:theRange];
 }
 
-- (unsigned int) line 
+
+- (NSInteger) getP
+{
+    return p;
+}
+
+- (void) setP:(NSInteger)num
+{
+    p = num;
+}
+
+- (NSInteger) getN
+{
+    return n;
+}
+
+- (void) setN:(NSInteger)num
+{
+    n = num;
+}
+
+- (NSInteger) getLine 
 {
 	return line;
 }
 
-- (unsigned int) charPositionInLine 
-{
-	return charPositionInLine;
-}
-
-- (void) setLine:(unsigned int) theLine 
+- (void) setLine:(NSInteger) theLine 
 {
 	line = theLine;
 }
 
-- (void) setCharPositionInLine:(unsigned int) thePos 
+- (NSInteger) getCharPositionInLine 
+{
+	return charPositionInLine;
+}
+
+- (void) setCharPositionInLine:(NSInteger) thePos 
 {
 	charPositionInLine = thePos;
+}
+
+- (ANTLRPtrBuffer *)getMarkers
+{
+    return markers;
+}
+
+- (void) setMarkers:(ANTLRPtrBuffer *)aMarkerList
+{
+    markers = aMarkerList;
+}
+
+- (NSString *)getSourceName
+{
+    return name;
+}
+
+- (void) setSourceName:(NSString *)aName
+{
+    name = aName;
+}
+
+
+- (ANTLRCharStreamState *)getCharState
+{
+    return charState;
+}
+
+- (void) setCharState:(ANTLRCharStreamState *)aCharState
+{
+    charState = aCharState;
+}
+
+- (NSString *)toString
+{
+    return [NSString stringWithString:data];
 }
 
 //---------------------------------------------------------- 
@@ -212,9 +412,9 @@
 - (void) setData: (NSString *) aData
 {
     if (data != aData) {
-        [aData retain];
-        [data release];
-        data = aData;
+        data = [NSString stringWithString:aData];
+        [data retain];
+        [aData release];
     }
 }
 

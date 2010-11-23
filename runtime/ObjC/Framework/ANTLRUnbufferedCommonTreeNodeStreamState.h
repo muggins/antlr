@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRCommonTree.h>
+#import "ANTLRCommonTree.h"
 
 @interface ANTLRUnbufferedCommonTreeNodeStreamState : NSObject {
 	ANTLRCommonTree *currentNode;
@@ -45,17 +45,17 @@
 - (ANTLRCommonTree *) previousNode;
 - (void) setPreviousNode: (ANTLRCommonTree *) aPreviousNode;
 
-- (int) currentChildIndex;
-- (void) setCurrentChildIndex: (int) aCurrentChildIndex;
+- (NSInteger) currentChildIndex;
+- (void) setCurrentChildIndex: (NSInteger) aCurrentChildIndex;
 
-- (int) absoluteNodeIndex;
-- (void) setAbsoluteNodeIndex: (int) anAbsoluteNodeIndex;
+- (NSInteger) absoluteNodeIndex;
+- (void) setAbsoluteNodeIndex: (NSInteger) anAbsoluteNodeIndex;
 
-- (unsigned int) nodeStackSize;
-- (void) setNodeStackSize: (unsigned int) aNodeStackSize;
+- (NSUInteger) nodeStackSize;
+- (void) setNodeStackSize: (NSUInteger) aNodeStackSize;
 
-- (unsigned int) indexStackSize;
-- (void) setIndexStackSize: (unsigned int) anIndexStackSize;
+- (NSUInteger) indexStackSize;
+- (void) setIndexStackSize: (NSUInteger) anIndexStackSize;
 
 - (NSMutableArray *) lookahead;
 - (void) setLookahead: (NSMutableArray *) aLookahead;

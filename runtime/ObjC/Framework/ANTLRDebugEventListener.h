@@ -25,8 +25,8 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRToken.h>
-#import <ANTLR/ANTLRRecognitionException.h>
+#import "ANTLRToken.h"
+#import "ANTLRRecognitionException.h"
 
 @protocol ANTLRDebugEventListener 
 
@@ -41,7 +41,7 @@
 /** Because rules can have lots of alternatives, it is very useful to
 *  know which alt you are entering.  This is 1..n for n alts.
 */
-- (void) enterAlt:(int)alt;
+- (void) enterAlt:(NSInteger)alt;
 
 /** This is the last thing executed before leaving a rule.  It is
 *  executed even if an exception is thrown.  This is triggered after
@@ -51,9 +51,9 @@
 - (void) exitRule:(NSString *)ruleName;
 
 /** Track entry into any (...) subrule other EBNF construct */
-- (void) enterSubRule:(int)decisionNumber;
+- (void) enterSubRule:(NSInteger)decisionNumber;
 
-- (void) exitSubRule:(int)decisionNumber;
+- (void) exitSubRule:(NSInteger)decisionNumber;
 
 /** Every decision, fixed k or arbitrary, has an enter/exit event
 *  so that a GUI can easily track what LT/consume events are
@@ -61,9 +61,9 @@
 *  subrule but multiple enter/exit decision events, one for each
 *  loop iteration.
 */
-- (void) enterDecision:(int)decisionNumber;
+- (void) enterDecision:(NSInteger)decisionNumber;
 
-- (void) exitDecision:(int)decisionNumber;
+- (void) exitDecision:(NSInteger)decisionNumber;
 
 /** An input token was consumed; matched by any kind of element.
 *  Trigger after the token was matched by things like match(), matchAny().
@@ -83,18 +83,18 @@
 *  ahead into a file it doesn't have so LT events must pass the token
 *  even if the info is redundant.
 */
-- (void) LT:(int)i foundToken:(id<ANTLRToken>)t;
+- (void) LT:(NSInteger)i foundToken:(id<ANTLRToken>)t;
 
 /** The parser is going to look arbitrarily ahead; mark this location,
 *  the token stream's marker is sent in case you need it.
 */
-- (void) mark:(int)marker;
+- (void) mark:(NSInteger)marker;
 
 /** After an arbitrairly long lookahead as with a cyclic DFA (or with
 *  any backtrack), this informs the debugger that stream should be
 *  rewound to the position associated with marker.
 */
-- (void) rewind:(int)marker;
+- (void) rewind:(NSInteger)marker;
 
 /** Rewind to the input position of the last marker.
 *  Used currently only after a cyclic DFA and just
@@ -105,9 +105,9 @@
 */
 - (void) rewind;
 
-- (void) beginBacktrack:(int)level;
+- (void) beginBacktrack:(NSInteger)level;
 
-- (void) endBacktrack:(int)level wasSuccessful:(BOOL)successful;
+- (void) endBacktrack:(NSInteger)level wasSuccessful:(BOOL)successful;
 
 /** To watch a parser move through the grammar, the parser needs to
 *  inform the debugger what line/charPos it is passing in the grammar.
@@ -117,7 +117,7 @@
 *  This should also allow breakpoints because the debugger can stop
 *  the parser whenever it hits this line/pos.
 */
-- (void) locationLine:(int)line column:(int)pos;
+- (void) locationLine:(NSInteger)line column:(NSInteger)pos;
 
 /** A recognition exception occurred such as NoViableAltException.  I made
 *  this a generic event so that I can alter the exception hierachy later
@@ -223,13 +223,13 @@
 *  the ID is not really meaningful as it's fixed--there is
 *  just one UP node and one DOWN navigation node.
 */
-- (void) consumeNode:(int)nodeHash ofType:(int)type text:(NSString *)text;
+- (void) consumeNode:(NSInteger)nodeHash ofType:(NSInteger)type text:(NSString *)text;
 
 /** The tree parser lookedahead.  If the type is UP or DOWN,
 *  then the ID is not really meaningful as it's fixed--there is
 *  just one UP node and one DOWN navigation node.
 */
-- (void) LT:(int)i foundNode:(unsigned)nodeHash ofType:(int)type text:(NSString *)text;
+- (void) LT:(NSInteger)i foundNode:(unsigned)nodeHash ofType:(NSInteger)type text:(NSString *)text;
 
 
 // A S T  E v e n t s
@@ -243,10 +243,10 @@
 - (void) createNilNode:(unsigned)hash;
 
 /** Announce a new node built from text */
-- (void) createNode:(unsigned)hash text:(NSString *)text type:(int)type;
+- (void) createNode:(unsigned)hash text:(NSString *)text type:(NSInteger)type;
 
 /** Announce a new node built from an existing token */
-- (void) createNode:(unsigned)hash fromTokenAtIndex:(int)tokenIndex;
+- (void) createNode:(unsigned)hash fromTokenAtIndex:(NSInteger)tokenIndex;
 
 /** Make a node the new root of an existing root.  See
 *
@@ -268,7 +268,7 @@
 - (void) addChild:(unsigned)childHash toTree:(unsigned)treeHash;
 
 /** Set the token start/stop token index for a subtree root or node */
-- (void) setTokenBoundariesForTree:(unsigned)nodeHash start:(unsigned int)tokenStartIndex stop:(unsigned int)tokenStopIndex;
+- (void) setTokenBoundariesForTree:(unsigned)nodeHash From:(NSUInteger)tokenStartIndex To:(NSUInteger)tokenStopIndex;
 
 - (void) waitForDebuggerConnection;
 

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,8 @@
 
 @implementation ANTLRParserRuleReturnScope
 
-- (id<ANTLRToken>) start
-{
-    return start; 
-}
+@synthesize startToken;
+@synthesize stopToken;
 
 - (void) dealloc
 {
@@ -41,27 +39,42 @@
     [super dealloc];
 }
 
+- (id<ANTLRToken>) getStart
+{
+    return startToken; 
+}
+
 - (void) setStart: (id<ANTLRToken>) aStart
 {
-    if (start != aStart) {
+    if (startToken != aStart) {
         [aStart retain];
-        [start release];
-        start = aStart;
+        [startToken release];
+        startToken = aStart;
     }
 }
 
-- (id<ANTLRToken>) stop
+- (id<ANTLRToken>) getStop
 {
-    return stop; 
+    return stopToken; 
 }
 
 - (void) setStop: (id<ANTLRToken>) aStop
 {
-    if (stop != aStop) {
+    if (stopToken != aStop) {
         [aStop retain];
-        [stop release];
-        stop = aStop;
+        [stopToken release];
+        stopToken = aStop;
     }
+}
+
+// create a copy, including the text if available
+// the input stream is *not* copied!
+- (id) copyWithZone:(NSZone *)theZone
+{
+    ANTLRParserRuleReturnScope *copy = [super copyWithZone:theZone];
+    copy.startToken = startToken;
+    copy.stopToken = stopToken;
+    return copy;
 }
 
 @end

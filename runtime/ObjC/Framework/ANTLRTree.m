@@ -50,36 +50,28 @@
 {
 	if ((self = [super init]) != nil) {
 		isEmptyNode = NO;
-		children = nil;
 	}
 	return self;
 }
 
 - (void) dealloc
 {
-	[children release];
-	children = nil;
 	[super dealloc];
 }
 
-- (id<ANTLRTree>) childAtIndex:(unsigned int) index
+- (id<ANTLRTree>) getChild:(NSUInteger) index
 {
-	if (children && index < [children count]) {
-		return [children objectAtIndex:index];
-	}
 	return nil;
 }
 
-- (unsigned int) childCount
+- (NSUInteger) getChildCount
 {
-	if (children) 
-		return [children count];
 	return 0;
 }
 
-- (NSArray *) allChildren
+- (NSArray *) getChildren
 {
-	return [[children retain] autorelease];
+	return nil;
 }
 
 	// Add tree as a child to this node.  If tree is nil, do nothing.  If tree
@@ -87,33 +79,14 @@
 
 - (void) addChild:(id<ANTLRTree>) tree
 {
-	if (!tree) return;
-	if ([tree isEmpty]) {
-		// TODO: handle self add
-		if ([tree childCount]) {
-			if (!children)
-				[self _createChildrenList];
-			[children addObjectsFromArray:[tree allChildren]];
-		}
-	} else {
-		if (!children)
-			[self _createChildrenList];
-		[children addObject:tree];
-	}
 }
 
 - (void) addChildren:(NSArray *) theChildren
 {
-	if (!theChildren) return;
-	if (!children)
-		[self _createChildrenList];
-	[children addObjectsFromArray:theChildren];
 }
 
 - (void) removeAllChildren
 {
-	if (children)
-		[children removeAllObjects];
 }
 
 	// Indicates the node is an empty node but may still have children, meaning
@@ -129,58 +102,26 @@
 	isEmptyNode = emptyFlag;
 }
 
-#pragma mark Copying
-
-// the children themselves are not copied here!
-- (id) copyWithZone:(NSZone *)aZone
-{
-	id<ANTLRTree> theCopy = [[[self class] alloc] init];
-	[theCopy addChildren:[self allChildren]];
-	[theCopy setIsEmpty:[self isEmpty]];
-	return theCopy;
-}
-
-- (id) deepCopy 					// performs a deepCopyWithZone: with the default zone
-{
-	return [self deepCopyWithZone:NULL];
-}
-
-- (id) deepCopyWithZone:(NSZone *)aZone
-{
-	id<ANTLRTree> theCopy = [self copyWithZone:aZone];
-	
-	NSArray *childrenCopy = [[theCopy allChildren] copy];
-	[theCopy removeAllChildren];
-	unsigned int childIdx = 0;
-	for (childIdx = 0; childIdx < [childrenCopy count]; childIdx++) {
-		id<ANTLRTree> childCopy = [[childrenCopy objectAtIndex:childIdx] deepCopyWithZone:aZone];
-		[theCopy addChild:childCopy];
-	}
-	[childrenCopy release];
-	
-	return theCopy;
-}
-
 #pragma mark ANTLRTree abstract base class
 
 	// Return a token type; needed for tree parsing
-- (int) tokenType
+- (NSInteger) getType
 {
 	return 0;
 }
 
-- (NSString *) text
+- (NSString *) getText
 {
 	return [self description];
 }
 
 	// In case we don't have a token payload, what is the line for errors?
-- (int) line
+- (NSInteger) getLine
 {
 	return 0;
 }
 
-- (int) charPositionInLine
+- (NSInteger) getCharPositionInLine
 {
 	return 0;
 }

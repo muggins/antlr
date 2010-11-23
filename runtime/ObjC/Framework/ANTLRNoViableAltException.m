@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,15 @@
 @implementation ANTLRNoViableAltException
 
 
-+ (ANTLRNoViableAltException *) exceptionWithDecision:(int)theDecisionNumber state:(int)theStateNumber stream:(id<ANTLRIntStream>)theStream
++ (ANTLRNoViableAltException *) newANTLRNoViableAltException:(NSInteger)theDecisionNumber state:(NSInteger)theStateNumber stream:(id<ANTLRIntStream>)theStream
 {
-	return [[[self alloc] initWithDecision:theDecisionNumber state:theStateNumber stream:theStream] autorelease];
+	return [[self alloc] initWithDecision:theDecisionNumber state:theStateNumber stream:theStream];
 }
 
 
-- (ANTLRNoViableAltException *) initWithDecision:(int)theDecisionNumber state:(int)theStateNumber stream:(id<ANTLRIntStream>)theStream
+- (ANTLRNoViableAltException *) initWithDecision:(NSInteger)theDecisionNumber state:(NSInteger)theStateNumber stream:(id<ANTLRIntStream>)theStream
 {
-	if (nil!=(self = [super initWithStream:theStream])) {
+	if ((self = [super initWithStream:theStream]) != nil) {
 		decisionNumber = theDecisionNumber;
 		stateNumber = theStateNumber;
 	}
@@ -56,12 +56,12 @@
 //---------------------------------------------------------- 
 //  decisionNumber 
 //---------------------------------------------------------- 
-- (int) decisionNumber
+- (NSInteger) decisionNumber
 {
     return decisionNumber;
 }
 
-- (void) setDecisionNumber: (int) aDecisionNumber
+- (void) setDecisionNumber: (NSInteger) aDecisionNumber
 {
     decisionNumber = aDecisionNumber;
 }
@@ -69,12 +69,12 @@
 //---------------------------------------------------------- 
 //  stateNumber 
 //---------------------------------------------------------- 
-- (int) stateNumber
+- (NSInteger) stateNumber
 {
     return stateNumber;
 }
 
-- (void) setStateNumber: (int) aStateNumber
+- (void) setStateNumber: (NSInteger) aStateNumber
 {
     stateNumber = aStateNumber;
 }

@@ -25,9 +25,9 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRTreeParser.h>
-#import <ANTLR/ANTLRDebugEventProxy.h>
-#import <ANTLR/ANTLRDebugTreeNodeStream.h>
+#import "ANTLRTreeParser.h"
+#import "ANTLRDebugEventProxy.h"
+#import "ANTLRDebugTreeNodeStream.h"
 
 @interface ANTLRDebugTreeParser : ANTLRTreeParser {
 	id<ANTLRDebugEventListener> debugListener;
@@ -35,11 +35,11 @@
 
 - (id) initWithTreeNodeStream:(id<ANTLRTreeNodeStream>)theStream;
 - (id) initWithTreeNodeStream:(id<ANTLRTreeNodeStream>)theStream
-				 debuggerPort:(int)portNumber;
+				 debuggerPort:(NSInteger)portNumber;
 	// designated initializer
 - (id) initWithTreeNodeStream:(id<ANTLRTreeNodeStream>)theStream
 				debugListener:(id<ANTLRDebugEventListener>)theDebugListener
-				 debuggerPort:(int)portNumber;
+				 debuggerPort:(NSInteger)portNumber;
 
 - (id<ANTLRDebugEventListener>) debugListener;
 - (void) setDebugListener: (id<ANTLRDebugEventListener>) aDebugListener;

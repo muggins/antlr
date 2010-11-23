@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ typedef enum {
     ANTLRTokenChannelHidden = 99
 } ANTLRTokenChannel;
 
+#define HIDDEN 99
 
 @protocol ANTLRToken < NSObject, NSCopying >
 
@@ -50,28 +51,29 @@ typedef enum {
 + (ANTLRTokenChannel) defaultChannel;
 
 // provide hooks to explicitely set the text as opposed to use the indices into the CharStream
-- (NSString *) text;
+- (NSString *) getText;
 - (void) setText:(NSString *) theText;
 
-- (int) type;
-- (void) setType: (int) aType;
+- (NSInteger) getType;
+- (void) setType: (NSInteger) aType;
 
 // ANTLR v3 provides automatic line and position tracking. Subclasses do not need to
 // override these, if they do not want to store line/pos tracking information
-- (unsigned int) line;
-- (void) setLine: (unsigned int) aLine;
+- (NSUInteger) getLine;
+- (void) setLine: (NSUInteger) aLine;
 
-- (unsigned int) charPositionInLine;
-- (void) setCharPositionInLine: (unsigned int) aCharPositionInLine;
+- (NSUInteger) getCharPositionInLine;
+- (void) setCharPositionInLine: (NSUInteger) aCharPositionInLine;
 
 // explicitely change the channel this Token is on. The default parser implementation
 // just sees the defaultChannel
 // Common idiom is to put whitespace tokens on channel 99.
-- (unsigned int) channel;
-- (void) setChannel: (unsigned int) aChannel;
+- (NSUInteger) getChannel;
+- (void) setChannel: (NSUInteger) aChannel;
 
 // the index of this Token into the TokenStream
-- (unsigned int) tokenIndex;
-- (void) setTokenIndex: (unsigned int) aTokenIndex;
+- (NSUInteger) getTokenIndex;
+- (void) setTokenIndex: (NSUInteger) aTokenIndex;
+- (NSString *)toString;
 
 @end

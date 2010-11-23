@@ -44,7 +44,7 @@ static unsigned lengthOfUTF8Ack = 0;
 	return [self initWithGrammarName:nil debuggerPort:DEFAULT_DEBUGGER_PORT];
 }
 
-- (id) initWithGrammarName:(NSString *)aGrammarName debuggerPort:(int)aPort
+- (id) initWithGrammarName:(NSString *)aGrammarName debuggerPort:(NSInteger)aPort
 {
 	self = [super init];
 	if (self) {
@@ -74,7 +74,7 @@ static unsigned lengthOfUTF8Ack = 0;
 		NSAssert1(serverSocket != -1, @"Failed to create debugger socket. %s", strerror(errno));
 		
 		int yes = 1;
-		setsockopt(serverSocket, SOL_SOCKET, SO_KEEPALIVE|SO_REUSEPORT|SO_REUSEADDR|TCP_NODELAY, (void *)&yes, sizeof(int));
+		setsockopt(serverSocket, SOL_SOCKET, SO_KEEPALIVE|SO_REUSEPORT|SO_REUSEADDR|TCP_NODELAY, (void *)&yes, sizeof(NSInteger));
 
 		struct sockaddr_in server_addr;
 		bzero(&server_addr, sizeof(struct sockaddr_in));
@@ -102,7 +102,7 @@ static unsigned lengthOfUTF8Ack = 0;
 	@try {
 		NSData *newLine = [debuggerFH readDataOfLength:lengthOfUTF8Ack];
 		response = [[NSString alloc] initWithData:newLine encoding:NSUTF8StringEncoding];
-		if (![response isEqualToString:@"ack\n"]) @throw [NSException exceptionWithName:@"ANTLRDebugEventProxy" reason:@"illegal response from debugger" userInfo:nil];
+		if (![response isEqualToString:@"ack\n"]) @throw [NSException exceptionWithName:@"ANTLRDebugEventProxy" Reason:@"illegal response from debugger" userInfo:nil];
 	}
 	@catch (NSException *e) {
 		NSLog(@"socket died or debugger misbehaved: %@ read <%@>", e, response);
@@ -125,22 +125,22 @@ static unsigned lengthOfUTF8Ack = 0;
 	if (wait) [self waitForAck];
 }
 
-- (int) serverSocket
+- (NSInteger) serverSocket
 {
     return serverSocket;
 }
 
-- (void) setServerSocket: (int) aServerSocket
+- (void) setServerSocket: (NSInteger) aServerSocket
 {
     serverSocket = aServerSocket;
 }
 
-- (int) debuggerSocket
+- (NSInteger) debuggerSocket
 {
     return debuggerSocket;
 }
 
-- (void) setDebuggerSocket: (int) aDebuggerSocket
+- (void) setDebuggerSocket: (NSInteger) aDebuggerSocket
 {
     debuggerSocket = aDebuggerSocket;
 }
@@ -159,12 +159,12 @@ static unsigned lengthOfUTF8Ack = 0;
     }
 }
 
-- (int) debuggerPort
+- (NSInteger) debuggerPort
 {
     return debuggerPort;
 }
 
-- (void) setDebuggerPort: (int) aDebuggerPort
+- (void) setDebuggerPort: (NSInteger) aDebuggerPort
 {
     debuggerPort = aDebuggerPort;
 }
@@ -192,7 +192,7 @@ static unsigned lengthOfUTF8Ack = 0;
 	[self sendToDebugger:[NSString stringWithFormat:@"enterRule %@", ruleName]];
 }
 
-- (void) enterAlt:(int)alt
+- (void) enterAlt:(NSInteger)alt
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"enterAlt %d", alt]]; 
 }
@@ -202,22 +202,22 @@ static unsigned lengthOfUTF8Ack = 0;
 	[self sendToDebugger:[NSString stringWithFormat:@"exitRule %@", ruleName]];
 }
 
-- (void) enterSubRule:(int)decisionNumber
+- (void) enterSubRule:(NSInteger)decisionNumber
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"enterSubRule %d", decisionNumber]];
 }
 
-- (void) exitSubRule:(int)decisionNumber
+- (void) exitSubRule:(NSInteger)decisionNumber
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"exitSubRule %d", decisionNumber]];
 }
 
-- (void) enterDecision:(int)decisionNumber
+- (void) enterDecision:(NSInteger)decisionNumber
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"enterDecision %d", decisionNumber]];
 }
 
-- (void) exitDecision:(int)decisionNumber
+- (void) exitDecision:(NSInteger)decisionNumber
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"exitDecision %d", decisionNumber]];
 }
@@ -232,16 +232,16 @@ static unsigned lengthOfUTF8Ack = 0;
 	[self sendToDebugger:[NSString stringWithFormat:@"consumeHiddenToken %@", [self escapeNewlines:[t debuggerDescription]]]];
 }
 
-- (void) LT:(int)i foundToken:(id<ANTLRToken>)t
+- (void) LT:(NSInteger)i foundToken:(id<ANTLRToken>)t
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"LT %d %@", i, [self escapeNewlines:[t debuggerDescription]]]];
 }
 
-- (void) mark:(int)marker
+- (void) mark:(NSInteger)marker
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"mark %d", marker]];
 }
-- (void) rewind:(int)marker
+- (void) rewind:(NSInteger)marker
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"rewind %d", marker]];
 }
@@ -251,17 +251,17 @@ static unsigned lengthOfUTF8Ack = 0;
 	[self sendToDebugger:@"rewind"];
 }
 
-- (void) beginBacktrack:(int)level
+- (void) beginBacktrack:(NSInteger)level
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"beginBacktrack %d", level]];
 }
 
-- (void) endBacktrack:(int)level wasSuccessful:(BOOL)successful
+- (void) endBacktrack:(NSInteger)level wasSuccessful:(BOOL)successful
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"endBacktrack %d %d", level, successful ? 1 : 0]];
 }
 
-- (void) locationLine:(int)line column:(int)pos
+- (void) locationLine:(NSInteger)line column:(NSInteger)pos
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"location %d %d", line, pos]];
 }
@@ -309,7 +309,7 @@ static unsigned lengthOfUTF8Ack = 0;
 
 
 #pragma mark Tree Parsing
-- (void) consumeNode:(unsigned)nodeHash ofType:(int)type text:(NSString *)text
+- (void) consumeNode:(unsigned)nodeHash ofType:(NSInteger)type text:(NSString *)text
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"consumeNode %u %d %@",
 		nodeHash,
@@ -318,7 +318,7 @@ static unsigned lengthOfUTF8Ack = 0;
 		]];
 }
 
-- (void) LT:(int)i foundNode:(unsigned)nodeHash ofType:(int)type text:(NSString *)text
+- (void) LT:(NSInteger)i foundNode:(unsigned)nodeHash ofType:(NSInteger)type text:(NSString *)text
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"LN %d %u %d %@",
 		i,
@@ -336,7 +336,7 @@ static unsigned lengthOfUTF8Ack = 0;
 	[self sendToDebugger:[NSString stringWithFormat:@"nilNode %u", hash]];
 }
 
-- (void) createNode:(unsigned)hash text:(NSString *)text type:(int)type
+- (void) createNode:(unsigned)hash text:(NSString *)text type:(NSInteger)type
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"createNodeFromToken %u %d %@", 
 		hash,
@@ -345,12 +345,12 @@ static unsigned lengthOfUTF8Ack = 0;
 		]];
 }
 
-- (void) createNode:(unsigned)hash fromTokenAtIndex:(int)tokenIndex
+- (void) createNode:(unsigned)hash fromTokenAtIndex:(NSInteger)tokenIndex
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"createNode %u %d", hash, tokenIndex]];
 }
 
-- (void) makeNode:(unsigned)newRootHash parentOf:(unsigned)oldRootHash
+- (void) becomeRoot:(unsigned)newRootHash old:(unsigned)oldRootHash
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"becomeRoot %u %u", newRootHash, oldRootHash]];
 }
@@ -360,7 +360,7 @@ static unsigned lengthOfUTF8Ack = 0;
 	[self sendToDebugger:[NSString stringWithFormat:@"addChild %u %u", treeHash, childHash]];
 }
 
-- (void) setTokenBoundariesForTree:(unsigned)nodeHash start:(int)tokenStartIndex stop:(int)tokenStopIndex
+- (void) setTokenBoundariesForTree:(unsigned)nodeHash From:(NSInteger)tokenStartIndex To:(NSInteger)tokenStopIndex
 {
 	[self sendToDebugger:[NSString stringWithFormat:@"setTokenBoundaries %u %d %d", nodeHash, tokenStartIndex, tokenStopIndex]];
 }

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -73,42 +73,42 @@
     }
 }
 
-- (int) currentChildIndex
+- (NSInteger) currentChildIndex
 {
     return currentChildIndex;
 }
 
-- (void) setCurrentChildIndex: (int) aCurrentChildIndex
+- (void) setCurrentChildIndex: (NSInteger) aCurrentChildIndex
 {
     currentChildIndex = aCurrentChildIndex;
 }
 
-- (int) absoluteNodeIndex
+- (NSInteger) absoluteNodeIndex
 {
     return absoluteNodeIndex;
 }
 
-- (void) setAbsoluteNodeIndex: (int) anAbsoluteNodeIndex
+- (void) setAbsoluteNodeIndex: (NSInteger) anAbsoluteNodeIndex
 {
     absoluteNodeIndex = anAbsoluteNodeIndex;
 }
 
-- (unsigned int) nodeStackSize
+- (NSUInteger) nodeStackSize
 {
     return nodeStackSize;
 }
 
-- (void) setNodeStackSize: (unsigned int) aNodeStackSize
+- (void) setNodeStackSize: (NSUInteger) aNodeStackSize
 {
     nodeStackSize = aNodeStackSize;
 }
 
-- (unsigned int) indexStackSize
+- (NSUInteger) indexStackSize
 {
     return indexStackSize;
 }
 
-- (void) setIndexStackSize: (unsigned int) anIndexStackSize
+- (void) setIndexStackSize: (NSUInteger) anIndexStackSize
 {
     indexStackSize = anIndexStackSize;
 }

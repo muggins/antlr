@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,138 +24,176 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#import "ANTLRToken.h"
 #import "ANTLRCommonTokenStream.h"
 
 
 @implementation ANTLRCommonTokenStream
 
+@synthesize channelOverride;
+@synthesize channel;
+
 #pragma mark Initialization
+
++ (ANTLRCommonTokenStream *)newANTLRCommonTokenStream
+{
+    return [[ANTLRCommonTokenStream alloc] init];
+}
+
++ (ANTLRCommonTokenStream *)newANTLRCommonTokenStreamWithTokenSource:(id<ANTLRTokenSource>)theTokenSource
+{
+    return [[ANTLRCommonTokenStream alloc] initWithTokenSource:(id<ANTLRTokenSource>)theTokenSource];
+}
+
++ (ANTLRCommonTokenStream *)newANTLRCommonTokenStreamWithTokenSource:(id<ANTLRTokenSource>)theTokenSource
+                                                               Channel:(NSInteger)aChannel
+{
+    return [[ANTLRCommonTokenStream alloc] initWithTokenSource:(id<ANTLRTokenSource>)theTokenSource
+                                                       Channel:aChannel];
+}
 
 - (id) init
 {
-	if ((self = [self initWithTokenSource:nil])) {
+	if ((self = [super init]) != nil) {
+		p = -1;
+		tokens = [[NSMutableArray arrayWithCapacity:1000] retain];
+		channelOverride = [[NSMutableDictionary dictionaryWithCapacity:100] retain];
+		channel = ANTLRTokenChannelDefault;
+        tokenSource = nil;
 	}
 	return self;
 }
 
 - (id) initWithTokenSource:(id<ANTLRTokenSource>)theTokenSource
 {
-	if ((self = [super init])) {
-		[self setTokenSource:theTokenSource];
+	if ((self = [super init]) != nil) {
 		p = -1;
-		discardOffChannelTokens = NO;
-		tokens = [[NSMutableArray alloc] initWithCapacity:500];
-		channelOverride = [[NSMutableDictionary alloc] init];
-		discardSet = [[NSMutableSet alloc] init];
+		tokens = [[NSMutableArray arrayWithCapacity:1000] retain];
+		channelOverride = [[NSMutableDictionary dictionaryWithCapacity:100] retain];
 		channel = ANTLRTokenChannelDefault;
+		tokenSource = theTokenSource;
+	}
+	return self;
+}
+
+- (id) initWithTokenSource:(id<ANTLRTokenSource>)theTokenSource Channel:(NSInteger)aChannel
+{
+	if ((self = [super init]) != nil) {
+		p = -1;
+		tokens = [[NSMutableArray arrayWithCapacity:1000] retain];
+		channelOverride = [[NSMutableDictionary dictionaryWithCapacity:100] retain];
+		tokenSource = theTokenSource;
+		channel = aChannel;
 	}
 	return self;
 }
 
 - (void) dealloc
 {
-	[discardSet release];
 	[channelOverride release];
 	[tokens release];
 	[self setTokenSource:nil];
 	[super dealloc];
 }
 
-- (void) fillBuffer
-{
-	int index = 0;
-	id<ANTLRToken> token = [tokenSource nextToken];
-	while ( token && [token type] != ANTLRTokenTypeEOF ) {
-		BOOL discard = NO;
-		NSNumber *tokenType = [NSNumber numberWithInt:[token type]];
-		if ([discardSet containsObject:tokenType])
-		{
-			discard = YES;
-		} else if ( discardOffChannelTokens && [token channel] != channel ) {
-			discard = YES;
-		} else {
-			NSNumber *channelI = [channelOverride objectForKey:tokenType];
-			if (channelI) {
-				[token setChannel:[channelI intValue]];
-			}
-		}
-		if ( !discard )	{
-			[token setTokenIndex:index];
-			[tokens addObject:token];
-			index++;
-		}
-		token = [tokenSource nextToken];
-	}
-	// leave p pointing at first token on channel
-	p = 0;
-	p = [self skipOffChannelTokens:p];
-}
-
 #pragma mark Accessors
 
-- (id<ANTLRTokenSource>) tokenSource
+- (id<ANTLRTokenSource>) getTokenSource
 {
     return tokenSource; 
 }
 
-- (void) setTokenSource: (id<ANTLRTokenSource>) aTokenSource
+/** Reset this token stream by setting its token source. */
+- (void) setTokenSource:(id<ANTLRTokenSource>)aTokenSource
 {
-    if (tokenSource != aTokenSource) {
-        [(id<NSObject>)aTokenSource retain];
-        [(id<NSObject>)tokenSource release];
-        tokenSource = aTokenSource;
-		p = -1;
-		channel = ANTLRTokenChannelDefault;
-    }
+    [super setTokenSource:aTokenSource];
+    channel = ANTLRTokenChannelDefault;
 }
 
+/** Always leave p on an on-channel token. */
+- (void) consume
+{
+    if (p == -1) [self setup];
+    p++;
+    [self sync:p];
+    while ( [[tokens objectAtIndex:p] getChannel] != channel ) {
+		p++;
+		[self sync:p];
+	}
+}
+
+#pragma mark Lookahead
+
+- (id<ANTLRToken>) LB:(NSInteger)k
+{
+	if ( k == 0 || (p-k) < 0 ) {
+		return nil;
+	}
+	int i = p;
+	int n = 1;
+    // find k good tokens looking backwards
+	while ( n <= k ) {
+		i = [self skipOffChannelTokensReverse:i-1];
+		n++;
+	}
+	if ( i < 0 ) {
+		return nil;
+	}
+	return [tokens objectAtIndex:i];
+}
+
+- (id<ANTLRToken>) LT:(NSInteger)k
+{
+	if ( p == -1 ) [self setup];
+	if ( k == 0 ) return nil;
+	if ( k < 0 ) return [self LB:-k];
+	int i = p;
+	int n = 1;
+	while ( n < k ) {
+		i = [self skipOffChannelTokens:i+1];
+		n++;
+	}
+	if ( i >= (NSInteger)[tokens count] ) {
+		return [ANTLRCommonToken eofToken];
+	}
+    if (i > range) range = i;
+	return [tokens objectAtIndex:i];
+}
 
 #pragma mark Channels & Skipping
 
-- (int) skipOffChannelTokens:(int) i
+- (NSInteger) skipOffChannelTokens:(NSInteger) idx
 {
-	int n = [tokens count];
-	int tmp = i;
-	while ( tmp < n && [(id<ANTLRToken>)[tokens objectAtIndex:tmp] channel] != channel ) {
-		tmp++;
+    [self sync:idx];
+	while ( [[tokens objectAtIndex:idx] getChannel] != channel ) {
+		idx++;
+        [self sync:idx];
 	}
-	return tmp;
+	return idx;
 }
 
-- (int) skipOffChannelTokensReverse:(int) i
+- (NSInteger) skipOffChannelTokensReverse:(NSInteger) i
 {
-	int tmp = i;
-	while ( tmp >= 0 && [(id<ANTLRToken>)[tokens objectAtIndex:tmp] channel] != channel ) {
-		tmp--;
+	while ( i >= 0 && [(id<ANTLRToken>)[tokens objectAtIndex:i] getChannel] != channel ) {
+		i--;
 	}
-	return tmp;
+	return i;
 }
 
-- (void) setTokenType:(int)ttype toChannel:(int)theChannel
+- (void) setup
 {
-	[channelOverride setObject:[NSNumber numberWithInt:theChannel] forKey:[NSNumber numberWithInt:ttype]];
-}
-
-- (void) discardTokenType:(int)ttype
-{
-	[discardSet addObject:[NSNumber numberWithInt:ttype]];
-}
-
-- (void) discardOffChannelTokens:(BOOL)flag
-{
-	discardOffChannelTokens = flag;
+    p = 0;
+    [self sync:0];
+    int index = 0;
+    while ( [((id<ANTLRToken>)[tokens objectAtIndex:index]) getChannel] != channel ) {
+        index++;
+        [self sync:index];
+    }
+	// leave p pointing at first token on channel
+    p = index;
 }
 
 #pragma mark Token access
-
-
-- (NSArray *) tokens
-{
-	if ( p == -1 ) {
-		[self fillBuffer];
-	}
-	return tokens;
-}
 
 - (NSArray *) tokensInRange:(NSRange)aRange
 {
@@ -164,24 +202,25 @@
 
 - (NSArray *) tokensInRange:(NSRange)aRange inBitSet:(ANTLRBitSet *)aBitSet
 {
-	unsigned int start = aRange.location;
-	unsigned int stop = aRange.location+aRange.length;
+	unsigned int startIndex = aRange.location;
+	unsigned int stopIndex = aRange.location+aRange.length;
 	if ( p == -1 ) {
-		[self fillBuffer];
+		[self setup];
 	}
-	if (stop >= [tokens count]) {
-		stop = [tokens count] - 1;
+	if (stopIndex >= [tokens count]) {
+		stopIndex = [tokens count] - 1;
 	}
-	NSMutableArray *filteredTokens = [[NSMutableArray alloc] init];
+	NSMutableArray *filteredTokens = [NSMutableArray arrayWithCapacity:100];
 	unsigned int i=0;
-	for (i = start; i<=stop; i++) {
+	for (i = startIndex; i<=stopIndex; i++) {
 		id<ANTLRToken> token = [tokens objectAtIndex:i];
-		if (aBitSet == nil || [aBitSet isMember:[token type]]) {
+		if (aBitSet == nil || [aBitSet member:[token getType]]) {
 			[filteredTokens addObject:token];
+            [token retain];
 		}
 	}
 	if ([filteredTokens count]) {
-		return [filteredTokens autorelease];
+		return filteredTokens;
 	} else {
 		[filteredTokens release];
 		return nil;
@@ -191,111 +230,31 @@
 - (NSArray *) tokensInRange:(NSRange)aRange withTypes:(NSArray *)tokenTypes
 {
 	ANTLRBitSet *bits = [[ANTLRBitSet alloc] initWithArrayOfBits:tokenTypes];
-	NSArray *returnTokens = [self tokensInRange:aRange inBitSet:bits];
+	NSArray *returnTokens = [[self tokensInRange:aRange inBitSet:bits] retain];
 	[bits release];
 	return returnTokens;
 }
 
-- (NSArray *) tokensInRange:(NSRange)aRange withType:(int)tokenType
+- (NSArray *) tokensInRange:(NSRange)aRange withType:(NSInteger)tokenType
 {
 	ANTLRBitSet *bits = [[ANTLRBitSet alloc] init];
 	[bits add:tokenType];
-	NSArray *returnTokens = [self tokensInRange:aRange inBitSet:bits];
+	NSArray *returnTokens = [[self tokensInRange:aRange inBitSet:bits] retain];
 	[bits release];
 	return returnTokens;
 }
 
-- (id<ANTLRToken>) tokenAtIndex:(int)i
+- (id<ANTLRToken>) getToken:(NSInteger)i
 {
 	return [tokens objectAtIndex:i];
 }
 
-- (int) count
+- (NSInteger) size
 {
 	return [tokens count];
 }
 
-#pragma mark Lookahead
-
-- (id<ANTLRToken>) LT:(int)k
-{
-	if ( p == -1 ) {
-		[self fillBuffer];
-	}
-	if ( k == 0 ) {
-		return nil;
-	}
-	if ( k < 0 ) {
-		return [self LB:k];
-	}
-	if ( (p+k-1) >= (int)[tokens count] ) {
-		return [ANTLRCommonToken eofToken];
-	}
-	int i = p;
-	int n = 1;
-	while ( n < k ) {
-		i = [self skipOffChannelTokens:i+1];
-		n++;
-	}
-	if ( i >= (int)[tokens count] ) {
-		return [ANTLRCommonToken eofToken];
-	}
-	return [tokens objectAtIndex:i];
-}
-
-- (id<ANTLRToken>) LB:(int)k
-{
-	if ( p == -1 ) {
-		[self fillBuffer];
-	}
-	if ( k == 0 ) {
-		return nil;
-	}
-	if ( (p-k)<0 ) {
-		return nil;
-	}
-	if ( (p+k-1) >= (int)[tokens count] ) {
-		return [ANTLRCommonToken eofToken];
-	}
-	int i = p;
-	int n = 1;
-	while ( n <= k ) {
-		i = [self skipOffChannelTokensReverse:i-1];
-		n++;
-	}
-	if ( i-1 < 0 ) {
-		return nil;
-	}
-	return [tokens objectAtIndex:i-1];
-}
-
-- (int) LA:(int)k
-{
-	return [[self LT:k] type];
-}
-
-#pragma mark Stream Seeking
-
-- (void) consume
-{
-	if (p < (int)[tokens count]) {
-		p++;
-		p = [self skipOffChannelTokens:p];
-	}
-}
-
-- (int) mark
-{
-	lastMarker = [self index];
-	return lastMarker;
-}
-
-- (void) release:(int)marker
-{
-	// empty
-}
-
-- (int) index
+- (NSInteger) getIndex
 {
 	return p;
 }
@@ -305,49 +264,87 @@
 	[self seek:lastMarker];
 }
 
-- (void) rewind:(int)marker
+- (void) rewind:(NSInteger)marker
 {
 	[self seek:marker];
 }
 
-- (void) seek:(int)index
+- (void) seek:(NSInteger)index
 {
 	p = index;
 }
-#pragma mark Stringvalues
+#pragma mark toString routines
 
-- (NSString *) stringValue
+- (NSString *) toString
 {
 	if ( p == -1 ) {
-		[self fillBuffer];
+		[self setup];
 	}
-	return [self stringValueWithRange:NSMakeRange(0,[self count])];
+	return [self toStringFromStart:0 ToEnd:[tokens count]];
 }
 
-- (NSString *) stringValueWithRange:(NSRange) aRange
+- (NSString *) toStringFromStart:(NSInteger)startIdx ToEnd:(NSInteger) stopIdx
 {
-	if ( p == -1 ) {
-		[self fillBuffer];
-	}
-	NSArray *tokensInRange = [self tokensInRange:aRange];
-	NSEnumerator *tokenEnum = [tokensInRange objectEnumerator];
-	id<ANTLRToken> token;
-	NSMutableString *stringValue = [[NSMutableString alloc] init];
-	while ((token = [tokenEnum nextObject])) {
-		[stringValue appendString:[token text]];
-	}
-	return [stringValue autorelease];
+    NSString *stringBuffer;
+    id<ANTLRToken> t;
+
+    if ( startIdx < 0 || stopIdx < 0 ) {
+        return nil;
+    }
+    if ( p == -1 ) {
+        [self setup];
+    }
+    if ( stopIdx >= [tokens count] ) {
+        stopIdx = [tokens count]-1;
+    }
+    stringBuffer = [NSString string];
+    for (int i = startIdx; i <= stopIdx; i++) {
+        t = (id<ANTLRToken>)[tokens objectAtIndex:i];
+        [stringBuffer stringByAppendingString:[t getText]];
+    }
+    return stringBuffer;
 }
 
-- (NSString *) stringValueFromToken:(id<ANTLRToken>)startToken toToken:(id<ANTLRToken>)stopToken
+- (NSString *) toStringFromToken:(id<ANTLRToken>)startToken ToToken:(id<ANTLRToken>)stopToken
 {
 	if (startToken && stopToken) {
-		int start = [startToken tokenIndex];
-		int stop = [stopToken tokenIndex];
-		return [self stringValueWithRange:NSMakeRange(start,stop-start)];
+		int startIdx = [startToken getTokenIndex];
+		int stopIdx = [stopToken getTokenIndex];
+		return [self toStringFromStart:startIdx ToEnd:stopIdx];
 	}
 	return nil;
 }
 
+- (id) copyWithZone:(NSZone *)aZone
+{
+    ANTLRCommonTokenStream *copy;
+	
+    //    copy = [[[self class] allocWithZone:aZone] init];
+    copy = [super copyWithZone:aZone]; // allocation occurs in ANTLRBaseTree
+    if ( self.channelOverride )
+        copy.channelOverride = [channelOverride copyWithZone:aZone];
+    copy.channel = channel;
+    return copy;
+}
+
+- (NSInteger)getChannel
+{
+    return channel;
+}
+
+- (void)setChannel:(NSInteger)aChannel
+{
+    channel = aChannel;
+}
+
+- (NSMutableDictionary *)getChannelOverride
+{
+    return channelOverride;
+}
+
+- (void)setChannelOverride:(NSMutableDictionary *)anOverride
+{
+    channelOverride = anOverride;
+}
 
 @end

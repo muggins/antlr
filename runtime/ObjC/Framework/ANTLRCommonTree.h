@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,36 +25,64 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRCommonToken.h>
-#import <ANTLR/ANTLRTree.h>
+#import "ANTLRCommonToken.h"
+#import "ANTLRBaseTree.h"
 
-@interface ANTLRCommonTree : ANTLRTree {
-	int startIndex;
-	int stopIndex;
+@interface ANTLRCommonTree : ANTLRBaseTree <ANTLRTree> {
 	ANTLRCommonToken *token;
+	NSInteger startIndex;
+	NSInteger stopIndex;
+    ANTLRCommonTree *parent;
+    NSInteger childIndex;
 }
 
-- (id<ANTLRTree>) initWithTreeNode:(ANTLRCommonTree *)aNode;
-- (id<ANTLRTree>) initWithToken:(ANTLRCommonToken *)aToken;
-- (id<ANTLRTree>) initWithTokenType:(int)aTokenType;
+@property (retain, getter=getANTLRCommonToken, setter=setANTLRCommonToken) ANTLRCommonToken *token;
+@property (assign, getter=getTokenStartIndex, setter=setTokenStartIndex) NSInteger startIndex;
+@property (assign, getter=getTokenStopIndex, setter=setTokenStopIndex) NSInteger stopIndex;
+@property (retain, getter=getParent, setter=setParent:) ANTLRCommonTree *parent;
+@property (assign, getter=getChildIndex, setter=setChildIndex) NSInteger childIndex;
+
++ (ANTLRCommonTree *) invalidNode;
++ (ANTLRCommonTree *) newANTLRCommonTree;
++ (ANTLRCommonTree *) newANTLRCommonTreeWithTree:(ANTLRCommonTree *)aTree;
++ (ANTLRCommonTree *) newANTLRCommonTreeWithToken:(ANTLRCommonToken *)aToken;
++ (ANTLRCommonTree *) newANTLRCommonTreeWithTokenType:(NSInteger)tokenType;
++ (ANTLRCommonTree *) newANTLRCommonTreeWithTokenType:(NSInteger)aTType Text:(NSString *)theText;
+#ifdef DONTUSEYET
++ (id<ANTLRTree>) newANTLRCommonTreeWithTokenType:(NSInteger)tokenType;
++ (id<ANTLRTree>) newANTLRCommonTreeWithToken:(id<ANTLRToken>)fromToken TokenType:(NSInteger)tokenType;
++ (id<ANTLRTree>) newANTLRCommonTreeWithToken:(id<ANTLRToken>)fromToken TokenType:(NSInteger)tokenType Text:(NSString *)tokenText;
++ (id<ANTLRTree>) newANTLRCommonTreeWithToken:(id<ANTLRToken>)fromToken Text:(NSString *)tokenText;
+#endif
+
+- (id) init;
+- (id) initWithTreeNode:(ANTLRCommonTree *)aNode;
+- (id) initWithToken:(ANTLRCommonToken *)aToken;
+- (id) initWithTokenType:(NSInteger)aTokenType;
+- (id) initWithTokenType:(NSInteger)aTokenType Text:(NSString *)theText;
 
 - (id<ANTLRTree>) copyWithZone:(NSZone *)aZone;
 
-- (BOOL) isEmpty;
+- (BOOL) isNil;
 
-- (ANTLRCommonToken *) token;
+- (ANTLRCommonToken *) getToken;
 - (void) setToken:(ANTLRCommonToken *)aToken;
-- (int) tokenType;
-- (NSString *) text;
-- (unsigned int) line;
-- (unsigned int) charPositionInLine;
+- (id<ANTLRTree>) dupNode;
+- (NSInteger) getType;
+- (NSString *) getText;
+- (NSUInteger) getLine;
+- (NSUInteger) getCharPositionInLine;
+- (ANTLRCommonTree *) getParent;
+- (void) setParent:(ANTLRCommonTree *) t;
 
+#ifdef DONTUSENOMO
 - (NSString *) treeDescription;
+#endif
 - (NSString *) description;
-
-- (int) startIndex;
-- (void) setStartIndex: (int) aStartIndex;
-- (int) stopIndex;
-- (void) setStopIndex: (int) aStopIndex;
+- (void) setUnknownTokenBoundaries;
+- (NSInteger) getTokenStartIndex;
+- (void) setTokenStartIndex: (NSInteger) aStartIndex;
+- (NSInteger) getTokenStopIndex;
+- (void) setTokenStopIndex: (NSInteger) aStopIndex;
 
 @end

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,34 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRBaseRecognizer.h>
-#import <ANTLR/ANTLRTokenStream.h>
+#import "ANTLRBaseRecognizer.h"
+#import "ANTLRCommonToken.h"
+#import "ANTLRTokenStream.h"
 
 @interface ANTLRParser : ANTLRBaseRecognizer {
 	id<ANTLRTokenStream> input;
 }
++ (ANTLRParser *)newANTLRParser:(id<ANTLRTokenStream>)anInput;
++ (ANTLRParser *)newANTLRParser:(id<ANTLRTokenStream>)anInput State:(ANTLRRecognizerSharedState *)aState;
 
 - (id) initWithTokenStream:(id<ANTLRTokenStream>)theStream;
+- (id) initWithTokenStream:(id<ANTLRTokenStream>)theStream State:(ANTLRRecognizerSharedState *)aState;
 
-- (id<ANTLRTokenStream>) input;
+- (id<ANTLRTokenStream>) getInput;
 - (void) setInput: (id<ANTLRTokenStream>) anInput;
 
+- (void) reset;
 
+- (id) getCurrentInputSymbol:(id<ANTLRTokenStream>)anInput;
+- (ANTLRCommonToken *)getMissingSymbol:(id<ANTLRTokenStream>)input
+                             Exception:(ANTLRRecognitionException *)e
+                                 TType:(NSInteger)expectedTokenType
+                                BitSet:(ANTLRBitSet *)follow;
+- (void) setTokenStream:(id<ANTLRTokenStream>)anInput;
+- (id<ANTLRTokenStream>)getTokenStream;
+- (NSString *)getSourceName;
 
+- (void) traceIn:(NSString *)ruleName Index:(int)ruleIndex;
+- (void) traceOut:(NSString *)ruleName Index:(NSInteger) ruleIndex;
 
 @end

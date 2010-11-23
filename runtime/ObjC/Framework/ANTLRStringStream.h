@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,39 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRCharStream.h>
+#import "ANTLRCharStream.h"
+#import "ANTLRCharStreamState.h"
+#import "ANTLRPtrBuffer.h"
 
 @interface ANTLRStringStream : NSObject < ANTLRCharStream > {
-	NSMutableArray *markers;
 	NSString *data;
-	
-	unsigned  p;
-	unsigned  line;
-	unsigned  charPositionInLine;
-	unsigned  markDepth;
-	unsigned lastMarker;
+	NSInteger n;
+	NSInteger p;
+	NSInteger line;
+	NSInteger charPositionInLine;
+	NSInteger markDepth;
+	ANTLRPtrBuffer *markers;
+	NSInteger lastMarker;
+	NSString *name;
+    ANTLRCharStreamState *charState;
 }
+
+@property (retain, getter=getData,setter=setData:) NSString *data;
+@property (getter=getP,setter=setP:) NSInteger p;
+@property (getter=getN,setter=setN:) NSInteger n;
+@property (getter=getLine,setter=setLine:) NSInteger line;
+@property (getter=getCharPositionInLine,setter=setCharPositionInLine:) NSInteger charPositionInLine;
+@property (getter=getMarkDepth,setter=setMarkDepth:) NSInteger markDepth;
+@property (retain, getter=getMarkers, setter=setMarkers:) ANTLRPtrBuffer *markers;
+@property (getter=getLastMarker,setter=setLastMarker:) NSInteger lastMarker;
+@property (retain, getter=getSourceName, setter=setSourceName:) NSString *name;
+@property (retain, getter=getCharState, setter=setCharState:) ANTLRCharStreamState *charState;
+
++ newANTLRStringStream;
+
++ newANTLRStringStream:(NSString *)aString;
+
++ newANTLRStringStream:(char *)myData Count:(NSInteger)numBytes;
 
 - (id) init;
 
@@ -47,7 +68,11 @@
 // This is the preferred constructor as no data is copied
 - (id) initWithStringNoCopy:(NSString *) theString;
 
+- (id) initWithData:(char *)myData Count:(NSInteger)numBytes;
+
 - (void) dealloc;
+
+- (id) copyWithZone:(NSZone *)aZone;
 
 // reset the stream's state, but keep the data to feed off
 - (void) reset;
@@ -55,31 +80,46 @@
 - (void) consume;
 
 // look ahead i characters
-- (int) LA:(int) i;
+- (NSInteger) LA:(NSInteger) i;
+- (NSInteger) LT:(NSInteger) i;
 
 // returns the position of the current input symbol
-- (unsigned int) index;
+- (NSInteger) getIndex;
 // total length of the input data
-- (unsigned int) count;
+- (NSInteger) size;
 
 // seek and rewind in the stream
-- (unsigned int) mark;
+- (NSInteger) mark;
+- (void) rewind:(NSInteger) marker;
 - (void) rewind;
-- (void) rewind:(unsigned int) marker;
-- (void) release:(unsigned int) marker;
-- (void) seek:(unsigned int) index;
+- (void) release:(NSInteger) marker;
+- (void) seek:(NSInteger) index;
 
 // provide the streams data (e.g. for tokens using indices)
+- (NSString *) substring:(NSInteger)startIndex To:(NSInteger)stopIndex;
 - (NSString *) substringWithRange:(NSRange) theRange;
 
 // used for tracking the current position in the input stream
-- (unsigned int) line;
-- (void) setLine:(unsigned int) theLine;
-- (unsigned int) charPositionInLine;
-- (void) setCharPositionInLine:(unsigned int) thePos;
+- (NSInteger) getLine;
+- (void) setLine:(NSInteger) theLine;
+- (NSInteger) getCharPositionInLine;
+- (void) setCharPositionInLine:(NSInteger) thePos;
+
+- (NSInteger) getN;
+- (void) setN:(NSInteger)num;
+
+- (NSInteger) getP;
+- (void) setP:(NSInteger)num;
+
+- (ANTLRPtrBuffer *)getMarkers;
+- (void) setMarkers:(ANTLRPtrBuffer *)aMarkerList;
+
+- (NSString *)getSourceName;
+
+- (NSString *)toString;
 
 // accessors to the raw data of this stream
-- (NSString *) data;
+- (NSString *) getData;
 - (void) setData: (NSString *) aData;
 
 

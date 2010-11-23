@@ -46,7 +46,7 @@
 #import <ANTLR/ANTLRTreeException.h>
 
 #import <ANTLR/ANTLRParserRuleReturnScope.h>
-#import <ANTLR/ANTLRTreeParserRuleReturnScope.h>
+#import <ANTLR/ANTLRTreeRuleReturnScope.h>
 
 #import <ANTLR/ANTLRTree.h>
 #import <ANTLR/ANTLRCommonTree.h>

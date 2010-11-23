@@ -25,41 +25,33 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRToken.h>
-#import <ANTLR/ANTLRBaseRecognizerState.h>
+#import "ANTLRToken.h"
+#import "ANTLRRecognizerSharedState.h"
 
-@interface ANTLRLexerState : ANTLRBaseRecognizerState {
-	id<ANTLRToken> token;					///< The current token that will be emitted next.
-    
-    unsigned int tokenType;					///< The type of the current token.
-    unsigned int channel;					///< The token channel number to be used for the current token.
-    unsigned int tokenStartLine;			///< The line number of the first character of the current token appeared in.
-    unsigned int tokenCharPositionInLine;	///< The character index of the first character of the current token within the current line.
-	int tokenStartCharIndex;				///< The index of the first character of the current token. Default is -1 for an undefined value.
-    NSString *text;							///< The text for the current token to be emitted next. If nil, we just refer to the start and stop indices into the character stream.
+@interface ANTLRLexerState : ANTLRRecognizerSharedState {
 }
 
 - (void) reset;
 
-- (id<ANTLRToken>) token;
+- (id<ANTLRToken>) getToken;
 - (void) setToken:(id<ANTLRToken>) theToken;
 
-- (unsigned int) tokenType;
+- (unsigned int) getTokenType;
 - (void) setTokenType:(unsigned int) theTokenType;
 
-- (unsigned int) channel;
+- (unsigned int) getChannel;
 - (void) setChannel:(unsigned int) theChannel;
 
-- (unsigned int) tokenStartLine;
+- (unsigned int) getTokenStartLine;
 - (void) setTokenStartLine:(unsigned int) theTokenStartLine;
 
-- (unsigned int) tokenCharPositionInLine;
+- (unsigned int) getTokenCharPositionInLine;
 - (void) setTokenCharPositionInLine:(unsigned int) theCharPosition;
 
-- (int) tokenStartCharIndex;
+- (int) getTokenStartCharIndex;
 - (void) setTokenStartCharIndex:(int) theTokenStartCharIndex;
 
-- (NSString *) text;
+- (NSString *) getText;
 - (void) setText:(NSString *) theText;
 
 @end

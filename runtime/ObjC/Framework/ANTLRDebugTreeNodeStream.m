@@ -35,7 +35,7 @@
 	if (self) {
 		[self setDebugListener:debugger];
 		[self setTreeAdaptor:[theStream treeAdaptor]];
-		[self setTreeNodeStream:theStream];
+		[self setInput:theStream];
 	}
 	return self;
 }
@@ -44,7 +44,7 @@
 {
     [self setDebugListener: nil];
     [self setTreeAdaptor: nil];
-    [self setTreeNodeStream: nil];
+    [self setInput: nil];
     [super dealloc];
 }
 
@@ -63,7 +63,7 @@
 }
 
 
-- (id<ANTLRTreeAdaptor>) treeAdaptor
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor
 {
     return treeAdaptor; 
 }
@@ -78,26 +78,26 @@
 }
 
 
-- (id<ANTLRTreeNodeStream>) treeNodeStream
+- (id<ANTLRTreeNodeStream>) getInput
 {
-    return treeNodeStream; 
+    return input; 
 }
 
-- (void) setTreeNodeStream: (id<ANTLRTreeNodeStream>) aTreeNodeStream
+- (void) setInput: (id<ANTLRTreeNodeStream>) aTreeNodeStream
 {
-    if (treeNodeStream != aTreeNodeStream) {
+    if (input != aTreeNodeStream) {
         [(id<ANTLRTreeNodeStream,NSObject>)aTreeNodeStream retain];
-        [(id<ANTLRTreeNodeStream,NSObject>)treeNodeStream release];
-        treeNodeStream = aTreeNodeStream;
+        [(id<ANTLRTreeNodeStream,NSObject>)input release];
+        input = aTreeNodeStream;
     }
 }
 
 
 #pragma mark ANTLRTreeNodeStream conformance
 
-- (id) LT:(int)k
+- (id) LT:(NSInteger)k
 {
-	id node = [treeNodeStream LT:k];
+	id node = [input LT:k];
 	unsigned hash = [treeAdaptor uniqueIdForTree:node];
 	NSString *text = [treeAdaptor textForNode:node];
 	int type = [treeAdaptor tokenTypeForNode:node];
@@ -105,69 +105,71 @@
 	return node;
 }
 
-- (void) setUsesUniqueNavigationNodes:(BOOL)flag
+- (void) setUniqueNavigationNodes:(BOOL)flag
 {
-	[treeNodeStream setUsesUniqueNavigationNodes:flag];
+	[input setUniqueNavigationNodes:flag];
 }
 
 #pragma mark ANTLRIntStream conformance
 - (void) consume
 {
-	id node = [treeNodeStream LT:1];
-	[treeNodeStream consume];
+	id node = [input LT:1];
+	[input consume];
 	unsigned hash = [treeAdaptor uniqueIdForTree:node];
 	NSString *text = [treeAdaptor textForNode:node];
 	int type = [treeAdaptor tokenTypeForNode:node];
 	[debugListener consumeNode:hash ofType:type text:text];
 }
 
-- (int) LA:(unsigned int) i
+- (NSInteger) LA:(NSUInteger) i
 {
 	id<ANTLRTree> node = [self LT:1];
-	return [node tokenType];
+	return [node getType];
 }
 
-- (unsigned int) mark
+- (NSUInteger) mark
 {
-	unsigned lastMarker = [treeNodeStream mark];
+	unsigned lastMarker = [input mark];
 	[debugListener mark:lastMarker];
 	return lastMarker;
 }
 
-- (unsigned int) index
+- (NSUInteger) getIndex
 {
-	return [treeNodeStream index];
+	return [input getIndex];
 }
 
-- (void) rewind:(unsigned int) marker
+- (void) rewind:(NSUInteger) marker
 {
-	[treeNodeStream rewind:marker];
+	[input rewind:marker];
 	[debugListener rewind:marker];
 }
 
 - (void) rewind
 {
-	[treeNodeStream rewind];
+	[input rewind];
 	[debugListener rewind];
 }
 
-- (void) release:(unsigned int) marker
+- (void) release:(NSUInteger) marker
 {
-	[treeNodeStream release:marker];
+	[input release:marker];
 }
 
-- (void) seek:(unsigned int) index
+- (void) seek:(NSUInteger) index
 {
-	[treeNodeStream seek:index];
+	[input seek:index];
 	// todo: seek missing in debug protocol
 }
 
-- (unsigned int) count
+- (NSUInteger) size
 {
-	return [treeNodeStream count];
+	return [input size];
 }
 
-
-
+- (NSString *) toStringFromToken:(id)startNode ToToken:(id)stopNode
+{
+    return [input toStringFromToken:(id<ANTLRToken>)startNode ToToken:(id<ANTLRToken>)stopNode];
+}
 
 @end

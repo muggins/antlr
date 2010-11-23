@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,19 +25,19 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRRecognitionException.h>
-#import <ANTLR/ANTLRIntStream.h>
+#import "ANTLRRecognitionException.h"
+#import "ANTLRIntStream.h"
 
 @interface ANTLRNoViableAltException : ANTLRRecognitionException {
 	int decisionNumber;
 	int stateNumber;
 }
 
-+ (ANTLRNoViableAltException *) exceptionWithDecision:(int)theDecisionNumber state:(int)theStateNumber stream:(id<ANTLRIntStream>)theStream;
-- (ANTLRNoViableAltException *) initWithDecision:(int)theDecisionNumber state:(int)theStateNumber stream:(id<ANTLRIntStream>)theStream;
++ (ANTLRNoViableAltException *) newANTLRNoViableAltException:(NSInteger)theDecisionNumber state:(NSInteger)theStateNumber stream:(id<ANTLRIntStream>)theStream;
+- (ANTLRNoViableAltException *) initWithDecision:(NSInteger)theDecisionNumber state:(NSInteger)theStateNumber stream:(id<ANTLRIntStream>)theStream;
 
-- (void)setDecisionNumber:(int)decisionNumber;
-- (void)setStateNumber:(int)stateNumber;
+- (void)setDecisionNumber:(NSInteger)decisionNumber;
+- (void)setStateNumber:(NSInteger)stateNumber;
 
 
 @end

@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,8 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#import <ANTLR/ANTLRIntStream.h>
-#import <ANTLR/ANTLRToken.h>
+#import "ANTLRIntStream.h"
+#import "ANTLRToken.h"
 
 @protocol ANTLRTokenStream < ANTLRIntStream >
 
@@ -36,15 +36,27 @@
 // Return null for LT:0 and any index that results in an absolute address
 // that is negative.
 
-- (id<ANTLRToken>) LT:(int) i;
+- (id<ANTLRToken>) LT:(NSInteger) i;
 
-- (id<ANTLRToken>) tokenAtIndex:(unsigned int) i;
+- (id<ANTLRToken>) getToken:(NSUInteger) i;
 
-- (id) tokenSource;
+- (id) getTokenSource;
 
-- (NSString *) stringValue;
-- (NSString *) stringValueWithRange:(NSRange) aRange;
-- (NSString *) stringValueFromToken:(id<ANTLRToken>)startToken toToken:(id<ANTLRToken>)stopToken;
+- (NSString *) toString;
+/** Return the text of all tokens from start to stop, inclusive.
+ *  If the stream does not buffer all the tokens then it can just
+ *  return "" or null;  Users should not access $ruleLabel.text in
+ *  an action of course in that case.
+ */
+- (NSString *)toStringFromStart:(NSInteger)startIdx ToEnd:(NSInteger)stopIdx;
+
+/** Because the user is not required to use a token with an index stored
+ *  in it, we must provide a means for two token objects themselves to
+ *  indicate the start/end location.  Most often this will just delegate
+ *  to the other toString(int,int).  This is also parallel with
+ *  the TreeNodeStream.toString(Object,Object).
+ */
+- (NSString *) toStringFromToken:(id<ANTLRToken>)startToken ToToken:(id<ANTLRToken>)stopToken;
 
 
 @end

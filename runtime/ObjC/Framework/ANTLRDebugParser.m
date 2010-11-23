@@ -35,19 +35,20 @@
 }
 
 - (id) initWithTokenStream:(id<ANTLRTokenStream>)theStream
-			  debuggerPort:(int)portNumber
+			  debuggerPort:(NSInteger)portNumber
 {
 	return [self initWithTokenStream:theStream debugListener:nil debuggerPort:portNumber];
 }
 
 - (id) initWithTokenStream:(id<ANTLRTokenStream>)theStream
 			 debugListener:(id<ANTLRDebugEventListener>)theDebugListener
-			  debuggerPort:(int)portNumber
+			  debuggerPort:(NSInteger)portNumber
 {
 	id<ANTLRDebugEventListener,NSObject> debugger = nil;
 	id<ANTLRTokenStream> tokenStream = nil;
 	if (theDebugListener) {
 		debugger = [(id<ANTLRDebugEventListener,NSObject>)theDebugListener retain];
+		debugger = theDebugListener;
 	} else {
 		debugger = [[ANTLRDebugEventProxy alloc] initWithGrammarName:[self grammarFileName] debuggerPort:portNumber];
 	}
@@ -55,6 +56,7 @@
 		tokenStream = [[ANTLRDebugTokenStream alloc] initWithTokenStream:theStream debugListener:debugger];
 	} else {
 		tokenStream = [theStream retain];
+		tokenStream = theStream;
 	}
 	self = [super initWithTokenStream:tokenStream];
 	if (self) {
@@ -98,12 +100,12 @@
 {
 	[debugListener endResync];
 }
-- (void)beginBacktracking:(int)level
+- (void)beginBacktracking:(NSInteger)level
 {
 	[debugListener beginBacktrack:level];
 }
 
-- (void)endBacktracking:(int)level wasSuccessful:(BOOL)successful
+- (void)endBacktracking:(NSInteger)level wasSuccessful:(BOOL)successful
 {
 	[debugListener endBacktrack:level wasSuccessful:successful];
 }

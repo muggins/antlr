@@ -25,11 +25,11 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRParser.h>
-#import <ANTLR/ANTLRTreeAdaptor.h>
-#import <ANTLR/ANTLRDebugEventListener.h>
+#import "ANTLRParser.h"
+#import "ANTLRBaseTreeAdaptor.h"
+#import "ANTLRDebugEventListener.h"
 
-@interface ANTLRDebugTreeAdaptor : ANTLRTreeAdaptor {
+@interface ANTLRDebugTreeAdaptor : ANTLRBaseTreeAdaptor {
 	id<ANTLRDebugEventListener> debugListener;
 	id<ANTLRTreeAdaptor> treeAdaptor;
 }
@@ -39,7 +39,7 @@
 - (id<ANTLRDebugEventListener>) debugListener;
 - (void) setDebugListener: (id<ANTLRDebugEventListener>) aDebugListener;
 
-- (id<ANTLRTreeAdaptor>) treeAdaptor;
+- (id<ANTLRTreeAdaptor>) getTreeAdaptor;
 - (void) setTreeAdaptor: (id<ANTLRTreeAdaptor>) aTreeAdaptor;
 
 @end

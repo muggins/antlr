@@ -42,10 +42,10 @@
 {
 	[super reset];
 	[self setToken:nil];
-	tokenType = 0;				
+	type = 0;				
 	channel = 0;				
 	tokenStartLine = 0;		
-	tokenCharPositionInLine = 0;
+	tokenStartCharPositionInLine = 0;
 	tokenStartCharIndex = -1;    
 	[self setText:nil];
 }
@@ -57,7 +57,7 @@
 	[super dealloc];
 }
 
-- (id<ANTLRToken>) token
+- (id<ANTLRToken>) getToken
 {
 	return token;
 }
@@ -70,19 +70,21 @@
 }
 
 
-- (unsigned int) tokenType
+- (unsigned int) getType
 {
-	return tokenType;
+	return type;
 }
+
 - (void) setTokenType:(unsigned int) theTokenType
 {
-	tokenType = theTokenType;
+	type = theTokenType;
 }
 
 - (unsigned int) channel
 {
 	return channel;
 }
+
 - (void) setChannel:(unsigned int) theChannel
 {
 	channel = theChannel;
@@ -92,6 +94,7 @@
 {
 	return tokenStartLine;
 }
+
 - (void) setTokenStartLine:(unsigned int) theTokenStartLine
 {
 	tokenStartLine = theTokenStartLine;
@@ -99,17 +102,19 @@
 
 - (unsigned int) tokenCharPositionInLine
 {
-	return tokenCharPositionInLine;
+	return tokenStartCharPositionInLine;
 }
+
 - (void) setTokenCharPositionInLine:(unsigned int) theCharPosition
 {
-	tokenCharPositionInLine = theCharPosition;
+	tokenStartCharPositionInLine = theCharPosition;
 }
 
 - (int) tokenStartCharIndex
 {
 	return tokenStartCharIndex;
 }
+
 - (void) setTokenStartCharIndex:(int) theTokenStartCharIndex
 {
 	tokenStartCharIndex = theTokenStartCharIndex;
@@ -119,6 +124,7 @@
 {
 	return text;
 }
+
 - (void) setText:(NSString *) theText
 {
 	if (text != theText) {

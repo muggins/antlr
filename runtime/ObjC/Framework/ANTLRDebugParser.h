@@ -25,9 +25,9 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRParser.h>
-#import <ANTLR/ANTLRDebugEventProxy.h>
-#import <ANTLR/ANTLRDebugTokenStream.h>
+#import "ANTLRParser.h"
+#import "ANTLRDebugEventProxy.h"
+#import "ANTLRDebugTokenStream.h"
 
 @interface ANTLRDebugParser : ANTLRParser {
 	id<ANTLRDebugEventListener> debugListener;
@@ -35,11 +35,11 @@
 
 - (id) initWithTokenStream:(id<ANTLRTokenStream>)theStream;
 - (id) initWithTokenStream:(id<ANTLRTokenStream>)theStream
-			  debuggerPort:(int)portNumber;
+			  debuggerPort:(NSInteger)portNumber;
 // designated initializer
 - (id) initWithTokenStream:(id<ANTLRTokenStream>)theStream
 			 debugListener:(id<ANTLRDebugEventListener>)theDebugListener
-			  debuggerPort:(int)portNumber;
+			  debuggerPort:(NSInteger)portNumber;
 
 - (id<ANTLRDebugEventListener>) debugListener;
 - (void) setDebugListener: (id<ANTLRDebugEventListener>) aDebugListener;

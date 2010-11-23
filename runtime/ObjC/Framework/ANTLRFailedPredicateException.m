@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 20110 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,8 @@
 	return desc;
 }
 
-- (NSString *) predicate
+#ifdef DONTUSEYET
+- (NSString *) getPredicate
 {
 	return predicate;
 }
@@ -71,7 +72,7 @@
 	}
 }
 
-- (NSString *) ruleName
+- (NSString *) getRuleName
 {
 	return ruleName;
 }
@@ -84,5 +85,6 @@
 		ruleName = theRuleName;
 	}
 }
+#endif
 
 @end

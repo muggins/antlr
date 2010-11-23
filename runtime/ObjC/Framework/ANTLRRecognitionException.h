@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,47 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLRToken.h>
-#import <ANTLR/ANTLRIntStream.h>
-#import <ANTLR/ANTLRCharStream.h>
-#import <ANTLR/ANTLRTokenStream.h>
-#import <ANTLR/ANTLRTree.h>
-#import <ANTLR/ANTLRTreeNodeStream.h>
+#import "ANTLRRuntimeException.h"
+#import "ANTLRToken.h"
+#import "ANTLRIntStream.h"
+#import "ANTLRTree.h"
 
-@interface ANTLRRecognitionException : NSException {
+@interface ANTLRRecognitionException : ANTLRRuntimeException {
 	id<ANTLRIntStream> input;
-	int index;
+	NSInteger index;
 	id<ANTLRToken> token;
 	id<ANTLRTree> node;
 	unichar c;
-	int line;
-	int charPositionInLine;
+	NSInteger line;
+	NSInteger charPositionInLine;
 }
 
+@property (retain, getter=getStream, setter=setStream:) id<ANTLRIntStream> input;
+@property (retain, getter=getToken, setter=setToken:) id<ANTLRToken>token;
+@property (retain, getter=getNode, setter=setNode:) id<ANTLRTree>node;
+@property (getter=getLine, setter=setLine:) NSInteger line;
+@property (getter=getCharPositionInLine, setter=setCharPositionInLine:) NSInteger charPositionInLine;
+
++ (ANTLRRecognitionException *) newANTLRRecognitionException;
 + (ANTLRRecognitionException *) exceptionWithStream:(id<ANTLRIntStream>) anInputStream; 
+- (id) init;
 - (id) initWithStream:(id<ANTLRIntStream>)anInputStream;
 - (id) initWithStream:(id<ANTLRIntStream>)anInputStream reason:(NSString *)aReason;
-- (int) unexpectedType;
+- (NSInteger) unexpectedType;
+- (id<ANTLRToken>)getUnexpectedToken;
 
-- (id<ANTLRIntStream>) stream;
+- (id<ANTLRIntStream>) getStream;
 - (void) setStream: (id<ANTLRIntStream>) aStream;
 
-- (id<ANTLRToken>) token;
+- (id<ANTLRToken>) getToken;
 - (void) setToken: (id<ANTLRToken>) aToken;
 
-- (id<ANTLRTree>) node;
+- (id<ANTLRTree>) getNode;
 - (void) setNode: (id<ANTLRTree>) aNode;
+
+- (NSString *)getMessage;
+
+- (NSInteger)getCharPositionInLine;
+- (void)setCharPositionInLine:(NSInteger)aPos;
 
 @end

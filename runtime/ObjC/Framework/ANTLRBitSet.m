@@ -1,5 +1,5 @@
 // [The "BSD licence"]
-// Copyright (c) 2006-2007 Kay Roepke
+// Copyright (c) 2006-2007 Kay Roepke 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,111 @@
 #import "ANTLRBitSet.h"
 
 @implementation ANTLRBitSet
+#pragma mark Class Methods
+
++ (ANTLRBitSet *) newANTLRBitSet
+{
+    return [[ANTLRBitSet alloc] init];
+}
+
++ (ANTLRBitSet *) newANTLRBitSetWithType:(ANTLRTokenType)type
+{
+    return [[ANTLRBitSet alloc] initWithType:type];
+}
+
+/** Construct a ANTLRBitSet given the size
+ * @param nbits The size of the ANTLRBitSet in bits
+ */
++ (ANTLRBitSet *) newANTLRBitSetWithNBits:(NSUInteger)nbits
+{
+    return [[ANTLRBitSet alloc] initWithNBits:nbits];
+}
+
++ (ANTLRBitSet *) newANTLRBitSetWithArray:(NSMutableArray *)types
+{
+    return [[ANTLRBitSet alloc] initWithArrayOfBits:types];
+}
+
++ (ANTLRBitSet *) newANTLRBitSetWithBits:(const unsigned long long *)theBits Count:(NSUInteger)longCount
+{
+    return [[ANTLRBitSet alloc] initWithBits:theBits Count:longCount];
+}
+
+
++ (ANTLRBitSet *) of:(NSUInteger) el
+{
+    ANTLRBitSet *s = [ANTLRBitSet newANTLRBitSetWithNBits:(el + 1)];
+    [s add:el];
+    return s;
+}
+
++ (ANTLRBitSet *) of:(NSUInteger) a And2:(NSUInteger) b
+{
+    NSInteger c = (((a>b)?a:b)+1);
+    ANTLRBitSet *s = [ANTLRBitSet newANTLRBitSetWithNBits:c];
+    [s add:a];
+    [s add:b];
+    return s;
+}
+
++ (ANTLRBitSet *) of:(NSUInteger)a And2:(NSUInteger)b And3:(NSUInteger)c
+{
+    NSInteger d = ((a>b)?a:b);
+    d = ((c>d)?c:d)+1;
+    ANTLRBitSet *s = [ANTLRBitSet newANTLRBitSetWithNBits:d];
+    [s add:a];
+    [s add:b];
+    [s add:c];
+    return s;
+}
+
++ (ANTLRBitSet *) of:(NSUInteger)a And2:(NSUInteger)b And3:(NSUInteger)c And4:(NSUInteger)d
+{
+    NSInteger e = ((a>b)?a:b);
+    NSInteger f = ((c>d)?c:d);
+    e = ((e>f)?e:f)+1;
+    ANTLRBitSet *s = [ANTLRBitSet newANTLRBitSetWithNBits:e];
+    [s add:a];
+    [s add:b];
+    [s add:c];
+    [s add:d];
+    return s;
+}
 
 // initializer
 #pragma mark Initializer
 
 - (ANTLRBitSet *) init
 {
-	if (nil != (self = [super init])) {
+	if ((self = [super init]) != nil) {
 		bitVector = CFBitVectorCreateMutable(kCFAllocatorDefault,0);
+	}
+	return self;
+}
+
+- (ANTLRBitSet *) initWithType:(ANTLRTokenType)type
+{
+	if ((self = [super init]) != nil) {
+		bitVector = CFBitVectorCreateMutable(kCFAllocatorDefault,0);
+        if ((CFIndex)type >= CFBitVectorGetCount(bitVector))
+            CFBitVectorSetCount(bitVector, type+1);
+        CFBitVectorSetBitAtIndex(bitVector, type, 1);
+	}
+	return self;
+}
+
+- (ANTLRBitSet *) initWithNBits:(NSUInteger)nbits
+{
+	if ((self = [super init]) != nil) {
+        bitVector = CFBitVectorCreateMutable(kCFAllocatorDefault,0);
+        CFBitVectorSetCount( bitVector, nbits );
 	}
 	return self;
 }
 
 - (ANTLRBitSet *) initWithBitVector:(CFMutableBitVectorRef)theBitVector
 {
-	if (nil != (self = [super init])) {
+	if ((self = [super init]) != nil) {
 		bitVector = theBitVector;
 	}
 	return self;
@@ -49,18 +139,19 @@
 
 // Initialize the bit vector with a constant array of ulonglongs like ANTLR generates.
 // Converts to big endian, because the underlying CFBitVector works like that.
-- (ANTLRBitSet *) initWithBits:(const unsigned long long *)theBits count:(unsigned int)longCount
+- (ANTLRBitSet *) initWithBits:(const unsigned long long *)theBits Count:(NSUInteger)longCount
 {
-	if (nil != (self = [self init])) {
+	if ((self = [super init]) != nil) {
 		unsigned int longNo;
 		CFIndex bitIdx;
-		CFBitVectorSetCount(bitVector,sizeof(unsigned long long)*8*longCount);
+        bitVector = CFBitVectorCreateMutable ( kCFAllocatorDefault, 0 );
+		CFBitVectorSetCount( bitVector, sizeof(unsigned long long)*8*longCount );
 
 		for (longNo = 0; longNo < longCount; longNo++) {
 			for (bitIdx = 0; bitIdx < (CFIndex)sizeof(unsigned long long)*8; bitIdx++) {
 				unsigned long long swappedBits = CFSwapInt64HostToBig(theBits[longNo]);
 				if (swappedBits & (1LL << bitIdx)) {
-					CFBitVectorSetBitAtIndex(bitVector,bitIdx+(longNo*sizeof(unsigned long long)*8),1);
+					CFBitVectorSetBitAtIndex(bitVector, bitIdx+(longNo*(sizeof(unsigned long long)*8)), 1);
 				}
 			}
 		}
@@ -72,13 +163,15 @@
 // Note: This is big-endian!
 - (ANTLRBitSet *) initWithArrayOfBits:(NSArray *)theArray
 {
-	if (nil != (self = [self init])) {
+	if ((self = [super init]) != nil) {
+        bitVector = CFBitVectorCreateMutable ( kCFAllocatorDefault, 0 );
 		NSEnumerator *enumerator = [theArray objectEnumerator];
 		id value;
 		int bit = 0;
 		while (value = [enumerator nextObject]) {
 			if ([value boolValue] == YES) {
-				CFBitVectorSetBitAtIndex(bitVector,bit,1);
+                [self add:bit];
+				//CFBitVectorSetBitAtIndex(bitVector, bit, 1);
 			}
 			bit++;
 		}
@@ -97,7 +190,7 @@
 // return a copy of (self|aBitSet)
 - (ANTLRBitSet *) or:(ANTLRBitSet *) aBitSet
 {
-	ANTLRBitSet *bitsetCopy = [self copy];
+	ANTLRBitSet *bitsetCopy = [self mutableCopyWithZone:nil];
 	[bitsetCopy orInPlace:aBitSet];
 	return bitsetCopy;
 }
@@ -113,46 +206,60 @@
 	
 	CFIndex currIdx;
 	for (currIdx = 0; currIdx < maxBitCnt; currIdx++) {
-		if (CFBitVectorGetBitAtIndex(bitVector,currIdx) | CFBitVectorGetBitAtIndex(otherBitVector,currIdx)) {
-			CFBitVectorSetBitAtIndex(bitVector,currIdx,1);
+		if (CFBitVectorGetBitAtIndex(bitVector, currIdx) | CFBitVectorGetBitAtIndex(otherBitVector, currIdx)) {
+			CFBitVectorSetBitAtIndex(bitVector, currIdx, 1);
 		}
 	}
 }
 
 // set a bit, grow the bit vector if necessary
-- (void) add:(unsigned int) bit
+- (void) add:(NSUInteger) bit
 {
-	if ((CFIndex)bit > CFBitVectorGetCount(bitVector))
-		CFBitVectorSetCount(bitVector,bit);
-	CFBitVectorSetBitAtIndex(bitVector,bit,1);
+	if ((CFIndex)bit >= CFBitVectorGetCount(bitVector))
+		CFBitVectorSetCount(bitVector, bit+1);
+	CFBitVectorSetBitAtIndex(bitVector, bit, 1);
 }
 
 // unset a bit
-- (void) remove:(unsigned int) bit
+- (void) remove:(NSUInteger) bit
 {
-	CFBitVectorSetBitAtIndex(bitVector,bit,0);
+	CFBitVectorSetBitAtIndex(bitVector, bit, 0);
+}
+
+- (void) setAllBits:(BOOL) aState
+{
+    for( NSInteger bit=0; bit < CFBitVectorGetCount(bitVector); bit++ ) {
+        CFBitVectorSetBitAtIndex(bitVector, bit, aState);
+    }
 }
 
 // returns the number of bits in the bit vector.
-- (unsigned int) size
+- (NSInteger) numBits
 {
-	return CFBitVectorGetCount(bitVector);
+    // return CFBitVectorGetCount(bitVector);
+    return CFBitVectorGetCountOfBit(bitVector, CFRangeMake(0, CFBitVectorGetCount(bitVector)), 1);
 }
 
-- (void) setSize:(unsigned int) noOfWords
+// returns the number of bits in the bit vector.
+- (NSUInteger) size
 {
-	// not supported - not needed :)
+    return CFBitVectorGetCount(bitVector);
+}
+
+- (void) setSize:(NSUInteger) nBits
+{
+    CFBitVectorSetCount( bitVector, nBits );
 }
 
 #pragma mark Informational
 // return a bitmask representation of this bitvector for easy operations
-- (unsigned long long) bitMask:(unsigned int) bitNumber
+- (unsigned long long) bitMask:(NSUInteger) bitNumber
 {
 	return 1LL << bitNumber;
 }
 
 // test a bit (no pun intended)
-- (BOOL) isMember:(unsigned int) bitNumber
+- (BOOL) member:(NSUInteger) bitNumber
 {
 	return CFBitVectorGetBitAtIndex(bitVector,bitNumber) ? YES : NO;
 }
@@ -160,7 +267,7 @@
 // are all bits off?
 - (BOOL) isNil
 {
-	return CFBitVectorGetCountOfBit(bitVector,CFRangeMake(0,CFBitVectorGetCount(bitVector)),1)==0 ? YES : NO;
+	return ((CFBitVectorGetCountOfBit(bitVector, CFRangeMake(0,CFBitVectorGetCount(bitVector)), 1) == 0) ? YES : NO);
 }
 
 // return a string representation of the bit vector, indicating by their bitnumber which bits are set
@@ -168,14 +275,14 @@
 {
 	CFIndex length = CFBitVectorGetCount(bitVector);
 	CFIndex currBit;
-	NSMutableString *descString = [[NSMutableString alloc] initWithString:@"{"];
-	BOOL haveInsertedBit = false;
+	NSMutableString *descString = [NSMutableString  stringWithString:@"{"];
+	BOOL haveInsertedBit = NO;
 	for (currBit = 0; currBit < length; currBit++) {
-		if (CFBitVectorGetBitAtIndex(bitVector,currBit)) {
+		if ( CFBitVectorGetBitAtIndex(bitVector, currBit) ) {
 			if (haveInsertedBit) {
 				[descString appendString:@","];
 			}
-			[descString appendString:[NSString stringWithFormat:@"%d", currBit]];
+			[descString appendFormat:@"%d", currBit];
 			haveInsertedBit = YES;
 		}
 	}
@@ -192,7 +299,7 @@
 	// NSCopying
 #pragma mark NSCopying support
 
-- (id) copyWithZone:(NSZone *) theZone
+- (id) mutableCopyWithZone:(NSZone *) theZone
 {
 	ANTLRBitSet *newBitSet = [[ANTLRBitSet allocWithZone:theZone] initWithBitVector:CFBitVectorCreateMutableCopy(kCFAllocatorDefault,0,bitVector)];
 	return newBitSet;
@@ -203,5 +310,9 @@
 	return bitVector;
 }
 
-
 @end
+
+NSInteger max(NSInteger a, NSInteger b)
+{
+    return (a>b)?a:b;
+}
