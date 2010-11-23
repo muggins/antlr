@@ -1,5 +1,10 @@
+//
+//  ANTLRNodeMapElement.m
+//  ANTLR
+//
+//  Created by Alan Condit on 6/16/10.
 // [The "BSD licence"]
-// Copyright (c) 2007 Kay Roepke
+// Copyright (c) 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,110 +29,79 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "ANTLRBaseRecognizerState.h"
+#import "ANTLRNodeMapElement.h"
 
+static NSInteger _aUniqueID;
 
-@implementation ANTLRBaseRecognizerState
+@implementation ANTLRNodeMapElement
+
+@synthesize node;
+
++ (void)initialize
+{
+    _aUniqueID = 0;
+}
+
++ (ANTLRNodeMapElement *)newANTLRNodeMapElement
+{
+    return [[ANTLRNodeMapElement alloc] init];
+}
+
++ (ANTLRNodeMapElement *)newANTLRNodeMapElementWithIndex:(id)anIndex Node:(id<ANTLRTree>)aNode
+{
+    return [[ANTLRNodeMapElement alloc] initWithAnIndex:anIndex Node:aNode];
+}
 
 - (id) init
 {
-	if (nil != (self = [super init])) {
-		following = [[NSMutableArray alloc] init];
-		ruleMemo = [[NSMutableArray alloc] init];
-		errorRecovery = NO;
-		lastErrorIndex = -1;
-		failed = NO;
-		backtracking = 0;
-	}
-	return self;
+    if ((self = [super init]) != nil ) {
+        index = nil;
+        node = nil;
+    }
+    return (self);
 }
 
-- (void) reset
+- (id) initWithAnIndex:(id)anIndex Node:(id)aNode
 {
-	errorRecovery = NO;
-	lastErrorIndex = -1;
-	failed = NO;
-	backtracking = 0;
-	[following removeAllObjects]; 
-	[ruleMemo removeAllObjects];
+    if ((self = [super initWithAnIndex:anIndex]) != nil ) {
+        if ( aNode != node ) {
+            if (node  != nil) [node release];
+            [aNode retain];
+        }
+        node = aNode;
+    }
+    return (self);
 }
 
-- (void) dealloc
+- (id) copyWithZone:(NSZone *)aZone
 {
-	[following release];
-	[ruleMemo release];
-	[super dealloc];
+    ANTLRNodeMapElement *copy;
+    
+    copy = [super copyWithZone:aZone];
+    copy.node = node;
+    return( copy );
 }
 
-
-- (NSMutableArray *) following
+- (id<ANTLRTree>)getNode
 {
-	return following;
+    return node;
 }
 
-- (NSMutableArray *) ruleMemo
+- (void)setNode:(id<ANTLRTree>)aNode
 {
-	return ruleMemo;
+    if ( aNode != node ) {
+        if (node  != nil) [node release];
+        [aNode retain];
+    }
+    node = aNode;
 }
 
-
-- (BOOL) isErrorRecovery
+- (NSInteger)size
 {
-	return errorRecovery;
+    NSInteger aSize = 0;
+    if (node != nil) aSize += sizeof(id);
+    if (index != nil) aSize += sizeof(id);
+    return( aSize );
 }
-
-- (void) setIsErrorRecovery: (BOOL) flag
-{
-	errorRecovery = flag;
-}
-
-
-- (BOOL) isFailed
-{
-	return failed;
-}
-
-- (void) setIsFailed: (BOOL) flag
-{
-	failed = flag;
-}
-
-
-- (int) backtracking
-{
-	return backtracking;
-}
-
-- (void) setBacktracking:(int) value
-{
-	backtracking = value;
-}
-
-- (void) increaseBacktracking
-{
-	backtracking++;
-}
-
-- (void) decreaseBacktracking
-{
-	backtracking--;
-}
-
-- (BOOL) isBacktracking
-{
-	return backtracking > 0;
-}
-
-
-- (int) lastErrorIndex
-{
-    return lastErrorIndex;
-}
-
-- (void) setLastErrorIndex:(int) value
-{
-	lastErrorIndex = value;
-}
-
 
 @end

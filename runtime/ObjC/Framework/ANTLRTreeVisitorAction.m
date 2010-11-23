@@ -1,5 +1,10 @@
+//
+//  ANTLRTreeVisitorAction.m
+//  ANTLR
+//
+//  Created by Alan Condit on 6/18/10.
 // [The "BSD licence"]
-// Copyright (c) 2007 Kay Roepke
+// Copyright (c) 2010 Alan Condit
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,35 +29,41 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
+#import "ANTLRTreeVisitorAction.h"
 
-@interface ANTLRBaseRecognizerState : NSObject {
-	NSMutableArray *following;			// a stack of FOLLOW bitsets used for context sensitive prediction and recovery
-	NSMutableArray *ruleMemo;			// store previous results of matching rules so we don't have to do it again. Hook in incremental stuff here, too.
-	BOOL errorRecovery;					// are we recovering?
-	BOOL failed;						// indicate that some match failed
-	int backtracking;					// the level of backtracking
-	int lastErrorIndex;
+
+@implementation ANTLRTreeVisitorAction
+
++ (ANTLRTreeVisitorAction *)newANTLRTreeVisitorAction
+{
+    return [[ANTLRTreeVisitorAction alloc] init];
 }
 
-- (void) reset;
+- (id) init
+{
+    if ((self = [super init]) != nil ) {
+    }
+    return self;
+}
 
-- (NSMutableArray *) following;
-- (NSMutableArray *) ruleMemo;
+/** Execute an action before visiting children of t.  Return t or
+ *  a rewritten t.  It is up to the visitor to decide what to do
+ *  with the return value.  Children of returned value will be
+ *  visited if using TreeVisitor.visit().
+ */
+- (ANTLRTreeVisitorAction *)pre:(ANTLRTreeVisitorAction *) t
+{
+    return nil;
+}
 
-- (BOOL) isErrorRecovery;
-- (void) setIsErrorRecovery: (BOOL) flag;
+/** Execute an action after visiting children of t.  Return t or
+ *  a rewritten t.  It is up to the visitor to decide what to do
+ *  with the return value.
+ */
+- (ANTLRTreeVisitorAction *)post:(ANTLRTreeVisitorAction *) t
+{
+    return nil;
+}
 
-- (BOOL) isFailed;
-- (void) setIsFailed: (BOOL) flag;
-
-- (int) backtracking;
-- (void) setBacktracking:(int) value;
-- (void) increaseBacktracking;
-- (void) decreaseBacktracking;
-- (BOOL) isBacktracking;
-
-- (int) lastErrorIndex;
-- (void) setLastErrorIndex:(int) value;
 
 @end
