@@ -1,356 +1,0 @@
-TANTLR Xcode plugin
-v7
-r0
-t304107090.056951
-cCheck dependencies
-cProcessInfoPlistFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Info.plist" Info.plist
-cCopyStringsFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/InfoPlist.strings" English.lproj/InfoPlist.strings
-cCopyPlistFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pblangspec" antlr.pblangspec
-cCopyPlistFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbfilespec" antlr.pbfilespec
-cCopyStringsFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/org.antlr.Tool.strings" English.lproj/org.antlr.Tool.strings
-cCpResource build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.xcbuildrules antlr.xcbuildrules
-cCpResource build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbcompspec antlr.pbcompspec
-cPBXCp build/Debug/ANTLR.pbplugin/Contents/Frameworks/ANTLR.framework /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/build/Debug/ANTLR.framework
-cPBXCp build/Debug/ANTLR.pbplugin/Contents/Frameworks/GrammarFilterLexer.h GrammarFilterLexer.h
-cProcessPCH "/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Xcode plugin_Prefix-bydiodekkdpftydtjlgsivfsflsi/Xcode plugin_Prefix.pch.gch" "Xcode plugin_Prefix.pch" normal i386 objective-c com.apple.compilers.gcc.4_2
-
-N/Developer/SDKs/MacOSX10.4u.sdk
-c000000004722B9A000000000000000EE
-t1193458080
-s238
-
-N/Developer/SDKs/MacOSX10.4u.sdk/Library/Frameworks/ANTLR.framework/Headers/ANTLR.h
-c000000004C54C8A70000000000000A70
-t1280624807
-s2672
-
-N/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h
-c0000000040C4AA6800000000000001E5
-t1086630504
-s485
-
-N/System/Library/Frameworks/Cocoa.framework/Cocoa
-c000000004A98CCAD000000000000A5E0
-t1251527853
-s42464
-
-N/System/Library/PrivateFrameworks/DevToolsCore.framework/DevToolsCore
-c00000000000000000000000000000000
-t2
-s0
-
-N/System/Library/PrivateFrameworks/DevToolsSupport.framework/DevToolsSupport
-c00000000000000000000000000000000
-t2
-s0
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/build/Debug/ANTLR.framework
-c000000004C6F265F00000000000000CC
-t1282352735
-s204
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/ANTLRCompilerSpecification.h
-c000000004643A8CC0000000000000888
-t1178839244
-s2184
-i"Specifications.h"
-i"BuildSystemInterfaces.h"
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/ANTLRCompilerSpecification.m
-c000000004643A8CC0000000000002452
-t1178839244
-s9298
-i"ANTLRCompilerSpecification.h"
-i"DependencyGraph.h"
-i"BuildSystemInterfaces.h"
-i"GrammarFilterLexer.h"
-i<ANTLR/ANTLR.h>
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/ANTLRXCPlugin.h
-c000000004643A8CC0000000000000614
-t1178839244
-s1556
-i<Cocoa/Cocoa.h>
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/ANTLRXCPlugin.m
-c000000004643A8CC000000000000083E
-t1178839244
-s2110
-i"ANTLRXCPlugin.h"
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/BuildSystemInterfaces.h
-c000000004643A8CC0000000000003188
-t1178839244
-s12680
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/DependencyGraph.h
-c000000004643A8CC00000000000030A8
-t1178839244
-s12456
-i"BuildSystemInterfaces.h"
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/English.lproj/InfoPlist.strings
-c000000004643A8CC00000000000000CC
-t1178839244
-s204
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/English.lproj/org.antlr.Tool.strings
-c000000004643A8CC0000000000000F67
-t1178839244
-s3943
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/GrammarFilterLexer.h
-c000000004643A8CC0000000000000537
-t1178839244
-s1335
-i<Cocoa/Cocoa.h>
-i<ANTLR/ANTLR.h>
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/GrammarFilterLexer.m
-c000000004643A8CC000000000000AFCD
-t1178839244
-s45005
-i"GrammarFilterLexer.h"
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Specifications.h
-c000000004643A8CC0000000000003DC0
-t1178839244
-s15808
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch
-c000000004643A8CC000000000000009C
-t1178839244
-s156
-i<Cocoa/Cocoa.h>
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.pbcompspec
-c000000004643A8CC000000000000161A
-t1178839244
-s5658
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.pbfilespec
-c000000004643A8CC0000000000000683
-t1178839244
-s1667
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.pblangspec
-c000000004643A8CC00000000000008F5
-t1178839244
-s2293
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.xcbuildrules
-c000000004643A8CC000000000000063C
-t1178839244
-s1596
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin
-t1282414283
-s102
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Frameworks/ANTLR.framework
-t1282414284
-s204
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Frameworks/GrammarFilterLexer.h
-t1282414284
-s1335
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Info.plist
-t1282414283
-s804
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/MacOS/ANTLR
-t2
-s0
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/InfoPlist.strings
-t1282414284
-s204
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/org.antlr.Tool.strings
-t1282414284
-s7888
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbcompspec
-t1282414284
-s5658
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbfilespec
-t1282414284
-s1667
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pblangspec
-t1282414284
-s2293
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.xcbuildrules
-t1282414284
-s1596
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/Objects-normal/i386/ANTLR.LinkFileList
-c000000004C7016CB00000000000001B3
-t1282414283
-s435
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/Objects-normal/i386/ANTLRCompilerSpecification.o
-t2
-s0
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/Objects-normal/i386/ANTLRXCPlugin.o
-t2
-s0
-
-N/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/Objects-normal/i386/GrammarFilterLexer.o
-t2
-s0
-
-N/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Xcode plugin_Prefix-bydiodekkdpftydtjlgsivfsflsi/Xcode plugin_Prefix.pch.gch
-t2
-s0
-
-NInfo.plist
-c000000004643A8CC0000000000000374
-t1178839244
-s884
-
-CCheck dependencies
-r0
-lSLF07#2@18"Check dependencies304107083#304107083#0(0"0(0#1#0"4231192#0"0#
-
-CCompileC "build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/Objects-normal/i386/ANTLRCompilerSpecification.o" "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/ANTLRCompilerSpecification.m" normal i386 objective-c com.apple.compilers.gcc.4_2
-r0
-
-CCompileC "build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/Objects-normal/i386/ANTLRXCPlugin.o" "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/ANTLRXCPlugin.m" normal i386 objective-c com.apple.compilers.gcc.4_2
-r0
-
-CCompileC "build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/Objects-normal/i386/GrammarFilterLexer.o" "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/GrammarFilterLexer.m" normal i386 objective-c com.apple.compilers.gcc.4_2
-r0
-
-CCopyPlistFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbfilespec" antlr.pbfilespec
-s304107084.284026
-e304107084.317278
-r1
-xCopyPlistFile
-x/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbfilespec
-xantlr.pbfilespec
-lSLF07#2@21"Copy antlr.pbfilespec304107084#304107084#0(0"0(0#0#63"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.pbfilespec2518167488#268"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    /Developer/Library/Xcode/Plug-ins/CoreBuildTasks.xcplugin/Contents/Resources/copyplist antlr.pbfilespec --outdir "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources"0#
-
-CCopyPlistFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pblangspec" antlr.pblangspec
-s304107083.987199
-e304107084.283877
-r1
-xCopyPlistFile
-x/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pblangspec
-xantlr.pblangspec
-lSLF07#2@21"Copy antlr.pblangspec304107083#304107084#0(0"0(0#0#63"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.pblangspec4717520#268"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    /Developer/Library/Xcode/Plug-ins/CoreBuildTasks.xcplugin/Contents/Resources/copyplist antlr.pblangspec --outdir "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources"0#
-
-CCopyStringsFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/InfoPlist.strings" English.lproj/InfoPlist.strings
-s304107083.970431
-e304107084.378413
-r1
-xCopyStringsFile
-x/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/InfoPlist.strings
-xEnglish.lproj/InfoPlist.strings
-lSLF07#2@36"Copy English.lproj/InfoPlist.strings304107083#304107084#0(0"0(0#0#78"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/English.lproj/InfoPlist.strings4717520#389"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    setenv ICONV /usr/bin/iconv    /Developer/Library/Xcode/Plug-ins/CoreBuildTasks.xcplugin/Contents/Resources/copystrings --validate --inputencoding utf-16 --outputencoding UTF-16 English.lproj/InfoPlist.strings --outdir "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj"0#
-
-CCopyStringsFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/org.antlr.Tool.strings" English.lproj/org.antlr.Tool.strings
-s304107084.317421
-e304107084.380919
-r1
-xCopyStringsFile
-x/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj/org.antlr.Tool.strings
-xEnglish.lproj/org.antlr.Tool.strings
-lSLF07#2@41"Copy English.lproj/org.antlr.Tool.strings304107084#304107084#0(0"0(0#0#83"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/English.lproj/org.antlr.Tool.strings2518167488#393"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    setenv ICONV /usr/bin/iconv    /Developer/Library/Xcode/Plug-ins/CoreBuildTasks.xcplugin/Contents/Resources/copystrings --validate --inputencoding utf-8 --outputencoding UTF-16 English.lproj/org.antlr.Tool.strings --outdir "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources/English.lproj"0#
-
-CCpResource build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbcompspec antlr.pbcompspec
-s304107084.379754
-e304107084.404920
-r1
-xCpResource
-xbuild/Debug/ANTLR.pbplugin/Contents/Resources/antlr.pbcompspec
-xantlr.pbcompspec
-lSLF07#2@21"Copy antlr.pbcompspec304107084#304107084#0(0"0(0#0#63"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.pbcompspec2518167488#365"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -resolve-src-symlinks "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.pbcompspec" "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources"0#
-
-CCpResource build/Debug/ANTLR.pbplugin/Contents/Resources/antlr.xcbuildrules antlr.xcbuildrules
-s304107084.378647
-e304107084.404684
-r1
-xCpResource
-xbuild/Debug/ANTLR.pbplugin/Contents/Resources/antlr.xcbuildrules
-xantlr.xcbuildrules
-lSLF07#2@23"Copy antlr.xcbuildrules304107084#304107084#0(0"0(0#0#65"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.xcbuildrules2518167488#367"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -resolve-src-symlinks "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/antlr.xcbuildrules" "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Resources"0#
-
-CLd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/MacOS/ANTLR" normal i386
-r0
-
-CPBXCp build/Debug/ANTLR.pbplugin/Contents/Frameworks/ANTLR.framework /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/build/Debug/ANTLR.framework
-s304107084.405037
-e304107084.794148
-r1
-xPBXCp
-xbuild/Debug/ANTLR.pbplugin/Contents/Frameworks/ANTLR.framework
-x/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/build/Debug/ANTLR.framework
-lSLF07#2@76"Copy /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/build/Debug/ANTLR.framework304107084#304107084#0(0"0(0#0#71"/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/build/Debug/ANTLR.framework2518167488#372"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -resolve-src-symlinks /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/build/Debug/ANTLR.framework "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Frameworks"0#
-
-CPBXCp build/Debug/ANTLR.pbplugin/Contents/Frameworks/GrammarFilterLexer.h GrammarFilterLexer.h
-s304107084.406266
-e304107084.416099
-r1
-xPBXCp
-xbuild/Debug/ANTLR.pbplugin/Contents/Frameworks/GrammarFilterLexer.h
-xGrammarFilterLexer.h
-lSLF07#2@25"Copy GrammarFilterLexer.h304107084#304107084#0(0"0(0#0#67"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/GrammarFilterLexer.h2518167488#370"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -resolve-src-symlinks "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/GrammarFilterLexer.h" "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Frameworks"0#
-
-CProcessInfoPlistFile "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Info.plist" Info.plist
-s304107083.848831
-e304107083.970265
-r1
-xProcessInfoPlistFile
-x/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Info.plist
-xInfo.plist
-lSLF07#2@18"Process Info.plist304107083#304107083#0(0"0(0#0#57"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Info.plist4231192#233"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    builtin-infoPlistUtility Info.plist -expandbuildsettings -platform macosx -o "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin/Contents/Info.plist"0#
-
-CProcessPCH "/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Xcode plugin_Prefix-bydiodekkdpftydtjlgsivfsflsi/Xcode plugin_Prefix.pch.gch" "Xcode plugin_Prefix.pch" normal i386 objective-c com.apple.compilers.gcc.4_2
-s304107084.794402
-e304107090.056734
-r0
-xProcessPCH
-x/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Xcode plugin_Prefix-bydiodekkdpftydtjlgsivfsflsi/Xcode plugin_Prefix.pch.gch
-xXcode plugin_Prefix.pch
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-oIn file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:12,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:6,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,
-o                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:
-o/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdarg.h:4:25: error: stdarg.h: No such file or directory
-oIn file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:16,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:6,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,
-o                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:
-o/Developer/SDKs/MacOSX10.4u.sdk/usr/include/float.h:8:24: error: float.h: No such file or directory
-oIn file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h:32,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h:125,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h:21,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h:20,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h:8,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:104,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,
-o                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:
-o/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h:29:23: error: xmmintrin.h: No such file or directory
-oIn file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h:32,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h:125,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h:21,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h:20,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h:8,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:104,
-o                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,
-o                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:
-o/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h:254: error: expected specifier-qualifier-list before '__m128'
-lSLF07#2@34"Precompile Xcode plugin_Prefix.pch304107084#304107090#0(3691"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:12,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:6,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdarg.h:4:25: error: stdarg.h: No such file or directoryIn file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:16,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:6,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:/Developer/SDKs/MacOSX10.4u.sdk/usr/include/float.h:8:24: error: float.h: No such file or directoryIn file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h:32,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h:125,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h:21,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h:20,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h:8,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:104,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h:29:23: error: xmmintrin.h: No such file or directoryIn file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h:32,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h:125,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h:21,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h:20,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h:8,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:104,                 from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h:12,                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch:6:/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h:254: error: expected specifier-qualifier-list before '__m128'4(4@35"Stdarg.h: No such file or directory304107085#471#102#5(7@92"In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch304107085#4294967295#0#0(6@70"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch200532044#6#0#6#0#0"0(7@111"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h304107085#4294967295#0#0(6@89"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h108323304#12#0#12#0#0"0(7@121"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h304107085#4294967295#0#0(6@99"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h199160112#6#0#6#0#0"0(7@129"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h304107085#4294967295#0#0(6@107"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h199154179#12#0#12#0#0"0(13@91"Stdarg.h: No such file or directory in /Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdarg.h304107085#4294967295#0#0(6@52"/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdarg.h200008154#4#0#4#0#0"0(6@52"/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdarg.h200008154#4#0#4#0#28"*: No such file or directory0(4@34"Float.h: No such file or directory304107085#1044#100#5(7@92"In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch304107085#4294967295#0#0(6@70"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch200532044#6#0#6#0#0"0(7@111"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h304107085#4294967295#0#0(6@89"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h108323304#12#0#12#0#0"0(7@121"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h304107085#4294967295#0#0(6@99"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h199160112#6#0#6#0#0"0(7@129"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h304107085#4294967295#0#0(6@107"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h199154179#16#0#16#0#0"0(13@89"Float.h: No such file or directory in /Developer/SDKs/MacOSX10.4u.sdk/usr/include/float.h304107085#4294967295#0#0(6@51"/Developer/SDKs/MacOSX10.4u.sdk/usr/include/float.h200008154#8#0#8#0#0"0(6@51"/Developer/SDKs/MacOSX10.4u.sdk/usr/include/float.h200008154#8#0#8#0#28"*: No such file or directory0(4@38"Xmmintrin.h: No such file or directory304107086#2219#194#9(7@92"In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch304107086#4294967295#0#0(6@70"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch200532044#6#0#6#0#0"0(7@111"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h304107086#4294967295#0#0(6@89"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h108323304#12#0#12#0#0"0(7@121"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h304107086#4294967295#0#0(6@99"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h199160112#104#0#104#0#0"0(7@133"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h304107086#4294967295#0#0(6@111"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h199160116#8#0#8#0#0"0(7@139"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h304107086#4294967295#0#0(6@117"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h198768451#20#0#20#0#0"0(7@125"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h304107086#4294967295#0#0(6@103"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h198759783#21#0#21#0#0"0(7@155"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h304107086#4294967295#0#0(6@133"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h203396006#125#0#125#0#0"0(7@159"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h304107086#4294967295#0#0(6@137"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h203396006#32#0#32#0#0"0(13@182"Xmmintrin.h: No such file or directory in /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h304107086#4294967295#0#0(6@140"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h203396006#29#0#29#0#0"0(6@140"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h203396006#29#0#29#0#28"*: No such file or directory0(4@49"Expected specifier-qualifier-list before '__m128'304107086#3488#203#9(7@92"In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch304107086#4294967295#0#0(6@70"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch200532044#6#0#6#0#0"0(7@111"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h304107086#4294967295#0#0(6@89"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h108323304#12#0#12#0#0"0(7@121"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h304107086#4294967295#0#0(6@99"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h199160112#104#0#104#0#0"0(7@133"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h304107086#4294967295#0#0(6@111"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSAppleEventDescriptor.h199160116#8#0#8#0#0"0(7@139"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h304107086#4294967295#0#0(6@117"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Headers/ApplicationServices.h198768451#20#0#20#0#0"0(7@125"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h304107086#4294967295#0#0(6@103"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/CoreServices.h198759783#21#0#21#0#0"0(7@155"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h304107086#4294967295#0#0(6@133"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h203396006#125#0#125#0#0"0(7@159"In file included from /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h304107086#4294967295#0#0(6@137"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h203396006#32#0#32#0#0"0(13@193"Expected specifier-qualifier-list before '__m128' in /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h304107086#4294967295#0#0(6@140"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h203396006#254#0#254#0#0"0(6@140"/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h203396006#254#0#254#0#19"expected * before *0(0#0#70"/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch2518167488#1277"    cd "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin"    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c-header -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks -gstabs+ -feliminate-unused-debug-symbols -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mfix-and-continue -mmacosx-version-min=10.4 "-I/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/ANTLR.hmap" "-F/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug" -F/Developer/SDKs/MacOSX10.4u.sdk/System/Library/PrivateFrameworks -F/Developer/SDKs/MacOSX10.4u.sdk/System/Library/PrivateFrameworks "-I/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/include" "-I/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/DerivedSources/i386" "-I/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Xcode plugin.build/Debug/ANTLR Xcode plugin.build/DerivedSources" -c "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/Xcode plugin_Prefix.pch" -o "/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Xcode plugin_Prefix-bydiodekkdpftydtjlgsivfsflsi/Xcode plugin_Prefix.pch.gch"1#
-
-CTouch "/usr/local/ANTLR3-ObjC2.0-Runtime/Xcode plugin/build/Debug/ANTLR.pbplugin"
-r0
-
