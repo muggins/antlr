@@ -1,0 +1,13 @@
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: incomplete implementation of class 'ANTLRBaseTreeAdaptor'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-replaceChildren:From:To:With:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-setChildIndex:With:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-getChildIndex:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-setParent:With:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-getParent:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-getTokenStopIndex:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-getTokenStartIndex:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-setTokenBoundaries:From:To:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-getToken:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-createTree:FromToken:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: method definition for '-createTree:' not found
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.m:349: warning: class 'ANTLRBaseTreeAdaptor' does not fully implement the 'ANTLRTreeAdaptor' protocol

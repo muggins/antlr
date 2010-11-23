@@ -1,0 +1,13 @@
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m: In function '+[ANTLRBufferedTokenStream newANTLRBufferedTokenStreamWith:]':
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:46: warning: type 'id <ANTLRTokenSource>' does not conform to the 'NSMutableCopying' protocol
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m: In function '-[ANTLRBufferedTokenStream toString]':
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:338: warning: 'ANTLRBufferedTokenStream' may not respond to '-toStringFromStart:ToEnd:'
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:338: warning: (Messages without a matching method signature
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:338: warning: will be assumed to return 'id' and accept
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:338: warning: '...' as arguments.)
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m: At top level:
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:392: warning: incomplete implementation of class 'ANTLRBufferedTokenStream'
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:392: warning: method definition for '-toStringFrom:To:' not found
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:392: warning: incomplete implementation of class 'ANTLRBufferedTokenStream'
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:392: warning: method definition for '-toStringFrom:To:' not found
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRBufferedTokenStream.m:392: warning: class 'ANTLRBufferedTokenStream' does not fully implement the 'ANTLRTokenStream' protocol

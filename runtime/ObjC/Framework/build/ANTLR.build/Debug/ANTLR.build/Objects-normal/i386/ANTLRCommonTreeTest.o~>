@@ -1,0 +1,14 @@
+In file included from /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m:10:
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.h:9:40: error: SenTestingKit/SenTestingKit.h: No such file or directory
+In file included from /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m:10:
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.h:13: error: cannot find interface declaration for 'SenTestCase', superclass of 'ANTLRCommonTreeTest'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m: In function '-[ANTLRCommonTreeTest test01InitAndRelease]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m:21: warning: implicit declaration of function 'STAssertNotNil'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m: In function '-[ANTLRCommonTreeTest test02InitWithTree]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m:31: warning: implicit declaration of function 'STAssertEquals'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m: In function '-[ANTLRCommonTreeTest testWithToken]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m:51: warning: implicit declaration of function 'STAssertTrue'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m: In function '-[ANTLRCommonTreeTest test06Description]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m:109: warning: implicit declaration of function 'STAssertNil'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m: In function '-[ANTLRCommonTreeTest test10AddSelfAsChild]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/tree/ANTLRCommonTreeTest.m:205: warning: implicit declaration of function 'STFail'

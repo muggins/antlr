@@ -1,0 +1,4 @@
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeVisitor.m: In function '-[ANTLRTreeVisitor visit:Action:]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeVisitor.m:79: warning: class 'ANTLRTreeVisitorAction' does not implement the 'ANTLRTree' protocol
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeVisitor.m:83: warning: class 'ANTLRTreeVisitor' does not implement the 'ANTLRTree' protocol
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeVisitor.m:89: warning: class 'ANTLRTreeVisitorAction' does not implement the 'ANTLRTree' protocol

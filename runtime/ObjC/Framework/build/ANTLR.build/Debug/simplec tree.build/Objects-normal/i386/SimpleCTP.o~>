@@ -1,0 +1,8 @@
+In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/simplecTreeParser/SimpleCTP.m:45:
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/simplecTreeParser/SimpleCTP.h:23:1: warning: "EOF" redefined
+In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRDebugEventProxy.h:30,
+                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRDebug.h:28,
+                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/simplecTreeParser/antlr3.h:18,
+                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/simplecTreeParser/SimpleCTP.h:7,
+                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/simplecTreeParser/SimpleCTP.m:45:
+/Developer/SDKs/MacOSX10.6.sdk/usr/include/sys/socket.h:1:35: warning: this is the location of the previous definition

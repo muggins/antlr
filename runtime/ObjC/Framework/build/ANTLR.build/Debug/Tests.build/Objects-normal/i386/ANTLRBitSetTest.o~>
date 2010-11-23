@@ -1,0 +1,30 @@
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:10:24: error: ANTLRBitSet.h: No such file or directory
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m: In function '-[ANTLRBitSetTest testWithBitData]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:19: error: 'ANTLRBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:19: error: (Each undeclared identifier is reported only once
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:19: error: for each function it appears in.)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:19: error: 'bitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m: In function '-[ANTLRBitSetTest testWithBitArray]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:34: error: 'ANTLRBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:34: error: 'bitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m: In function '-[ANTLRBitSetTest testAdd]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:44: error: 'ANTLRBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:44: error: 'bitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m: In function '-[ANTLRBitSetTest testRemove]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:56: error: 'ANTLRBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:56: error: 'bitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m: In function '-[ANTLRBitSetTest testCopyBitSet]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:72: error: 'ANTLRBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:72: error: 'bitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:73: error: 'copy' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:75: warning: type defaults to 'int' in declaration of 'type name'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:75: warning: type defaults to 'int' in declaration of 'a2value'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:75: warning: type defaults to 'int' in declaration of 'type name'
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m: In function '-[ANTLRBitSetTest testOr]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:82: error: 'ANTLRBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:82: error: 'bitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:85: error: 'otherBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:87: error: 'c' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m: In function '-[ANTLRBitSetTest testDescription]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:93: error: 'ANTLRBitSet' undeclared (first use in this function)
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m:93: error: 'bitSet' undeclared (first use in this function)

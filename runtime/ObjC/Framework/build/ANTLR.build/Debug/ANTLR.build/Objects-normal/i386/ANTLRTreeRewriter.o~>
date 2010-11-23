@@ -1,0 +1,4 @@
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeRewriter.m: In function '-[ANTLRTreeRewriter applyRepeatedly:Rule:]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeRewriter.m:145: warning: class 'ANTLRTreeRewriter' does not implement the 'ANTLRTree' protocol
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeRewriter.m: In function '-[ANTLRTreeRewriter downup:XForm:]':
+/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeRewriter.m:189: warning: class 'ANTLRTreeVisitor' does not implement the 'ANTLRTree' protocol

@@ -1,0 +1,2 @@
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRCommonTree.m:313: warning: incomplete implementation of class 'ANTLRCommonTree'
+/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRCommonTree.m:313: warning: method definition for '-treeDescription' not found
