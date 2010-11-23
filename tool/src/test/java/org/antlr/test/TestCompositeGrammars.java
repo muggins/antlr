@@ -890,4 +890,63 @@ public class TestCompositeGrammars extends BaseTest {
 		assertEquals("unexpected errors: "+equeue, 0, equeue.errors.size());
 	}
 
+	@Test public void testNestedComposite() throws Exception {
+		// Wasn't compiling. http://www.antlr.org/jira/browse/ANTLR-438
+		ErrorQueue equeue = new ErrorQueue();
+		ErrorManager.setErrorListener(equeue);
+		String gstr =
+			"lexer grammar L;\n" +
+			"T1: '1';\n" +
+			"T2: '2';\n" +
+			"T3: '3';\n" +
+			"T4: '4';\n" ;
+		mkdir(tmpdir);
+		writeFile(tmpdir, "L.g", gstr);
+		gstr =
+			"parser grammar G1;\n" +
+			"s: a | b;\n" +
+			"a: T1;\n" +
+			"b: T2;\n" ;
+		mkdir(tmpdir);
+		writeFile(tmpdir, "G1.g", gstr);
+
+		gstr =
+			"parser grammar G2;\n" +
+			"import G1;\n" +
+			"a: T3;\n" ;
+		mkdir(tmpdir);
+		writeFile(tmpdir, "G2.g", gstr);
+		String G3str =
+			"grammar G3;\n" +
+			"import G2;\n" +
+			"b: T4;\n" ;
+		mkdir(tmpdir);
+		writeFile(tmpdir, "G3.g", G3str);
+
+		Tool antlr = newTool(new String[] {"-lib", tmpdir});
+		CompositeGrammar composite = new CompositeGrammar();
+		Grammar g = new Grammar(antlr,tmpdir+"/G3.g",composite);
+		composite.setDelegationRoot(g);
+		g.parseAndBuildAST();
+		g.composite.assignTokenTypes();
+		g.composite.defineGrammarSymbols();
+
+		String expectedTokenIDToTypeMap = "[T1=4, T2=5, T3=6, T4=7]";
+		String expectedStringLiteralToTypeMap = "{}";
+		String expectedTypeToTokenList = "[T1, T2, T3, T4]";
+
+		assertEquals(expectedTokenIDToTypeMap,
+					 realElements(g.composite.tokenIDToTypeMap).toString());
+		assertEquals(expectedStringLiteralToTypeMap, g.composite.stringLiteralToTypeMap.toString());
+		assertEquals(expectedTypeToTokenList,
+					 realElements(g.composite.typeToTokenList).toString());
+
+		assertEquals("unexpected errors: "+equeue, 0, equeue.errors.size());
+
+		boolean ok =
+			rawGenerateAndBuildRecognizer("G3.g", G3str, "G3Parser", null, false);
+		boolean expecting = true; // should be ok
+		assertEquals(expecting, ok);
+	}
+
 }

@@ -124,7 +124,7 @@ public class CompositeGrammarTree {
 		grammars.add(this.grammar);
 	}
 
-	/** Return a postorder list of grammars; root is last in list */
+	/** Return a preorder list of grammars; root is first in list */
 	public List<Grammar> getPreOrderedGrammarList() {
 		List<Grammar> grammars = new ArrayList<Grammar>();
 		_getPreOrderedGrammarList(grammars);
@@ -135,7 +135,7 @@ public class CompositeGrammarTree {
 		grammars.add(this.grammar);
 		for (int i = 0; children!=null && i < children.size(); i++) {
 			CompositeGrammarTree child = children.get(i);
-			child._getPostOrderedGrammarList(grammars);
+			child._getPreOrderedGrammarList(grammars);
 		}
 	}
 

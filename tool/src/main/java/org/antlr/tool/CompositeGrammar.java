@@ -274,8 +274,9 @@ public class CompositeGrammar {
 		Set<String> ruleNames = new HashSet();
 		Set<Rule> rules = new HashSet();
 		CompositeGrammarTree subtreeRoot = delegateGrammarTreeRoot.findNode(g);
-		List<Grammar> grammars = subtreeRoot.getPostOrderedGrammarList();
-		// walk all grammars
+
+		List<Grammar> grammars = subtreeRoot.getPreOrderedGrammarList();
+		// walk all grammars preorder, priority given to grammar listed first.
 		for (int i = 0; i < grammars.size(); i++) {
 			Grammar delegate = (org.antlr.tool.Grammar) grammars.get(i);
 			// for each rule in delegate, add to rules if no rule with that
