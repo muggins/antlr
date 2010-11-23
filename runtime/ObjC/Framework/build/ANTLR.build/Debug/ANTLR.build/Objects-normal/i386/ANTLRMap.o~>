@@ -1,2 +1,0 @@
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMap.m: In function '-[ANTLRMap getNode:]':
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMap.m:308: warning: type 'id <ANTLRTree>' does not conform to the 'ANTLRLinkList' protocol

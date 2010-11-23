@@ -1,446 +1,0 @@
-TANTLRCommonTokenTest
-v7
-r0
-t303093360.653277
-cCheck dependencies
-cProcessInfoPlistFile /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/Info.plist ANTLRCommonTokenTest-Info.plist
-cProcessPCH /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-djqbnlszsxrhmhdewftdpnbyjyle/Cocoa.h.gch /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRBitSetTest.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cLd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/MacOS/ANTLRCommonTokenTest normal i386
-cPhaseScriptExecution "Run Script" /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Script-1A1210F911D3A5D900F27B38.sh
-cTouch /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/NSException_SenTestFailure.h
-c000000004BD1355B0000000000000E25
-t1272001883
-s3621
-i<Foundation/Foundation.h>
-i<SenTestingKit/SenTestDefines.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenInterfaceTestCase.h
-c000000004BD1355B0000000000000701
-t1272001883
-s1793
-i<Foundation/Foundation.h>
-i<SenTestingKit/SenTestCase.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTest.h
-c000000004BD1355B000000000000084C
-t1272001883
-s2124
-i<Foundation/Foundation.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestCase.h
-c000000004BD1355B000000000000167B
-t1272001883
-s5755
-i<Foundation/NSObject.h>
-i<SenTestingKit/SenTest.h>
-i<SenTestingKit/SenTestCase_Macros.h>
-i<SenTestingKit/NSException_SenTestFailure.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestCaseRun.h
-c000000004BD1355B0000000000000860
-t1272001883
-s2144
-i<SenTestingKit/SenTestRun.h>
-i<SenTestingKit/SenTestDefines.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestCase_Macros.h
-c000000004BD1355B0000000000007F41
-t1272001883
-s32577
-i<SenTestingKit/SenTestingUtilities.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestDefines.h
-c000000004BD1355B0000000000000947
-t1272001883
-s2375
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestDistributedNotifier.h
-c000000004BD1355B00000000000006F0
-t1272001883
-s1776
-i<Foundation/Foundation.h>
-i<SenTestingKit/SenTestObserver.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestLog.h
-c000000004BD1355B00000000000006D0
-t1272001883
-s1744
-i<Foundation/Foundation.h>
-i<SenTestingKit/SenTestObserver.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestObserver.h
-c000000004BD1355B00000000000009CF
-t1272001883
-s2511
-i<Foundation/Foundation.h>
-i<SenTestingKit/SenTestDefines.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestProbe.h
-c000000004BD1355B0000000000000958
-t1272001883
-s2392
-i<Foundation/Foundation.h>
-i<SenTestingKit/SenTestDefines.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestRun.h
-c000000004BD1355B0000000000000A79
-t1272001883
-s2681
-i<Foundation/NSObject.h>
-i<SenTestingKit/SenTest.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestSuite.h
-c000000004BD1355B0000000000000CCF
-t1272001883
-s3279
-i<SenTestingKit/SenTest.h>
-i<SenTestingKit/SenTestCase.h>
-i<Foundation/Foundation.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestSuiteRun.h
-c000000004BD1355B00000000000007D3
-t1272001883
-s2003
-i<SenTestingKit/SenTestRun.h>
-i<SenTestingKit/SenTestDefines.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestingKit.h
-c000000004BD1355B00000000000008A5
-t1272001883
-s2213
-i<SenTestingKit/SenTestDefines.h>
-i<SenTestingKit/SenTest.h>
-i<SenTestingKit/SenTestCase.h>
-i<SenTestingKit/SenTestSuite.h>
-i<SenTestingKit/SenTestObserver.h>
-i<SenTestingKit/NSException_SenTestFailure.h>
-i<SenTestingKit/SenTestLog.h>
-i<SenTestingKit/SenTestDistributedNotifier.h>
-i<SenTestingKit/SenTestRun.h>
-i<SenTestingKit/SenTestSuiteRun.h>
-i<SenTestingKit/SenTestCaseRun.h>
-i<SenTestingKit/SenInterfaceTestCase.h>
-i<SenTestingKit/SenTestProbe.h>
-i<SenTestingKit/SenTestingUtilities.h>
-
-N/Developer/Library/Frameworks/SenTestingKit.framework/Headers/SenTestingUtilities.h
-c000000004BD1355B0000000000000C37
-t1272001883
-s3127
-i<Foundation/Foundation.h>
-
-N/Developer/SDKs/MacOSX10.6.sdk
-c000000004BF4701900000000000000EE
-t1274310681
-s238
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Cocoa
-c000000004BF4700F0000000000003430
-t1274310671
-s13360
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h
-c0000000040C4AA6800000000000001E5
-t1086630504
-s485
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation
-c000000004BF4700F0000000000082ED0
-t1274310671
-s536272
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFBitVector.h
-c000000004B90C8A500000000000007BE
-t1267779749
-s1982
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h
-c000000004B90C8A60000000000000AF4
-t1267779750
-s2804
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h
-c000000004B90FBB700000000000013E6
-t1267792823
-s5094
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSObject.h
-c000000004B90FBB90000000000000EDE
-t1267792825
-s3806
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseStack.h
-c000000004C420F1200000000000003BC
-t1279397650
-s956
-i<Cocoa/Cocoa.h>
-i"ANTLRPtrBuffer.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBitSet.h
-c000000004C3498AB0000000000000EA4
-t1278515371
-s3748
-i<Cocoa/Cocoa.h>
-i<CoreFoundation/CoreFoundation.h>
-i"ANTLRToken.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCharStream.h
-c000000004C51FAC90000000000000901
-t1280441033
-s2305
-i"ANTLRIntStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCharStreamState.h
-c000000004C110A3A00000000000002F4
-t1276185146
-s756
-i<Cocoa/Cocoa.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonToken.h
-c000000004C51EAE3000000000000122C
-t1280436963
-s4652
-i<Cocoa/Cocoa.h>
-i"ANTLRToken.h"
-i"ANTLRCharStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRIntStream.h
-c000000004C3498AC000000000000108D
-t1278515372
-s4237
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRLinkBase.h
-c000000004C51EAE30000000000000574
-t1280436963
-s1396
-i<Cocoa/Cocoa.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRPtrBuffer.h
-c000000004C564ACD00000000000006A9
-t1280723661
-s1705
-i<Cocoa/Cocoa.h>
-i"ANTLRLinkBase.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRStringStream.h
-c000000004C534A0D0000000000001116
-t1280526861
-s4374
-i<Cocoa/Cocoa.h>
-i"ANTLRCharStream.h"
-i"ANTLRCharStreamState.h"
-i"ANTLRPtrBuffer.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRToken.h
-c000000004C3BECFF0000000000000B76
-t1278995711
-s2934
-i<Cocoa/Cocoa.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRBitSetTest.o
-t1281400559
-s31008
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.LinkFileList
-c000000004C609EEF0000000000000131
-t1281400559
-s305
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.o
-t1281400560
-s56856
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Script-1A1210F911D3A5D900F27B38.sh
-c000000004C609EEF0000000000000062
-t1281400559
-s98
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLR.framework/ANTLR
-c000000004C606A34000000000006B920
-t1281387060
-s440608
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest
-t1281400560
-s102
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/Info.plist
-t1281400559
-s689
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/MacOS/ANTLRCommonTokenTest
-t1281400560
-s49056
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.h
-c000000004C229B3A0000000000000182
-t1277336378
-s386
-i<SenTestingKit/SenTestingKit.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m
-c000000004C5F49870000000000000F0B
-t1281313159
-s3851
-i"ANTLRBitSetTest.h"
-i"ANTLRBitSet.h"
-i<CoreFoundation/CoreFoundation.h>
-i<CoreFoundation/CFBitVector.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.h
-c000000004BFCB4D800000000000001C6
-t1274852568
-s454
-i<SenTestingKit/SenTestingKit.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.m
-c000000004C60563800000000000010C3
-t1281381944
-s4291
-i"ANTLRCommonTokenTest.h"
-i"ANTLRCommonToken.h"
-i"ANTLRStringStream.h"
-
-N/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-dcjehvsdfkjlmdedpfymhtxxswum/Cocoa.h.gch
-t2
-s0
-
-N/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-djqbnlszsxrhmhdewftdpnbyjyle/Cocoa.h.gch
-t1281399359
-s38344656
-
-N/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-hjcggpekdhdtbediazoxmegzibsv/Cocoa.h.gch
-t1277333421
-s38352848
-
-NANTLRCommonTokenTest-Info.plist
-c000000004C236E5900000000000002BC
-t1277390425
-s700
-
-CCheck dependencies
-r0
-lSLF07#2@18"Check dependencies303093359#303093359#0(0"0(0#1#0"2518167488#0"0#
-
-CCompileC build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRBitSetTest.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s303093359.272012
-e303093359.859470
-r1
-xCompileC
-xbuild/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRBitSetTest.o
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-occ1obj: warning: -Wuninitialized is not supported without -O
-lSLF07#2@104"Compile /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m303093359#303093359#0(61"cc1obj: warning: -Wuninitialized is not supported without -O1(22@43"-Wuninitialized is not supported without -O303093359#0#61#0(6@0"303093359#0#0#0#0#0"0(0#0#96"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m2518167488#1888"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wswitch -Wunused-variable -Wunused-value -Wuninitialized -isysroot /Developer/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-generated-files.hmap -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-own-target-headers.hmap -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-all-target-headers.hmap -iquote /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-project-headers.hmap -F/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug -F/Developer/Library/Frameworks -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/include -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/DerivedSources/i386 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/DerivedSources -include /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-djqbnlszsxrhmhdewftdpnbyjyle/Cocoa.h -c /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/sets/ANTLRBitSetTest.m -o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRBitSetTest.o0#
-
-CCompileC build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s303093359.265921
-e303093360.054668
-r1
-xCompileC
-xbuild/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.o
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-occ1obj: warning: -Wuninitialized is not supported without -O
-lSLF07#2@110"Compile /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.m303093359#303093360#0(61"cc1obj: warning: -Wuninitialized is not supported without -O1(22@43"-Wuninitialized is not supported without -O303093359#0#61#0(6@0"303093359#0#0#0#0#0"0(0#0#102"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.m2518167488#1899"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wswitch -Wunused-variable -Wunused-value -Wuninitialized -isysroot /Developer/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-generated-files.hmap -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-own-target-headers.hmap -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-all-target-headers.hmap -iquote /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-project-headers.hmap -F/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug -F/Developer/Library/Frameworks -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/include -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/DerivedSources/i386 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/DerivedSources -include /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-djqbnlszsxrhmhdewftdpnbyjyle/Cocoa.h -c /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/test/runtime/token/ANTLRCommonTokenTest.m -o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.o0#
-
-CLd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/MacOS/ANTLRCommonTokenTest normal i386
-s303093360.054804
-e303093360.122378
-r1
-xLd
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/MacOS/ANTLRCommonTokenTest
-xnormal
-xi386
-lSLF07#2@141"Link /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/MacOS/ANTLRCommonTokenTest303093360#303093360#0(0"0(0#0#0"2518167488#826"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv MACOSX_DEPLOYMENT_TARGET 10.6    /Developer/usr/bin/gcc-4.2 -arch i386 -bundle -isysroot /Developer/SDKs/MacOSX10.6.sdk -L/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug -F/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug -F/Developer/Library/Frameworks -filelist /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.LinkFileList -mmacosx-version-min=10.6 -framework Cocoa -framework SenTestingKit -framework ANTLR -framework Cocoa -framework CoreFoundation -o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/MacOS/ANTLRCommonTokenTest0#
-
-CPhaseScriptExecution "Run Script" /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Script-1A1210F911D3A5D900F27B38.sh
-s303093360.122561
-e303093360.648519
-r1
-xPhaseScriptExecution
-xRun Script
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Script-1A1210F911D3A5D900F27B38.sh
-o/Developer/Tools/RunPlatformUnitTests.include:412: note: Started tests for architectures 'i386'
-o/Developer/Tools/RunPlatformUnitTests.include:419: note: Running tests for architecture 'i386' (GC OFF)
-oobjc[41546]: GC: forcing GC OFF because OBJC_DISABLE_GC is set
-oTest Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' started at 2010-08-09 17:36:00 -0700
-oTest Suite 'ANTLRBitSetTest' started at 2010-08-09 17:36:00 -0700
-oTest Case '-[ANTLRBitSetTest testAdd]' started.
-oTest Case '-[ANTLRBitSetTest testAdd]' passed (0.001 seconds).
-oTest Case '-[ANTLRBitSetTest testCopyBitSet]' started.
-oTest Case '-[ANTLRBitSetTest testCopyBitSet]' passed (0.009 seconds).
-oTest Case '-[ANTLRBitSetTest testDescription]' started.
-oTest Case '-[ANTLRBitSetTest testDescription]' passed (0.001 seconds).
-oTest Case '-[ANTLRBitSetTest testOr]' started.
-oTest Case '-[ANTLRBitSetTest testOr]' passed (0.001 seconds).
-oTest Case '-[ANTLRBitSetTest testRemove]' started.
-oTest Case '-[ANTLRBitSetTest testRemove]' passed (0.001 seconds).
-oTest Case '-[ANTLRBitSetTest testWithBitArray]' started.
-oTest Case '-[ANTLRBitSetTest testWithBitArray]' passed (0.001 seconds).
-oTest Case '-[ANTLRBitSetTest testWithBitData]' started.
-oTest Case '-[ANTLRBitSetTest testWithBitData]' passed (0.001 seconds).
-oTest Suite 'ANTLRBitSetTest' finished at 2010-08-09 17:36:00 -0700.
-oExecuted 7 tests, with 0 failures (0 unexpected) in 0.013 (0.028) seconds
-o
-oTest Suite 'ANTLRCommonTokenTest' started at 2010-08-09 17:36:00 -0700
-oTest Case '-[ANTLRCommonTokenTest testGetEOFToken]' started.
-oTest Case '-[ANTLRCommonTokenTest testGetEOFToken]' passed (0.001 seconds).
-oTest Case '-[ANTLRCommonTokenTest testInitAndRelease]' started.
-oTest Case '-[ANTLRCommonTokenTest testInitAndRelease]' passed (0.003 seconds).
-oTest Case '-[ANTLRCommonTokenTest testInitWithCharStream]' started.
-oTest Case '-[ANTLRCommonTokenTest testInitWithCharStream]' passed (0.001 seconds).
-oTest Case '-[ANTLRCommonTokenTest testInitWithToken]' started.
-oTest Case '-[ANTLRCommonTokenTest testInitWithToken]' passed (0.001 seconds).
-oTest Case '-[ANTLRCommonTokenTest testInitWithTokenType]' started.
-oTest Case '-[ANTLRCommonTokenTest testInitWithTokenType]' passed (0.001 seconds).
-oTest Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' started.
-oTest Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' passed (0.001 seconds).
-oTest Case '-[ANTLRCommonTokenTest testTokenDescription]' started.
-oTest Case '-[ANTLRCommonTokenTest testTokenDescription]' passed (0.001 seconds).
-oTest Suite 'ANTLRCommonTokenTest' finished at 2010-08-09 17:36:00 -0700.
-oExecuted 7 tests, with 0 failures (0 unexpected) in 0.008 (0.016) seconds
-o
-oTest Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' finished at 2010-08-09 17:36:00 -0700.
-oExecuted 14 tests, with 0 failures (0 unexpected) in 0.021 (0.062) seconds
-o
-o/Developer/Tools/RunPlatformUnitTests.include:446: note: Passed tests for architecture 'i386' (GC OFF)
-o/Developer/Tools/RunPlatformUnitTests.include:462: note: Completed tests for architectures 'i386'
-lSLF07#2@36"Run custom shell script 'Run Script'303093360#303093360#1(20@47"Run unit tests for architecture 'i386' (GC OFF)303093360#303093360#1(20@122"Run test suite /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)303093360#303093360#2(20@30"Run test suite ANTLRBitSetTest303093360#303093360#7(20@21"Run test case testAdd303093360#303093360#0(111"Test Case '-[ANTLRBitSetTest testAdd]' started.Test Case '-[ANTLRBitSetTest testAdd]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds62"Test Case '-[ANTLRBitSetTest testAdd]' passed (0.001 seconds).7"testAdd20@28"Run test case testCopyBitSet303093360#303093360#0(125"Test Case '-[ANTLRBitSetTest testCopyBitSet]' started.Test Case '-[ANTLRBitSetTest testCopyBitSet]' passed (0.009 seconds).0(0#0#0"13"0.009 seconds69"Test Case '-[ANTLRBitSetTest testCopyBitSet]' passed (0.009 seconds).14"testCopyBitSet20@29"Run test case testDescription303093360#303093360#0(127"Test Case '-[ANTLRBitSetTest testDescription]' started.Test Case '-[ANTLRBitSetTest testDescription]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds70"Test Case '-[ANTLRBitSetTest testDescription]' passed (0.001 seconds).15"testDescription20@20"Run test case testOr303093360#303093360#0(109"Test Case '-[ANTLRBitSetTest testOr]' started.Test Case '-[ANTLRBitSetTest testOr]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds61"Test Case '-[ANTLRBitSetTest testOr]' passed (0.001 seconds).6"testOr20@24"Run test case testRemove303093360#303093360#0(117"Test Case '-[ANTLRBitSetTest testRemove]' started.Test Case '-[ANTLRBitSetTest testRemove]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds65"Test Case '-[ANTLRBitSetTest testRemove]' passed (0.001 seconds).10"testRemove20@30"Run test case testWithBitArray303093360#303093360#0(129"Test Case '-[ANTLRBitSetTest testWithBitArray]' started.Test Case '-[ANTLRBitSetTest testWithBitArray]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds71"Test Case '-[ANTLRBitSetTest testWithBitArray]' passed (0.001 seconds).16"testWithBitArray20@29"Run test case testWithBitData303093360#303093360#0(127"Test Case '-[ANTLRBitSetTest testWithBitData]' started.Test Case '-[ANTLRBitSetTest testWithBitData]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds70"Test Case '-[ANTLRBitSetTest testWithBitData]' passed (0.001 seconds).15"testWithBitData1053"Test Suite 'ANTLRBitSetTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRBitSetTest testAdd]' started.Test Case '-[ANTLRBitSetTest testAdd]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testCopyBitSet]' started.Test Case '-[ANTLRBitSetTest testCopyBitSet]' passed (0.009 seconds).Test Case '-[ANTLRBitSetTest testDescription]' started.Test Case '-[ANTLRBitSetTest testDescription]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testOr]' started.Test Case '-[ANTLRBitSetTest testOr]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testRemove]' started.Test Case '-[ANTLRBitSetTest testRemove]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitArray]' started.Test Case '-[ANTLRBitSetTest testWithBitArray]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitData]' started.Test Case '-[ANTLRBitSetTest testWithBitData]' passed (0.001 seconds).Test Suite 'ANTLRBitSetTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.013 (0.028) seconds0(0#0#23"7 out of 7 tests passed13"0.013 seconds73"Executed 7 tests, with 0 failures (0 unexpected) in 0.013 (0.028) seconds15"ANTLRBitSetTest20@35"Run test suite ANTLRCommonTokenTest303093360#303093360#7(20@29"Run test case testGetEOFToken303093360#303093360#0(137"Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' started.Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds75"Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' passed (0.001 seconds).15"testGetEOFToken20@32"Run test case testInitAndRelease303093360#303093360#0(143"Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' started.Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' passed (0.003 seconds).0(0#0#0"13"0.003 seconds78"Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' passed (0.003 seconds).18"testInitAndRelease20@36"Run test case testInitWithCharStream303093360#303093360#0(151"Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' started.Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds82"Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' passed (0.001 seconds).22"testInitWithCharStream20@31"Run test case testInitWithToken303093360#303093360#0(141"Test Case '-[ANTLRCommonTokenTest testInitWithToken]' started.Test Case '-[ANTLRCommonTokenTest testInitWithToken]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds77"Test Case '-[ANTLRCommonTokenTest testInitWithToken]' passed (0.001 seconds).17"testInitWithToken20@35"Run test case testInitWithTokenType303093360#303093360#0(149"Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds81"Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' passed (0.001 seconds).21"testInitWithTokenType20@42"Run test case testInitWithTokenTypeAndText303093360#303093360#0(163"Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds88"Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' passed (0.001 seconds).28"testInitWithTokenTypeAndText20@34"Run test case testTokenDescription303093360#303093360#0(147"Test Case '-[ANTLRCommonTokenTest testTokenDescription]' started.Test Case '-[ANTLRCommonTokenTest testTokenDescription]' passed (0.001 seconds).0(0#0#0"13"0.001 seconds80"Test Case '-[ANTLRCommonTokenTest testTokenDescription]' passed (0.001 seconds).20"testTokenDescription1249"Test Suite 'ANTLRCommonTokenTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' started.Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' started.Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' passed (0.003 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' started.Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithToken]' started.Test Case '-[ANTLRCommonTokenTest testInitWithToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testTokenDescription]' started.Test Case '-[ANTLRCommonTokenTest testTokenDescription]' passed (0.001 seconds).Test Suite 'ANTLRCommonTokenTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.008 (0.016) seconds0(0#0#23"7 out of 7 tests passed13"0.008 seconds73"Executed 7 tests, with 0 failures (0 unexpected) in 0.008 (0.016) seconds20"ANTLRCommonTokenTest2697"Test Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' started at 2010-08-09 17:36:00 -0700Test Suite 'ANTLRBitSetTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRBitSetTest testAdd]' started.Test Case '-[ANTLRBitSetTest testAdd]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testCopyBitSet]' started.Test Case '-[ANTLRBitSetTest testCopyBitSet]' passed (0.009 seconds).Test Case '-[ANTLRBitSetTest testDescription]' started.Test Case '-[ANTLRBitSetTest testDescription]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testOr]' started.Test Case '-[ANTLRBitSetTest testOr]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testRemove]' started.Test Case '-[ANTLRBitSetTest testRemove]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitArray]' started.Test Case '-[ANTLRBitSetTest testWithBitArray]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitData]' started.Test Case '-[ANTLRBitSetTest testWithBitData]' passed (0.001 seconds).Test Suite 'ANTLRBitSetTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.013 (0.028) secondsTest Suite 'ANTLRCommonTokenTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' started.Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' started.Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' passed (0.003 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' started.Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithToken]' started.Test Case '-[ANTLRCommonTokenTest testInitWithToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testTokenDescription]' started.Test Case '-[ANTLRCommonTokenTest testTokenDescription]' passed (0.001 seconds).Test Suite 'ANTLRCommonTokenTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.008 (0.016) secondsTest Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' finished at 2010-08-09 17:36:00 -0700.Executed 14 tests, with 0 failures (0 unexpected) in 0.021 (0.062) seconds0(0#0#25"14 out of 14 tests passed13"0.021 seconds74"Executed 14 tests, with 0 failures (0 unexpected) in 0.021 (0.062) seconds107"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)2968"/Developer/Tools/RunPlatformUnitTests.include:419: note: Running tests for architecture 'i386' (GC OFF)objc[41546]: GC: forcing GC OFF because OBJC_DISABLE_GC is setTest Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' started at 2010-08-09 17:36:00 -0700Test Suite 'ANTLRBitSetTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRBitSetTest testAdd]' started.Test Case '-[ANTLRBitSetTest testAdd]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testCopyBitSet]' started.Test Case '-[ANTLRBitSetTest testCopyBitSet]' passed (0.009 seconds).Test Case '-[ANTLRBitSetTest testDescription]' started.Test Case '-[ANTLRBitSetTest testDescription]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testOr]' started.Test Case '-[ANTLRBitSetTest testOr]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testRemove]' started.Test Case '-[ANTLRBitSetTest testRemove]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitArray]' started.Test Case '-[ANTLRBitSetTest testWithBitArray]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitData]' started.Test Case '-[ANTLRBitSetTest testWithBitData]' passed (0.001 seconds).Test Suite 'ANTLRBitSetTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.013 (0.028) secondsTest Suite 'ANTLRCommonTokenTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' started.Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' started.Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' passed (0.003 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' started.Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithToken]' started.Test Case '-[ANTLRCommonTokenTest testInitWithToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testTokenDescription]' started.Test Case '-[ANTLRCommonTokenTest testTokenDescription]' passed (0.001 seconds).Test Suite 'ANTLRCommonTokenTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.008 (0.016) secondsTest Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' finished at 2010-08-09 17:36:00 -0700.Executed 14 tests, with 0 failures (0 unexpected) in 0.021 (0.062) seconds/Developer/Tools/RunPlatformUnitTests.include:446: note: Passed tests for architecture 'i386' (GC OFF)0(0#0#0"0"102"/Developer/Tools/RunPlatformUnitTests.include:446: note: Passed tests for architecture 'i386' (GC OFF)0"3162"/Developer/Tools/RunPlatformUnitTests.include:412: note: Started tests for architectures 'i386'/Developer/Tools/RunPlatformUnitTests.include:419: note: Running tests for architecture 'i386' (GC OFF)objc[41546]: GC: forcing GC OFF because OBJC_DISABLE_GC is setTest Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' started at 2010-08-09 17:36:00 -0700Test Suite 'ANTLRBitSetTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRBitSetTest testAdd]' started.Test Case '-[ANTLRBitSetTest testAdd]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testCopyBitSet]' started.Test Case '-[ANTLRBitSetTest testCopyBitSet]' passed (0.009 seconds).Test Case '-[ANTLRBitSetTest testDescription]' started.Test Case '-[ANTLRBitSetTest testDescription]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testOr]' started.Test Case '-[ANTLRBitSetTest testOr]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testRemove]' started.Test Case '-[ANTLRBitSetTest testRemove]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitArray]' started.Test Case '-[ANTLRBitSetTest testWithBitArray]' passed (0.001 seconds).Test Case '-[ANTLRBitSetTest testWithBitData]' started.Test Case '-[ANTLRBitSetTest testWithBitData]' passed (0.001 seconds).Test Suite 'ANTLRBitSetTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.013 (0.028) secondsTest Suite 'ANTLRCommonTokenTest' started at 2010-08-09 17:36:00 -0700Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' started.Test Case '-[ANTLRCommonTokenTest testGetEOFToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' started.Test Case '-[ANTLRCommonTokenTest testInitAndRelease]' passed (0.003 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' started.Test Case '-[ANTLRCommonTokenTest testInitWithCharStream]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithToken]' started.Test Case '-[ANTLRCommonTokenTest testInitWithToken]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenType]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' started.Test Case '-[ANTLRCommonTokenTest testInitWithTokenTypeAndText]' passed (0.001 seconds).Test Case '-[ANTLRCommonTokenTest testTokenDescription]' started.Test Case '-[ANTLRCommonTokenTest testTokenDescription]' passed (0.001 seconds).Test Suite 'ANTLRCommonTokenTest' finished at 2010-08-09 17:36:00 -0700.Executed 7 tests, with 0 failures (0 unexpected) in 0.008 (0.016) secondsTest Suite '/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest(Tests)' finished at 2010-08-09 17:36:00 -0700.Executed 14 tests, with 0 failures (0 unexpected) in 0.021 (0.062) seconds/Developer/Tools/RunPlatformUnitTests.include:446: note: Passed tests for architecture 'i386' (GC OFF)/Developer/Tools/RunPlatformUnitTests.include:462: note: Completed tests for architectures 'i386'0(0#0#0"2518167488#18174"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv ACTION build    setenv ALTERNATE_GROUP acondit    setenv ALTERNATE_MODE u+w,go-w,a+rX    setenv ALTERNATE_OWNER acondit    setenv ALWAYS_SEARCH_USER_PATHS NO    setenv ANTLR_EXTRA_JAVA_ARGS "/Users/kroepke/classpath/antlr-2.7.7.jar:/Users/kroepke/IdeaProjects/antlr3/out/production/antlr3:/Users/kroepke/IdeaProjects/antlr3/out/production/stringtemplate"    setenv APPLE_INTERNAL_DEVELOPER_DIR /AppleInternal/Developer    setenv APPLE_INTERNAL_DIR /AppleInternal    setenv APPLE_INTERNAL_DOCUMENTATION_DIR /AppleInternal/Documentation    setenv APPLE_INTERNAL_LIBRARY_DIR /AppleInternal/Library    setenv APPLE_INTERNAL_TOOLS /AppleInternal/Developer/Tools    setenv APPLY_RULES_IN_COPY_FILES NO    setenv ARCHS i386    setenv ARCHS_STANDARD_32_64_BIT "x86_64 i386 ppc"    setenv ARCHS_STANDARD_32_BIT "i386 ppc"    setenv ARCHS_STANDARD_64_BIT x86_64    setenv BUILD_COMPONENTS "headers build"    setenv BUILD_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build    setenv BUILD_ROOT /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build    setenv BUILD_STYLE Debug    setenv BUILD_VARIANTS normal    setenv BUILT_PRODUCTS_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug    setenv CACHE_ROOT /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501    setenv CCHROOT /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501    setenv CHMOD /bin/chmod    setenv CHOWN /usr/sbin/chown    setenv CLASS_FILE_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/JavaClasses    setenv CLEAN_PRECOMPS YES    setenv CLONE_HEADERS NO    setenv CODESIGNING_FOLDER_PATH /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest    setenv CODE_SIGNING_ALLOWED YES    setenv COMMAND_MODE legacy    setenv COMPOSITE_SDK_DIRS /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/CompositeSDKs    setenv CONFIGURATION Debug    setenv CONFIGURATION_BUILD_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug    setenv CONFIGURATION_TEMP_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug    setenv CONTENTS_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents    setenv COPYING_PRESERVES_HFS_DATA NO    setenv COPY_PHASE_STRIP NO    setenv COPY_RESOURCES_FROM_STATIC_FRAMEWORKS YES    setenv CP /bin/cp    setenv CURRENT_ARCH i386    setenv CURRENT_VARIANT normal    setenv DEAD_CODE_STRIPPING NO    setenv DEBUGGING_SYMBOLS YES    setenv DEBUG_INFORMATION_FORMAT dwarf    setenv DEPLOYMENT_LOCATION NO    setenv DEPLOYMENT_POSTPROCESSING NO    setenv DERIVED_FILES_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/DerivedSources    setenv DERIVED_FILE_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/DerivedSources    setenv DERIVED_SOURCES_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/DerivedSources    setenv DEVELOPER_APPLICATIONS_DIR /Developer/Applications    setenv DEVELOPER_BIN_DIR /Developer/usr/bin    setenv DEVELOPER_DIR /Developer    setenv DEVELOPER_FRAMEWORKS_DIR /Developer/Library/Frameworks    setenv DEVELOPER_FRAMEWORKS_DIR_QUOTED "\"/Developer/Library/Frameworks\""    setenv DEVELOPER_LIBRARY_DIR /Developer/Library    setenv DEVELOPER_SDK_DIR /Developer/SDKs    setenv DEVELOPER_TOOLS_DIR /Developer/Tools    setenv DEVELOPER_USR_DIR /Developer/usr    setenv DEVELOPMENT_LANGUAGE English    setenv DOCUMENTATION_FOLDER_PATH /Documentation    setenv DO_HEADER_SCANNING_IN_JAM NO    setenv DSTROOT /tmp/ANTLR.dst    setenv DWARF_DSYM_FILE_NAME ANTLRCommonTokenTest.octest.dSYM    setenv DWARF_DSYM_FOLDER_PATH /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug    setenv ENABLE_HEADER_DEPENDENCIES YES    setenv ENABLE_OPENMP_SUPPORT NO    setenv EXCLUDED_INSTALLSRC_SUBDIRECTORY_PATTERNS ".svn CVS"    setenv EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES "*.nib *.lproj *.framework *.gch (*) CVS .svn *.xcodeproj *.xcode *.pbproj *.pbxproj"    setenv EXECUTABLES_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/Executables    setenv EXECUTABLE_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/MacOS    setenv EXECUTABLE_NAME ANTLRCommonTokenTest    setenv EXECUTABLE_PATH ANTLRCommonTokenTest.octest/Contents/MacOS/ANTLRCommonTokenTest    setenv FILE_LIST /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects/LinkFileList    setenv FIXED_FILES_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/FixedFiles    setenv FRAMEWORKS_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/Frameworks    setenv FRAMEWORK_FLAG_PREFIX -framework    setenv FRAMEWORK_SEARCH_PATHS "\"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug\" /Developer/Library/Frameworks"    setenv FRAMEWORK_VERSION A    setenv FULL_PRODUCT_NAME ANTLRCommonTokenTest.octest    setenv GCC3_VERSION 3.3    setenv GCC_C_LANGUAGE_STANDARD gnu99    setenv GCC_DEBUGGING_SYMBOLS full    setenv GCC_DYNAMIC_NO_PIC NO    setenv GCC_ENABLE_FIX_AND_CONTINUE NO    setenv GCC_ENABLE_OBJC_EXCEPTIONS YES    setenv GCC_ENABLE_OBJC_GC unsupported    setenv GCC_ENABLE_SYMBOL_SEPARATION NO    setenv GCC_INLINES_ARE_PRIVATE_EXTERN YES    setenv GCC_MODEL_TUNING G5    setenv GCC_OPTIMIZATION_LEVEL 0    setenv GCC_PFE_FILE_C_DIALECTS "c objective-c c++ objective-c++"    setenv GCC_PRECOMPILE_PREFIX_HEADER YES    setenv GCC_PREFIX_HEADER /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h    setenv GCC_TREAT_WARNINGS_AS_ERRORS NO    setenv GCC_VERSION 4.2    setenv GCC_WARN_ABOUT_MISSING_NEWLINE NO    setenv GCC_WARN_ABOUT_POINTER_SIGNEDNESS YES    setenv GCC_WARN_ABOUT_RETURN_TYPE YES    setenv GCC_WARN_CHECK_SWITCH_STATEMENTS YES    setenv GCC_WARN_SHADOW NO    setenv GCC_WARN_SIGN_COMPARE NO    setenv GCC_WARN_UNINITIALIZED_AUTOS YES    setenv GCC_WARN_UNUSED_PARAMETER NO    setenv GCC_WARN_UNUSED_VALUE YES    setenv GCC_WARN_UNUSED_VARIABLE YES    setenv GENERATE_MASTER_OBJECT_FILE NO    setenv GENERATE_PKGINFO_FILE NO    setenv GENERATE_PROFILING_CODE NO    setenv GID 501    setenv GROUP acondit    setenv HEADERMAP_INCLUDES_FLAT_ENTRIES_FOR_TARGET_BEING_BUILT YES    setenv HEADERMAP_INCLUDES_FRAMEWORK_ENTRIES_FOR_ALL_PRODUCT_TYPES YES    setenv HEADERMAP_INCLUDES_NONPUBLIC_NONPRIVATE_HEADERS YES    setenv HEADERMAP_INCLUDES_PROJECT_HEADERS YES    setenv HEADER_SEARCH_PATHS "\"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/include\" "    setenv ICONV /usr/bin/iconv    setenv INFOPLIST_EXPAND_BUILD_SETTINGS YES    setenv INFOPLIST_FILE ANTLRCommonTokenTest-Info.plist    setenv INFOPLIST_OUTPUT_FORMAT same-as-input    setenv INFOPLIST_PATH ANTLRCommonTokenTest.octest/Contents/Info.plist    setenv INFOPLIST_PREPROCESS NO    setenv INFOSTRINGS_PATH /InfoPlist.strings    setenv INSTALL_DIR /tmp/ANTLR.dst/Users/acondit/Library/Bundles    setenv INSTALL_GROUP acondit    setenv INSTALL_MODE_FLAG u+w,go-w,a+rX    setenv INSTALL_OWNER acondit    setenv INSTALL_PATH /Users/acondit/Library/Bundles    setenv INSTALL_ROOT /tmp/ANTLR.dst    setenv JAVAC_DEFAULT_FLAGS "-J-Xms64m -J-XX:NewSize=4M -J-Dfile.encoding=UTF8"    setenv JAVA_APP_STUB /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub    setenv JAVA_ARCHIVE_CLASSES YES    setenv JAVA_ARCHIVE_TYPE JAR    setenv JAVA_COMPILER /usr/bin/javac    setenv JAVA_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/Resources/Java    setenv JAVA_FRAMEWORK_RESOURCES_DIRS Resources    setenv JAVA_JAR_FLAGS cv    setenv JAVA_SOURCE_SUBDIR .    setenv JAVA_USE_DEPENDENCIES YES    setenv JAVA_ZIP_FLAGS -urg    setenv JIKES_DEFAULT_FLAGS "+E +OLDCSO"    setenv KEEP_PRIVATE_EXTERNS NO    setenv LD_GENERATE_MAP_FILE NO    setenv LD_MAP_FILE_PATH /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ANTLRCommonTokenTest-LinkMap-normal-i386.txt    setenv LD_OPENMP_FLAGS -fopenmp    setenv LEX /Developer/usr/bin/lex    setenv LIBRARY_FLAG_NOSPACE YES    setenv LIBRARY_FLAG_PREFIX -l    setenv LIBRARY_SEARCH_PATHS "\"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug\" "    setenv LINKER_DISPLAYS_MANGLED_NAMES NO    setenv LINK_FILE_LIST_normal_i386 /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal/i386/ANTLRCommonTokenTest.LinkFileList    setenv LINK_WITH_STANDARD_LIBRARIES YES    setenv LOCAL_ADMIN_APPS_DIR /Applications/Utilities    setenv LOCAL_APPS_DIR /Applications    setenv LOCAL_DEVELOPER_DIR /Library/Developer    setenv LOCAL_LIBRARY_DIR /Library    setenv MACH_O_TYPE mh_bundle    setenv MACOSX_DEPLOYMENT_TARGET 10.6    setenv MAC_OS_X_VERSION_ACTUAL 1064    setenv MAC_OS_X_VERSION_MAJOR 1060    setenv MAC_OS_X_VERSION_MINOR 0604    setenv NATIVE_ARCH i386    setenv NATIVE_ARCH_32_BIT i386    setenv NATIVE_ARCH_64_BIT x86_64    setenv NATIVE_ARCH_ACTUAL i386    setenv NO_COMMON YES    setenv OBJECT_FILE_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects    setenv OBJECT_FILE_DIR_normal /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Objects-normal    setenv OBJROOT /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build    setenv ONLY_ACTIVE_ARCH NO    setenv OPTIMIZATION_LEVEL 0    setenv OS MACOS    setenv OSAC /usr/bin/osacompile    setenv OTHER_LDFLAGS "-framework Cocoa -framework SenTestingKit"    setenv PACKAGE_TYPE com.apple.package-type.wrapper    setenv PASCAL_STRINGS YES    setenv PATH_PREFIXES_EXCLUDED_FROM_HEADER_DEPENDENCIES "/usr/include /usr/local/include /System/Library/Frameworks /System/Library/PrivateFrameworks /Developer/Headers /Developer/SDKs /Developer/Platforms"    setenv PBDEVELOPMENTPLIST_PATH ANTLRCommonTokenTest.octest/Contents/pbdevelopment.plist    setenv PFE_FILE_C_DIALECTS objective-c    setenv PKGINFO_FILE_PATH /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/PkgInfo    setenv PKGINFO_PATH ANTLRCommonTokenTest.octest/Contents/PkgInfo    setenv PLATFORM_DEVELOPER_APPLICATIONS_DIR /Developer/Applications    setenv PLATFORM_DEVELOPER_BIN_DIR /Developer/usr/bin    setenv PLATFORM_DEVELOPER_LIBRARY_DIR /Developer/Library    setenv PLATFORM_DEVELOPER_SDK_DIR /Developer/SDKs    setenv PLATFORM_DEVELOPER_TOOLS_DIR /Developer/Tools    setenv PLATFORM_DEVELOPER_USR_DIR /Developer/usr    setenv PLATFORM_NAME macosx    setenv PLIST_FILE_OUTPUT_FORMAT same-as-input    setenv PLUGINS_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/PlugIns    setenv PREBINDING NO    setenv PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR YES    setenv PRECOMP_DESTINATION_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/PrefixHeaders    setenv PRESERVE_DEAD_CODE_INITS_AND_TERMS NO    setenv PRIVATE_HEADERS_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/PrivateHeaders    setenv PRODUCT_NAME ANTLRCommonTokenTest    setenv PRODUCT_SETTINGS_PATH /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonTokenTest-Info.plist    setenv PRODUCT_TYPE com.apple.product-type.bundle    setenv PROFILING_CODE NO    setenv PROJECT ANTLR    setenv PROJECT_DERIVED_FILE_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/DerivedSources    setenv PROJECT_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv PROJECT_FILE_PATH /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLR.xcodeproj    setenv PROJECT_NAME ANTLR    setenv PROJECT_TEMP_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build    setenv PUBLIC_HEADERS_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/Headers    setenv RECURSIVE_SEARCH_PATHS_FOLLOW_SYMLINKS YES    setenv REMOVE_CVS_FROM_RESOURCES YES    setenv REMOVE_SVN_FROM_RESOURCES YES    setenv REZ_COLLECTOR_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ResourceManagerResources    setenv REZ_OBJECTS_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/ResourceManagerResources/Objects    setenv REZ_SEARCH_PATHS "\"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug\" "    setenv RUN_CLANG_STATIC_ANALYZER NO    setenv SCAN_ALL_SOURCE_FILES_FOR_INCLUDES NO    setenv SCRIPTS_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/Resources/Scripts    setenv SCRIPT_INPUT_FILE_COUNT 0    setenv SCRIPT_OUTPUT_FILE_COUNT 0    setenv SDKROOT /Developer/SDKs/MacOSX10.6.sdk    setenv SDK_DIR /Developer/SDKs/MacOSX10.6.sdk    setenv SDK_NAME macosx10.6    setenv SED /usr/bin/sed    setenv SEPARATE_STRIP NO    setenv SEPARATE_SYMBOL_EDIT NO    setenv SET_DIR_MODE_OWNER_GROUP YES    setenv SET_FILE_MODE_OWNER_GROUP NO    setenv SHARED_DERIVED_FILE_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/DerivedSources    setenv SHARED_FRAMEWORKS_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/SharedFrameworks    setenv SHARED_PRECOMPS_DIR /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders    setenv SHARED_SUPPORT_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/SharedSupport    setenv SKIP_INSTALL NO    setenv SOURCE_ROOT /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv SRCROOT /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv STANDARD_C_PLUS_PLUS_LIBRARY_TYPE dynamic    setenv STRINGS_FILE_OUTPUT_ENCODING UTF-16    setenv STRIP_INSTALLED_PRODUCT YES    setenv STRIP_STYLE non-global    setenv SYMBOL_REPOSITORY_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/SymbolRepositories    setenv SYMROOT /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build    setenv SYSTEM_ADMIN_APPS_DIR /Applications/Utilities    setenv SYSTEM_APPS_DIR /Applications    setenv SYSTEM_CORE_SERVICES_DIR /System/Library/CoreServices    setenv SYSTEM_DEMOS_DIR /Applications/Extras    setenv SYSTEM_DEVELOPER_APPS_DIR /Developer/Applications    setenv SYSTEM_DEVELOPER_BIN_DIR /Developer/usr/bin    setenv SYSTEM_DEVELOPER_DEMOS_DIR "/Developer/Applications/Utilities/Built Examples"    setenv SYSTEM_DEVELOPER_DIR /Developer    setenv SYSTEM_DEVELOPER_DOC_DIR "/Developer/ADC Reference Library"    setenv SYSTEM_DEVELOPER_GRAPHICS_TOOLS_DIR "/Developer/Applications/Graphics Tools"    setenv SYSTEM_DEVELOPER_JAVA_TOOLS_DIR "/Developer/Applications/Java Tools"    setenv SYSTEM_DEVELOPER_PERFORMANCE_TOOLS_DIR "/Developer/Applications/Performance Tools"    setenv SYSTEM_DEVELOPER_RELEASENOTES_DIR "/Developer/ADC Reference Library/releasenotes"    setenv SYSTEM_DEVELOPER_TOOLS /Developer/Tools    setenv SYSTEM_DEVELOPER_TOOLS_DOC_DIR "/Developer/ADC Reference Library/documentation/DeveloperTools"    setenv SYSTEM_DEVELOPER_TOOLS_RELEASENOTES_DIR "/Developer/ADC Reference Library/releasenotes/DeveloperTools"    setenv SYSTEM_DEVELOPER_USR_DIR /Developer/usr    setenv SYSTEM_DEVELOPER_UTILITIES_DIR /Developer/Applications/Utilities    setenv SYSTEM_DOCUMENTATION_DIR /Library/Documentation    setenv SYSTEM_LIBRARY_DIR /System/Library    setenv TARGETNAME ANTLRCommonTokenTest    setenv TARGET_BUILD_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug    setenv TARGET_NAME ANTLRCommonTokenTest    setenv TARGET_TEMP_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build    setenv TEMP_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build    setenv TEMP_FILES_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build    setenv TEMP_FILE_DIR /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build    setenv TEMP_ROOT /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build    setenv UID 501    setenv UNLOCALIZED_RESOURCES_FOLDER_PATH ANTLRCommonTokenTest.octest/Contents/Resources    setenv UNSTRIPPED_PRODUCT NO    setenv USER acondit    setenv USER_APPS_DIR /Users/acondit/Applications    setenv USER_LIBRARY_DIR /Users/acondit/Library    setenv USE_DYNAMIC_NO_PIC YES    setenv USE_HEADERMAP YES    setenv USE_HEADER_SYMLINKS NO    setenv VALIDATE_PRODUCT NO    setenv VALID_ARCHS "i386 ppc ppc64 ppc7400 ppc970 x86_64"    setenv VERBOSE_PBXCP NO    setenv VERSIONPLIST_PATH ANTLRCommonTokenTest.octest/Contents/version.plist    setenv VERSION_INFO_BUILDER acondit    setenv VERSION_INFO_FILE ANTLRCommonTokenTest_vers.c    setenv VERSION_INFO_STRING "\"@(#)PROGRAM:ANTLRCommonTokenTest  PROJECT:ANTLR-\""    setenv WRAPPER_EXTENSION octest    setenv WRAPPER_NAME ANTLRCommonTokenTest.octest    setenv WRAPPER_SUFFIX .octest    setenv XCODE_APP_SUPPORT_DIR /Developer/Library/Xcode    setenv XCODE_VERSION_ACTUAL 0323    setenv XCODE_VERSION_MAJOR 0300    setenv XCODE_VERSION_MINOR 0320    setenv YACC /Developer/usr/bin/yacc    /bin/sh -c /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/ANTLRCommonTokenTest.build/Script-1A1210F911D3A5D900F27B38.sh0#
-
-CProcessInfoPlistFile /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/Info.plist ANTLRCommonTokenTest-Info.plist
-s303093359.250617
-e303093359.265649
-r1
-xProcessInfoPlistFile
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/Info.plist
-xANTLRCommonTokenTest-Info.plist
-lSLF07#2@39"Process ANTLRCommonTokenTest-Info.plist303093359#303093359#0(0"0(0#0#92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonTokenTest-Info.plist2518167488#291"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    builtin-infoPlistUtility ANTLRCommonTokenTest-Info.plist -expandbuildsettings -platform macosx -o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest/Contents/Info.plist0#
-
-CProcessPCH /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-dcjehvsdfkjlmdedpfymhtxxswum/Cocoa.h.gch /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h normal i386 objective-c com.apple.compilers.gcc.4_2
-r0
-
-CProcessPCH /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-djqbnlszsxrhmhdewftdpnbyjyle/Cocoa.h.gch /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h normal i386 objective-c com.apple.compilers.gcc.4_2
-r0
-
-CProcessPCH /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/Cocoa-hjcggpekdhdtbediazoxmegzibsv/Cocoa.h.gch /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h normal i386 objective-c com.apple.compilers.gcc.4_2
-r0
-
-CTouch /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest
-s303093360.648635
-e303093360.653214
-r1
-xTouch
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest
-lSLF07#2@106"Touch /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest303093360#303093360#0(0"0(0#0#0"2518167488#191"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    /usr/bin/touch -c /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLRCommonTokenTest.octest0#
-

@@ -1,8 +1,0 @@
-cc1obj: warning: -Wuninitialized is not supported without -O
-In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/hoistedPredicates/main.m:3:
-/usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/hoistedPredicates/TLexer.h:31:1: warning: "EOF" redefined
-In file included from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRDebugEventProxy.h:30,
-                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/ANTLRDebug.h:28,
-                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/hoistedPredicates/antlr3.h:18,
-                 from /usr/local/ANTLR3-ObjC2.0-Runtime/Framework/examples/hoistedPredicates/main.m:2:
-/Developer/SDKs/MacOSX10.6.sdk/usr/include/sys/socket.h:55:35: warning: this is the location of the previous definition

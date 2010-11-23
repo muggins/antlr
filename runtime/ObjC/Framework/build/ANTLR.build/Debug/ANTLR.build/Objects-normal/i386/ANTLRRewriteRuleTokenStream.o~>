@@ -1,5 +1,0 @@
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleTokenStream.m: In function '-[ANTLRRewriteRuleTokenStream nextNode]':
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleTokenStream.m:106: warning: type 'id <ANTLRTree>' does not conform to the 'ANTLRToken' protocol
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleTokenStream.m:106: warning: type 'id <ANTLRTree>' does not conform to the 'ANTLRToken' protocol
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleTokenStream.m: In function '-[ANTLRRewriteRuleTokenStream toTree:]':
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleTokenStream.m:120: warning: type 'id <ANTLRToken>' does not conform to the 'ANTLRTree' protocol

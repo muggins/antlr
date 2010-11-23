@@ -1,717 +1,0 @@
-Tfuzzy
-v7
-r0
-t299106749.458930
-cCheck dependencies
-cProcessPCH /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/AppKit-ahznifaksrxtpvdrqxtapswqebtt/AppKit.h.gch /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/AppKit.framework/Headers/AppKit.h normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/main.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/FuzzyJavaLexer.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m normal i386 objective-c com.apple.compilers.gcc.4_2
-
-N/Developer/SDKs/MacOSX10.6.sdk
-c000000004B99A23900000000000000EE
-t1268359737
-s238
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/AppKit.framework/Headers/AppKit.h
-c000000004B448B6700000000000017ED
-t1262783335
-s6125
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Cocoa.framework/Headers/Cocoa.h
-c0000000040C4AA6800000000000001E5
-t1086630504
-s485
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h
-c000000004B569ADA0000000000000AF4
-t1263966938
-s2804
-
-N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h
-c000000004B447F4E00000000000013E6
-t1262780238
-s5094
-
-N/System/Library/Frameworks/Cocoa.framework/Cocoa
-c000000004A98CCAD000000000000A5E0
-t1251527853
-s42464
-
-N/System/Library/Frameworks/Foundation.framework/Foundation
-c000000004C11730A0000000000B37440
-t1276211978
-s11760704
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLR.h
-c000000004C1B8E930000000000000A70
-t1276874387
-s2672
-i<ANTLR/ANTLRBitSet.h>
-i<ANTLR/ANTLRBaseRecognizer.h>
-i<ANTLR/ANTLRLexer.h>
-i<ANTLR/ANTLRParser.h>
-i<ANTLR/ANTLRTreeParser.h>
-i<ANTLR/ANTLRDFA.h>
-i<ANTLR/ANTLRStringStream.h>
-i<ANTLR/ANTLRTokenSource.h>
-i<ANTLR/ANTLRCommonTokenStream.h>
-i<ANTLR/ANTLRRecognitionException.h>
-i<ANTLR/ANTLREarlyExitException.h>
-i<ANTLR/ANTLRMismatchedSetException.h>
-i<ANTLR/ANTLRMismatchedTokenException.h>
-i<ANTLR/ANTLRMismatchedRangeException.h>
-i<ANTLR/ANTLRMismatchedTreeNodeException.h>
-i<ANTLR/ANTLRNoViableAltException.h>
-i<ANTLR/ANTLRFailedPredicateException.h>
-i<ANTLR/ANTLRTreeException.h>
-i<ANTLR/ANTLRParserRuleReturnScope.h>
-i<ANTLR/ANTLRTreeRuleReturnScope.h>
-i<ANTLR/ANTLRTree.h>
-i<ANTLR/ANTLRCommonTree.h>
-i<ANTLR/ANTLRTreeAdaptor.h>
-i<ANTLR/ANTLRCommonTreeAdaptor.h>
-i<ANTLR/ANTLRTreeNodeStream.h>
-i<ANTLR/ANTLRUnbufferedCommonTreeNodeStream.h>
-i<ANTLR/ANTLRUnbufferedCommonTreeNodeStreamState.h>
-i<ANTLR/ANTLRRewriteRuleSubtreeStream.h>
-i<ANTLR/ANTLRRewriteRuleTokenStream.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseMap.h
-c000000004C18F120000000000000022B
-t1276703008
-s555
-i<Cocoa/Cocoa.h>
-i"ANTLRLinkBase.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseRecognizer.h
-c000000004C224D8C0000000000001E5C
-t1277316492
-s7772
-i<Cocoa/Cocoa.h>
-i<Foundation/Foundation.h>
-i"ANTLRIntStream.h"
-i"ANTLRMap.h"
-i"ANTLRBitSet.h"
-i"ANTLRToken.h"
-i"ANTLRRecognizerSharedState.h"
-i"ANTLRRecognitionException.h"
-i"ANTLRMissingTokenException.h"
-i"ANTLRMismatchedTokenException.h"
-i"ANTLRMismatchedTreeNodeException.h"
-i"ANTLRUnwantedTokenException.h"
-i"ANTLRNoViableAltException.h"
-i"ANTLREarlyExitException.h"
-i"ANTLRMismatchedSetException.h"
-i"ANTLRMismatchedNotSetException.h"
-i"ANTLRFailedPredicateException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTree.h
-c000000004C21550C0000000000001A40
-t1277252876
-s6720
-i"ANTLRTree.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBaseTreeAdaptor.h
-c000000004C20D712000000000000149A
-t1277220626
-s5274
-i<Cocoa/Cocoa.h>
-i"ANTLRTreeAdaptor.h"
-i"ANTLRCommonErrorNode.h"
-i"ANTLRMapList.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBitSet.h
-c000000004C22B0330000000000000E96
-t1277341747
-s3734
-i<Cocoa/Cocoa.h>
-i<CoreFoundation/CoreFoundation.h>
-i"ANTLRToken.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRBufferedTokenStream.h
-c000000004C1A99FE0000000000000C3C
-t1276811774
-s3132
-i<Cocoa/Cocoa.h>
-i"ANTLRTokenStream.h"
-i"ANTLRTokenSource.h"
-i"ANTLRBitSet.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCharStream.h
-c000000004C117CCD00000000000007D6
-t1276214477
-s2006
-i"ANTLRIntStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonErrorNode.h
-c000000004C19202800000000000003FF
-t1276715048
-s1023
-i<Cocoa/Cocoa.h>
-i"ANTLRCommonTree.h"
-i"ANTLRTokenStream.h"
-i"ANTLRUnWantedTokenException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonToken.h
-c000000004C237C9C0000000000001151
-t1277394076
-s4433
-i<Cocoa/Cocoa.h>
-i"ANTLRToken.h"
-i"ANTLRCharStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonTokenStream.h
-c000000004C1920290000000000000E2C
-t1276715049
-s3628
-i<Cocoa/Cocoa.h>
-i"ANTLRTokenStream.h"
-i"ANTLRToken.h"
-i"ANTLRCommonToken.h"
-i"ANTLRTokenSource.h"
-i"ANTLRBitSet.h"
-i"ANTLRBufferedTokenStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonTree.h
-c000000004C14F2250000000000000E77
-t1276441125
-s3703
-i<Cocoa/Cocoa.h>
-i"ANTLRCommonToken.h"
-i"ANTLRBaseTree.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRCommonTreeAdaptor.h
-c000000004C1C392E0000000000000BF6
-t1276918062
-s3062
-i<Cocoa/Cocoa.h>
-i"ANTLRTree.h"
-i"ANTLRCommonToken.h"
-i"ANTLRCommonTree.h"
-i"ANTLRBaseTreeAdaptor.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRDFA.h
-c000000004C03EE74000000000000099A
-t1275326068
-s2458
-i<Cocoa/Cocoa.h>
-i"ANTLRBaseRecognizer.h"
-i"ANTLRIntStream.h"
-i"ANTLRNoViableAltException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLREarlyExitException.h
-c000000004C0188920000000000000753
-t1275168914
-s1875
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRFailedPredicateException.h
-c000000004C13FB2B0000000000000911
-t1276377899
-s2321
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRIntStream.h
-c000000004C1250810000000000001090
-t1276268673
-s4240
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRLexer.h
-c000000004C1814710000000000000C0D
-t1276646513
-s3085
-i<Cocoa/Cocoa.h>
-i"ANTLRTokenSource.h"
-i"ANTLRBaseRecognizer.h"
-i"ANTLRRecognizerSharedState.h"
-i"ANTLRCharStream.h"
-i"ANTLRToken.h"
-i"ANTLRCommonToken.h"
-i"ANTLRRecognitionException.h"
-i"ANTLRMismatchedTokenException.h"
-i"ANTLRMismatchedRangeException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRLinkBase.h
-c000000004C18F40F0000000000000574
-t1276703759
-s1396
-i<Cocoa/Cocoa.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMap.h
-c000000004C2038BD0000000000000407
-t1277180093
-s1031
-i<Cocoa/Cocoa.h>
-i"ANTLRBaseMap.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMapList.h
-c000000004C2148630000000000000638
-t1277249635
-s1592
-i<Cocoa/Cocoa.h>
-i"ANTLRMap.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMismatchedNotSetException.h
-c000000004C15047C0000000000000339
-t1276445820
-s825
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-i"ANTLRBitSet.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMismatchedRangeException.h
-c000000004C01884D0000000000000728
-t1275168845
-s1832
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMismatchedSetException.h
-c000000004C141F7000000000000007B9
-t1276387184
-s1977
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMismatchedTokenException.h
-c000000004C13DECD0000000000000BA8
-t1276370637
-s2984
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-i"ANTLRBitSet.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMismatchedTreeNodeException.h
-c000000004C14420F00000000000007A6
-t1276396047
-s1958
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRMissingTokenException.h
-c000000004C14001E000000000000031F
-t1276379166
-s799
-i<Cocoa/Cocoa.h>
-i"ANTLRMismatchedTokenException.h"
-i"ANTLRToken.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRNoViableAltException.h
-c000000004C0188A9000000000000082F
-t1275168937
-s2095
-i<Cocoa/Cocoa.h>
-i"ANTLRRecognitionException.h"
-i"ANTLRIntStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRParser.h
-c000000004C03D8D90000000000000712
-t1275320537
-s1810
-i<Cocoa/Cocoa.h>
-i"ANTLRBaseRecognizer.h"
-i"ANTLRTokenStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRParserRuleReturnScope.h
-c000000004C1ADF4400000000000007F7
-t1276829508
-s2039
-i<Cocoa/Cocoa.h>
-i"ANTLRToken.h"
-i"ANTLRRuleReturnScope.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRecognitionException.h
-c000000004C154F2E0000000000000B35
-t1276464942
-s2869
-i<Cocoa/Cocoa.h>
-i"ANTLRRuntimeException.h"
-i"ANTLRToken.h"
-i"ANTLRIntStream.h"
-i"ANTLRTree.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRecognizerSharedState.h
-c000000004C1ABD5900000000000011E1
-t1276820825
-s4577
-i<Cocoa/Cocoa.h>
-i"ANTLRToken.h"
-i"ANTLRBitSet.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleElementStream.h
-c000000004C125DAA0000000000000B1A
-t1276272042
-s2842
-i<Cocoa/Cocoa.h>
-i"ANTLRTreeAdaptor.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleSubtreeStream.h
-c000000004C180614000000000000069A
-t1276642836
-s1690
-i<Cocoa/Cocoa.h>
-i"ANTLRRewriteRuleElementStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRewriteRuleTokenStream.h
-c000000004C2276490000000000000B95
-t1277326921
-s2965
-i<Cocoa/Cocoa.h>
-i"ANTLRRewriteRuleElementStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRuleReturnScope.h
-c000000004C1ADD5A0000000000000289
-t1276829018
-s649
-i<Cocoa/Cocoa.h>
-i"ANTLRToken.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRRuntimeException.h
-c000000004C23B6E200000000000003EE
-t1277408994
-s1006
-i<Cocoa/Cocoa.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRStringStream.h
-c000000004C1920370000000000001059
-t1276715063
-s4185
-i<Cocoa/Cocoa.h>
-i"ANTLRCharStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRToken.h
-c000000004C110C870000000000000B5E
-t1276185735
-s2910
-i<Cocoa/Cocoa.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTokenSource.h
-c000000004C1813190000000000000730
-t1276646169
-s1840
-i"ANTLRToken.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTokenStream.h
-c000000004C1259B20000000000000AD6
-t1276271026
-s2774
-i"ANTLRIntStream.h"
-i"ANTLRToken.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTree.h
-c000000004C0867160000000000001121
-t1275619094
-s4385
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeAdaptor.h
-c000000004C1807DF0000000000001C33
-t1276643295
-s7219
-i"ANTLRToken.h"
-i"ANTLRBaseTree.h"
-i"ANTLRTokenStream.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeException.h
-c000000004C0188F800000000000007E2
-t1275169016
-s2018
-i<Cocoa/Cocoa.h>
-i"ANTLRTree.h"
-i"ANTLRRecognitionException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeNodeStream.h
-c000000004C1CEDDE000000000000086E
-t1276964318
-s2158
-i<Cocoa/Cocoa.h>
-i"ANTLRIntStream.h"
-i"ANTLRCharStream.h"
-i"ANTLRTokenStream.h"
-i"ANTLRCommonTree.h"
-i"ANTLRCommonTreeAdaptor.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeParser.h
-c000000004C1B85F20000000000000E72
-t1276872178
-s3698
-i<Cocoa/Cocoa.h>
-i"ANTLRBaseRecognizer.h"
-i"ANTLRTreeNodeStream.h"
-i"ANTLRCommonTreeAdaptor.h"
-i"ANTLRMismatchedTreeNodeException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreeRuleReturnScope.h
-c000000004C1AE611000000000000020A
-t1276831249
-s522
-i<Cocoa/Cocoa.h>
-i"ANTLRRuleReturnScope.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRUnbufferedCommonTreeNodeStream.h
-c000000004C2152FF000000000000135E
-t1277252351
-s4958
-i<Cocoa/Cocoa.h>
-i"ANTLRTreeNodeStream.h"
-i"ANTLRCommonTokenStream.h"
-i"ANTLRCommonTree.h"
-i"ANTLRCommonTreeAdaptor.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRUnbufferedCommonTreeNodeStreamState.h
-c000000004C01702B0000000000000A06
-t1275162667
-s2566
-i<Cocoa/Cocoa.h>
-i"ANTLRCommonTree.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRUnwantedTokenException.h
-c000000004C102B610000000000000298
-t1276128097
-s664
-i<Cocoa/Cocoa.h>
-i"ANTLRMismatchedTokenException.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/FuzzyJavaLexer.o
-t2
-s0
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/fuzzy.LinkFileList
-c000000004C23CA360000000000000102
-t1277413942
-s258
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/main.o
-t1277413949
-s9180
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/ANTLR.framework/ANTLR
-c000000004C23BF870000000000057CC8
-t1277411207
-s359624
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/fuzzy
-t2
-s0
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.h
-c0000000046A831CE0000000000000681
-t1185427918
-s1665
-i<Cocoa/Cocoa.h>
-i<ANTLR/ANTLR.h>
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m
-c000000004C016A12000000000000C4A8
-t1275161106
-s50344
-i"FuzzyJavaLexer.h"
-
-N/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m
-c0000000046A831CE000000000000029D
-t1185427918
-s669
-i<Cocoa/Cocoa.h>
-i"FuzzyJavaLexer.h"
-i<ANTLR/ANTLR.h>
-
-N/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/AppKit-ahznifaksrxtpvdrqxtapswqebtt/AppKit.h.gch
-t1277413949
-s37893452
-
-CCheck dependencies
-r0
-lSLF07#2@18"Check dependencies299106741#299106742#0(0"0(0#1#0"2513878976#0"0#
-
-CCompileC build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/FuzzyJavaLexer.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s299106749.122057
-e299106749.458824
-r0
-xCompileC
-xbuild/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/FuzzyJavaLexer.o
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-occ1obj: warning: -Wuninitialized is not supported without -O
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer nextToken]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:45: error: '_channel' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:45: error: (Each undeclared identifier is reported only once
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:45: error: for each function it appears in.)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: error: '_tokenStartLine' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: '-line' not found in protocol(s)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: no '-line' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: (Messages without a matching method signature
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: will be assumed to return 'id' and accept
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: '...' as arguments.)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:47: error: '_tokenCharPositionInLine' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:48: error: 'tokenStartCharIndex' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:48: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:51: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:59: error: 'token' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mIMPORT]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:86: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:86: warning: initialization makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:90: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:90: warning: no '-initWithInput:tokenType:channel:start:stop:' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:91: warning: 'FuzzyJavaLexer' may not respond to '-line'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:91: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:119: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mRETURN]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:180: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCLASS]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:211: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:211: warning: initialization makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:215: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:215: warning: no '-initWithInput:tokenType:channel:start:stop:' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:216: warning: 'FuzzyJavaLexer' may not respond to '-line'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:216: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:407: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:408: warning: '-text' not found in protocol(s)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:408: warning: no '-text' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:413: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mMETHOD]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:445: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:445: warning: initialization makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:449: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:449: warning: no '-initWithInput:tokenType:channel:start:stop:' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:450: warning: 'FuzzyJavaLexer' may not respond to '-line'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:450: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:732: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:733: warning: '-text' not found in protocol(s)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:733: warning: no '-text' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:738: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mFIELD]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:770: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:770: warning: initialization makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:774: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:774: warning: no '-initWithInput:tokenType:channel:start:stop:' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:775: warning: 'FuzzyJavaLexer' may not respond to '-line'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:775: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:822: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:828: warning: '-text' not found in protocol(s)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:828: warning: no '-text' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:833: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mSTAT]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:874: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:946: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCALL]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:971: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:971: warning: initialization makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:975: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:975: warning: no '-initWithInput:tokenType:channel:start:stop:' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:976: warning: 'FuzzyJavaLexer' may not respond to '-line'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:976: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1001: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1002: warning: '-text' not found in protocol(s)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1002: warning: no '-text' method found
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1007: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCOMMENT]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1074: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1075: warning: 'FuzzyJavaLexer' may not respond to '-text'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1080: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mSL_COMMENT]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1137: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1138: warning: 'FuzzyJavaLexer' may not respond to '-text'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1143: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mSTRING]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1230: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCHAR]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1317: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mWS]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1360: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1381: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mID]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1625: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mESC]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1692: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mTokens]':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1721: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1724: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1727: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1730: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1733: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1737: error: 'backtracking' undeclared (first use in this function)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1720: warning: unused variable 'LA38_1'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1746: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1749: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1752: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1755: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1745: warning: unused variable 'LA38_2'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1768: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1771: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1774: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1777: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1767: warning: unused variable 'LA38_3'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1790: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1793: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1796: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1799: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1789: warning: unused variable 'LA38_4'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1812: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1815: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1818: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1821: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1811: warning: unused variable 'LA38_5'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1834: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1837: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1840: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1843: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1833: warning: unused variable 'LA38_6'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1902: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1905: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1908: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1901: warning: unused variable 'LA38_7'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1921: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1924: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1920: warning: unused variable 'LA38_8'
-o{standard input}:96:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_1" minus "L00000000002$pb"
-o{standard input}:96:symbol: "L_OBJC_SELECTOR_REFERENCES_1" can't be undefined in a subtraction expression
-o{standard input}:92:non-relocatable subtraction expression, "L_OBJC_CLASS_FuzzyJavaLexer" minus "L00000000002$pb"
-o{standard input}:92:symbol: "L_OBJC_CLASS_FuzzyJavaLexer" can't be undefined in a subtraction expression
-o{standard input}:57:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_0" minus "L00000000001$pb"
-o{standard input}:57:symbol: "L_OBJC_SELECTOR_REFERENCES_0" can't be undefined in a subtraction expression
-o{standard input}:53:non-relocatable subtraction expression, "L_OBJC_CLASS_FuzzyJavaLexer" minus "L00000000001$pb"
-o{standard input}:53:symbol: "L_OBJC_CLASS_FuzzyJavaLexer" can't be undefined in a subtraction expression
-o{standard input}:unknown:Undefined local symbol L_OBJC_CLASS_FuzzyJavaLexer
-o{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_0
-o{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_1
-lSLF07#2@100"Compile /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m299106749#299106749#0(21755"cc1obj: warning: -Wuninitialized is not supported without -O/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer nextToken]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:45: error: '_channel' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:45: error: (Each undeclared identifier is reported only once/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:45: error: for each function it appears in.)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: error: '_tokenStartLine' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: '-line' not found in protocol(s)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: no '-line' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: (Messages without a matching method signature/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: will be assumed to return 'id' and accept/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:46: warning: '...' as arguments.)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:47: error: '_tokenCharPositionInLine' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:48: error: 'tokenStartCharIndex' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:48: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:51: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:59: error: 'token' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mIMPORT]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:86: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:86: warning: initialization makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:90: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:90: warning: no '-initWithInput:tokenType:channel:start:stop:' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:91: warning: 'FuzzyJavaLexer' may not respond to '-line'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:91: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:119: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mRETURN]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:180: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCLASS]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:211: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:211: warning: initialization makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:215: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:215: warning: no '-initWithInput:tokenType:channel:start:stop:' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:216: warning: 'FuzzyJavaLexer' may not respond to '-line'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:216: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:407: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:408: warning: '-text' not found in protocol(s)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:408: warning: no '-text' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:413: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mMETHOD]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:445: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:445: warning: initialization makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:449: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:449: warning: no '-initWithInput:tokenType:channel:start:stop:' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:450: warning: 'FuzzyJavaLexer' may not respond to '-line'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:450: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:732: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:733: warning: '-text' not found in protocol(s)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:733: warning: no '-text' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:738: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mFIELD]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:770: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:770: warning: initialization makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:774: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:774: warning: no '-initWithInput:tokenType:channel:start:stop:' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:775: warning: 'FuzzyJavaLexer' may not respond to '-line'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:775: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:822: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:828: warning: '-text' not found in protocol(s)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:828: warning: no '-text' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:833: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mSTAT]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:874: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:946: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCALL]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:971: warning: 'FuzzyJavaLexer' may not respond to '-getCharIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:971: warning: initialization makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:975: warning: 'FuzzyJavaLexer' may not respond to '-charIndex'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:975: warning: no '-initWithInput:tokenType:channel:start:stop:' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:976: warning: 'FuzzyJavaLexer' may not respond to '-line'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:976: warning: passing argument 1 of 'setLine:' makes integer from pointer without a cast/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1001: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1002: warning: '-text' not found in protocol(s)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1002: warning: no '-text' method found/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1007: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCOMMENT]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1074: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1075: warning: 'FuzzyJavaLexer' may not respond to '-text'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1080: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mSL_COMMENT]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1137: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1138: warning: 'FuzzyJavaLexer' may not respond to '-text'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1143: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mSTRING]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1230: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mCHAR]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1317: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mWS]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1360: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1381: error: 'struct FuzzyJavaLexer' has no member named '_tokenType'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mID]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1625: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mESC]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1692: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m: In function '-[FuzzyJavaLexer mTokens]':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1721: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1724: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1727: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1730: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1733: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1737: error: 'backtracking' undeclared (first use in this function)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1720: warning: unused variable 'LA38_1'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1746: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1749: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1752: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1755: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1745: warning: unused variable 'LA38_2'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1768: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1771: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1774: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1777: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1767: warning: unused variable 'LA38_3'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1790: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1793: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1796: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1799: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1789: warning: unused variable 'LA38_4'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1812: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1815: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1818: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1821: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1811: warning: unused variable 'LA38_5'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1834: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1837: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1840: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1843: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1833: warning: unused variable 'LA38_6'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1902: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1905: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1908: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1901: warning: unused variable 'LA38_7'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1921: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1924: warning: 'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m:1920: warning: unused variable 'LA38_8'{standard input}:96:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_1" minus "L00000000002$pb"{standard input}:96:symbol: "L_OBJC_SELECTOR_REFERENCES_1" can't be undefined in a subtraction expression{standard input}:92:non-relocatable subtraction expression, "L_OBJC_CLASS_FuzzyJavaLexer" minus "L00000000002$pb"{standard input}:92:symbol: "L_OBJC_CLASS_FuzzyJavaLexer" can't be undefined in a subtraction expression{standard input}:57:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_0" minus "L00000000001$pb"{standard input}:57:symbol: "L_OBJC_SELECTOR_REFERENCES_0" can't be undefined in a subtraction expression{standard input}:53:non-relocatable subtraction expression, "L_OBJC_CLASS_FuzzyJavaLexer" minus "L00000000001$pb"{standard input}:53:symbol: "L_OBJC_CLASS_FuzzyJavaLexer" can't be undefined in a subtraction expression{standard input}:unknown:Undefined local symbol L_OBJC_CLASS_FuzzyJavaLexer{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_0{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_1112(22@43"-Wuninitialized is not supported without -O299106749#0#61#0(6@0"299106749#0#0#0#0#0"0(4@50"'_channel' undeclared (first use in this function)299106749#198#155#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#45#0#45#0#43"'*' undeclared (first use in this function)0(4@57"'_tokenStartLine' undeclared (first use in this function)299106749#645#162#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#46#0#46#0#43"'*' undeclared (first use in this function)0(22@32"'-line' not found in protocol(s)299106749#807#139#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#46#0#46#0#28"'*' not found in protocol(s)0(22@23"No '-line' method found299106749#946#130#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#46#0#46#0#19"no '*' method found0(13@108"(Messages without a matching method signature will be assumed to return 'id' and accept '...' as arguments.)299106749#1076#152#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#46#0#46#0#0"0(4@66"'_tokenCharPositionInLine' undeclared (first use in this function)299106749#1503#171#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#47#0#47#0#43"'*' undeclared (first use in this function)0(4@61"'tokenStartCharIndex' undeclared (first use in this function)299106749#1674#166#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#48#0#48#0#43"'*' undeclared (first use in this function)0(22@51"'FuzzyJavaLexer' may not respond to '-getCharIndex'299106749#1840#158#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#48#0#48#0#26"'*' may not respond to '*'0(4@54"'backtracking' undeclared (first use in this function)299106749#1998#159#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#51#0#51#0#43"'*' undeclared (first use in this function)0(4@47"'token' undeclared (first use in this function)299106749#2157#152#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#59#0#59#0#43"'*' undeclared (first use in this function)0(22@51"'FuzzyJavaLexer' may not respond to '-getCharIndex'299106749#2444#158#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#86#0#86#0#26"'*' may not respond to '*'0(22@56"Initialization makes integer from pointer without a cast299106749#2602#163#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#86#0#86#0#0"0(22@48"'FuzzyJavaLexer' may not respond to '-charIndex'299106749#2765#155#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#90#0#90#0#26"'*' may not respond to '*'0(22@62"No '-initWithInput:tokenType:channel:start:stop:' method found299106749#2920#169#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#90#0#90#0#19"no '*' method found0(22@43"'FuzzyJavaLexer' may not respond to '-line'299106749#3089#150#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#91#0#91#0#26"'*' may not respond to '*'0(22@74"Passing argument 1 of 'setLine:' makes integer from pointer without a cast299106749#3239#181#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#91#0#91#0#67"passing argument * of '*' makes integer from pointer without a cast0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#3420#162#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#119#0#119#0#27"'*' has no member named '*'0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#3717#162#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#180#0#180#0#27"'*' has no member named '*'0(22@51"'FuzzyJavaLexer' may not respond to '-getCharIndex'299106749#4013#159#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#211#0#211#0#26"'*' may not respond to '*'0(22@56"Initialization makes integer from pointer without a cast299106749#4172#164#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#211#0#211#0#0"0(22@48"'FuzzyJavaLexer' may not respond to '-charIndex'299106749#4336#156#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#215#0#215#0#26"'*' may not respond to '*'0(22@62"No '-initWithInput:tokenType:channel:start:stop:' method found299106749#4492#170#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#215#0#215#0#19"no '*' method found0(22@43"'FuzzyJavaLexer' may not respond to '-line'299106749#4662#151#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#216#0#216#0#26"'*' may not respond to '*'0(22@74"Passing argument 1 of 'setLine:' makes integer from pointer without a cast299106749#4813#182#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#216#0#216#0#67"passing argument * of '*' makes integer from pointer without a cast0(4@54"'backtracking' undeclared (first use in this function)299106749#4995#160#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#407#0#407#0#43"'*' undeclared (first use in this function)0(22@32"'-text' not found in protocol(s)299106749#5155#140#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#408#0#408#0#28"'*' not found in protocol(s)0(22@23"No '-text' method found299106749#5295#131#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#408#0#408#0#19"no '*' method found0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#5426#162#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#413#0#413#0#27"'*' has no member named '*'0(22@51"'FuzzyJavaLexer' may not respond to '-getCharIndex'299106749#5723#159#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#445#0#445#0#26"'*' may not respond to '*'0(22@56"Initialization makes integer from pointer without a cast299106749#5882#164#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#445#0#445#0#0"0(22@48"'FuzzyJavaLexer' may not respond to '-charIndex'299106749#6046#156#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#449#0#449#0#26"'*' may not respond to '*'0(22@62"No '-initWithInput:tokenType:channel:start:stop:' method found299106749#6202#170#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#449#0#449#0#19"no '*' method found0(22@43"'FuzzyJavaLexer' may not respond to '-line'299106749#6372#151#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#450#0#450#0#26"'*' may not respond to '*'0(22@74"Passing argument 1 of 'setLine:' makes integer from pointer without a cast299106749#6523#182#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#450#0#450#0#67"passing argument * of '*' makes integer from pointer without a cast0(4@54"'backtracking' undeclared (first use in this function)299106749#6705#160#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#732#0#732#0#43"'*' undeclared (first use in this function)0(22@32"'-text' not found in protocol(s)299106749#6865#140#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#733#0#733#0#28"'*' not found in protocol(s)0(22@23"No '-text' method found299106749#7005#131#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#733#0#733#0#19"no '*' method found0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#7136#162#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#738#0#738#0#27"'*' has no member named '*'0(22@51"'FuzzyJavaLexer' may not respond to '-getCharIndex'299106749#7432#159#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#770#0#770#0#26"'*' may not respond to '*'0(22@56"Initialization makes integer from pointer without a cast299106749#7591#164#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#770#0#770#0#0"0(22@48"'FuzzyJavaLexer' may not respond to '-charIndex'299106749#7755#156#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#774#0#774#0#26"'*' may not respond to '*'0(22@62"No '-initWithInput:tokenType:channel:start:stop:' method found299106749#7911#170#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#774#0#774#0#19"no '*' method found0(22@43"'FuzzyJavaLexer' may not respond to '-line'299106749#8081#151#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#775#0#775#0#26"'*' may not respond to '*'0(22@74"Passing argument 1 of 'setLine:' makes integer from pointer without a cast299106749#8232#182#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#775#0#775#0#67"passing argument * of '*' makes integer from pointer without a cast0(4@54"'backtracking' undeclared (first use in this function)299106749#8414#160#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#822#0#822#0#43"'*' undeclared (first use in this function)0(22@32"'-text' not found in protocol(s)299106749#8574#140#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#828#0#828#0#28"'*' not found in protocol(s)0(22@23"No '-text' method found299106749#8714#131#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#828#0#828#0#19"no '*' method found0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#8845#162#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#833#0#833#0#27"'*' has no member named '*'0(4@54"'backtracking' undeclared (first use in this function)299106749#9140#160#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#874#0#874#0#43"'*' undeclared (first use in this function)0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#9300#162#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#946#0#946#0#27"'*' has no member named '*'0(22@51"'FuzzyJavaLexer' may not respond to '-getCharIndex'299106749#9595#159#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#971#0#971#0#26"'*' may not respond to '*'0(22@56"Initialization makes integer from pointer without a cast299106749#9754#164#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#971#0#971#0#0"0(22@48"'FuzzyJavaLexer' may not respond to '-charIndex'299106749#9918#156#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#975#0#975#0#26"'*' may not respond to '*'0(22@62"No '-initWithInput:tokenType:channel:start:stop:' method found299106749#10074#170#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#975#0#975#0#19"no '*' method found0(22@43"'FuzzyJavaLexer' may not respond to '-line'299106749#10244#151#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#976#0#976#0#26"'*' may not respond to '*'0(22@74"Passing argument 1 of 'setLine:' makes integer from pointer without a cast299106749#10395#182#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#976#0#976#0#67"passing argument * of '*' makes integer from pointer without a cast0(4@54"'backtracking' undeclared (first use in this function)299106749#10577#161#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1001#0#1001#0#43"'*' undeclared (first use in this function)0(22@32"'-text' not found in protocol(s)299106749#10738#141#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1002#0#1002#0#28"'*' not found in protocol(s)0(22@23"No '-text' method found299106749#10879#132#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1002#0#1002#0#19"no '*' method found0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#11011#163#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1007#0#1007#0#27"'*' has no member named '*'0(4@54"'backtracking' undeclared (first use in this function)299106749#11310#161#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1074#0#1074#0#43"'*' undeclared (first use in this function)0(22@43"'FuzzyJavaLexer' may not respond to '-text'299106749#11471#152#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1075#0#1075#0#26"'*' may not respond to '*'0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#11623#163#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1080#0#1080#0#27"'*' has no member named '*'0(4@54"'backtracking' undeclared (first use in this function)299106749#11925#161#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1137#0#1137#0#43"'*' undeclared (first use in this function)0(22@43"'FuzzyJavaLexer' may not respond to '-text'299106749#12086#152#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1138#0#1138#0#26"'*' may not respond to '*'0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#12238#163#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1143#0#1143#0#27"'*' has no member named '*'0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#12536#163#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1230#0#1230#0#27"'*' has no member named '*'0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#12832#163#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1317#0#1317#0#27"'*' has no member named '*'0(4@54"'backtracking' undeclared (first use in this function)299106749#13126#161#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1360#0#1360#0#43"'*' undeclared (first use in this function)0(4@56"'struct FuzzyJavaLexer' has no member named '_tokenType'299106749#13287#163#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1381#0#1381#0#27"'*' has no member named '*'0(4@54"'backtracking' undeclared (first use in this function)299106749#13581#161#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1625#0#1625#0#43"'*' undeclared (first use in this function)0(4@54"'backtracking' undeclared (first use in this function)299106749#13874#161#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1692#0#1692#0#43"'*' undeclared (first use in this function)0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#14170#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1721#0#1721#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#14345#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1724#0#1724#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#14520#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1727#0#1727#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#14695#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1730#0#1730#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#14870#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1733#0#1733#0#26"'*' may not respond to '*'0(4@54"'backtracking' undeclared (first use in this function)299106749#15045#161#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1737#0#1737#0#43"'*' undeclared (first use in this function)0(22@24"Unused variable 'LA38_1'299106749#15206#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1720#0#1720#0#19"unused variable '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#15339#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1746#0#1746#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#15514#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1749#0#1749#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#15689#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1752#0#1752#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#15864#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1755#0#1755#0#26"'*' may not respond to '*'0(22@24"Unused variable 'LA38_2'299106749#16039#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1745#0#1745#0#19"unused variable '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#16172#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1768#0#1768#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#16347#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1771#0#1771#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#16522#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1774#0#1774#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#16697#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1777#0#1777#0#26"'*' may not respond to '*'0(22@24"Unused variable 'LA38_3'299106749#16872#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1767#0#1767#0#19"unused variable '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#17005#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1790#0#1790#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#17180#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1793#0#1793#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#17355#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1796#0#1796#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#17530#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1799#0#1799#0#26"'*' may not respond to '*'0(22@24"Unused variable 'LA38_4'299106749#17705#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1789#0#1789#0#19"unused variable '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#17838#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1812#0#1812#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#18013#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1815#0#1815#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#18188#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1818#0#1818#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#18363#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1821#0#1821#0#26"'*' may not respond to '*'0(22@24"Unused variable 'LA38_5'299106749#18538#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1811#0#1811#0#19"unused variable '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#18671#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1834#0#1834#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#18846#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1837#0#1837#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#19021#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1840#0#1840#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#19196#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1843#0#1843#0#26"'*' may not respond to '*'0(22@24"Unused variable 'LA38_6'299106749#19371#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1833#0#1833#0#19"unused variable '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#19504#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1902#0#1902#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#19679#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1905#0#1905#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#19854#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1908#0#1908#0#26"'*' may not respond to '*'0(22@24"Unused variable 'LA38_7'299106749#20029#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1901#0#1901#0#19"unused variable '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#20162#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1921#0#1921#0#26"'*' may not respond to '*'0(22@66"'FuzzyJavaLexer' may not respond to '-evaluateSyntacticPredicate:'299106749#20337#175#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1924#0#1924#0#26"'*' may not respond to '*'0(22@24"Unused variable 'LA38_8'299106749#20512#133#0(6@92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m296853906#1920#0#1920#0#19"unused variable '*'0(0#0#92"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m2513878976#1311"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wswitch -Wunused-variable -Wunused-value -Wuninitialized -isysroot /Developer/SDKs/MacOSX10.6.sdk -fobjc-gc-only -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/fuzzy.hmap -F/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/include -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/DerivedSources/i386 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/DerivedSources -include /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/AppKit-ahznifaksrxtpvdrqxtapswqebtt/AppKit.h -c /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/FuzzyJavaLexer.m -o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/FuzzyJavaLexer.o1#
-
-CCompileC build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/main.o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s299106749.120342
-e299106749.425181
-r1
-xCompileC
-xbuild/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/main.o
-x/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-occ1obj: warning: -Wuninitialized is not supported without -O
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m: In function 'main':
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m:8: warning: 'stringWithContentsOfFile:' is deprecated (declared at /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:379)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m:13: warning: '-type' not found in protocol(s)
-o/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m:13: warning: comparison between pointer and integer
-lSLF07#2@90"Compile /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m299106749#299106749#0(681"cc1obj: warning: -Wuninitialized is not supported without -O/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m: In function 'main':/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m:8: warning: 'stringWithContentsOfFile:' is deprecated (declared at /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:379)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m:13: warning: '-type' not found in protocol(s)/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m:13: warning: comparison between pointer and integer4(22@43"-Wuninitialized is not supported without -O299106749#0#61#0(6@0"299106749#0#0#0#0#0"0(22@156"'stringWithContentsOfFile:' is deprecated (declared at /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:379)299106749#165#252#0(6@82"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m207120718#8#0#8#0#33"'*' is deprecated (declared at *)0(22@32"'-type' not found in protocol(s)299106749#417#129#0(6@82"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m207120718#13#0#13#0#28"'*' not found in protocol(s)0(22@38"Comparison between pointer and integer299106749#546#135#0(6@82"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m207120718#13#0#13#0#0"0(0#0#82"/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m2513878976#1291"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wswitch -Wunused-variable -Wunused-value -Wuninitialized -isysroot /Developer/SDKs/MacOSX10.6.sdk -fobjc-gc-only -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/fuzzy.hmap -F/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/include -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/DerivedSources/i386 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/DerivedSources -include /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/AppKit-ahznifaksrxtpvdrqxtapswqebtt/AppKit.h -c /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/examples/fuzzy/main.m -o /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/Objects-normal/i386/main.o0#
-
-CLd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/fuzzy normal i386
-r0
-
-CProcessPCH /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/AppKit-ahznifaksrxtpvdrqxtapswqebtt/AppKit.h.gch /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/AppKit.framework/Headers/AppKit.h normal i386 objective-c com.apple.compilers.gcc.4_2
-s299106742.045743
-e299106749.120138
-r1
-xProcessPCH
-x/var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/AppKit-ahznifaksrxtpvdrqxtapswqebtt/AppKit.h.gch
-x/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/AppKit.framework/Headers/AppKit.h
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-occ1obj: warning: -Wuninitialized is not supported without -O
-lSLF07#2@101"Precompile /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/AppKit.framework/Headers/AppKit.h299106742#299106749#0(61"cc1obj: warning: -Wuninitialized is not supported without -O1(22@43"-Wuninitialized is not supported without -O299106742#0#61#0(6@0"299106742#0#0#0#0#0"0(0#0#90"/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/AppKit.framework/Headers/AppKit.h2513878976#1177"    cd /Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c-header -arch i386 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wswitch -Wunused-variable -Wunused-value -Wuninitialized -isysroot /Developer/SDKs/MacOSX10.6.sdk -fobjc-gc-only -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/fuzzy.hmap -F/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/Debug/include -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/DerivedSources/i386 -I/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/build/ANTLR.build/Debug/fuzzy.build/DerivedSources -c /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/AppKit.framework/Headers/AppKit.h -o /var/folders/g7/g7-mBaqj2RaJUU+F71D0SU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/AppKit-ahznifaksrxtpvdrqxtapswqebtt/AppKit.h.gch0#
-

@@ -1,2 +1,0 @@
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreePatternParser.m: In function '-[ANTLRTreePatternParser parseNode]':
-/Users/acondit/source/antlr/antlr-3.2/runtime/ObjC/Framework/ANTLRTreePatternParser.m:152: warning: type 'id <ANTLRTreeAdaptor>' does not conform to the 'ANTLRTree' protocol
