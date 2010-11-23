@@ -1,44 +1,57 @@
-// $ANTLR 3.0 SymbolTable.g 2007-07-25 20:12:44
+// $ANTLR 3.2 Aug 24, 2010 10:45:57 SymbolTable.g 2010-08-24 13:53:46
 
+/* =============================================================================
+ * Standard antlr3 OBJC runtime definitions
+ */
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLR.h>
+#import "antlr3.h"
+/* End of standard antlr3 runtime definitions
+ * =============================================================================
+ */
 
+/* Start cyclicDFAInterface */
+#pragma mark Cyclic DFA interface start DFA4
+@interface DFA4 : ANTLRDFA {
+}
++ newDFA4WithRecognizer:(ANTLRBaseRecognizer *)theRecognizer;
+- initWithRecognizer:(ANTLRBaseRecognizer *)recognizer;
+@end /* end of DFA4 interface  */
+
+#pragma mark Cyclic DFA interface end DFA4
 
 #pragma mark Rule return scopes start
 #pragma mark Rule return scopes end
-
 #pragma mark Tokens
-#define SymbolTableLexer_T10	10
-#define SymbolTableLexer_T14	14
-#define SymbolTableLexer_T11	11
-#define SymbolTableLexer_T9	9
-#define SymbolTableLexer_INT	5
-#define SymbolTableLexer_EOF	-1
-#define SymbolTableLexer_WS	6
-#define SymbolTableLexer_T12	12
-#define SymbolTableLexer_Tokens	15
-#define SymbolTableLexer_T8	8
-#define SymbolTableLexer_T13	13
-#define SymbolTableLexer_T7	7
-#define SymbolTableLexer_ID	4
-
-@interface SymbolTableLexer : ANTLRLexer {
+#define WS 6
+#define T__12 12
+#define T__11 11
+#define T__14 14
+#define T__13 13
+#define T__10 10
+#define INT 5
+#define ID 4
+#define EOF -1
+#define T__9 9
+#define T__8 8
+#define T__7 7
+@interface SymbolTableLexer : ANTLRLexer { // line 283
+DFA4 *dfa4;
+// start of actions.lexer.memVars
+// start of action-actionScope-memVars
 }
++ (SymbolTableLexer *)newSymbolTableLexerWithCharStream:(id<ANTLRCharStream>)anInput;
 
+- (void)mT__7; 
+- (void)mT__8; 
+- (void)mT__9; 
+- (void)mT__10; 
+- (void)mT__11; 
+- (void)mT__12; 
+- (void)mT__13; 
+- (void)mT__14; 
+- (void)mID; 
+- (void)mINT; 
+- (void)mWS; 
+- (void)mTokens; 
 
-- (void) mT7;
-- (void) mT8;
-- (void) mT9;
-- (void) mT10;
-- (void) mT11;
-- (void) mT12;
-- (void) mT13;
-- (void) mT14;
-- (void) mID;
-- (void) mINT;
-- (void) mWS;
-- (void) mTokens;
-
-
-
-@end
+@end /* end of SymbolTableLexer interface */

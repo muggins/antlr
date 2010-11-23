@@ -1,16 +1,16 @@
 #import <Cocoa/Cocoa.h>
 #import "TestLexer.h"
-#import <ANTLR/ANTLR.h>
+#import "antlr3.h"
 #import <unistd.h>
 
 int main(int argc, const char * argv[])
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	ANTLRStringStream *stream = [[ANTLRStringStream alloc] initWithStringNoCopy:@"abB9Cdd44"];
+	ANTLRStringStream *stream = [ANTLRStringStream newANTLRStringStream:@"abB9Cdd44"];
 	TestLexer *lexer = [[TestLexer alloc] initWithCharStream:stream];
 	id<ANTLRToken> currentToken;
-	while ((currentToken = [lexer nextToken]) && [currentToken type] != ANTLRTokenTypeEOF) {
+	while ((currentToken = [[lexer nextToken] retain]) && [currentToken getType] != ANTLRTokenTypeEOF) {
 		NSLog(@"%@", currentToken);
 	}
 	[lexer release];
@@ -18,6 +18,6 @@ int main(int argc, const char * argv[])
 	
 	[pool release];
     // sleep for objectalloc
-    while (1) sleep(60);
+    // while (1) sleep(60);
 	return 0;
 }

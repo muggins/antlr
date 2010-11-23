@@ -1,62 +1,75 @@
-// $ANTLR 3.1b1 SimpleC.g 2007-12-16 20:47:43
+// $ANTLR 3.2 Aug 24, 2010 10:45:57 SimpleC.g 2010-08-25 11:11:23
 
+/* =============================================================================
+ * Standard antlr3 OBJC runtime definitions
+ */
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLR.h>
+#import "antlr3.h"
+/* End of standard antlr3 runtime definitions
+ * =============================================================================
+ */
 
+/* Start cyclicDFAInterface */
+#pragma mark Cyclic DFA interface start DFA4
+@interface DFA4 : ANTLRDFA {
+}
++ newDFA4WithRecognizer:(ANTLRBaseRecognizer *)theRecognizer;
+- initWithRecognizer:(ANTLRBaseRecognizer *)recognizer;
+@end /* end of DFA4 interface  */
+
+#pragma mark Cyclic DFA interface end DFA4
 
 #pragma mark Rule return scopes start
 #pragma mark Rule return scopes end
-
 #pragma mark Tokens
-#define SimpleCLexer_T21	21
-#define SimpleCLexer_FUNC_DEF	8
-#define SimpleCLexer_T22	22
-#define SimpleCLexer_WS	20
-#define SimpleCLexer_CHAR	15
-#define SimpleCLexer_EQ	11
-#define SimpleCLexer_T23	23
-#define SimpleCLexer_FUNC_HDR	6
-#define SimpleCLexer_LT	18
-#define SimpleCLexer_ARG_DEF	5
-#define SimpleCLexer_EQEQ	17
-#define SimpleCLexer_BLOCK	9
-#define SimpleCLexer_T25	25
-#define SimpleCLexer_T26	26
-#define SimpleCLexer_INT	12
-#define SimpleCLexer_EOF	-1
-#define SimpleCLexer_VOID	16
-#define SimpleCLexer_FOR	13
-#define SimpleCLexer_Tokens	27
-#define SimpleCLexer_PLUS	19
-#define SimpleCLexer_FUNC_DECL	7
-#define SimpleCLexer_T24	24
-#define SimpleCLexer_INT_TYPE	14
-#define SimpleCLexer_ID	10
-#define SimpleCLexer_VAR_DEF	4
-
-@interface SimpleCLexer : ANTLRLexer {
+#define K_ID 11
+#define K_RCURLY 19
+#define K_RCURVE 14
+#define K_INT 25
+#define K_EQEQ 22
+#define K_FOR 20
+#define FUNC_HDR 6
+#define FUNC_DEF 8
+#define EOF -1
+#define K_SEMICOLON 10
+#define K_INT_TYPE 15
+#define FUNC_DECL 7
+#define K_COMMA 13
+#define ARG_DEF 5
+#define K_LCURLY 18
+#define WS 26
+#define K_EQ 21
+#define BLOCK 9
+#define K_LCURVE 12
+#define K_LT 23
+#define K_CHAR 16
+#define K_VOID 17
+#define VAR_DEF 4
+#define K_PLUS 24
+@interface SimpleCLexer : ANTLRLexer { // line 283
+DFA4 *dfa4;
+// start of actions.lexer.memVars
+// start of action-actionScope-memVars
 }
++ (SimpleCLexer *)newSimpleCLexerWithCharStream:(id<ANTLRCharStream>)anInput;
 
+- (void)mK_FOR; 
+- (void)mK_CHAR; 
+- (void)mK_INT_TYPE; 
+- (void)mK_VOID; 
+- (void)mK_ID; 
+- (void)mK_INT; 
+- (void)mK_LCURVE; 
+- (void)mK_RCURVE; 
+- (void)mK_PLUS; 
+- (void)mK_COMMA; 
+- (void)mK_SEMICOLON; 
+- (void)mK_LT; 
+- (void)mK_EQ; 
+- (void)mK_EQEQ; 
+- (void)mK_LCURLY; 
+- (void)mK_RCURLY; 
+- (void)mWS; 
+- (void)mTokens; 
 
-- (void) mT21;
-- (void) mT22;
-- (void) mT23;
-- (void) mT24;
-- (void) mT25;
-- (void) mT26;
-- (void) mFOR;
-- (void) mINT_TYPE;
-- (void) mCHAR;
-- (void) mVOID;
-- (void) mID;
-- (void) mINT;
-- (void) mEQ;
-- (void) mEQEQ;
-- (void) mLT;
-- (void) mPLUS;
-- (void) mWS;
-- (void) mTokens;
-
-
-
-@end
+@end /* end of SimpleCLexer interface */

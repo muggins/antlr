@@ -1,39 +1,56 @@
-// $ANTLR 3.0 T.g 2007-07-25 20:12:43
+// $ANTLR 3.2 Aug 24, 2010 10:45:57 T.g 2010-08-24 13:53:44
 
+/* =============================================================================
+ * Standard antlr3 OBJC runtime definitions
+ */
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLR.h>
+#import "antlr3.h"
+/* End of standard antlr3 runtime definitions
+ * =============================================================================
+ */
 
-
-
+/* parserHeaderFile */
 #pragma mark Tokens
-#define TParser_INT	5
-#define TParser_WS	6
-#define TParser_EOF	-1
-#define TParser_ID	4
-
+#define WS 6
+#define INT 5
+#define ID 4
+#define EOF -1
+#define T__7 7
 #pragma mark Dynamic Global Scopes
-
 #pragma mark Dynamic Rule Scopes
-
-#pragma mark Rule Return Scopes
-
-
-@interface TParser : ANTLRParser {
-
-					
+#pragma mark Rule Return Scopes start
+#pragma mark Rule return scopes end
+@interface TParser : ANTLRParser { /* line 572 */
+// start of globalAttributeScopeMemVar
 
 
-	/** With this true, enum is seen as a keyword.  False, it's an identifier */
-	BOOL enableEnum;
+// start of action-actionScope-memVars
+
+/* With this true, enum is seen as a keyword.  False, it's an identifier */
+BOOL enableEnum;
+
+// start of ruleAttributeScopeMemVar
+
+
+// Start of memVars
 
  }
 
-
-- (void) stat;
-- (void) identifier;
-- (void) enumAsKeyword;
-- (void) enumAsID;
+// start of action-actionScope-methodsDecl
 
 
+- (void)stat; 
+- (void)identifier; 
+- (void)enumAsKeyword; 
+- (void)enumAsID; 
 
-@end
+
+@end /* end of TParser interface */
+/** Demonstrates how semantic predicates get hoisted out of the rule in 
+ *  which they are found and used in other decisions.  This grammar illustrates
+ *  how predicates can be used to distinguish between enum as a keyword and
+ *  an ID *dynamically*. :)
+
+ * Run "java org.antlr.Tool -dfa t.g" to generate DOT (graphviz) files.  See
+ * the T_dec-1.dot file to see the predicates in action.
+ */

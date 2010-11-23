@@ -1,30 +1,34 @@
-// $ANTLR 3.0 T.g 2007-07-25 20:12:43
+// $ANTLR 3.2 Aug 24, 2010 10:45:57 T.g 2010-08-24 13:53:45
 
+/* =============================================================================
+ * Standard antlr3 OBJC runtime definitions
+ */
 #import <Cocoa/Cocoa.h>
-#import <ANTLR/ANTLR.h>
+#import "antlr3.h"
+/* End of standard antlr3 runtime definitions
+ * =============================================================================
+ */
 
+/* Start cyclicDFAInterface */
 
 #pragma mark Rule return scopes start
 #pragma mark Rule return scopes end
-
 #pragma mark Tokens
-#define TLexer_INT	5
-#define TLexer_EOF	-1
-#define TLexer_WS	6
-#define TLexer_Tokens	8
-#define TLexer_T7	7
-#define TLexer_ID	4
-
-@interface TLexer : ANTLRLexer {
+#define WS 6
+#define INT 5
+#define ID 4
+#define EOF -1
+#define T__7 7
+@interface TLexer : ANTLRLexer { // line 283
+// start of actions.lexer.memVars
+// start of action-actionScope-memVars
 }
++ (TLexer *)newTLexerWithCharStream:(id<ANTLRCharStream>)anInput;
 
+- (void)mT__7; 
+- (void)mID; 
+- (void)mINT; 
+- (void)mWS; 
+- (void)mTokens; 
 
-- (void) mT7;
-- (void) mID;
-- (void) mINT;
-- (void) mWS;
-- (void) mTokens;
-
-
-
-@end
+@end /* end of TLexer interface */

@@ -19,21 +19,21 @@ program
 
 declaration
     :   variable
-    |   functionHeader ';' -> ^(FUNC_DECL functionHeader)
+    |   functionHeader K_SEMICOLON -> ^(FUNC_DECL functionHeader)
     |   functionHeader block -> ^(FUNC_DEF functionHeader block)
     ;
 
 variable
-    :   type declarator ';' -> ^(VAR_DEF type declarator)
+    :   type declarator K_SEMICOLON -> ^(VAR_DEF type declarator)
     ;
 
 declarator
-    :   ID 
+    :   K_ID 
     ;
 
 functionHeader
-    :   type ID '(' ( formalParameter ( ',' formalParameter )* )? ')'
-        -> ^(FUNC_HDR type ID formalParameter+)
+    :   type K_ID K_LCURVE ( formalParameter ( K_COMMA formalParameter )* )? K_RCURVE
+        -> ^(FUNC_HDR type K_ID formalParameter+)
     ;
 
 formalParameter
@@ -41,68 +41,74 @@ formalParameter
     ;
 
 type
-    :   'int'   
-    |   'char'  
-    |   'void'
-    |   ID        
+    :   K_INT_TYPE   
+    |   K_CHAR  
+    |   K_VOID
+    |   K_ID        
     ;
 
 block
-    :   lc='{'
+    :   lc=K_LCURLY
             variable*
             stat*
-        '}'
+        K_RCURLY
         -> ^(BLOCK[$lc,@"BLOCK"] variable* stat*)
     ;
 
 stat: forStat
-    | expr ';'!
+    | expr K_SEMICOLON!
     | block
-    | assignStat ';'!
-    | ';'!
+    | assignStat K_SEMICOLON!
+    | K_SEMICOLON!
     ;
 
 forStat
-    :   'for' '(' start=assignStat ';' expr ';' next=assignStat ')' block
-        -> ^('for' $start expr $next block)
+    :   K_FOR K_LCURVE start=assignStat K_SEMICOLON expr K_SEMICOLON next=assignStat K_RCURVE block
+        -> ^(K_FOR $start expr $next block)
     ;
 
 assignStat
-    :   ID EQ expr -> ^(EQ ID expr)
+    :   K_ID K_EQ expr -> ^(K_EQ K_ID expr)
     ;
 
 expr:   condExpr
     ;
 
 condExpr
-    :   aexpr ( ('=='^ | '<'^) aexpr )?
+    :   aexpr ( (K_EQEQ^ | K_LT^) aexpr )?
     ;
 
 aexpr
-    :   atom ( '+'^ atom )*
+    :   atom ( K_PLUS^ atom )*
     ;
 
 atom
-    : ID      
-    | INT      
-    | '(' expr ')' -> expr
+    : K_ID      
+    | K_INT      
+    | K_LCURVE expr K_RCURVE -> expr
     ; 
 
-FOR : 'for' ;
-INT_TYPE : 'int' ;
-CHAR: 'char';
-VOID: 'void';
+K_FOR : 'for' ;
+K_CHAR: 'char';
+K_INT_TYPE : 'int' ;
+K_VOID: 'void';
 
-ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+K_ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
 
-INT :	int+=('0'..'9')+ {NSLog(@"\%@", $int);}
+K_INT :	anInt+=('0'..'9')+ {NSLog(@"\%@", $anInt);}
     ;
 
-EQ   : '=' ;
-EQEQ : '==' ;
-LT   : '<' ;
-PLUS : '+' ;
+K_LCURVE : '(';
+K_RCURVE : ')';
+K_PLUS : '+' ;
+K_COMMA : ',';
+K_SEMICOLON : ';';
+K_LT   : '<' ;
+K_EQ   : '=' ;
+K_EQEQ : '==' ;
+K_LCURLY : '{';
+K_RCURLY : '}';
 
 WS  :   (   ' '
         |   '\t'

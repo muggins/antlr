@@ -1,17 +1,18 @@
 #import <Cocoa/Cocoa.h>
-#import "FuzzyJavaLexer.h"
-#import <ANTLR/ANTLR.h>
+#import "FuzzyLexer.h"
+#import "antlr3.h"
 
 int main(int argc, const char * argv[])
 {
+    NSError *error;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString *string = [NSString stringWithContentsOfFile:@"examples/fuzzy/input"];
+	NSString *string = [NSString stringWithContentsOfFile:@"../../examples/fuzzy/input"  encoding:NSASCIIStringEncoding error:&error];
 	NSLog(@"%@", string);
-	ANTLRStringStream *stream = [[ANTLRStringStream alloc] initWithStringNoCopy:string];
-	FuzzyJavaLexer *lexer = [[FuzzyJavaLexer alloc] initWithCharStream:stream];
+	ANTLRStringStream *stream = [ANTLRStringStream newANTLRStringStream:string];
+	Fuzzy *lexer = [Fuzzy newFuzzyWithCharStream:stream];
 	id<ANTLRToken> currentToken;
-	while ((currentToken = [lexer nextToken]) && [currentToken type] != ANTLRTokenTypeEOF) {
-//		NSLog(@"%@", currentToken);
+	while ((currentToken = [lexer nextToken]) && [currentToken getType] != ANTLRTokenTypeEOF) {
+		NSLog(@"%@", currentToken);
 	}
 	[lexer release];
 	[stream release];
