@@ -1198,6 +1198,7 @@ catch (NoViableAltException nvae)
 
 /* Dump DFA tables.
  */
+cyclicDFA(dfa) ::= <<
 private class DFA<dfa.decisionNumber> : DFA
 {
 	private const string DFA<dfa.decisionNumber>_eotS =
