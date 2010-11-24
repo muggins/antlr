@@ -1,6 +1,7 @@
 /*
  * [The "BSD license"]
- *  Copyright (c) 2010 Terence Parr
+ *  Copyright (c) 2010 Terence Parr and Alan Condit
+ *  Copyright (c) 2006 Kay Roepke (Objective-C runtime)
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -84,7 +85,8 @@ public class ObjCTarget extends Target {
 		if ( name.charAt(0)=='\'' ) {
 			return String.valueOf(ttype);
 		}
-		return generator.grammar.name + Grammar.grammarTypeToFileNameSuffix[generator.grammar.type] + "_" + name;
+		return name;
+		//return generator.grammar.name + Grammar.grammarTypeToFileNameSuffix[generator.grammar.type] + "_" + name;
 		//return super.getTokenTypeAsTargetLabel(generator, ttype);
 		//return this.getTokenTextAndTypeAsTargetLabel(generator, null, ttype);
 	}
