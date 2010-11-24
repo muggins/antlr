@@ -309,6 +309,9 @@ public abstract class BaseRecognizer {
 
 	/** What is the error header, normally line/character position information? */
 	public String getErrorHeader(RecognitionException e) {
+		if ( getSourceName()!=null )
+			return getSourceName()+" line "+e.line+":"+e.charPositionInLine;
+				
 		return "line "+e.line+":"+e.charPositionInLine;
 	}
 

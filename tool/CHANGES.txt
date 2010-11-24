@@ -9,7 +9,11 @@ CHANGES
 
 November 29, 2010 -- ANTLR v3.3
 
-* October 20, 2010
+November 23, 2010
+
+* Added source name to syntax error msgs
+
+October 20, 2010
 
 Added boolean couldBacktrack to enterDecision in dbg interface. Breaks AW
 interface and other tools! [BREAKS BACKWARD COMPATIBILITY]
