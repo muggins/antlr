@@ -389,7 +389,11 @@ namespace Antlr.Runtime
         /** <summary>What is the error header, normally line/character position information?</summary> */
         public virtual string GetErrorHeader( RecognitionException e )
         {
-            return "line " + e.Line + ":" + ( e.CharPositionInLine + 1 );
+            string prefix = SourceName ?? string.Empty;
+            if (prefix.Length > 0)
+                prefix += ' ';
+
+            return string.Format("{0}line {1}:{2}", prefix, e.Line, e.CharPositionInLine + 1);
         }
 
         /** <summary>
