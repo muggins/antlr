@@ -33,6 +33,7 @@
 namespace Antlr.Runtime
 {
     using ArgumentNullException = System.ArgumentNullException;
+    using Exception = System.Exception;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
@@ -49,8 +50,36 @@ namespace Antlr.Runtime
         private readonly string _ruleName;
         private readonly string _predicateText;
 
+        public FailedPredicateException()
+        {
+        }
+
+        public FailedPredicateException(string message)
+            : base(message)
+        {
+        }
+
+        public FailedPredicateException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         public FailedPredicateException(IIntStream input, string ruleName, string predicateText)
             : base(input)
+        {
+            this._ruleName = ruleName;
+            this._predicateText = predicateText;
+        }
+
+        public FailedPredicateException(string message, IIntStream input, string ruleName, string predicateText)
+            : base(message, input)
+        {
+            this._ruleName = ruleName;
+            this._predicateText = predicateText;
+        }
+
+        public FailedPredicateException(string message, IIntStream input, string ruleName, string predicateText, Exception innerException)
+            : base(message, input, innerException)
         {
             this._ruleName = ruleName;
             this._predicateText = predicateText;

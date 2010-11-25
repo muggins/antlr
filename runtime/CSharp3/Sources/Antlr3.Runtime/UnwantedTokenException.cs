@@ -33,6 +33,7 @@
 namespace Antlr.Runtime
 {
     using System.Collections.Generic;
+    using Exception = System.Exception;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
@@ -40,6 +41,20 @@ namespace Antlr.Runtime
     [System.Serializable]
     public class UnwantedTokenException : MismatchedTokenException
     {
+        public UnwantedTokenException()
+        {
+        }
+
+        public UnwantedTokenException(string message)
+            : base(message)
+        {
+        }
+
+        public UnwantedTokenException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         public UnwantedTokenException(int expecting, IIntStream input)
             : base(expecting, input)
         {
@@ -47,6 +62,16 @@ namespace Antlr.Runtime
 
         public UnwantedTokenException(int expecting, IIntStream input, IList<string> tokenNames)
             : base(expecting, input, tokenNames)
+        {
+        }
+
+        public UnwantedTokenException(string message, int expecting, IIntStream input, IList<string> tokenNames)
+            : base(message, expecting, input, tokenNames)
+        {
+        }
+
+        public UnwantedTokenException(string message, int expecting, IIntStream input, IList<string> tokenNames, Exception innerException)
+            : base(message, expecting, input, tokenNames, innerException)
         {
         }
 

@@ -33,6 +33,7 @@
 namespace Antlr.Runtime
 {
     using ArgumentNullException = System.ArgumentNullException;
+    using Exception = System.Exception;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
@@ -43,6 +44,27 @@ namespace Antlr.Runtime
         private readonly int _decisionNumber;
         private readonly int _stateNumber;
 
+        public NoViableAltException()
+        {
+        }
+
+        public NoViableAltException(string grammarDecisionDescription)
+        {
+            this._grammarDecisionDescription = grammarDecisionDescription;
+        }
+
+        public NoViableAltException(string message, string grammarDecisionDescription)
+            : base(message)
+        {
+            this._grammarDecisionDescription = grammarDecisionDescription;
+        }
+
+        public NoViableAltException(string message, string grammarDecisionDescription, Exception innerException)
+            : base(message, innerException)
+        {
+            this._grammarDecisionDescription = grammarDecisionDescription;
+        }
+
         public NoViableAltException(string grammarDecisionDescription, int decisionNumber, int stateNumber, IIntStream input)
             : base(input)
         {
@@ -50,7 +72,23 @@ namespace Antlr.Runtime
             this._decisionNumber = decisionNumber;
             this._stateNumber = stateNumber;
         }
-        
+
+        public NoViableAltException(string message, string grammarDecisionDescription, int decisionNumber, int stateNumber, IIntStream input)
+            : base(message, input)
+        {
+            this._grammarDecisionDescription = grammarDecisionDescription;
+            this._decisionNumber = decisionNumber;
+            this._stateNumber = stateNumber;
+        }
+
+        public NoViableAltException(string message, string grammarDecisionDescription, int decisionNumber, int stateNumber, IIntStream input, Exception innerException)
+            : base(message, input, innerException)
+        {
+            this._grammarDecisionDescription = grammarDecisionDescription;
+            this._decisionNumber = decisionNumber;
+            this._stateNumber = stateNumber;
+        }
+
         protected NoViableAltException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {

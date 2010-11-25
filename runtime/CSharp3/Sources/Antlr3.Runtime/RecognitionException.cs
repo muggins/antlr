@@ -128,7 +128,7 @@ namespace Antlr.Runtime
         }
 
         public RecognitionException( IIntStream input )
-            : this("A recognition error occurred.", null, input)
+            : this("A recognition error occurred.", input, null)
         {
         }
 
@@ -138,16 +138,16 @@ namespace Antlr.Runtime
         }
 
         public RecognitionException(string message, IIntStream input)
-            : this(message, null, input)
+            : this(message, input, null)
         {
         }
 
         public RecognitionException(string message, Exception innerException)
-            : this(message, innerException, null)
+            : this(message, null, innerException)
         {
         }
 
-        public RecognitionException(string message, Exception innerException, IIntStream input)
+        public RecognitionException(string message, IIntStream input, Exception innerException)
             : base(message, innerException)
         {
             this._input = input;

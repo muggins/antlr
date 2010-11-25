@@ -48,9 +48,31 @@ namespace Antlr.Runtime.Tree
     {
         private readonly string _elementDescription;
 
+        public RewriteCardinalityException()
+        {
+        }
+
         public RewriteCardinalityException(string elementDescription)
+            : this(elementDescription, elementDescription)
         {
             this._elementDescription = elementDescription;
+        }
+
+        public RewriteCardinalityException(string elementDescription, Exception innerException)
+            : this(elementDescription, elementDescription, innerException)
+        {
+        }
+
+        public RewriteCardinalityException(string message, string elementDescription)
+            : base(message)
+        {
+            _elementDescription = elementDescription;
+        }
+
+        public RewriteCardinalityException(string message, string elementDescription, Exception innerException)
+            : base(message, innerException)
+        {
+            _elementDescription = elementDescription;
         }
 
         protected RewriteCardinalityException(SerializationInfo info, StreamingContext context)
@@ -60,14 +82,6 @@ namespace Antlr.Runtime.Tree
                 throw new ArgumentNullException("info");
 
             _elementDescription = info.GetString("ElementDescription");
-        }
-
-        public override string Message
-        {
-            get
-            {
-                return _elementDescription;
-            }
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

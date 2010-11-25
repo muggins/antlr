@@ -33,6 +33,7 @@
 namespace Antlr.Runtime
 {
     using ArgumentNullException = System.ArgumentNullException;
+    using Exception = System.Exception;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
@@ -42,8 +43,36 @@ namespace Antlr.Runtime
         private readonly int _a;
         private readonly int _b;
 
+        public MismatchedRangeException()
+        {
+        }
+
+        public MismatchedRangeException(string message)
+            : base(message)
+        {
+        }
+
+        public MismatchedRangeException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         public MismatchedRangeException(int a, int b, IIntStream input)
             : base(input)
+        {
+            this._a = a;
+            this._b = b;
+        }
+
+        public MismatchedRangeException(string message, int a, int b, IIntStream input)
+            : base(message, input)
+        {
+            this._a = a;
+            this._b = b;
+        }
+
+        public MismatchedRangeException(string message, int a, int b, IIntStream input, Exception innerException)
+            : base(message, input, innerException)
         {
             this._a = a;
             this._b = b;
