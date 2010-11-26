@@ -1,10 +1,15 @@
-gUnit 1.0.6b
+gUnit
 July 31, 2009
 
 Leon, Jen-Yuan Su
 leonsu at mac com
 
 CHANGES
+
+November 26, 2010
+
+* Added -p package-name-for-junit-output since test package is usually
+  different than parser package. TJP
 
 January 24, 2009
 

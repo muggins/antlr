@@ -1,4 +1,4 @@
-gUnit 1.0.5
+gUnit
 Feb 21, 2009
 
 Leon, Jen-Yuan Su
@@ -7,9 +7,9 @@ leonsu at mac com
 INTRODUCTION
 
 Welcome to gUnit! I've been working on gUnit from 2007 summer and 
-this is a project in USF CS, sponsored by professor Terence.
+this is a project in USF CS, sponsored by professor Terence Parr.
 
-You should use the latest ANTLR v3.1 with gUnit:
+You should use the latest ANTLR v3 with gUnit:
 
 http://www.antlr.org/download.html
 
@@ -52,5 +52,5 @@ similar to what jUnit does for unit testing.
 
 How do I install gUnit?
 
-Just add gunit-1.0.5.jar to your CLASSPATH, and also make sure that
-both ANTLR and StringTemplate jars lie in CLASSPATH.
+It is included in ANTLR v3; it needs both ANTLR and StringTemplate jars
+in CLASSPATH.
