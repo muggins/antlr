@@ -949,4 +949,23 @@ public class TestCompositeGrammars extends BaseTest {
 		assertEquals(expecting, ok);
 	}
 
+	@Test public void testHeadersPropogatedCorrectlyToImportedGrammars() throws Exception {
+		String slave =
+			"parser grammar S;\n" +
+			"a : B {System.out.print(\"S.a\");} ;\n";
+		mkdir(tmpdir);
+		writeFile(tmpdir, "S.g", slave);
+		String master =
+			"grammar M;\n" +
+			"import S;\n" +
+			"@header{package mypackage;}\n" +
+			"@lexer::header{package mypackage;}\n" +
+			"s : a ;\n" +
+			"B : 'b' ;" + // defines B from inherited token space
+			"WS : (' '|'\\n') {skip();} ;\n" ;
+		boolean ok = antlr("M.g", "M.g", master, debug);
+		boolean expecting = true; // should be ok
+		assertEquals(expecting, ok);
+	}
+
 }

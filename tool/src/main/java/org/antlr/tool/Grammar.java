@@ -32,6 +32,7 @@ import antlr.collections.AST;
 import org.antlr.Tool;
 import org.antlr.analysis.*;
 import org.antlr.codegen.CodeGenerator;
+import org.antlr.codegen.Target;
 import org.antlr.grammar.v2.ANTLRLexer;
 import org.antlr.grammar.v2.ANTLRParser;
 import org.antlr.grammar.v2.*;
@@ -285,7 +286,8 @@ public class Grammar {
 	 *  I track the AST node for the action in case I need the line number
 	 *  for errors.
 	 */
-	protected Map actions = new HashMap();
+	protected Map<String, Map<String,GrammarAST>> actions =
+		new HashMap<String, Map<String,GrammarAST>>();
 
 	/** The NFA that represents the grammar with edges labelled with tokens
 	 *  or epsilon.  It is more suitable to analysis than an AST representation.
@@ -493,6 +495,9 @@ public class Grammar {
 	/** Factored out the sanity checking code; delegate to it. */
 	GrammarSanity sanity = new GrammarSanity(this);
 
+	/** Useful for asking questions about target during analysis */
+	Target target;
+
 	/** Create a grammar from file name.  */
 	public Grammar(Tool tool, String fileName, CompositeGrammar composite) {
 		this.composite = composite;
@@ -501,7 +506,8 @@ public class Grammar {
 		// ensure we have the composite set to something
 		if ( composite.delegateGrammarTreeRoot==null ) {
 			composite.setDelegationRoot(this);
-		}		
+		}
+		target = CodeGenerator.loadLanguageTarget((String)getOption("language"));		
 	}
 
 	/** Useful for when you are sure that you are not part of a composite
@@ -510,6 +516,7 @@ public class Grammar {
 	public Grammar() {
 		builtFromString = true;
 		composite = new CompositeGrammar(this);
+		target = CodeGenerator.loadLanguageTarget((String)getOption("language"));		
 	}
 
 	/** Used for testing; only useful on noncomposite grammars.*/
@@ -1439,7 +1446,7 @@ outer:
 		if ( scope==null ) {
 			scope = getDefaultActionScope(type);
 		}
-		//System.out.println("@"+scope+"::"+nameAST.getText()+"{"+actionAST.getText()+"}");
+		//System.out.println("Grammar "+name+" define @"+scope+"::"+nameAST.getText()+"{"+actionAST.getText()+"}");
 		String actionName = nameAST.getText();
 		Map scopeActions = (Map)actions.get(scope);
 		if ( scopeActions==null ) {
@@ -1458,8 +1465,11 @@ outer:
         // propogate header (regardless of scope (lexer, parser, ...) ?
         if ( this==composite.getRootGrammar() && actionName.equals("header") ) {
             List<Grammar> allgrammars = composite.getRootGrammar().getDelegates();
-            for (Grammar g : allgrammars) {
-                g.defineNamedAction(ampersandAST, scope, nameAST, actionAST);
+            for (Grammar delegate : allgrammars) {
+				if ( target.isValidActionScope(delegate.type, scope) ) {
+					//System.out.println("propogate to "+delegate.name);
+                	delegate.defineNamedAction(ampersandAST, scope, nameAST, actionAST);
+				}
             }
         }
     }

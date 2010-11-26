@@ -156,10 +156,11 @@ public class CodeGenerator {
 		this.tool = tool;
 		this.grammar = grammar;
 		this.language = language;
-		loadLanguageTarget(language);
+		target = loadLanguageTarget(language);
 	}
 
-	protected void loadLanguageTarget(String language) {
+	public static Target loadLanguageTarget(String language) {
+		Target target = null;
 		String targetName = "org.antlr.codegen."+language+"Target";
 		try {
 			Class c = Class.forName(targetName);
@@ -178,6 +179,7 @@ public class CodeGenerator {
 							   targetName,
 							   cnfe);
 		}
+		return target;
 	}
 
 	/** load the main language.stg template group file */

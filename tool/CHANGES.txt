@@ -11,6 +11,15 @@ November 29, 2010 -- ANTLR v3.3
 
 November 23, 2010
 
+* CodeGenerator.loadLanguageTarget is now static and available to load
+  targets so we can ask them questions during analysis.
+
+* Fixed and added unit test
+    http://www.antlr.org/jira/browse/ANTLR-370
+    http://www.antlr.org/jira/browse/ANTLR-375
+
+November 23, 2010
+
 * Added source name to syntax error msgs
 
 October 20, 2010
