@@ -31,62 +31,83 @@ import java.io.IOException;
 
 import org.antlr.runtime.*;
 
-/** The main gUnit interpreter entry point. 
- * 	Read a gUnit script, run unit tests or generate a junit file. 
+/** The main gUnit interpreter entry point.
+ * 	Read a gUnit script, run unit tests or generate a junit file.
  */
 public class Interp {
+    static String testPackage;
+    static boolean genJUnit;
+    static String gunitFile;
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException, RecognitionException {
 		/** Pull char from where? */
 		CharStream input = null;
 		/** If the input source is a testsuite file, where is it? */
 		String testsuiteDir = System.getProperty("user.dir");
-		
-	    /** Generate junit codes */
-		if ( args.length>0 && args[0].equals("-o") ) {
-			if ( args.length==2 ) {
-				input = new ANTLRFileStream(args[1]);
-				File f = new File(args[1]);
+
+        processArgs(args);
+
+	    if ( genJUnit ) {
+			if ( gunitFile!=null ) {
+				input = new ANTLRFileStream(gunitFile);
+				File f = new File(gunitFile);
 				testsuiteDir = getTestsuiteDir(f.getCanonicalPath(), f.getName());
 			}
 			else {
 				input = new ANTLRInputStream(System.in);
             }
-            JUnitCodeGen generater = new JUnitCodeGen(parse(input), testsuiteDir);
+            GrammarInfo grammarInfo = parse(input);
+            grammarInfo.setTestPackage(testPackage);
+            JUnitCodeGen generater = new JUnitCodeGen(grammarInfo, testsuiteDir);
             generater.compile();
 			return;
 		}
-		
-		
-		/** Run gunit tests */
-		if ( args.length==1 ) {
-			input = new ANTLRFileStream(args[0]);
-			File f = new File(args[0]);
+
+		if ( gunitFile!=null ) {
+			input = new ANTLRFileStream(gunitFile);
+			File f = new File(gunitFile);
 			testsuiteDir = getTestsuiteDir(f.getCanonicalPath(), f.getName());
 		}
 		else
 			input = new ANTLRInputStream(System.in);
-		
+
 		gUnitExecutor executer = new gUnitExecutor(parse(input), testsuiteDir);
-		
+
 		System.out.print(executer.execTest());	// unit test result
-		
+
 		//return an error code of the number of failures
-		System.exit(executer.failures.size() + executer.invalids.size()); 
+		System.exit(executer.failures.size() + executer.invalids.size());
 	}
-	
+
+    public static void processArgs(String[] args) {
+        if (args == null || args.length == 0) return;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-p")) {
+                if (i + 1 >= args.length) {
+                    System.err.println("missing library directory with -lib option; ignoring");
+                }
+                else {
+                    i++;
+                    testPackage = args[i];
+                }
+            }
+            else if (args[i].equals("-o")) genJUnit = true;
+            else gunitFile = args[i]; // Must be the gunit file
+        }
+    }
+
 	public static GrammarInfo parse(CharStream input) throws RecognitionException {
 		gUnitLexer lexer = new gUnitLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		
+
 		GrammarInfo grammarInfo = new GrammarInfo();
 		gUnitParser parser = new gUnitParser(tokens, grammarInfo);
 		parser.gUnitDef();	// parse gunit script and save elements to grammarInfo
 		return grammarInfo;
 	}
-	
+
 	public static String getTestsuiteDir(String fullPath, String fileName) {
 		return fullPath.substring(0, fullPath.length()-fileName.length());
 	}
-	
+
 }

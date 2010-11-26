@@ -41,11 +41,11 @@ import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
 
 public class gUnitExecutor implements ITestSuite {
 	public GrammarInfo grammarInfo;
-	
+
 	private final ClassLoader grammarClassLoader;
-	
+
 	private final String testsuiteDir;
-	
+
 	public int numOfTest;
 
 	public int numOfSuccess;
@@ -59,17 +59,17 @@ public class gUnitExecutor implements ITestSuite {
 	private String parserName;
 
 	private String lexerName;
-	
+
 	public List<AbstractTest> failures;
 	public List<AbstractTest> invalids;
-	
+
 	private PrintStream console = System.out;
     private PrintStream consoleErr = System.err;
-    
+
     public gUnitExecutor(GrammarInfo grammarInfo, String testsuiteDir) {
     	this( grammarInfo, determineClassLoader(), testsuiteDir);
     }
-    
+
     private static ClassLoader determineClassLoader() {
     	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     	if ( classLoader == null ) {
@@ -77,7 +77,7 @@ public class gUnitExecutor implements ITestSuite {
     	}
     	return classLoader;
     }
-    
+
 	public gUnitExecutor(GrammarInfo grammarInfo, ClassLoader grammarClassLoader, String testsuiteDir) {
 		this.grammarInfo = grammarInfo;
 		this.grammarClassLoader = grammarClassLoader;
@@ -89,29 +89,29 @@ public class gUnitExecutor implements ITestSuite {
 		failures = new ArrayList<AbstractTest>();
 		invalids = new ArrayList<AbstractTest>();
 	}
-	
+
 	protected ClassLoader getGrammarClassLoader() {
 		return grammarClassLoader;
 	}
-	
+
 	protected final Class classForName(String name) throws ClassNotFoundException {
 		return getGrammarClassLoader().loadClass( name );
 	}
-	
+
 	public String execTest() throws IOException{
 		// Set up string template for testing result
 		StringTemplate testResultST = getTemplateGroup().getInstanceOf("testResult");
 		try {
 			/** Set up appropriate path for parser/lexer if using package */
-			if (grammarInfo.getHeader()!=null ) {
-				parserName = grammarInfo.getHeader()+"."+grammarInfo.getGrammarName()+"Parser";
-				lexerName = grammarInfo.getHeader()+"."+grammarInfo.getGrammarName()+"Lexer";
+			if (grammarInfo.getGrammarPackage()!=null ) {
+				parserName = grammarInfo.getGrammarPackage()+"."+grammarInfo.getGrammarName()+"Parser";
+				lexerName = grammarInfo.getGrammarPackage()+"."+grammarInfo.getGrammarName()+"Lexer";
 			}
 			else {
 				parserName = grammarInfo.getGrammarName()+"Parser";
 				lexerName = grammarInfo.getGrammarName()+"Lexer";
 			}
-			
+
 			/*** Start Unit/Functional Testing ***/
 			// Execute unit test of for parser, lexer and tree grammar
 			if ( grammarInfo.getTreeGrammarName()!=null ) {
@@ -122,7 +122,7 @@ public class gUnitExecutor implements ITestSuite {
 			}
 			executeTests();
 			// End of exection of unit testing
-			
+
 			// Fill in the template holes with the test results
 			testResultST.setAttribute("title", title);
 			testResultST.setAttribute("num_of_test", numOfTest);
@@ -142,7 +142,7 @@ public class gUnitExecutor implements ITestSuite {
         }
 		return testResultST.toString();
 	}
-	
+
 	private StringTemplateGroup getTemplateGroup() {
 		StringTemplateGroupLoader loader = new CommonGroupLoader("org/antlr/gunit", null);
 		StringTemplateGroup.registerGroupLoader(loader);
@@ -150,7 +150,7 @@ public class gUnitExecutor implements ITestSuite {
 		StringTemplateGroup group = StringTemplateGroup.loadGroup("gUnitTestResult");
 		return group;
 	}
-	
+
 	// TODO: throw more specific exceptions
 	private gUnitTestResult runCorrectParser(String parserName, String lexerName, String rule, String lexicalRule, String treeRule, gUnitTestInput input) throws Exception
 	{
@@ -182,11 +182,11 @@ public class gUnitExecutor implements ITestSuite {
 					invalids.add(test);
 					continue;
 				}	// TODO: ensure there's no other exceptions required to be handled here...
-				
+
 				String expected = test.getExpected();
 				String actual = test.getResult(result);
 				test.setActual(actual);
-				
+
 				if (actual == null) {
 					numOfFailure++;
                     test.setHeader(rule, lexicalRule, treeRule, numOfTest, input.line);
@@ -226,16 +226,16 @@ public class gUnitExecutor implements ITestSuite {
 		try {
 			/** Set up ANTLR input stream based on input source, file or String */
 			input = getANTLRInputStream(testInput);
-		
+
             /** Use Reflection to create instances of lexer and parser */
         	lexer = classForName(lexerName);
             Class[] lexArgTypes = new Class[]{CharStream.class};				// assign type to lexer's args
-            Constructor lexConstructor = lexer.getConstructor(lexArgTypes);        
-            Object[] lexArgs = new Object[]{input};								// assign value to lexer's args   
-            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer    
-            
+            Constructor lexConstructor = lexer.getConstructor(lexArgTypes);
+            Object[] lexArgs = new Object[]{input};								// assign value to lexer's args
+            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer
+
             Method ruleName = lexer.getMethod("m"+testRuleName, new Class[0]);
-            
+
             /** Start of I/O Redirecting */
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream err = new ByteArrayOutputStream();
@@ -252,7 +252,7 @@ public class gUnitExecutor implements ITestSuite {
             if ( currentIndex!=input.size() ) {
             	ps2.print("extra text found, '"+input.substring(currentIndex, input.size()-1)+"'");
             }
-			
+
 			if ( err.toString().length()>0 ) {
 				gUnitTestResult testResult = new gUnitTestResult(false, err.toString(), true);
 				testResult.setError(err.toString());
@@ -292,7 +292,7 @@ public class gUnitExecutor implements ITestSuite {
         // TODO: verify this:
         throw new Exception("This should be unreachable?");
 	}
-	
+
 	// TODO: throw proper exceptions
 	protected gUnitTestResult runParser(String parserName, String lexerName, String testRuleName, gUnitTestInput testInput) throws Exception {
 		CharStream input;
@@ -303,22 +303,22 @@ public class gUnitExecutor implements ITestSuite {
 		try {
 			/** Set up ANTLR input stream based on input source, file or String */
 			input = getANTLRInputStream(testInput);
-			
+
             /** Use Reflection to create instances of lexer and parser */
         	lexer = classForName(lexerName);
             Class[] lexArgTypes = new Class[]{CharStream.class};				// assign type to lexer's args
-            Constructor lexConstructor = lexer.getConstructor(lexArgTypes);        
-            Object[] lexArgs = new Object[]{input};								// assign value to lexer's args   
-            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer    
-            
+            Constructor lexConstructor = lexer.getConstructor(lexArgTypes);
+            Object[] lexArgs = new Object[]{input};								// assign value to lexer's args
+            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer
+
             CommonTokenStream tokens = new CommonTokenStream((Lexer) lexObj);
-            
+
             parser = classForName(parserName);
             Class[] parArgTypes = new Class[]{TokenStream.class};				// assign type to parser's args
             Constructor parConstructor = parser.getConstructor(parArgTypes);
-            Object[] parArgs = new Object[]{tokens};							// assign value to parser's args  
-            Object parObj = parConstructor.newInstance(parArgs);				// makes new instance of parser      
-            
+            Object[] parArgs = new Object[]{tokens};							// assign value to parser's args
+            Object parObj = parConstructor.newInstance(parArgs);				// makes new instance of parser
+
             // set up customized tree adaptor if necessary
             if ( grammarInfo.getAdaptor()!=null ) {
             	parArgTypes = new Class[]{TreeAdaptor.class};
@@ -326,9 +326,9 @@ public class gUnitExecutor implements ITestSuite {
             	Class _treeAdaptor = classForName(grammarInfo.getAdaptor());
             	_setTreeAdaptor.invoke(parObj, _treeAdaptor.newInstance());
             }
-            
+
             Method ruleName = parser.getMethod(testRuleName);
-            
+
             /** Start of I/O Redirecting */
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream err = new ByteArrayOutputStream();
@@ -366,13 +366,13 @@ public class gUnitExecutor implements ITestSuite {
                 	}
                 }
             }
-            
+
             /** Invalid input */
             if ( tokens.index()!=tokens.size() ) {
             	//throw new InvalidInputException();
             	ps2.print("Invalid input");
             }
-			
+
 			if ( err.toString().length()>0 ) {
 				gUnitTestResult testResult = new gUnitTestResult(false, err.toString());
 				testResult.setError(err.toString());
@@ -389,7 +389,7 @@ public class gUnitExecutor implements ITestSuite {
 			else if ( stString!=null ) {// Return toString of ST
 				return new gUnitTestResult(true, stdout, stString);
 			}
-			
+
 			if ( ruleReturn!=null ) {
 				// TODO: currently only works for a single return with int or String value
 				return new gUnitTestResult(true, stdout, String.valueOf(ruleReturn));
@@ -424,7 +424,7 @@ public class gUnitExecutor implements ITestSuite {
         // TODO: verify this:
         throw new Exception("This should be unreachable?");
 	}
-	
+
 	protected gUnitTestResult runTreeParser(String parserName, String lexerName, String testRuleName, String testTreeRuleName, gUnitTestInput testInput) throws Exception {
 		CharStream input;
 		String treeParserPath;
@@ -436,32 +436,32 @@ public class gUnitExecutor implements ITestSuite {
 		try {
 			/** Set up ANTLR input stream based on input source, file or String */
 			input = getANTLRInputStream(testInput);
-			
+
 			/** Set up appropriate path for tree parser if using package */
-			if ( grammarInfo.getHeader()!=null ) {
-				treeParserPath = grammarInfo.getHeader()+"."+grammarInfo.getTreeGrammarName();
+			if ( grammarInfo.getGrammarPackage()!=null ) {
+				treeParserPath = grammarInfo.getGrammarPackage()+"."+grammarInfo.getTreeGrammarName();
 			}
 			else {
 				treeParserPath = grammarInfo.getTreeGrammarName();
 			}
-			
+
             /** Use Reflection to create instances of lexer and parser */
         	lexer = classForName(lexerName);
             Class[] lexArgTypes = new Class[]{CharStream.class};				// assign type to lexer's args
-            Constructor lexConstructor = lexer.getConstructor(lexArgTypes);        
-            Object[] lexArgs = new Object[]{input};								// assign value to lexer's args   
-            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer    
-            
+            Constructor lexConstructor = lexer.getConstructor(lexArgTypes);
+            Object[] lexArgs = new Object[]{input};								// assign value to lexer's args
+            Object lexObj = lexConstructor.newInstance(lexArgs);				// makes new instance of lexer
+
             CommonTokenStream tokens = new CommonTokenStream((Lexer) lexObj);
-            
+
             parser = classForName(parserName);
             Class[] parArgTypes = new Class[]{TokenStream.class};				// assign type to parser's args
             Constructor parConstructor = parser.getConstructor(parArgTypes);
-            Object[] parArgs = new Object[]{tokens};							// assign value to parser's args  
-            Object parObj = parConstructor.newInstance(parArgs);				// makes new instance of parser      
-            
+            Object[] parArgs = new Object[]{tokens};							// assign value to parser's args
+            Object parObj = parConstructor.newInstance(parArgs);				// makes new instance of parser
+
             // set up customized tree adaptor if necessary
-            TreeAdaptor customTreeAdaptor = null; 
+            TreeAdaptor customTreeAdaptor = null;
             if ( grammarInfo.getAdaptor()!=null ) {
             	parArgTypes = new Class[]{TreeAdaptor.class};
             	Method _setTreeAdaptor = parser.getMethod("setTreeAdaptor", parArgTypes);
@@ -469,7 +469,7 @@ public class gUnitExecutor implements ITestSuite {
             	customTreeAdaptor = (TreeAdaptor) _treeAdaptor.newInstance();
             	_setTreeAdaptor.invoke(parObj, customTreeAdaptor);
             }
-            
+
             Method ruleName = parser.getMethod(testRuleName);
 
             /** Start of I/O Redirecting */
@@ -483,8 +483,8 @@ public class gUnitExecutor implements ITestSuite {
 
             /** Invoke grammar rule, and get the return value */
             Object ruleReturn = ruleName.invoke(parObj);
-            
-            Class _return = classForName(parserName+"$"+testRuleName+"_return");            	
+
+            Class _return = classForName(parserName+"$"+testRuleName+"_return");
         	Method returnName = _return.getMethod("getTree");
         	CommonTree tree = (CommonTree) returnName.invoke(ruleReturn);
 
@@ -502,8 +502,8 @@ public class gUnitExecutor implements ITestSuite {
         	treeParser = classForName(treeParserPath);
             Class[] treeParArgTypes = new Class[]{TreeNodeStream.class};		// assign type to tree parser's args
             Constructor treeParConstructor = treeParser.getConstructor(treeParArgTypes);
-            Object[] treeParArgs = new Object[]{nodes};							// assign value to tree parser's args  
-            Object treeParObj = treeParConstructor.newInstance(treeParArgs);	// makes new instance of tree parser      
+            Object[] treeParArgs = new Object[]{nodes};							// assign value to tree parser's args
+            Object treeParObj = treeParConstructor.newInstance(treeParArgs);	// makes new instance of tree parser
         	// Invoke the tree rule, and store the return value if there is
             Method treeRuleName = treeParser.getMethod(testTreeRuleName);
             Object treeRuleReturn = treeRuleName.invoke(treeParObj);
@@ -534,7 +534,7 @@ public class gUnitExecutor implements ITestSuite {
                 	}
                 }
             }
-          
+
             /** Invalid input */
             if ( tokens.index()!=tokens.size() ) {
             	//throw new InvalidInputException();
@@ -546,7 +546,7 @@ public class gUnitExecutor implements ITestSuite {
 				testResult.setError(err.toString());
 				return testResult;
 			}
-			
+
 			String stdout = null;
 			// TODO: need to deal with the case which has both ST return value and stdout
 			if ( out.toString().length()>0 ) {
@@ -558,7 +558,7 @@ public class gUnitExecutor implements ITestSuite {
 			else if ( stString!=null ) {// Return toString of ST
 				return new gUnitTestResult(true, stdout, stString);
 			}
-			
+
 			if ( treeRuleReturn!=null ) {
 				// TODO: again, currently only works for a single return with int or String value
 				return new gUnitTestResult(true, stdout, String.valueOf(treeRuleReturn));
@@ -593,7 +593,7 @@ public class gUnitExecutor implements ITestSuite {
         // TODO: verify this:
         throw new Exception("Should not be reachable?");
 	}
-	
+
 	// Create ANTLR input stream based on input source, file or String
 	private CharStream getANTLRInputStream(gUnitTestInput testInput) throws IOException {
 		CharStream input;
@@ -605,8 +605,8 @@ public class gUnitExecutor implements ITestSuite {
 				testInputFile = new File(this.testsuiteDir, filePath);
 				if ( testInputFile.exists() ) filePath = testInputFile.getCanonicalPath();
 				// if still not found, also try to look for it under the package dir
-				else if ( grammarInfo.getHeader()!=null ) {
-					testInputFile = new File("."+File.separator+grammarInfo.getHeader().replace(".", File.separator), filePath);
+				else if ( grammarInfo.getGrammarPackage()!=null ) {
+					testInputFile = new File("."+File.separator+grammarInfo.getGrammarPackage().replace(".", File.separator), filePath);
 					if ( testInputFile.exists() ) filePath = testInputFile.getCanonicalPath();
 				}
 			}
@@ -617,7 +617,7 @@ public class gUnitExecutor implements ITestSuite {
 		}
 		return input;
 	}
-	
+
 	// set up the cause of exception or the exception name into a gUnitTestResult instance
 	private gUnitTestResult getTestExceptionResult(Exception e) {
 		gUnitTestResult testResult;
@@ -638,7 +638,7 @@ public class gUnitExecutor implements ITestSuite {
     }
 
     public void onFail(ITestCase failTest) {
-        
+
     }
-	
+
 }

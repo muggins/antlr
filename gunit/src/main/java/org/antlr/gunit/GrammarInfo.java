@@ -35,15 +35,16 @@ public class GrammarInfo {
 
 	private String grammarName;					// targeted grammar for unit test
 	private String treeGrammarName = null;		// optional, required for testing tree grammar
-	private String header = null;				// optional, required if using java package
+    private String grammarPackage = null;		// optional, package parser lives in
+    private String testPackage = null;		    // optional, package of junit code
 	private String adaptor = null;              // optional, required if using customized tree adaptor
 	private List<gUnitTestSuite> ruleTestSuites = new ArrayList<gUnitTestSuite>();	// testsuites for each testing rule
 	private StringBuffer unitTestResult = new StringBuffer();
-	
+
 	public String getGrammarName() {
 		return grammarName;
 	}
-	
+
 	public void setGrammarName(String grammarName) {
 		this.grammarName = grammarName;
 	}
@@ -56,18 +57,26 @@ public class GrammarInfo {
 		this.treeGrammarName = treeGrammarName;
 	}
 
-	public String getHeader() {
-		return header;
+    public String getTestPackage() {
+        return testPackage;
+    }
+
+    public void setTestPackage(String testPackage) {
+        this.testPackage = testPackage;
+    }
+
+    public String getGrammarPackage() {
+		return grammarPackage;
 	}
 
-	public void setHeader(String header) {
-		this.header = header;
+	public void setGrammarPackage(String grammarPackage) {
+		this.grammarPackage = grammarPackage;
 	}
-	
+
 	public String getAdaptor() {
 		return adaptor;
 	}
-	
+
 	public void setAdaptor(String adaptor) {
 		this.adaptor = adaptor;
 	}
@@ -76,11 +85,11 @@ public class GrammarInfo {
 		// Make this list unmodifiable so that we can refactor knowing it's not changed.
 		return Collections.unmodifiableList(ruleTestSuites);
 	}
-	
+
 	public void addRuleTestSuite(gUnitTestSuite testSuite) {
 		this.ruleTestSuites.add(testSuite);
 	}
-	
+
 	public void appendUnitTestResult(String result) {
 		this.unitTestResult.append(result);
 	}

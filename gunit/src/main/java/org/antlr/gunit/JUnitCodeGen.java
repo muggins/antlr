@@ -84,8 +84,8 @@ public class JUnitCodeGen {
 
     private Class locateParserClass(GrammarInfo grammarInfo, ClassLoader classLoader) throws ClassNotFoundException {
         String parserClassName = grammarInfo.getGrammarName() + "Parser";
-        if ( grammarInfo.getHeader() != null ) {
-            parserClassName = grammarInfo.getHeader()+ "." + parserClassName;
+        if ( grammarInfo.getGrammarPackage() != null ) {
+            parserClassName = grammarInfo.getGrammarPackage()+ "." + parserClassName;
         }
         return classLoader.loadClass( parserClassName );
     }
@@ -127,8 +127,8 @@ public class JUnitCodeGen {
 
     protected String genClassHeader(StringTemplateGroup group, String junitFileName, String lexerName, String parserName) {
         StringTemplate classHeaderST = group.getInstanceOf("classHeader");
-        if ( grammarInfo.getHeader()!=null ) {	// Set up class package if there is
-            classHeaderST.setAttribute("header", "package "+grammarInfo.getHeader()+";");
+        if ( grammarInfo.getTestPackage()!=null ) {	// Set up class package if there is
+            classHeaderST.setAttribute("header", "package "+grammarInfo.getTestPackage()+";");
         }
         classHeaderST.setAttribute("junitFileName", junitFileName);
 
@@ -139,13 +139,13 @@ public class JUnitCodeGen {
         boolean isTreeGrammar = false;
         boolean hasPackage = false;
         /** Set up appropriate class path for parser/tree parser if using package */
-        if ( grammarInfo.getHeader()!=null ) {
+        if ( grammarInfo.getGrammarPackage()!=null ) {
             hasPackage = true;
-            packagePath = "./"+grammarInfo.getHeader().replace('.', '/');
-            lexerPath = grammarInfo.getHeader()+"."+lexerName;
-            parserPath = grammarInfo.getHeader()+"."+parserName;
+            packagePath = "./"+grammarInfo.getGrammarPackage().replace('.', '/');
+            lexerPath = grammarInfo.getGrammarPackage()+"."+lexerName;
+            parserPath = grammarInfo.getGrammarPackage()+"."+parserName;
             if ( grammarInfo.getTreeGrammarName()!=null ) {
-                treeParserPath = grammarInfo.getHeader()+"."+grammarInfo.getTreeGrammarName();
+                treeParserPath = grammarInfo.getGrammarPackage()+"."+grammarInfo.getTreeGrammarName();
                 isTreeGrammar = true;
             }
         }
