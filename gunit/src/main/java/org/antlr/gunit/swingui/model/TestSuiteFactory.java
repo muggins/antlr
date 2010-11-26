@@ -27,13 +27,19 @@
 */
 package org.antlr.gunit.swingui.model;
 
+import org.antlr.gunit.swingui.parsers.ANTLRv3Lexer;
+import org.antlr.gunit.swingui.parsers.ANTLRv3Parser;
+import org.antlr.gunit.swingui.parsers.StGUnitLexer;
+import org.antlr.gunit.swingui.parsers.StGUnitParser;
 import org.antlr.gunit.swingui.runner.TestSuiteAdapter;
+import org.antlr.runtime.ANTLRReaderStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+
 import java.io.*;
-import java.util.*;
-import org.antlr.gunit.swingui.Tool;
-import org.antlr.gunit.swingui.parsers.*;
-import org.antlr.runtime.*;
-import org.antlr.stringtemplate.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestSuiteFactory {
     
