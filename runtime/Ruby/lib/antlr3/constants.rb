@@ -4,7 +4,7 @@
 =begin LICENSE
 
 [The "BSD licence"]
-Copyright (c) 2009 Kyle Yetter
+Copyright (c) 2009-2010 Kyle Yetter
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,17 +45,25 @@ module Constants
   # built-in token channel IDs
   
   # the channel to which most tokens will be assigned
-  DEFAULT = DEFAULT_CHANNEL = :default
+  DEFAULT = DEFAULT_CHANNEL = DEFAULT_TOKEN_CHANNEL = :default
   
   # the channel for tokens which should not be passed to a parser by a token stream
   HIDDEN  = HIDDEN_CHANNEL  = :hidden
+  
+  # flag used by recognizers during memoization to
+  # represent a previous prediction failure
+  MEMO_RULE_FAILED = -2
+  
+  # flag used by recognizers during memoization to indicate
+  # that the rule has not been memoized yet
+  MEMO_RULE_UNKNOWN = -1
   
   # built-in token types used internally by ANTLR3
   
   INVALID_TOKEN_TYPE = 0
   
-  # End of File / End of Input character and token type
   EOF = -1
+  
   
   # Imaginary tree-navigation token type indicating the ascent after moving through the
   # children of a node
@@ -74,10 +82,10 @@ module Constants
   # returning a string "<UNKNOWN: #{type}>" for non-builtin token
   # types
   BUILT_IN_TOKEN_NAMES = Hash.new do |h, k|
-    "<UNKNOWN: #{k}>"
+    "<UNKNOWN: #{ k }>"
   end
   
-  BUILT_IN_TOKEN_NAMES.update(
+  BUILT_IN_TOKEN_NAMES.update( 
     0 => "<invalid>".freeze, 1 => "<EOR>".freeze, 
     2 => "<DOWN>".freeze, 3 => "<UP>".freeze, 
     -1 => "<EOF>".freeze

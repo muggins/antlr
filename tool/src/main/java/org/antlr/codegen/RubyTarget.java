@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005 Martin Traverso
+ Copyright (c) 2010 Kyle Yetter
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -28,388 +28,453 @@
 
 package org.antlr.codegen;
 
+import java.io.IOException;
+import java.util.*;
+
 import org.antlr.Tool;
-import org.antlr.stringtemplate.AttributeRenderer;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
+import org.antlr.stringtemplate.*;
 import org.antlr.tool.Grammar;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-public class RubyTarget
-extends Target
+public class RubyTarget extends Target
 {
-	public static final Set rubyKeywords =
-		new HashSet() {
-		{
-			add("alias");    add("end");     add("retry"); 
-			add("and");      add("ensure");  add("return");
-			add("BEGIN");    add("false");   add("self");  
-			add("begin");    add("for");     add("super"); 
-			add("break");    add("if");      add("then");  
-			add("case");     add("in");      add("true");  
-			add("class");    add("module");  add("undef"); 
-			add("def");      add("next");    add("unless");
-			add("defined");  add("nil");     add("until"); 
-			add("do");       add("not");     add("when");  
-			add("else");     add("or");      add("while"); 
-			add("elsif");    add("redo");    add("yield"); 
-			add("END");      add("rescue");
-		}
-	};
+    /** A set of ruby keywords which are used to escape labels and method names
+     *  which will cause parse errors in the ruby source
+     */
+    public static final Set rubyKeywords =
+    new HashSet() {
+        {
+        	add( "alias" );     add( "END" );     add( "retry" );                                                                                                
+        	add( "and" );       add( "ensure" );  add( "return" );                                                                                               
+        	add( "BEGIN" );     add( "false" );   add( "self" );                                                                                                 
+        	add( "begin" );     add( "for" );     add( "super" );                                                                                                
+        	add( "break" );     add( "if" );      add( "then" );                                                                                                 
+        	add( "case" );      add( "in" );      add( "true" );                                                                                                 
+        	add( "class" );     add( "module" );  add( "undef" );                                                                                                
+        	add( "def" );       add( "next" );    add( "unless" );                                                                                               
+        	add( "defined?" );  add( "nil" );     add( "until" );                                                                                                
+        	add( "do" );        add( "not" );     add( "when" );                                                                                                 
+        	add( "else" );      add( "or" );      add( "while" );                                                                                                
+        	add( "elsif" );     add( "redo" );    add( "yield" );                                                                                                
+        	add( "end" );       add( "rescue" );                                                                                                                 
+        }
+    };
 
-	public class RubyRenderer 
-	implements AttributeRenderer 
-	{
-		public String toString(Object o) {
-			return o.toString();
-		}
-		
-		public String toString(Object o, String formatName) {
-			String idString = o.toString();
-			
-			if (idString.isEmpty()) return idString;
-			
-			if (formatName.equals("snakecase")) {
-				return snakecase(idString);
-			} else if (formatName.equals("camelcase")) {
-				return camelcase(idString);
-			} else if (formatName.equals("subcamelcase")) {
-				return subcamelcase(idString);
-			} else if (formatName.equals("constant")) {
-				return constantcase(idString);
-			} else if (formatName.equals("platform")) {
-				return platform(idString);
-			} else if (formatName.equals("lexerRule")) {
-				return lexerRule(idString);
-			} else if (formatName.equals("constantPath")) {
-				return constantPath(idString);
-			} else if (formatName.equals("label")) {
-				return label(idString);
-			} else if (formatName.equals("symbol")) {
-				return symbol(idString);
-			} else {
-				throw new IllegalArgumentException("Unsupported format name");
-			}
-		}
-		/** given an input string, which is presumed
-		 * to contain a word, which may potentially be camelcased,
-		 * and convert it to snake_case underscore style.
-		 *
-		 * algorithm --
-		 *   iterate through the string with a sliding window 3 chars wide
-		 *
-		 * example -- aGUIWhatNot
-		 *   c   c+1 c+2  action
-		 *   a   G        << 'a' << '_'  // a lower-upper word edge
-		 *   G   U   I    << 'g'
-		 *   U   I   W    << 'w'
-		 *   I   W   h    << 'i' << '_'  // the last character in an acronym run of uppers
-		 *   W   h        << 'w'
-		 *   ... and so on
-		 */
-		private String snakecase(String value) {
-			StringBuilder output_buffer = new StringBuilder();
-			int l = value.length();
-			int cliff = l - 1;
-			char cur;
-			char next;
-			char peek;
+    public static HashMap sharedActionBlocks = new HashMap();
 
-			if (value.isEmpty()) return value;
-			if (l == 1) return value.toLowerCase();
-
-			for (int i = 0; i < cliff; i++) {
-				cur  = value.charAt(i);
-				next = value.charAt(i + 1);
-
-				if ( Character.isLetter( cur ) ) {
-					output_buffer.append( Character.toLowerCase( cur ) );
-
-					if ( Character.isDigit( next ) || Character.isWhitespace( next ) ) {
-						output_buffer.append( '_' );
-					} else if ( Character.isLowerCase( cur ) && Character.isUpperCase( next ) ) {
-						// at camelcase word edge
-						output_buffer.append( '_' );
-					} else if ( (i < cliff - 1) && Character.isUpperCase( cur ) && Character.isUpperCase( next ) ) {
-						// cur is part of an acronym
-
-						peek = value.charAt(i + 2);
-						if ( Character.isLowerCase( peek ) ) {
-							/* if next is the start of word (indicated when peek is lowercase)
-                                         then the acronym must be completed by appending an underscore */ 
-							output_buffer.append('_');
-						}
-					}
-				} else if( Character.isDigit( cur ) ) {
-					output_buffer.append( cur );
-					if ( Character.isLetter( next ) ) {
-						output_buffer.append('_');
-					}
-				} else if (Character.isWhitespace( cur )) {
-					// do nothing
-				} else {
-					output_buffer.append( cur );
-				}
-
-			}
-
-			cur  = value.charAt(cliff);
-			if (! Character.isWhitespace(cur) ) {
-				output_buffer.append( Character.toLowerCase( cur ) );
-			}
-
-			return output_buffer.toString();
-		}
-		private String constantcase(String value) {
-			return snakecase(value).toUpperCase();
-		}
-		private String platform(String value) {
-			return ("__" + value + "__");
-		}
-		private String symbol(String value) {
-			if (value.matches("[a-zA-Z_]\\w*[\\?\\!\\=]?")) {
-				return (":" + value);
-			} else {
-				return ("%s(" + value + ")");
-			}
-		}
-		private String lexerRule(String value) {
-			if (value.equals("Tokens")) {
-				return "token!";
-			} else {
-				return (snakecase(value) + "!");
-			}
-		}
-		private String constantPath(String value) {
-			return value.replaceAll("\\.", "::");
-		}
-		private String camelcase(String value) {
-			StringBuilder output_buffer = new StringBuilder();
-			int cliff = value.length();
-			char cur;
-			char next;
-			boolean at_edge = true;
-
-			if (value.isEmpty()) return value;
-			if (cliff == 1) return value.toUpperCase();
-
-			for (int i = 0; i < cliff; i++) {
-				cur  = value.charAt(i);
-
-				if ( Character.isWhitespace( cur ) ) {
-					at_edge = true;
-					continue;
-				} else if ( cur == '_' ) {
-					at_edge = true;
-					continue;
-				} else if ( Character.isDigit( cur ) ) {
-					output_buffer.append( cur );
-					at_edge = true;
-					continue;
-				}
-
-				if (at_edge) {
-					output_buffer.append( Character.toUpperCase( cur ) );
-					if ( Character.isLetter( cur ) ) at_edge = false;
-				} else {
-					output_buffer.append( cur );
-				}
-			}
-
-			return output_buffer.toString();
-		}
-		private String label(String value) {
-			if (rubyKeywords.contains(value)) {
-				return platform(value);
-			} else if (Character.isUpperCase(value.charAt(0)) && 
-					(!value.equals("FILE")) && 
-					(!value.equals("LINE"))) {
-				return platform(value);
-			} else if (value.equals("FILE")) {
-				return "_FILE_";
-			} else if (value.equals("LINE")) {
-				return "_LINE_";
-			} else {
-				return value;
-			}
-		}
-		private String subcamelcase(String value) {
-			value = camelcase(value);
-			if (value.isEmpty())
-				return value;
-			Character head = Character.toLowerCase( value.charAt(0) );
-			String tail = value.substring(1);
-			return head.toString().concat(tail);
-		}
-	}
-
-	protected void genRecognizerFile(Tool tool,
-			CodeGenerator generator,
-			Grammar grammar,
-			StringTemplate outputFileST)
-	throws IOException
-	{
-		StringTemplateGroup group = generator.getTemplates();
-		RubyRenderer renderer = new RubyRenderer();
-		try {
-			group.registerRenderer(Class.forName("java.lang.String"), renderer);
-		} catch (ClassNotFoundException e) {
-			// this shouldn't happen
-			System.err.println("ClassNotFoundException: " + e.getMessage());
-			e.printStackTrace(System.err);
-		}
-		String fileName =
-			generator.getRecognizerFileName(grammar.name, grammar.type);
-		generator.write(outputFileST, fileName);
-	}
-	
-	public String getTargetCharLiteralFromANTLRCharLiteral(
-			CodeGenerator generator,
-			String literal)
-	{
-		literal = literal.substring(1, literal.length() - 1);
-
-		String result = "?";
-
-		if (literal.equals("\\")) {
-			result += "\\\\";
-		}
-		else if (literal.equals(" ")) {
-			result += "\\s";
-		}
-		else if (literal.startsWith("\\u")) {
-			result = "0x" + literal.substring(2);
-		}
-		else {
-			result += literal;
-		}
-
-		return result;
-	}
-	
-	public int getMaxCharValue(CodeGenerator generator)
-	{
-		// Versions before 1.9 do not support unicode
-		return 0xFF;
-	}
-	
-	public String getTokenTypeAsTargetLabel(CodeGenerator generator, int ttype)
-	{
-		String name = generator.grammar.getTokenDisplayName(ttype);
-		// If name is a literal, return the token type instead
-		if ( name.charAt(0)=='\'' ) {
-			return generator.grammar.computeTokenNameFromLiteral(ttype, name);
-		}
-		return name;
-	}
-	
-	/** Is scope in @scope::name {action} valid for this kind of grammar?
-	 *  Targets like C++ may want to allow new scopes like headerfile or
-	 *  some such.  The action names themselves are not policed at the
-	 *  moment so targets can add template actions w/o having to recompile
-	 *  ANTLR.
-	 */
-	public boolean isValidActionScope(int grammarType, String scope) {
-		switch (grammarType) {
-		case Grammar.LEXER:
-			if (scope.equals("lexer")) {
-				return true;
-			}
-			if (scope.equals("token")) {
-				return true;
-			}
-			if (scope.equals("module")) {
-				return true;
-			}
-			if (scope.equals("overrides")) {
-				return true;
-			}
-			break;
-		case Grammar.PARSER:
-			if (scope.equals("parser")) {
-				return true;
-			}
-			if (scope.equals("token")) {
-				return true;
-			}
-			if (scope.equals("module")) {
-				return true;
-			}
-			if (scope.equals("overrides")) {
-				return true;
-			}
-			break;
-		case Grammar.COMBINED:
-			if (scope.equals("parser")) {
-				return true;
-			}
-			if (scope.equals("lexer")) {
-				return true;
-			}
-			if (scope.equals("token")) {
-				return true;
-			}
-			if (scope.equals("module")) {
-				return true;
-			}
-			if (scope.equals("overrides")) {
-				return true;
-			}
-			break;
-		case Grammar.TREE_PARSER:
-			if (scope.equals("treeparser")) {
-				return true;
-			}
-			if (scope.equals("token")) {
-				return true;
-			}
-			if (scope.equals("module")) {
-				return true;
-			}
-			if (scope.equals("overrides")) {
-				return true;
-			}
-			break;
-		}
-		return false;
-	}
-	
-	/*
-    public String getTargetStringLiteralFromString(String s)
+    public class RubyRenderer implements AttributeRenderer
     {
-        System.out.print(s + "\n");
-        return super.getTargetStringLiteralFromString(s);
+    	protected String[] rubyCharValueEscape = new String[256];
+    	
+    	public RubyRenderer() {
+    		for ( int i = 0; i < 16; i++ ) {
+    			rubyCharValueEscape[ i ] = "\\x0" + Integer.toHexString( i );
+    		}
+    		for ( int i = 16; i < 32; i++ ) {
+    			rubyCharValueEscape[ i ] = "\\x" + Integer.toHexString( i );
+    		}
+    		for ( char i = 32; i < 127; i++ ) {
+    			rubyCharValueEscape[ i ] = Character.toString( i );
+    		}
+    		for ( int i = 127; i < 256; i++ ) {
+    			rubyCharValueEscape[ i ] = "\\x" + Integer.toHexString( i );
+    		}
+    		
+    		rubyCharValueEscape['\n'] = "\\n";
+    		rubyCharValueEscape['\r'] = "\\r";
+    		rubyCharValueEscape['\t'] = "\\t";
+    		rubyCharValueEscape['\b'] = "\\b";
+    		rubyCharValueEscape['\f'] = "\\f";
+    		rubyCharValueEscape['\\'] = "\\\\";
+    		rubyCharValueEscape['"'] = "\\\"";
+    	}
+    	
+        public String toString( Object o ) {
+            return o.toString();
+        }
+
+        public String toString( Object o, String formatName ) {
+            String idString = o.toString();
+
+            if ( idString.isEmpty() ) return idString;
+
+            if ( formatName.equals( "snakecase" ) ) {
+                return snakecase( idString );
+            } else if ( formatName.equals( "camelcase" ) ) {
+                return camelcase( idString );
+            } else if ( formatName.equals( "subcamelcase" ) ) {
+                return subcamelcase( idString );
+            } else if ( formatName.equals( "constant" ) ) {
+                return constantcase( idString );
+            } else if ( formatName.equals( "platform" ) ) {
+                return platform( idString );
+            } else if ( formatName.equals( "lexerRule" ) ) {
+                return lexerRule( idString );
+            } else if ( formatName.equals( "constantPath" ) ) {
+            	return constantPath( idString );
+            } else if ( formatName.equals( "rubyString" ) ) {
+                return rubyString( idString );
+            } else if ( formatName.equals( "label" ) ) {
+                return label( idString );
+            } else if ( formatName.equals( "symbol" ) ) {
+                return symbol( idString );
+            } else {
+                throw new IllegalArgumentException( "Unsupported format name" );
+            }
+        }
+
+        /** given an input string, which is presumed
+         * to contain a word, which may potentially be camelcased,
+         * and convert it to snake_case underscore style.
+         *
+         * algorithm --
+         *   iterate through the string with a sliding window 3 chars wide
+         *
+         * example -- aGUIWhatNot
+         *   c   c+1 c+2  action
+         *   a   G        << 'a' << '_'  // a lower-upper word edge
+         *   G   U   I    << 'g'
+         *   U   I   W    << 'w'
+         *   I   W   h    << 'i' << '_'  // the last character in an acronym run of uppers
+         *   W   h        << 'w'
+         *   ... and so on
+         */
+        private String snakecase( String value ) {
+            StringBuilder output_buffer = new StringBuilder();
+            int l = value.length();
+            int cliff = l - 1;
+            char cur;
+            char next;
+            char peek;
+
+            if ( value.isEmpty() ) return value;
+            if ( l == 1 ) return value.toLowerCase();
+
+            for ( int i = 0; i < cliff; i++ ) {
+                cur  = value.charAt( i );
+                next = value.charAt( i + 1 );
+
+                if ( Character.isLetter( cur ) ) {
+                    output_buffer.append( Character.toLowerCase( cur ) );
+
+                    if ( Character.isDigit( next ) || Character.isWhitespace( next ) ) {
+                        output_buffer.append( '_' );
+                    } else if ( Character.isLowerCase( cur ) && Character.isUpperCase( next ) ) {
+                        // at camelcase word edge
+                        output_buffer.append( '_' );
+                    } else if ( ( i < cliff - 1 ) && Character.isUpperCase( cur ) && Character.isUpperCase( next ) ) {
+                        // cur is part of an acronym
+
+                        peek = value.charAt( i + 2 );
+                        if ( Character.isLowerCase( peek ) ) {
+                            /* if next is the start of word (indicated when peek is lowercase)
+                                         then the acronym must be completed by appending an underscore */
+                            output_buffer.append( '_' );
+                        }
+                    }
+                } else if ( Character.isDigit( cur ) ) {
+                    output_buffer.append( cur );
+                    if ( Character.isLetter( next ) ) {
+                        output_buffer.append( '_' );
+                    }
+                } else if ( Character.isWhitespace( cur ) ) {
+                    // do nothing
+                } else {
+                    output_buffer.append( cur );
+                }
+
+            }
+
+            cur  = value.charAt( cliff );
+            if ( ! Character.isWhitespace( cur ) ) {
+                output_buffer.append( Character.toLowerCase( cur ) );
+            }
+
+            return output_buffer.toString();
+        }
+
+        private String constantcase( String value ) {
+            return snakecase( value ).toUpperCase();
+        }
+
+        private String platform( String value ) {
+            return ( "__" + value + "__" );
+        }
+
+        private String symbol( String value ) {
+            if ( value.matches( "[a-zA-Z_]\\w*[\\?\\!\\=]?" ) ) {
+                return ( ":" + value );
+            } else {
+                return ( "%s(" + value + ")" );
+            }
+        }
+
+        private String lexerRule( String value ) {
+					  // System.out.print( "lexerRule( \"" + value + "\") => " );
+            if ( value.equals( "Tokens" ) ) {
+							  // System.out.println( "\"token!\"" );
+                return "token!";
+            } else {
+							  // String result = snakecase( value ) + "!";
+								// System.out.println( "\"" + result + "\"" );
+                return ( snakecase( value ) + "!" );
+            }
+        }
+
+        private String constantPath( String value ) {
+            return value.replaceAll( "\\.", "::" );
+        }
+        
+        private String rubyString( String value ) {
+        	StringBuilder output_buffer = new StringBuilder();
+        	int len = value.length(); 
+        	
+        	output_buffer.append( '"' );
+        	for ( int i = 0; i < len; i++ ) {
+        		output_buffer.append( rubyCharValueEscape[ value.charAt( i ) ] );
+        	}
+        	output_buffer.append( '"' );
+        	return output_buffer.toString();
+        }
+
+        private String camelcase( String value ) {
+            StringBuilder output_buffer = new StringBuilder();
+            int cliff = value.length();
+            char cur;
+            char next;
+            boolean at_edge = true;
+
+            if ( value.isEmpty() ) return value;
+            if ( cliff == 1 ) return value.toUpperCase();
+
+            for ( int i = 0; i < cliff; i++ ) {
+                cur  = value.charAt( i );
+
+                if ( Character.isWhitespace( cur ) ) {
+                    at_edge = true;
+                    continue;
+                } else if ( cur == '_' ) {
+                    at_edge = true;
+                    continue;
+                } else if ( Character.isDigit( cur ) ) {
+                    output_buffer.append( cur );
+                    at_edge = true;
+                    continue;
+                }
+
+                if ( at_edge ) {
+                    output_buffer.append( Character.toUpperCase( cur ) );
+                    if ( Character.isLetter( cur ) ) at_edge = false;
+                } else {
+                    output_buffer.append( cur );
+                }
+            }
+
+            return output_buffer.toString();
+        }
+
+        private String label( String value ) {
+            if ( rubyKeywords.contains( value ) ) {
+                return platform( value );
+            } else if ( Character.isUpperCase( value.charAt( 0 ) ) &&
+                        ( !value.equals( "FILE" ) ) &&
+                        ( !value.equals( "LINE" ) ) ) {
+                return platform( value );
+            } else if ( value.equals( "FILE" ) ) {
+                return "_FILE_";
+            } else if ( value.equals( "LINE" ) ) {
+                return "_LINE_";
+            } else {
+                return value;
+            }
+        }
+
+        private String subcamelcase( String value ) {
+            value = camelcase( value );
+            if ( value.isEmpty() )
+                return value;
+            Character head = Character.toLowerCase( value.charAt( 0 ) );
+            String tail = value.substring( 1 );
+            return head.toString().concat( tail );
+        }
     }
 
-    public String getTargetStringLiteralFromString(String s, boolean quoted)
+    protected void genRecognizerFile( 
+    		Tool tool,
+    		CodeGenerator generator,
+    		Grammar grammar,
+    		StringTemplate outputFileST
+    ) throws IOException
     {
-        // System.out.print(s + "\n");
-        String ret_value = super.getTargetStringLiteralFromString(s, quoted);
-        System.out.print(ret_value + "\n");
-        return(ret_value);
+        /*
+            Below is an experimental attempt at providing a few named action blocks
+            that are printed in both lexer and parser files from combined grammars.
+            ANTLR appears to first generate a parser, then generate an independent lexer,
+            and then generate code from that. It keeps the combo/parser grammar object
+            and the lexer grammar object, as well as their respective code generator and
+            target instances, completely independent. So, while a bit hack-ish, this is
+            a solution that should work without having to modify Terrence Parr's
+            core tool code.
+
+            - sharedActionBlocks is a class variable containing a hash map
+            - if this method is called with a combo grammar, and the action map
+              in the grammar contains an entry for the named scope "all",
+              add an entry to sharedActionBlocks mapping the grammar name to
+              the "all" action map.
+            - if this method is called with an `implicit lexer'
+              (one that's extracted from a combo grammar), check to see if
+              there's an entry in sharedActionBlocks for the lexer's grammar name.
+            - if there is an action map entry, place it in the lexer's action map
+            - the recognizerFile template has code to place the
+              "all" actions appropriately
+
+            problems:
+              - This solution assumes that the parser will be generated
+                before the lexer. If that changes at some point, this will
+                not work.
+              - I have not investigated how this works with delegation yet
+
+            Kyle Yetter - March 25, 2010
+        */
+    	
+        if ( grammar.type == Grammar.COMBINED ) {
+            Map actions = grammar.getActions();
+            if ( actions.containsKey( "all" ) ) {
+                sharedActionBlocks.put( grammar.name, actions.get( "all" ) );
+            }
+        } else if ( grammar.implicitLexer ) {
+            if ( sharedActionBlocks.containsKey( grammar.name ) ) {
+                Map actions = grammar.getActions();
+                actions.put( "all", sharedActionBlocks.get( grammar.name ) );
+            }
+        }
+
+        StringTemplateGroup group = generator.getTemplates();
+        RubyRenderer renderer = new RubyRenderer();
+        try {
+            group.registerRenderer( Class.forName( "java.lang.String" ), renderer );
+        } catch ( ClassNotFoundException e ) {
+            // this shouldn't happen
+            System.err.println( "ClassNotFoundException: " + e.getMessage() );
+            e.printStackTrace( System.err );
+        }
+        String fileName =
+            generator.getRecognizerFileName( grammar.name, grammar.type );
+        generator.write( outputFileST, fileName );
     }
 
-    public String getTarget64BitStringFromValue(long word)
+    public String getTargetCharLiteralFromANTLRCharLiteral(
+        CodeGenerator generator,
+        String literal
+    )
     {
-        System.out.print(((Long)word).toString() + "\n");
-        String result = super.getTarget64BitStringFromValue(word);
-        System.out.print(result + "\n");
-        return result;
+        int code_point = 0;
+        literal = literal.substring( 1, literal.length() - 1 );
+        
+        if ( literal.charAt( 0 ) == '\\' ) {
+            switch ( literal.charAt( 1 ) ) {
+                case    '\\':
+                case    '"':
+                case    '\'':
+                    code_point = literal.codePointAt( 1 );
+                    break;
+                case    'n':
+                    code_point = 10;
+                    break;
+                case    'r':
+                    code_point = 13;
+                    break;
+                case    't':
+                    code_point = 9;
+                    break;
+                case    'b':
+                    code_point = 8;
+                    break;
+                case    'f':
+                    code_point = 12;
+                    break;
+                case    'u':    // Assume unnnn
+                    code_point = Integer.parseInt( literal.substring( 2 ), 16 );
+                    break;
+                default:
+                    System.out.println( "1: hey you didn't account for this: \"" + literal + "\"" );
+                    break;
+            }
+        } else if ( literal.length() == 1 ) {
+            code_point = literal.codePointAt( 0 );
+        } else {
+            System.out.println( "2: hey you didn't account for this: \"" + literal + "\"" );
+        }
+        
+        return ( "0x" + Integer.toHexString( code_point ) );
     }
-	*/
-	
-	public String encodeIntAsCharEscape(final int v) {
-		final int intValue;
-		
-		if ( v == 65535 ) {
-		  intValue = -1;
-		} else {
-		  intValue = v;
-		}
-		
-		return String.valueOf( intValue );
-	}
+
+    public int getMaxCharValue( CodeGenerator generator )
+    {
+        // Versions before 1.9 do not support unicode
+        return 0xFF;
+    }
+
+    public String getTokenTypeAsTargetLabel( CodeGenerator generator, int ttype )
+    {
+        String name = generator.grammar.getTokenDisplayName( ttype );
+        // If name is a literal, return the token type instead
+        if ( name.charAt( 0 )=='\'' ) {
+            return generator.grammar.computeTokenNameFromLiteral( ttype, name );
+        }
+        return name;
+    }
+    
+    public boolean isValidActionScope( int grammarType, String scope ) {
+        if ( scope.equals( "all" ) )       {
+            return true;
+        }
+        if ( scope.equals( "token" ) )     {
+            return true;
+        }
+        if ( scope.equals( "module" ) )    {
+            return true;
+        }
+        if ( scope.equals( "overrides" ) ) {
+            return true;
+        }
+				
+        switch ( grammarType ) {
+        case Grammar.LEXER:
+            if ( scope.equals( "lexer" ) ) {
+                return true;
+            }
+            break;
+        case Grammar.PARSER:
+            if ( scope.equals( "parser" ) ) {
+                return true;
+            }
+            break;
+        case Grammar.COMBINED:
+            if ( scope.equals( "parser" ) ) {
+                return true;
+            }
+            if ( scope.equals( "lexer" ) ) {
+                return true;
+            }
+            break;
+        case Grammar.TREE_PARSER:
+            if ( scope.equals( "treeparser" ) ) {
+                return true;
+            }
+            break;
+        }
+        return false;
+    }
+
+    public String encodeIntAsCharEscape( final int v ) {
+        final int intValue;
+
+        if ( v == 65535 ) {
+            intValue = -1;
+        } else {
+            intValue = v;
+        }
+
+        return String.valueOf( intValue );
+    }
 }

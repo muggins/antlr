@@ -4,7 +4,7 @@
 require 'antlr3/test/functional'
 
 class TestSyntacticPredicate < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar SyntacticPredicateGate;
     options {
       language = Ruby;
@@ -29,4 +29,3 @@ class TestSyntacticPredicate < ANTLR3::Test::Functional
 
 
 end
-

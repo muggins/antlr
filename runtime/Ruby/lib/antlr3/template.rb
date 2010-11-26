@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# encoding: utf-8
+
 
 require 'erb'
 require 'antlr3'
@@ -84,9 +84,12 @@ private
   
 end
 
+
+autoload :GroupFile, 'antlr3/template/group-file'
+
 class Group < Module
-  autoload :Lexer, 'antlr3/template/group-lexer'
-  autoload :Parser, 'antlr3/template/group-parser'
+  autoload :Lexer, 'antlr3/template/group-file'
+  autoload :Parser, 'antlr3/template/group-file'
   
   def self.parse( source, options = {} )
     namespace = options.fetch( :namespace, ::Object )
@@ -237,7 +240,7 @@ class Context
   
   def method_missing( method, *args )
     case name = method.to_s
-    when SETTER_FORM then return( self[ $1 ] = *args )
+    when SETTER_FORM then return( self[ $1 ] = args.first )
     when ATTR_FORM
       args.empty? and has_ivar?( name ) and return( self[ name ] )
     end

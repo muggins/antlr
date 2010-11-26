@@ -4,7 +4,7 @@
 =begin LICENSE
 
 [The "BSD licence"]
-Copyright (c) 2009 Kyle Yetter
+Copyright (c) 2009-2010 Kyle Yetter
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ autoload :Visitor, 'antlr3/tree/visitor'
 = TreeParser
 
 TreeParser is the default base class of ANTLR-generated tree parsers. The class
-tailors the functionality provided by BaseRecognizer to the task of tree-pattern
+tailors the functionality provided by Recognizer to the task of tree-pattern
 recognition.
 
 == About Tree Parsers
@@ -85,7 +85,7 @@ For more in-depth coverage of the topic, check out the ANTLR documentation
 
 == The Tree Parser API
 
-Like Parser, the class does not stray too far from the BaseRecognizer API.
+Like Parser, the class does not stray too far from the Recognizer API.
 Mainly, it customizes a few methods specifically to deal with tree nodes
 (instead of basic tokens), and adds some helper methods for working with trees.
 
@@ -101,10 +101,10 @@ See Tree and TreeAdaptor for more information.
 
 =end
 
-class TreeParser < BaseRecognizer
+class TreeParser < Recognizer
   def self.main( argv = ARGV, options = {} )
     if ::Hash === argv then argv, options = ARGV, argv end
-    main = ANTLR3::Main::WalkerMain.new(self, options)
+    main = ANTLR3::Main::WalkerMain.new( self, options )
     block_given? ? yield( main ) : main.execute( argv )
   end
   
@@ -121,7 +121,7 @@ class TreeParser < BaseRecognizer
   end
   
   def missing_symbol( error, expected_token_type, follow )
-    name = token_name(expected_token_type).to_s
+    name = token_name( expected_token_type ).to_s
     text = "<missing " << name << '>'
     tk = create_token do |t|
       t.text = text
@@ -152,13 +152,13 @@ class TreeParser < BaseRecognizer
     end
   end
   
-  def mismatch(input, type, follow = nil)
+  def mismatch( input, type, follow = nil )
     raise MismatchedTreeNode.new( type, input )
   end
   
   def error_header( e )
     <<-END.strip!
-    #{ grammar_file_name }: node from #{
+    #{ grammar_file_name }: node from #{ 
       e.approximate_line_info? ? 'after ' : ''
     } line #{ e.line }:#{ e.column }
     END
@@ -219,6 +219,7 @@ throughout the AST library:
 =end
 
 module Tree
+  
   #attr_accessor :parent
   attr_accessor :start_index
   attr_accessor :stop_index
@@ -230,85 +231,72 @@ module Tree
   #attr_reader :children
   attr_reader :token
   
-  #def [](index, length = nil)           # getChild(index)
-  #  length.nil? ? self.children[index] : self.children[index, length]
-  #end
-  #
-  #alias child []
-  #
-  #def child_count                       # getChildCount
-  #  self.children.length
-  #end
-  #
-  #def push(node, *nodes)
-  #  self.children.push(node, *nodes)
-  #end
-  #
-  #alias << push
-  #
-  #def shift
-  #  self.children.shift
-  #end
-  #
-  #def unshift(node, *nodes)
-  #  self.children.unshift(node, *nodes)
-  #end
-  #
-  #alias add_child shift
   
-  #def set_child(index, tree)
-  #  self.children[index] = tree
-  #end
+  def root?
+    parent.nil?
+  end
+  alias detached? root?
   
-  #alias []= set_child
+  def root
+    cursor = self
+    until cursor.root?
+      yield( parent_node = cursor.parent )
+      cursor = parent_node
+    end
+    return( cursor )
+  end
   
-  #def delete_child(index)
-  #  self.children.delete(index)
-  #end
   #
-  #def replace_children(start, stop, trees)
-  #  self.children[start..stop] = trees
-  #end
-  #
-  #def to_a
-  #  child_arrays = children.map { |child| child.to_a }
-  #  [token, *child_arrays]
-  #end
+  def leaf?
+    children.nil? or children.empty?
+  end
   
-  #include Enumerable
-  #
-  #def each_child
-  #  block_given? or return enum_for(__method__)
-  #  self.children.each { |child| yield(child)  }
-  #end
-  #
-  #def each_ancestor
-  #  block_given? or return enum_for(__method__)
-  #  self.ancestors.each { |anc| yield(anc) }
-  #end
+  def has_child?( node )
+    children and children.include?( node )
+  end
   
+  def depth
+    root? ? 0 : parent.depth + 1
+  end
   
-
+  def siblings
+    root? and return []
+    parent.children.reject { | c | c.equal?( self ) }
+  end
   
-  #alias :each :walk
-  #
-  #def root?
-  #  parent.nil?
-  #end
-  #
-  #def leaf?
-  #  children.empty?
-  #end
+  def each_ancestor
+    block_given? or return( enum_for( :each_ancestor ) )
+    cursor = self
+    until cursor.root?
+      yield( parent_node = cursor.parent )
+      cursor = parent_node
+    end
+    return( self )
+  end
   
-  #def ancestors
-  #  a = []
-  #  cursor = self
-  #  until cursor.root?
-  #    a.push(cursor.parent)
-  #    cursor = cursor.parent
-  #  end
-  #  return a
-  #end
+  def ancestors
+    each_ancestor.to_a
+  end
+  
+  def walk
+    block_given? or return( enum_for( :walk ) )
+    stack = []
+    cursor = self
+    while true
+      begin
+        yield( cursor )
+        stack.push( cursor.children.dup ) unless cursor.empty?
+      rescue StopIteration
+        # skips adding children to prune the node
+      ensure
+        break if stack.empty?
+        cursor = stack.last.shift
+        stack.pop if stack.last.empty?
+      end
+    end
+    return self
+  end
+  
 end
 
 
@@ -344,9 +332,8 @@ class BaseTree < ::Array
   def add_child( child_tree )
     child_tree.nil? and return
     if child_tree.flat_list?
-      if equal?( child_tree.children )
+      self.equal?( child_tree.children ) and
         raise ArgumentError, "attempt to add child list to itself"
-      end
       child_tree.each_with_index do | child, index |
         child.parent = self
         child.child_index = length + index
@@ -367,6 +354,7 @@ class BaseTree < ::Array
   end
   
   alias add_children concat
+  alias each_child each
   
   def set_child( index, tree )
     return if tree.nil?
@@ -383,15 +371,15 @@ class BaseTree < ::Array
 
   def replace_children( start, stop, new_tree )
     start >= length or stop >= length and
-      raise IndexError, (<<-END).gsub!(/^\s+\| /,'')
+      raise IndexError, ( <<-END ).gsub!( /^\s+\| /,'' )
       | indices span beyond the number of children:
-      |  children.length = #{length}
-      |  start = #{start_index.inspect}
-      |  stop  = #{stop_index.inspect}
+      |  children.length = #{ length }
+      |  start = #{ start_index.inspect }
+      |  stop  = #{ stop_index.inspect }
       END
     new_children = new_tree.flat_list? ? new_tree : [ new_tree ]
     self[ start .. stop ] = new_children
-    freshen(start_index)
+    freshen( start_index )
     return self
   end
   
@@ -451,6 +439,9 @@ class BaseTree < ::Array
   
   abstract :to_s
   #protected :sanity_check, :freshen
+  
+  def root?() @parent.nil? end
+  alias leaf? empty?
 end
 
 
@@ -586,22 +577,19 @@ class CommonTree < BaseTree
     flat_list? ? 'nil' : @token.text.to_s
   end
   
-  def pretty_print(printer)
+  def pretty_print( printer )
+    text = @token ? @token.text : 'nil'
+    text =~ /\s+/ and
+      text = text.dump
+    
     if empty?
-      to_s.each_line do | line |
-        nl = line.chomp!
-        printer.text( line )
-        if nl
-          printer.text( printer.newline )
-          printer.text( printer.genspace[ printer.indent ] )
-        end
-      end
+      printer.text( text )
     else
-      endpoints = flat_list? ? ['', ''] : ["(#{self}", ')']
-      printer.group(1, *endpoints) do
+      endpoints = @token ? [ "(#{ text }", ')' ] : [ '', '' ]
+      printer.group( 1, *endpoints ) do
         for child in self
           printer.breakable
-          printer.pp(child)
+          printer.pp( child )
         end
       end
     end
@@ -622,9 +610,9 @@ class CommonErrorNode < CommonTree
   attr_accessor :input, :start, :stop, :error
   
   def initialize( input, start, stop, error )
-    super(nil)
+    super( nil )
     stop = start if stop.nil? or
-      (stop.token_index < start.token_index and stop.type != EOF)
+      ( stop.token_index < start.token_index and stop.type != EOF )
     @input = input
     @start = start
     @stop = stop
@@ -643,7 +631,7 @@ class CommonErrorNode < CommonTree
     case @start
     when Token
       i = @start.token_index
-      j = (@stop.type == EOF) ? @input.size : @stop.token_index
+      j = ( @stop.type == EOF ) ? @input.size : @stop.token_index
       @input.to_s( i, j )            # <- the bad text
     when Tree
       @input.to_s( @start, @stop )   # <- the bad text
@@ -655,13 +643,13 @@ class CommonErrorNode < CommonTree
   def to_s
     case @error
     when MissingToken
-      "<missing type: #{@error.missing_type}>"
+      "<missing type: #{ @error.missing_type }>"
     when UnwantedToken
-      "<extraneous: #{@error.token.inspect}, resync = #{ text }>"
+      "<extraneous: #{ @error.token.inspect }, resync = #{ text }>"
     when MismatchedToken
-      "<mismatched token: #{@error.token.inspect}, resync = #{ text }>"
+      "<mismatched token: #{ @error.token.inspect }, resync = #{ text }>"
     when NoViableAlternative
-      "<unexpected: #{@error.token.inspect}, resync = #{ text }>"
+      "<unexpected: #{ @error.token.inspect }, resync = #{ text }>"
     else "<error: #{ text }>"
     end
   end
@@ -836,6 +824,7 @@ builds and manipulates CommonTree nodes.
 =end
 
 class CommonTreeAdaptor
+  extend ClassMacros
   include TreeAdaptor
   include ANTLR3::Constants
   
@@ -843,15 +832,16 @@ class CommonTreeAdaptor
     @token_class = token_class
   end
   
-  def create_flat_list!
-    return create_with_payload!( nil )
+  def create_flat_list
+    return create_with_payload( nil )
   end
+  alias create_flat_list! create_flat_list
   
   def become_root( new_root, old_root )
-    new_root = create!( new_root ) if new_root.is_a?( Token )
+    new_root = create( new_root ) if new_root.is_a?( Token )
     old_root or return( new_root )
     
-    new_root = create_with_payload!( new_root ) unless CommonTree === new_root
+    new_root = create_with_payload( new_root ) unless CommonTree === new_root
     if new_root.flat_list?
       count = new_root.child_count
       if count == 1
@@ -865,38 +855,50 @@ class CommonTreeAdaptor
     return new_root
   end
   
-  def create_from_token!( token_type, from_token, text = nil )
+  def create_from_token( token_type, from_token, text = nil )
     from_token = from_token.dup
     from_token.type = token_type
     from_token.text = text.to_s if text
-    tree = create_with_payload!( from_token )
+    tree = create_with_payload( from_token )
     return tree
   end
   
-  def create_from_type!( token_type, text )
+  def create_from_type( token_type, text )
     from_token = create_token( token_type, DEFAULT_CHANNEL, text )
-    create_with_payload!( from_token )
+    create_with_payload( from_token )
   end
   
-  def create_error_node!( input, start, stop, exc )
+  def create_error_node( input, start, stop, exc )
     CommonErrorNode.new( input, start, stop, exc )
   end
   
-  def create_with_payload!( payload )
+  def create_with_payload( payload )
     return CommonTree.new( payload )
   end
-  
-  def create!( *args )
+
+  def create( *args )
     n = args.length
-    if n == 1 and args.first.is_a?( Token ) then create_with_payload!( args[0] )
-    elsif n == 2 and Integer === args.first and String === args[1]
-      create_from_type!(*args)
+    if n == 1 and args.first.is_a?( Token ) then create_with_payload( args[ 0 ] )
+    elsif n == 2 and Integer === args.first and String === args[ 1 ]
+      create_from_type( *args )
     elsif n >= 2 and Integer === args.first
-      create_from_token!( *args )
+      create_from_token( *args )
     else
-      sig = args.map { |f| f.class }.join(', ')
+      sig = args.map { |f| f.class }.join( ', ' )
       raise TypeError, "No create method with this signature found: (#{ sig })"
     end
+  end
+  
+  creation_methods = %w(
+    create_from_token create_from_type
+    create_error_node create_with_payload
+    create
+  )
+  
+  for method_name in creation_methods
+    bang_method = method_name + '!'
+    alias_method( bang_method, method_name )
+    deprecate( bang_method, "use method ##{ method_name } instead" )
   end
   
   def rule_post_processing( root )
@@ -980,7 +982,7 @@ class CommonTreeNodeStream
   attr_accessor :token_stream
   attr_reader :adaptor, :position
   
-  def initialize(*args)
+  def initialize( *args )
     options = args.last.is_a?( ::Hash ) ? args.pop : {}
     case n = args.length
     when 1
@@ -1004,9 +1006,9 @@ class CommonTreeNodeStream
     end
     @adaptor ||= options.fetch( :adaptor ) { CommonTreeAdaptor.new }
     @token_stream ||= options[ :token_stream ]
-    @down  ||= options.fetch( :down ) { @adaptor.create_from_type!( DOWN, 'DOWN' ) }
-    @up    ||= options.fetch( :up )   { @adaptor.create_from_type!( UP, 'UP' ) }
-    @eof   ||= options.fetch( :eof )  { @adaptor.create_from_type!( EOF, 'EOF' ) }
+    @down  ||= options.fetch( :down ) { @adaptor.create_from_type( DOWN, 'DOWN' ) }
+    @up    ||= options.fetch( :up )   { @adaptor.create_from_type( UP, 'UP' ) }
+    @eof   ||= options.fetch( :eof )  { @adaptor.create_from_type( EOF, 'EOF' ) }
     @nodes ||= []
     
     @unique_navigation_nodes = options.fetch( :unique_navigation_nodes, false )
@@ -1035,9 +1037,9 @@ class CommonTreeNodeStream
     navigation_node =
       case type
       when DOWN
-        has_unique_navigation_nodes? ? @adaptor.create_from_type!( DOWN, 'DOWN' ) : @down
+        has_unique_navigation_nodes? ? @adaptor.create_from_type( DOWN, 'DOWN' ) : @down
       else
-        has_unique_navigation_nodes? ? @adaptor.create_from_type!( UP, 'UP' ) : @up
+        has_unique_navigation_nodes? ? @adaptor.create_from_type( UP, 'UP' ) : @up
       end
     @nodes << navigation_node
   end
@@ -1085,7 +1087,9 @@ class CommonTreeNodeStream
   
   def consume
     @position == -1 and fill_buffer
+    node = @nodes.fetch( @position, @eof )
     @position += 1
+    return( node )
   end
   
   def peek( i = 1 )
@@ -1093,7 +1097,7 @@ class CommonTreeNodeStream
   end
   
   alias >> peek
-  def <<(k)
+  def <<( k )
     self >> -k
   end
   
@@ -1135,7 +1139,7 @@ class CommonTreeNodeStream
   end
   
   def replace_children( parent, start, stop, replacement )
-    parent and @adaptor.replace_children(parent, start, stop, replacement)
+    parent and @adaptor.replace_children( parent, start, stop, replacement )
   end
   
   def size
@@ -1145,7 +1149,7 @@ class CommonTreeNodeStream
   
   def inspect
     @position == -1 and fill_buffer
-    @nodes.map { |nd| @adaptor.type_name( nd ) }.join(' ')
+    @nodes.map { |nd| @adaptor.type_name( nd ) }.join( ' ' )
   end
   
   def extract_text( start = nil, stop = nil )
@@ -1205,7 +1209,7 @@ class CommonTreeNodeStream
     else
       start_index = @nodes.index( start ) || @nodes.length
       stop_index  = @nodes.index( stop )  || @nodes.length
-      return(
+      return( 
         @nodes[ start_index .. stop_index ].map do | n |
           @adaptor.text_of( n ) or " " + @adaptor.type_of( n ).to_s
         end.join( '' )
@@ -1325,7 +1329,7 @@ rewriting parsers.
 =end
 class RewriteRuleTokenStream < RewriteRuleElementStream
   def next_node
-    return @adaptor.create_with_payload!( __next__ )
+    return @adaptor.create_with_payload( __next__ )
   end
   
   alias :next :__next__

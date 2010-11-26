@@ -5,7 +5,7 @@ require 'antlr3/test/functional'
 
 class TestFilterMode < ANTLR3::Test::Functional
 
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Filter;
     options {
         language = Ruby;
@@ -71,7 +71,7 @@ class TestFilterMode < ANTLR3::Test::Functional
   END
 
   example "skipping tokens that aren't important with filter mode" do
-    input = <<-END.fixed_indent(0)
+    input = <<-END.fixed_indent( 0 )
       import org.antlr.runtime.*;
       
       public class Main {
@@ -97,7 +97,7 @@ end
 
 class TestFuzzy < ANTLR3::Test::Functional
 
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Fuzzy;
     options {
         language = Ruby;
@@ -205,7 +205,7 @@ class TestFuzzy < ANTLR3::Test::Functional
   END
   
   example "fuzzy lexing with the filter mode option" do
-    input = <<-END.fixed_indent(0)
+    input = <<-END.fixed_indent( 0 )
       import org.antlr.runtime.*;
       
       public class Main {
@@ -221,7 +221,7 @@ class TestFuzzy < ANTLR3::Test::Functional
       }
     END
     
-    expected_output = <<-END.fixed_indent(0)
+    expected_output = <<-END.fixed_indent( 0 )
       found class Main
       found method main
       found var i
@@ -235,11 +235,10 @@ class TestFuzzy < ANTLR3::Test::Functional
       found // comment //System.out.println(tokens);
     END
     
-    lexer = Fuzzy::Lexer.new(input)
+    lexer = Fuzzy::Lexer.new( input )
     lexer.each { |tk| tk }
     lexer.output.should == expected_output
   end
 
 
 end
-

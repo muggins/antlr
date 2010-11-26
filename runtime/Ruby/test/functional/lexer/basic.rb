@@ -3,7 +3,7 @@
 require 'antlr3/test/functional'
 
 class LexerTest001 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Zero;
     options {
       language = Ruby;
@@ -15,7 +15,7 @@ class LexerTest001 < ANTLR3::Test::Functional
   END
   
   example %(lexing '0') do
-    lexer = Zero::Lexer.new('0')
+    lexer = Zero::Lexer.new( '0' )
     
     token = lexer.next_token
     token.name.should == 'ZERO'
@@ -25,18 +25,18 @@ class LexerTest001 < ANTLR3::Test::Functional
   end
   
   example %(iterating over tokens) do
-    lexer = Zero::Lexer.new('0')
+    lexer = Zero::Lexer.new( '0' )
     
     token_types = lexer.map { |token| token.name }
     token_types.should == %w(ZERO)
   end
 
   example "mismatched token" do
-    lexer = Zero::Lexer.new('1')
+    lexer = Zero::Lexer.new( '1' )
     
-    proc {
+    proc { 
       token = lexer.next_token
-    }.should raise_error(ANTLR3::Error::MismatchedToken) do |e|
+    }.should raise_error( ANTLR3::Error::MismatchedToken ) do |e|
       e.expecting.should == '0'
       e.unexpected_type.should == '1'
     end
@@ -44,7 +44,7 @@ class LexerTest001 < ANTLR3::Test::Functional
 end
 
 class LexerTest002 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Binary;
     options {
       language = Ruby;
@@ -73,7 +73,7 @@ class LexerTest002 < ANTLR3::Test::Functional
     lexer = Binary::Lexer.new( '2' )
     
     b = lambda { token = lexer.next_token }
-    b.should raise_error(ANTLR3::Error::NoViableAlternative) do |exc|
+    b.should raise_error( ANTLR3::Error::NoViableAlternative ) do |exc|
       exc.unexpected_type.should == '2'
     end
   end
@@ -81,7 +81,7 @@ class LexerTest002 < ANTLR3::Test::Functional
 end
 
 class LexerTest003 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar BinaryFooze;
     options {
       language = Ruby;
@@ -114,7 +114,7 @@ class LexerTest003 < ANTLR3::Test::Functional
     lexer = BinaryFooze::Lexer.new( '2' )
     
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::NoViableAlternative) do |exc|
+    should raise_error( ANTLR3::Error::NoViableAlternative ) do |exc|
       exc.unexpected_type.should == '2'
     end
   end
@@ -122,7 +122,7 @@ end
 
 
 class LexerTest004 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar FooStar;
     options {
       language = Ruby;
@@ -168,7 +168,7 @@ class LexerTest004 < ANTLR3::Test::Functional
     lexer = FooStar::Lexer.new( '2' )
     
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::MismatchedToken) do |exc|
+    should raise_error( ANTLR3::Error::MismatchedToken ) do |exc|
       exc.expecting.should == 'f'
       exc.unexpected_type.should == '2'
     end
@@ -176,7 +176,7 @@ class LexerTest004 < ANTLR3::Test::Functional
 end
 
 class LexerTest005 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar FooPlus;
     options {
       language = Ruby;
@@ -216,7 +216,7 @@ class LexerTest005 < ANTLR3::Test::Functional
     lexer = FooPlus::Lexer.new( '2' )
     
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::MismatchedToken) do |exc|
+    should raise_error( ANTLR3::Error::MismatchedToken ) do |exc|
       exc.expecting.should == 'f'
       exc.unexpected_type.should == '2'
     end
@@ -226,7 +226,7 @@ class LexerTest005 < ANTLR3::Test::Functional
     lexer = FooPlus::Lexer.new( 'f' )
     
     proc { token = lexer.next_token }.
-    should raise_error(ANTLR3::Error::EarlyExit) { |exc|
+    should raise_error( ANTLR3::Error::EarlyExit ) { |exc|
       exc.unexpected_type.should == ANTLR3::Constants::EOF
     }
   end
@@ -234,7 +234,7 @@ class LexerTest005 < ANTLR3::Test::Functional
 end
 
 class LexerTest006 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar FoaStar;
     options {
       language = Ruby;
@@ -270,7 +270,7 @@ class LexerTest006 < ANTLR3::Test::Functional
     lexer.next_token
     lexer.next_token
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::MismatchedToken) do |exc|
+    should raise_error( ANTLR3::Error::MismatchedToken ) do |exc|
       exc.expecting.should == 'f'
       exc.unexpected_type.should == '2'
       exc.column.should == 10
@@ -280,7 +280,7 @@ class LexerTest006 < ANTLR3::Test::Functional
 end
 
 class LexerTest007 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Foab;
     options {
       language = Ruby;
@@ -314,7 +314,7 @@ class LexerTest007 < ANTLR3::Test::Functional
     lexer = Foab::Lexer.new( 'foaboao' )
     
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::EarlyExit) do |exc|
+    should raise_error( ANTLR3::Error::EarlyExit ) do |exc|
       exc.unexpected_type.should == 'o'
       exc.column.should == 6
       exc.line.should == 1
@@ -323,7 +323,7 @@ class LexerTest007 < ANTLR3::Test::Functional
 end
 
 class LexerTest008 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Fa;
     options {
       language = Ruby;
@@ -365,7 +365,7 @@ class LexerTest008 < ANTLR3::Test::Functional
     lexer.next_token
     lexer.next_token
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::MismatchedToken) do |exc|
+    should raise_error( ANTLR3::Error::MismatchedToken ) do |exc|
       exc.unexpected_type.should == 'b'
       exc.column.should == 3
       exc.line.should == 1
@@ -375,7 +375,7 @@ end
 
 
 class LexerTest009 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Digit;
     options {
       language = Ruby;
@@ -416,7 +416,7 @@ class LexerTest009 < ANTLR3::Test::Functional
     
     lexer.next_token
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::MismatchedRange) do |exc|
+    should raise_error( ANTLR3::Error::MismatchedRange ) do |exc|
       exc.min.should == '0'
       exc.max.should == '9'
       exc.unexpected_type.should == 'a'
@@ -427,7 +427,7 @@ class LexerTest009 < ANTLR3::Test::Functional
 end
 
 class LexerTest010 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar IDsAndSpaces;
     options {
       language = Ruby;
@@ -481,7 +481,7 @@ class LexerTest010 < ANTLR3::Test::Functional
     
     lexer.next_token
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::NoViableAlternative) do |exc|
+    should raise_error( ANTLR3::Error::NoViableAlternative ) do |exc|
       exc.unexpected_type.should == '-'
       exc.column.should == 1
       exc.line.should == 1
@@ -490,7 +490,7 @@ class LexerTest010 < ANTLR3::Test::Functional
 end
 
 class LexerTest011 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar IDsWithAction;
     options {language = Ruby;}
         
@@ -550,7 +550,7 @@ class LexerTest011 < ANTLR3::Test::Functional
     
     lexer.next_token
     proc { lexer.next_token }.
-    should raise_error(ANTLR3::Error::NoViableAlternative) do |exc|
+    should raise_error( ANTLR3::Error::NoViableAlternative ) do |exc|
       exc.unexpected_type.should == '-'
       exc.column.should == 1
       exc.line.should == 1

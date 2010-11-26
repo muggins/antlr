@@ -4,7 +4,7 @@
 =begin LICENSE
 
 [The "BSD licence"]
-Copyright (c) 2009 Kyle Yetter
+Copyright (c) 2009-2010 Kyle Yetter
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # - ported from the ANTLR3 Python Runtime library by
 #   Kyle Yetter (kcy5b@yahoo.com)
 module ANTLR3
+
+# for compatibility with rubinius, which does not implement StopIteration yet
+unless defined?( StopIteration )
+  StopIteration = Class.new( StandardError )
+end
+
 module Error
 
 =begin rdoc ANTLR3::Error::BacktrackingFailed
@@ -117,21 +123,21 @@ class RecognitionError < StandardError
         @column = @input.column
       when AST::TreeNodeStream
         @symbol = @input.look
-        if @symbol.respond_to?(:line) and @symbol.respond_to?(:column)
+        if @symbol.respond_to?( :line ) and @symbol.respond_to?( :column )
           @line, @column = @symbol.line, @symbol.column
         else
           extract_from_node_stream( @input )
         end
       else
         @symbol = @input.look
-        if @symbol.respond_to?(:line) and @symbol.respond_to?(:column)
+        if @symbol.respond_to?( :line ) and @symbol.respond_to?( :column )
           @line, @column = @symbol.line, @symbol.column
-        elsif @input.respond_to?(:line) and @input.respond_to?(:column)
+        elsif @input.respond_to?( :line ) and @input.respond_to?( :column )
           @line, @column = @input.line, @input.column
         end
       end
     end
-    super(message)
+    super( message )
   end
   
   def approximate_line_info?
@@ -144,7 +150,7 @@ class RecognitionError < StandardError
       @symbol.type
     when AST::TreeNodeStream
       adaptor = @input.adaptor
-      return adaptor.type(@symbol)
+      return adaptor.type( @symbol )
     else
       return @symbol
     end
@@ -160,16 +166,16 @@ class RecognitionError < StandardError
   
 private
   
-  def extract_from_node_stream(nodes)
+  def extract_from_node_stream( nodes )
     adaptor = nodes.adaptor
-    payload = adaptor.token(@symbol)
+    payload = adaptor.token( @symbol )
     
     if payload
       @token = payload
       if payload.line <= 0
         i = -1
-        while prior_node = nodes.look(i)
-          prior_payload = adaptor.token(prior_node)
+        while prior_node = nodes.look( i )
+          prior_payload = adaptor.token( prior_node )
           if prior_payload and prior_payload.line > 0
             @line = prior_payload.line
             @column = prior_payload.column
@@ -182,10 +188,10 @@ private
         @line = payload.line
         @column = payload.column
       end
-    elsif @symbol.is_a?(AST::Tree)
+    elsif @symbol.is_a?( AST::Tree )
       @line = @symbol.line
       @column = @symbol.column
-      @symbol.is_a?(AST::CommonTree) and @token = @symbol.token
+      @symbol.is_a?( AST::CommonTree ) and @token = @symbol.token
     else
       type = adaptor.type( @symbol )
       text = adaptor.text( @symbol )
@@ -210,13 +216,14 @@ occurs when::
 
 class MismatchedToken < RecognitionError
   attr_reader :expecting
-  def initialize(expecting, input)
+  
+  def initialize( expecting, input )
     @expecting = expecting
-    super(input)
+    super( input )
   end
   
   def message
-    "%s: %p %p" % [self.class, unexpected_type, @expecting.inspect]
+    "%s: %p %p" % [ self.class, unexpected_type, @expecting.inspect ]
   end
 end
 
@@ -234,7 +241,7 @@ class UnwantedToken < MismatchedToken
   def message
     exp = @expecting == INVALID_TOKEN_TYPE ? '' : ", expected %p" % @expecting
     text = @symbol.text rescue nil
-    "%s: found=%p%s" % [self.class, text, exp]
+    "%s: found=%p%s" % [ self.class, text, exp ]
   end
 end
 
@@ -282,8 +289,8 @@ in ruby:
 
 class MissingToken < MismatchedToken
   attr_accessor :inserted
-  def initialize(expecting, input, inserted)
-    super(expecting, input)
+  def initialize( expecting, input, inserted )
+    super( expecting, input )
     @inserted = inserted
   end
   
@@ -294,7 +301,7 @@ class MissingToken < MismatchedToken
   def message
     if @inserted and @symbol
       "%s: inserted %p at %p" %
-        [self.class, @inserted, @symbol.text]
+        [ self.class, @inserted, @symbol.text ]
     else
       msg = self.class.to_s
       msg << ': at %p' % token.text unless @token.nil?
@@ -316,15 +323,15 @@ occurs when::
 
 class MismatchedRange < RecognitionError
   attr_accessor :min, :max
-  def initialize(min, max, input)
+  def initialize( min, max, input )
     @min = min
     @max = max
-    super(input)
+    super( input )
   end
   
   def message
     "%s: %p not in %p..%p" %
-      [self.class, unexpected_type, @min, @max]
+      [ self.class, unexpected_type, @min, @max ]
   end
 end
 
@@ -340,14 +347,14 @@ occurs when::
 
 class MismatchedSet < RecognitionError
   attr_accessor :expecting
-  def initialize(expecting, input)
-    super(input)
+  def initialize( expecting, input )
+    super( input )
     @expecting = expecting
   end
   
   def message
     "%s: %p not in %p" %
-      [self.class, unexpected_type, @expecting]
+      [ self.class, unexpected_type, @expecting ]
   end
 end
 
@@ -364,7 +371,7 @@ occurs when::
 class MismatchedNotSet < MismatchedSet
   def message
     '%s: %p != %p' %
-      [self.class, unexpected_type, @expecting]
+      [ self.class, unexpected_type, @expecting ]
   end
 end
 
@@ -394,16 +401,16 @@ current input does not appear to be part of any token specification.
 
 class NoViableAlternative < RecognitionError
   attr_accessor :grammar_decision_description, :decision_number, :state_number
-  def initialize(grammar_decision_description, decision_number, state_number, input)
+  def initialize( grammar_decision_description, decision_number, state_number, input )
     @grammar_decision_description = grammar_decision_description
     @decision_number = decision_number
     @state_number = state_number
-    super(input)
+    super( input )
   end
   
   def message
     '%s: %p != [%p]' %
-      [self.class, unexpected_type, @grammar_decision_description]
+      [ self.class, unexpected_type, @grammar_decision_description ]
   end
 end
 
@@ -438,13 +445,16 @@ now in ruby
 
 class EarlyExit < RecognitionError
   attr_accessor :decision_number
-  def initialize(decision_number, input)
+  
+  def initialize( decision_number, input )
     @decision_number = decision_number
-    super(input)
+    super( input )
   end
+  
   def message
     "The recognizer did not match anything for a (..)+ loop."
   end
+  
 end
 
 =begin rdoc ANTLR3::Error::FailedPredicate
@@ -459,14 +469,18 @@ occurs when::
 
 class FailedPredicate < RecognitionError
   attr_accessor :input, :rule_name, :predicate_text
-  def initialize(input, rule_name, predicate_text)
+  def initialize( input, rule_name, predicate_text )
     @rule_name = rule_name
     @predicate_text = predicate_text
-    super(input)
+    super( input )
+  end
+  
+  def inspect
+    '%s(%s, { %s }?)' % [ self.class.name, @rule_name, @predicate_text ]
   end
   
   def message
-    '%s(%s, { %s }?)' % [self.class.name, @rule_name, @predicate_text]
+    "rule #@rule_name failed predicate: { #@predicate_text }?"
   end
 end
 
@@ -483,14 +497,14 @@ occurs when::
 
 class MismatchedTreeNode < RecognitionError
   attr_accessor :expecting, :input
-  def initialize(expecting, input)
+  def initialize( expecting, input )
     @expecting = expecting
-    super(input)
+    super( input )
   end
   
   def message
     '%s: %p != %p' %
-      [self.class, unexpected_type, @expecting]
+      [ self.class, unexpected_type, @expecting ]
   end
 end
 
@@ -507,13 +521,13 @@ occurs when::
 
 class RewriteCardinalityError < StandardError
   attr_accessor :element_description
-  def initialize(element_description)
+  def initialize( element_description )
     @element_description = element_description
-    super(message)
+    super( message )
   end
   
   def message
-    "%s: %s" % [self.class, @element_description]
+    "%s: %s" % [ self.class, @element_description ]
   end
 end
 
@@ -529,8 +543,8 @@ occurs when::
 
 class RewriteEarlyExit < RewriteCardinalityError
   attr_accessor :element_description
-  def initialize(element_description = nil)
-    super(element_description)
+  def initialize( element_description = nil )
+    super( element_description )
   end
 end
 
@@ -562,17 +576,17 @@ situations that result in tree inconsistencies:
 =end
 
 class TreeInconsistency < StandardError
-  def self.failed_index_check!(expected, real)
-    new(
+  def self.failed_index_check!( expected, real )
+    new( 
       "%s: child indexes don't match -> expected %d found %d" %
-      [self, expected, real]
+      [ self, expected, real ]
     )
   end
   
-  def self.failed_parent_check!(expected, real)
-    new(
+  def self.failed_parent_check!( expected, real )
+    new( 
       "%s: parents don't match; expected %p found %p" %
-      [self, expected, real]
+      [ self, expected, real ]
     )
   end
   
@@ -583,56 +597,56 @@ end
 
 module_function
 
-def MismatchedToken(expecting, input = @input)
-  MismatchedToken.new(expecting, input)
+def MismatchedToken( expecting, input = @input )
+  MismatchedToken.new( expecting, input )
 end
 
-def UnwantedToken(expecting, input = @input)
-  UnwantedToken.new(expecting, input)
+def UnwantedToken( expecting, input = @input )
+  UnwantedToken.new( expecting, input )
 end
 
-def MissingToken(expecting, inserted, input = @input)
-  MissingToken.new(expecting, input, inserted)
+def MissingToken( expecting, inserted, input = @input )
+  MissingToken.new( expecting, input, inserted )
 end
 
-def MismatchedRange(min, max, input = @input)
-  MismatchedRange.new(min, max, input)
+def MismatchedRange( min, max, input = @input )
+  MismatchedRange.new( min, max, input )
 end
 
-def MismatchedSet(expecting, input = @input)
-  MismatchedSet.new(expecting, input)
+def MismatchedSet( expecting, input = @input )
+  MismatchedSet.new( expecting, input )
 end
 
-def MismatchedNotSet(expecting, input = @input)
-  MismatchedNotSet.new(expecting, input)
+def MismatchedNotSet( expecting, input = @input )
+  MismatchedNotSet.new( expecting, input )
 end
 
-def NoViableAlternative(description, decision_number, state_number, input = @input)
-  NoViableAlternative.new(description, decision_number, state_number, input)
+def NoViableAlternative( description, decision, state, input = @input )
+  NoViableAlternative.new( description, decision, state, input )
 end
 
-def EarlyExit(decision_number, input = @input)
-  EarlyExit.new(decision_number, input)
+def EarlyExit( decision, input = @input )
+  EarlyExit.new( decision, input )
 end
 
-def FailedPredicate(rule_name, predicate_text, input = @input)
-  FailedPredicate.new(input, rule_name, predicate_text)
+def FailedPredicate( rule, predicate, input = @input )
+  FailedPredicate.new( input, rule, predicate )
 end
 
-def MismatchedTreeNode(expecting, input = @input)
-  MismatchedTreeNode.new(expecting, input)
+def MismatchedTreeNode( expecting, input = @input )
+  MismatchedTreeNode.new( expecting, input )
 end
 
-def RewriteCardinalityError(element_description)
-  RewriteCardinalityError.new(element_description)
+def RewriteCardinalityError( element_description )
+  RewriteCardinalityError.new( element_description )
 end
 
-def RewriteEarlyExit(element_description = nil)
-  RewriteEarlyExit.new(element_description)
+def RewriteEarlyExit( element_description = nil )
+  RewriteEarlyExit.new( element_description )
 end
 
-def RewriteEmptyStream(element_description)
-  RewriteEmptyStream.new(element_description)
+def RewriteEmptyStream( element_description )
+  RewriteEmptyStream.new( element_description )
 end
 
 end
@@ -646,12 +660,11 @@ include Error
 =end
 
 class Bug < StandardError
-  def initialize(message = nil, *args)
+  def initialize( message = nil, *args )
     message = "something occurred that should not occur within unmodified, " <<
-              "ANTLR-generated source code: #{message}"
-    super(message, *args)
+              "ANTLR-generated source code: #{ message }"
+    super( message, *args )
   end
 end
 
 end
-

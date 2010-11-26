@@ -4,7 +4,7 @@
 require 'antlr3/test/functional'
 
 class TestBug80 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar Bug80;
     options { language = Ruby; }
      
@@ -28,7 +28,7 @@ end
 
 class TestEOF < ANTLR3::Test::Functional
 
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar EndOfFile;
     
     options {
@@ -44,4 +44,3 @@ class TestEOF < ANTLR3::Test::Functional
     tks = lexer.map { |tk| tk }
   end
 end
-

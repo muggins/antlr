@@ -4,7 +4,7 @@
 =begin LICENSE
 
 [The "BSD licence"]
-Copyright (c) 2009 Kyle Yetter
+Copyright (c) 2009-2010 Kyle Yetter
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,34 +48,34 @@ children have been visited.
 =end
 
 class Visitor
-  def initialize(adaptor = nil)
+  def initialize( adaptor = nil )
     @adaptor = adaptor || CommonTreeAdaptor.new()
     @pre_action = nil
     @post_action = nil
-    block_given? and yield(self)
+    block_given? and yield( self )
   end
   
-  def pre_action(&block)
+  def pre_action( &block )
     block_given? and @pre_action = block
     return @pre_action
   end
   
-  def post_action(&block)
+  def post_action( &block )
     block_given? and @post_action = block
     return @post_action
   end
   
-  def visit(tree, pre_action = nil, post_action = nil)
-    flat = @adaptor.flat_list?(tree)
+  def visit( tree, pre_action = nil, post_action = nil )
+    flat = @adaptor.flat_list?( tree )
     before = pre_action || @pre_action
     after = post_action || @post_action
     
-    tree = before.call(tree) unless before.nil? or flat
-    @adaptor.child_count(tree).times do |index|
-      child = @adaptor.child_of(tree, index)
-      visit(child, pre_action, post_action)
+    tree = before.call( tree ) unless before.nil? or flat
+    @adaptor.child_count( tree ).times do |index|
+      child = @adaptor.child_of( tree, index )
+      visit( child, pre_action, post_action )
     end
-    tree = after.call(tree) unless after.nil? or flat
+    tree = after.call( tree ) unless after.nil? or flat
     
     return tree
   end

@@ -5,7 +5,7 @@ require 'antlr3/test/functional'
 
 class TestLexerRuleReference < ANTLR3::Test::Functional
 
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar RuleProperty;
     options {
       language = Ruby;
@@ -31,8 +31,8 @@ class TestLexerRuleReference < ANTLR3::Test::Functional
     lexer = RuleProperty::Lexer.new( "foobar _ab98 \n A12sdf" )
     tokens = lexer.map { |tk| tk }
     
-    lexer.properties.should have(3).things
-    text, type, line, pos, index, channel, start, stop = lexer.properties[0]
+    lexer.properties.should have( 3 ).things
+    text, type, line, pos, index, channel, start, stop = lexer.properties[ 0 ]
     text.should == 'foobar'
     type.should == RuleProperty::TokenData::IDENTIFIER
     line.should == 1
@@ -42,7 +42,7 @@ class TestLexerRuleReference < ANTLR3::Test::Functional
     start.should == 0
     stop.should == 5
     
-    text, type, line, pos, index, channel, start, stop = lexer.properties[1]
+    text, type, line, pos, index, channel, start, stop = lexer.properties[ 1 ]
     text.should == '_ab98'
     type.should == RuleProperty::TokenData::IDENTIFIER
     line.should == 1
@@ -52,8 +52,8 @@ class TestLexerRuleReference < ANTLR3::Test::Functional
     start.should == 7
     stop.should == 11
     
-    lexer.properties.should have(3).things
-    text, type, line, pos, index, channel, start, stop = lexer.properties[2]
+    lexer.properties.should have( 3 ).things
+    text, type, line, pos, index, channel, start, stop = lexer.properties[ 2 ]
     text.should == 'A12sdf'
     type.should == RuleProperty::TokenData::IDENTIFIER
     line.should == 2
@@ -68,7 +68,7 @@ class TestLexerRuleReference < ANTLR3::Test::Functional
 end
 
 class TestLexerRuleLabel < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar LexerRuleLabel;
     options {
       language = Ruby;
@@ -101,4 +101,3 @@ class TestLexerRuleLabel < ANTLR3::Test::Functional
   end
 
 end
-

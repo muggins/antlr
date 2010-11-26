@@ -3,7 +3,7 @@
 
 =begin LICENSE
 [The "BSD licence"]
-Copyright (c) 2009 Kyle Yetter
+Copyright (c) 2009-2010 Kyle Yetter
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -65,57 +65,48 @@ module Options
   attr_accessor :debug_socket
   attr_accessor :ruby_prof
   
-  def initialize(options = {})
-    @no_output    = options.fetch(:no_output, false)
-    @profile      = options.fetch(:profile, false)
-    @debug_socket = options.fetch(:debug_socket, false)
-    @ruby_prof    = options.fetch(:ruby_prof, false)
-    @encoding     = options.fetch(:encoding, nil)
-    @interactive  = options.fetch(:interactive, false)
-    @input        = options.fetch(:input, $stdin)
+  def initialize( options = {} )
+    @no_output    = options.fetch( :no_output, false )
+    @profile      = options.fetch( :profile, false )
+    @debug_socket = options.fetch( :debug_socket, false )
+    @ruby_prof    = options.fetch( :ruby_prof, false )
+    @encoding     = options.fetch( :encoding, nil )
+    @interactive  = options.fetch( :interactive, false )
+    @input        = options.fetch( :input, $stdin )
   end
   
   # constructs an OptionParser and parses the argument list provided by +argv+
-  def parse_options(argv = ARGV)
-    oparser = OptionParser.new do |o|
-      o.on('-i', '--input "text to process"', doc(<<-END)) { |val| @input = val }
+  def parse_options( argv = ARGV )
+    oparser = OptionParser.new do | o |
+      o.separator 'Input Options:'
+      
+      o.on( '-i', '--input "text to process"', doc( <<-END ) ) { |val| @input = val }
       | a string to use as direct input to the recognizer
       END
       
       o.on( '-I', '--interactive', doc( <<-END ) ) { @interactive = true }
       | run an interactive session with the recognizer
       END
-      
-      o.on( '--profile', doc( <<-END.chomp! ) ) { @profile = true }
-      | profile code execution using the standard profiler library
-      END
-      
-      #o.on('--ruby-prof', doc(<<-END1), doc(<<-END2)) { @ruby_prof = true }
-      #| profile code execution using the faster ruby-prof
-      #END1
-      #| (requires rubygems with the ruby-prof gem)
-      #END2
     end
     
     setup_options( oparser )
-    return oparser.parse(argv)
+    return oparser.parse( argv )
   end
   
-  private
-  def setup_options(oparser)
+private
+  
+  def setup_options( oparser )
     # overridable hook to modify / append options
   end
   
   def doc( description_string )
     description_string.chomp!
-    description_string.gsub!(/^ *\| ?/,'')
-    description_string.gsub!(/\s+/,' ')
+    description_string.gsub!( /^ *\| ?/, '' )
+    description_string.gsub!( /\s+/, ' ' )
     return description_string
   end
   
 end
-
-
 
 =begin rdoc ANTLR3::Main::Main
 
@@ -127,55 +118,61 @@ scripts, but isn't particularly useful on its own.
 
 class Main
   include Options
+  include Util
   attr_accessor :output, :error
   
-  def initialize(options = {})
+  def initialize( options = {} )
     @input  = options.fetch( :input, $stdin )
     @output = options.fetch( :output, $stdout )
     @error  = options.fetch( :error, $stderr )
-    @name   = options.fetch( :name, File.basename($0, '.rb') )
+    @name   = options.fetch( :name, File.basename( $0, '.rb' ) )
     super
-    block_given? and yield(self)
+    block_given? and yield( self )
   end
   
+  
   # runs the script
-  def execute(argv = ARGV)
-    args = parse_options(argv)
+  def execute( argv = ARGV )
+    args = parse_options( argv )
     setup
     
     @interactive and return execute_interactive
     
     in_stream = 
       case
-      when @input.is_a?(::String) then StringStream.new(@input)
+      when @input.is_a?( ::String ) then StringStream.new( @input )
       when args.length == 1 && args.first != '-'
-        ANTLR3::FileStream.new(args[0])
-      else ANTLR3::FileStream.new(@input)
+        ANTLR3::FileStream.new( args[ 0 ] )
+      else ANTLR3::FileStream.new( @input )
       end
     case
     when @ruby_prof
       load_ruby_prof
       profile = RubyProf.profile do
-        recognize(in_stream)
+        recognize( in_stream )
       end
-      printer = RubyProf::FlatPrinter.new(profile)
-      printer.print(@output)
+      printer = RubyProf::FlatPrinter.new( profile )
+      printer.print( @output )
     when @profile
       require 'profiler'
       Profiler__.start_profile
-      recognize(in_stream)
+      recognize( in_stream )
       Profiler__.print_profile
     else
-      recognize(in_stream)
+      recognize( in_stream )
     end
   end
   
 private
   
+  def recognize( *args )
+    # overriden by subclasses
+  end
+  
   def execute_interactive
-    @output.puts( Util.tidy(<<-END) )
+    @output.puts( tidy( <<-END ) )
     | ===================================================================
-    | Ruby ANTLR Console for #{$0}
+    | Ruby ANTLR Console for #{ $0 }
     | ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     | * Enter source code lines 
     | * Enter EOF to finish up and exit
@@ -190,8 +187,12 @@ private
         line_number = 0
         lambda do
           begin
-            line = Readline.readline("#@name:#{line_number += 1}> ") or 
-              @output.print("\n") # ensures result output is on a new line after EOF is entered
+            if line = Readline.readline( "#@name:#{ line_number += 1 }> ", true )
+              line << $/
+            else
+              @output.print( "\n" ) # ensures result output is on a new line after EOF is entered
+              nil
+            end
           rescue Interrupt, EOFError
             retry
           end
@@ -201,9 +202,11 @@ private
       rescue LoadError
         lambda do
           begin
-            printf("%s:%i> ", @name, @input.lineno)
+            printf( "%s:%i> ", @name, @input.lineno )
             flush
-            line = @input.gets or @output.print("\n") # ensures result output is on a new line after EOF is entered
+            line = @input.gets or
+              @output.print( "\n" ) # ensures result output is on a new line after EOF is entered
+            line
           rescue Interrupt, EOFError
             retry
           end
@@ -211,120 +214,95 @@ private
         end
       end
     
-    stream = InteractiveStringStream.new(:name => @name, &read_method)
-    recognize(stream)
+    stream = InteractiveStringStream.new( :name => @name, &read_method )
+    recognize( stream )
   end
   
-  #def load_ruby_prof
-  #  require 'ruby-prof'
-  #rescue LoadError
-  #  attempt('rubygems', doc(<<-END)) { require 'rubygems' }
-  #  | * failed to load the rubygems library:
-  #  |   - ensure rubygems is in installed
-  #  |   - make sure it is in this script's load path
-  #  END
-  #  attempt('ruby-prof', doc(<<-END)) { gem 'ruby-prof' }
-  #  | * could not active the ruby-prof gem via ``gem "ruby-prof"''
-  #  |   - ensure the ruby-prof gem is installed
-  #  |   - it can be installed using the shell command
-  #  |     ``sudo gem install ruby-prof''
-  #  END
-  #  attempt('ruby-prof', doc(<<-END)) { require 'ruby-prof' }
-  #  | * activated the ruby-prof gem, but subsequently failed to
-  #  |   load the ruby-prof library
-  #  |   - check for problems with the gem
-  #  |   - try restoring it to its initial install condition
-  #  |     using the shell command
-  #  |     ``sudo gem pristine ruby-prof''
-  #  END
-  #end
+  def screen_width
+    ( ENV[ 'COLUMNS' ] || 80 ).to_i
+  end
   
-  #def load_prof
-  #  attempt('profiler', doc(<<-END), 1) { require 'profiler' }
-  #  | * failed to load the profiler library from the
-  #  |   ruby standard library
-  #  |   - ensure it is installed
-  #  |   - check that it is in this script's load path
-  #  END
-  #end
-  
-  def attempt(lib, message = nil, exit_status = nil)
+  def attempt( lib, message = nil, exit_status = nil )
     yield
   rescue LoadError => error
     message or raise
-    @error.puts(message)
-    report_error(error)
+    @error.puts( message )
+    report_error( error )
     report_load_path
-    exit(exit_status) if exit_status
+    exit( exit_status ) if exit_status
   rescue => error
-    @error.puts("received an error while attempting to load %p" % lib)
-    report_error(error)
-    exit(exit_status) if exit_status
+    @error.puts( "received an error while attempting to load %p" % lib )
+    report_error( error )
+    exit( exit_status ) if exit_status
   end
   
-  def report_error(error)
-    puts!("~ error details:")
-    puts!('  [ %s ]' % error.class.name)
-    message = error.to_s.gsub(/\n/, "\n     ")
-    puts!('  -> ' << message)
+  def report_error( error )
+    puts!( "~ error details:" )
+    puts!( '  [ %s ]' % error.class.name )
+    message = error.to_s.gsub( /\n/, "\n     " )
+    puts!( '  -> ' << message )
     for call in error.backtrace
-      puts!('     ' << call)
+      puts!( '     ' << call )
     end
   end
   
   def report_load_path
-    puts!("~ content of $LOAD_PATH: ")
+    puts!( "~ content of $LOAD_PATH: " )
     for dir in $LOAD_PATH
-      puts!("  - #{dir}")
+      puts!( "  - #{ dir }" )
     end
   end
   
   def setup
+    # hook
   end
   
-  def fetch_class(name)
-    name.nil? || name.empty? and return(nil)
-    unless constant_exists?(name)
-      try_to_load(name)
-      constant_exists?(name) or return(nil)
+  def fetch_class( name )
+    name.nil? || name.empty? and return( nil )
+    unless constant_exists?( name )
+      try_to_load( name )
+      constant_exists?( name ) or return( nil )
     end
     
-    name.split(/::/).inject(Object) do |mod, name|
+    name.split( /::/ ).inject( Object ) do |mod, name|
       # ::SomeModule splits to ['', 'SomeModule'] - so ignore empty strings
-      name.empty? and next(mod) 
-      mod.const_get(name)
+      name.empty? and next( mod ) 
+      mod.const_get( name )
     end
   end
   
-  def constant_exists?(name)
-    eval("defined?(#{name})") == 'constant'
+  def constant_exists?( name )
+    eval( "defined?(#{ name })" ) == 'constant'
   end
   
-  def try_to_load(name)
+  def try_to_load( name )
     if name =~ /(\w+)::(Lexer|Parser|TreeParser)$/
       retry_ok = true
-      script = name.gsub(/::/, '')
+      module_name, recognizer_type = $1, $2
+      script = name.gsub( /::/, '' )
       begin
-        return(require(script))
+        return( require( script ) )
       rescue LoadError
         if retry_ok
-          script, retry_ok = $1, false
+          script, retry_ok = module_name, false
           retry
         else
-          return(nil)
+          return( nil )
         end
       end
     end
   end
   
   %w(puts print printf flush).each do |method|
-    class_eval(<<-END, __FILE__, __LINE__)
+    class_eval( <<-END, __FILE__, __LINE__ )
       private
-      def #{method}(*args)
-        @output.#{method}(*args) unless @no_output
+      
+      def #{ method }(*args)
+        @output.#{ method }(*args) unless @no_output
       end
-      def #{method}!(*args)
-        @error.#{method}(*args) unless @no_output
+      
+      def #{ method }!( *args )
+        @error.#{ method }(*args) unless @no_output
       end
     END
   end
@@ -350,7 +328,7 @@ class LexerMain < Main
       begin
         token = lexer.next_token
         if token.nil? || token.type == ANTLR3::EOF then break
-        else display_token(token)
+        else display_token( token )
         end
       rescue ANTLR3::RecognitionError => error
         report_error( error )
@@ -359,7 +337,7 @@ class LexerMain < Main
     end
   end
   
-  def display_token(token)
+  def display_token( token )
     case token.channel
     when ANTLR3::DEFAULT_CHANNEL
       prefix = '-->'
@@ -372,9 +350,9 @@ class LexerMain < Main
       suffix = ' (channel %p)' % token.channel
     end
     
-    printf("%s %-15s %-15p @ line %-3i col %-3i%s\n",
+    printf( "%s %-15s %-15p @ line %-3i col %-3i%s\n",
            prefix, token.name, token.text,
-           token.line, token.column, suffix)
+           token.line, token.column, suffix )
   end
   
 end
@@ -386,39 +364,63 @@ generated parser file is run directly from the command line.
 
 =end
 class ParserMain < Main
-  def initialize(parser_class, options = {})
-    super(options)
-    @lexer_class_name = options[:lexer_class_name]
-    @lexer_class      = options[:lexer_class]
+  attr_accessor :lexer_class_name,
+                :lexer_class,
+                :parser_class,
+                :parser_rule,
+                :port,
+                :log
+  
+  def initialize( parser_class, options = {} )
+    super( options )
+    @lexer_class_name = options[ :lexer_class_name ]
+    @lexer_class      = options[ :lexer_class ]
     @parser_class     = parser_class
-    @parser_rule = options[:parser_rule]
-    if @debug = (@parser_class.debug? rescue false)
-      @port = options.fetch(:port, ANTLR3::Debug::DEFAULT_PORT)
-      @log  = options.fetch(:log, @error)
+    @parser_rule = options[ :parser_rule ]
+    if @debug = ( @parser_class.debug? rescue false )
+      @trace = options.fetch( :trace, nil )
+      @port = options.fetch( :port, ANTLR3::Debug::DEFAULT_PORT )
+      @log  = options.fetch( :log, @error )
     end
+    @profile = ( @parser_class.profile? rescue false )
   end
   
-  def setup_options(opt)
+  def setup_options( opt )
     super
-    opt.on('--lexer-name CLASS_NAME', "name of the lexer class to use") { |val|
+    
+    opt.separator ""
+    opt.separator( "Parser Configuration:" )
+    
+    opt.on( '--lexer-name CLASS_NAME', "name of the lexer class to use" ) { |val|
       @lexer_class_name = val
       @lexer_class = nil
     }
-    opt.on('--lexer-file PATH_TO_LIBRARY', "path to library defining the lexer class") { |val|
+    
+    opt.on( '--lexer-file PATH_TO_LIBRARY', "path to library defining the lexer class" ) { |val|
       begin
-        test(?f, val) ? load(val) : require(val)
+        test( ?f, val ) ? load( val ) : require( val )
       rescue LoadError
-        warn("unable to load the library specified by --lexer-file: #{$!}")
+        warn( "unable to load the library specified by --lexer-file: #{ $! }" )
       end
     }
-    opt.on('--rule NAME', "name of the parser rule to execute") { |val| @parser_rule = val }
+    
+    opt.on( '--rule NAME', "name of the parser rule to execute" ) { |val| @parser_rule = val }
+    
     if @debug
-      opt.on('--port NUMBER', Integer, "port number to use for the debug socket") do |number|
+      opt.separator ''
+      opt.separator "Debug Mode Options:"
+      
+      opt.on( '--trace', '-t', "print rule trace instead of opening a debug socket" ) do
+        @trace = true
+      end
+      
+      opt.on( '--port NUMBER', Integer, "port number to use for the debug socket" ) do |number|
         @port = number
       end
-      opt.on('--log PATH', "path of file to use to record socket activity",
+      
+      opt.on( '--log PATH', "path of file to use to record socket activity",
              "(stderr by default)" ) do |path|
-        @log = open(path, 'w')
+        @log = open( path, 'w' )
       end
     end
   end
@@ -426,10 +428,10 @@ class ParserMain < Main
   def setup
     unless @lexer_class ||= fetch_class( @lexer_class_name )
       if @lexer_class_name
-        fail("unable to locate the lexer class ``#@lexer_class_name''")
+        fail( "unable to locate the lexer class ``#@lexer_class_name''" )
       else
         unless @lexer_class = @parser_class.associated_lexer
-          fail(doc(<<-END))
+          fail( doc( <<-END ) )
           | no lexer class has been specified with the --lexer-name option
           | and #@parser_class does not appear to have an associated
           | lexer class
@@ -438,31 +440,38 @@ class ParserMain < Main
       end
     end
     @parser_rule ||= @parser_class.default_rule or
-      fail("a parser rule name must be specified via --rule NAME")
+      fail( "a parser rule name must be specified via --rule NAME" )
   end
   
-  def recognize(in_stream)
+  def recognize( in_stream )
     parser_options = {}
     if @debug
-      parser_options[:port] = @port
-      parser_options[:log] = @log
+      if @trace
+        parser_options[ :debug_listener ] = ANTLR3::Debug::RuleTracer.new
+      else
+        parser_options[ :port ] = @port
+        parser_options[ :log ]  = @log
+      end
     end
     lexer = @lexer_class.new( in_stream )
-    token_stream = CommonTokenStream.new( lexer )
-    parser = @parser_class.new( token_stream, parser_options )
+    # token_stream = CommonTokenStream.new( lexer )
+    parser = @parser_class.new( lexer, parser_options )
     result = parser.send( @parser_rule ) and present( result )
+    @profile and puts( parser.generate_report )
   end
   
   def present( return_value )
     ASTBuilder > @parser_class and return_value = return_value.tree
-    text = 
-      begin
-        require 'pp'
-        return_value.pretty_inspect
-      rescue LoadError, NoMethodError
-        return_value.inspect
-      end
-    puts(text)
+    if return_value
+      text = 
+        begin
+          require 'pp'
+          return_value.pretty_inspect
+        rescue LoadError, NoMethodError
+          return_value.inspect
+        end
+      puts( text )
+    end
   end
   
 end
@@ -476,81 +485,100 @@ generated tree walker (tree parser) file is run directly from the command line.
 
 class WalkerMain < Main
   attr_accessor :walker_class, :lexer_class, :parser_class
-  def initialize(walker_class, options = {})
-    super(options)
+  
+  def initialize( walker_class, options = {} )
+    super( options )
     @walker_class = walker_class
-    @lexer_class_name = options[:lexer_class_name]
-    @lexer_class  = options[:lexer_class]
-    @parser_class_name = options[:parser_class_name]
-    @parser_class = options[:parser_class]
-    if @debug = (@parser_class.debug? rescue false)
-      @port = options.fetch(:port, ANTLR3::Debug::DEFAULT_PORT)
-      @log  = options.fetch(:log, @error)
+    @lexer_class_name = options[ :lexer_class_name ]
+    @lexer_class  = options[ :lexer_class ]
+    @parser_class_name = options[ :parser_class_name ]
+    @parser_class = options[ :parser_class ]
+    if @debug = ( @parser_class.debug? rescue false )
+      @port = options.fetch( :port, ANTLR3::Debug::DEFAULT_PORT )
+      @log  = options.fetch( :log, @error )
     end
   end
   
-  def setup_options(opt)
+  def setup_options( opt )
     super
-    opt.on('--lexer-name CLASS_NAME') { |val| @lexer_class_name = val }
-    opt.on('--lexer-file PATH_TO_LIBRARY') { |val|
+    
+    opt.separator ''
+    opt.separator "Tree Parser Configuration:"
+    
+    opt.on( '--lexer-name CLASS_NAME', 'full name of the lexer class to use' ) { |val| @lexer_class_name = val }
+    opt.on(
+      '--lexer-file PATH_TO_LIBRARY',
+      'path to load to make the lexer class available'
+    ) { |val|
       begin
-        test(?f, val) ? load(val) : require(val)
+        test( ?f, val ) ? load( val ) : require( val )
       rescue LoadError
-        warn("unable to load the library specified by --lexer-file: #{$!}")
+        warn( "unable to load the library `#{ val }' specified by --lexer-file: #{ $! }" )
       end
     }
-    opt.on('--parser-name CLASS_NAME') { |val| @parser_class_name = val }
-    opt.on('--parser-file PATH_TO_LIBRARY') { |val|
+    
+    opt.on(
+      '--parser-name CLASS_NAME',
+      'full name of the parser class to use'
+    ) { |val| @parser_class_name = val }
+    opt.on(
+      '--parser-file PATH_TO_LIBRARY',
+      'path to load to make the parser class available'
+    ) { |val|
       begin
-        test(?f, val) ? load(val) : require(val)
+        test( ?f, val ) ? load( val ) : require( val )
       rescue LoadError
-        warn("unable to load the library specified by --parser-file: #{$!}")
+        warn( "unable to load the library specified by --parser-file: #{ $! }" )
       end
     }
-    opt.on('--parser-rule NAME') { |val| @parser_rule = val }
-    opt.on('--rule NAME') { |val| @walker_rule = val }
+    
+    opt.on( '--parser-rule NAME', "name of the parser rule to use on the input" ) { |val| @parser_rule = val }
+    opt.on( '--rule NAME', "name of the rule to invoke in the tree parser" ) { |val| @walker_rule = val }
     
     if @debug
-      opt.on('--port NUMBER', Integer, "port number to use for the debug socket") do |number|
+      opt.separator ''
+      opt.separator "Debug Mode Options:"
+      
+      opt.on( '--port NUMBER', Integer, "port number to use for the debug socket" ) do |number|
         @port = number
       end
-      opt.on('--log PATH', "path of file to use to record socket activity",
+      opt.on( '--log PATH', "path of file to use to record socket activity",
              "(stderr by default)" ) do |path|
-        @log = open(path, 'w')
+        @log = open( path, 'w' )
       end
     end
   end
   
   # TODO: finish the Main modules
   def setup
-    unless @lexer_class ||= fetch_class(@lexer_class_name)
-      fail("unable to locate the lexer class #@lexer_class_name")
+    unless @lexer_class ||= fetch_class( @lexer_class_name )
+      fail( "unable to locate the lexer class #@lexer_class_name" )
     end
-    unless @parser_class ||= fetch_class(@parser_class_name)
-      fail("unable to locate the parser class #@parser_class_name")
+    unless @parser_class ||= fetch_class( @parser_class_name )
+      fail( "unable to locate the parser class #@parser_class_name" )
     end
   end
   
-  def recognize(in_stream)
+  def recognize( in_stream )
     walker_options = {}
     if @debug
-      walker_options[:port] = @port
-      walker_options[:log] = @log
+      walker_options[ :port ] = @port
+      walker_options[ :log ] = @log
     end
-    @lexer = @lexer_class.new(in_stream)
-    @token_stream = ANTLR3::CommonTokenStream.new(@lexer)
-    @parser = @parser_class.new(@token_stream)
-    if result = @parser.send(@parser_rule)
-      result.respond_to?(:tree) or fail("Parser did not return an AST for rule #@parser_rule")
-      @node_stream = ANTLR3::CommonTreeNodeStream.new(result.tree)
+    @lexer = @lexer_class.new( in_stream )
+    @token_stream = ANTLR3::CommonTokenStream.new( @lexer )
+    @parser = @parser_class.new( @token_stream )
+    if result = @parser.send( @parser_rule )
+      result.respond_to?( :tree ) or fail( "Parser did not return an AST for rule #@parser_rule" )
+      @node_stream = ANTLR3::CommonTreeNodeStream.new( result.tree )
       @node_stream.token_stream = @token_stream
-      @walker = @walker_class.new(@node_stream, walker_options)
-      if result = @walker.send(@walker_rule)
+      @walker = @walker_class.new( @node_stream, walker_options )
+      if result = @walker.send( @walker_rule )
         out = result.tree.inspect rescue result.inspect
-        puts(out)
-      else puts!("walker.#@walker_rule returned nil")
+        puts( out )
+      else puts!( "walker.#@walker_rule returned nil" )
       end
-    else puts!("parser.#@parser_rule returned nil")
+    else puts!( "parser.#@parser_rule returned nil" )
     end
   end
 end

@@ -4,7 +4,7 @@
 require 'antlr3/test/functional'
 
 class TestActions1 < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     grammar ParserActions;
     options { language = Ruby; }
     
@@ -48,7 +48,7 @@ end
 
 class TestActions2 < ANTLR3::Test::Functional
 
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     grammar AllKindsOfActions;
     options { language = Ruby; }
     
@@ -92,13 +92,13 @@ class TestActions2 < ANTLR3::Test::Functional
     parser = AllKindsOfActions::Parser.new lexer
     parser.prog
     
-    parser.output.should == <<-END.fixed_indent(0)
+    parser.output.should == <<-END.fixed_indent( 0 )
       init
       after
       finally
     END
     
-    lexer.output.should == <<-END.fixed_indent(0)
+    lexer.output.should == <<-END.fixed_indent( 0 )
       action
       "foobar" 4 1 0 -1 :default 0 5
       attribute
@@ -114,7 +114,7 @@ end
 
 class TestFinally < ANTLR3::Test::Functional
 
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     grammar Finally;
     
     options {
@@ -148,9 +148,19 @@ end
 
 class TestActionScopes < ANTLR3::Test::Functional
 
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     grammar SpecialActionScopes;
     options { language=Ruby; }
+    
+    @all::header {
+      \$all_header_files ||= []
+      \$all_header_files << File.basename( __FILE__ )
+    }
+    
+    @all::footer {
+      \$all_footer_files ||= []
+      \$all_footer_files << File.basename( __FILE__ )
+    }
     
     @header {
       \$header_location = __LINE__
@@ -161,7 +171,6 @@ class TestActionScopes < ANTLR3::Test::Functional
       \$footer_location = __LINE__
       \$footer_context = self
     }
-    
     
     @module::head {
       \$module_head_location = __LINE__
@@ -207,12 +216,17 @@ class TestActionScopes < ANTLR3::Test::Functional
   END
   
   example 'verifying action scope behavior' do
-    lexer = SpecialActionScopes::Lexer.new("10 20 30 40 50")
+    lexer = SpecialActionScopes::Lexer.new( "10 20 30 40 50" )
     parser = SpecialActionScopes::Parser.new lexer
-    parser.nums.should == [10, 20, 30, 40, 50]
+    parser.nums.should == [ 10, 20, 30, 40, 50 ]
   end
   
   example 'special action scope locations' do
+    $all_header_files.should include "SpecialActionScopesLexer.rb"
+    $all_header_files.should include "SpecialActionScopesParser.rb"
+    $all_footer_files.should include "SpecialActionScopesLexer.rb"
+    $all_footer_files.should include "SpecialActionScopesParser.rb"
+    
     $header_location.should be < $module_head_location
     $module_head_location.should be < $token_scheme_location
     $token_scheme_location.should be < $token_members_location

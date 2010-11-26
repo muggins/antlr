@@ -4,7 +4,7 @@
 require 'antlr3/test/functional'
 
 class XMLLexerTest < ANTLR3::Test::Functional
-  inline_grammar(<<-'END')
+  inline_grammar( <<-'END' )
     lexer grammar XML;
     options { language = Ruby; }
     
@@ -134,7 +134,7 @@ class XMLLexerTest < ANTLR3::Test::Functional
   END
   
   it "should be valid" do
-    lexer = XML::Lexer.new(<<-'END'.fixed_indent(0))
+    lexer = XML::Lexer.new( <<-'END'.fixed_indent( 0 ) )
       <?xml version='1.0'?>
       <!DOCTYPE component [
       <!ELEMENT component (PCDATA|sub)*>
@@ -160,7 +160,7 @@ class XMLLexerTest < ANTLR3::Test::Functional
     
     lexer.map { |tk| tk }
     
-    lexer.output.should == <<-'END'.fixed_indent(0)
+    lexer.output.should == <<-'END'.fixed_indent( 0 )
       XML declaration
       Attr: version = '1.0'
       ROOTELEMENT: component

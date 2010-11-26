@@ -4,7 +4,7 @@
 =begin LICENSE
 
 [The "BSD licence"]
-Copyright (c) 2009 Kyle Yetter
+Copyright (c) 2009-2010 Kyle Yetter
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -173,46 +173,51 @@ module Stream
   abstract :consume
   
   ##
-  # :method: peek(k=1)
+  # :method: peek( k = 1 )
   # used to quickly retreive the object of interest to a recognizer at lookahead
   # position specified by <tt>k</tt> (such as integer value of a character or an
   # integer token type)
   abstract :peek
   
   ##
-  # :method: look(k=1)
+  # :method: look( k = 1 )
   # used to retreive the full object of interest at lookahead position specified
   # by <tt>k</tt> (such as a character string or a token structure)
   abstract :look
   
   ##
   # :method: mark
-  # TODO: document
+  # saves the current position for the purposes of backtracking and
+  # returns a value to pass to #rewind at a later time
   abstract :mark
   
   ##
   # :method: index
-  # TODO: document
+  # returns the current position of the stream
   abstract :index
   
   ##
-  # :method: rewind(marker=last_marker)
-  # TODO: document
+  # :method: rewind( marker = last_marker )
+  # restores the stream position using the state information previously saved
+  # by the given marker
   abstract :rewind
   
   ##
-  # :method: release(marker = last_marker)
-  # TODO: document
+  # :method: release( marker = last_marker )
+  # clears the saved state information associated with the given marker value
   abstract :release
   
   ##
-  # :method: seek(position)
-  # TODO: document
+  # :method: seek( position )
+  # move the stream to the given absolute index given by +position+
   abstract :seek
   
-  # TODO: document
+  ##
+  # the total number of symbols in the stream
   attr_reader :size
-  # TODO: document
+  
+  ##
+  # indicates an identifying name for the stream -- usually the file path of the input
   attr_accessor :source_name
 end
 
@@ -251,7 +256,7 @@ to keep it simple and familliar in this Ruby runtime API.
 module CharacterStream
   include Stream
   extend ClassMacros
-  EOF = -1
+  include Constants
   
   ##
   # :method: substring(start,stop)
@@ -327,8 +332,8 @@ module TokenStream
   abstract :to_s
   
   ##
-  # :method: at
-  # TODO: document
+  # :method: at( i )
+  # return the stream symbol at index +i+
   abstract :at
 end
 
@@ -359,6 +364,8 @@ development goal for this project.
 =end
 
 class StringStream
+  NEWLINE = ?\n.ord
+  
   include CharacterStream
   
   # current integer character index of the stream
@@ -376,24 +383,76 @@ class StringStream
   
   # the entire string that is wrapped by the stream
   attr_reader :data
+  attr_reader :string
   
-  # creates a new StringStream object where +data+ is the string data to stream.
-  # accepts the following options in a symbol-to-value hash:
-  #
-  # [:file or :name] the (file) name to associate with the stream; default: <tt>'(string)'</tt>
-  # [:line] the initial line number; default: +1+
-  # [:column] the initial column number; default: +0+
-  # 
-  def initialize(data, options = {})
-    @data = data.to_s
-    @data.equal?(data) and @data = @data.clone
-    @data.freeze
-    @position = 0
-    @line = options.fetch :line, 1
-    @column = options.fetch :column, 0
-    @markers = []
-    mark
-    @name ||= options[:file] || options[:name] # || '(string)'
+  if RUBY_VERSION =~ /^1\.9/
+    
+    # creates a new StringStream object where +data+ is the string data to stream.
+    # accepts the following options in a symbol-to-value hash:
+    #
+    # [:file or :name] the (file) name to associate with the stream; default: <tt>'(string)'</tt>
+    # [:line] the initial line number; default: +1+
+    # [:column] the initial column number; default: +0+
+    # 
+    def initialize( data, options = {} )      # for 1.9
+      @string   = data.to_s.encode( Encoding::UTF_8 ).freeze
+      @data     = @string.codepoints.to_a.freeze
+      @position = options.fetch :position, 0
+      @line     = options.fetch :line, 1
+      @column   = options.fetch :column, 0
+      @markers  = []
+      @name   ||= options[ :file ] || options[ :name ] # || '(string)'
+      mark
+    end
+    
+    #
+    # identical to #peek, except it returns the character value as a String
+    # 
+    def look( k = 1 )               # for 1.9
+      k == 0 and return nil
+      k += 1 if k < 0
+      
+      index = @position + k - 1
+      index < 0 and return nil
+      
+      @string[ index ]
+    end
+    
+  else
+    
+    # creates a new StringStream object where +data+ is the string data to stream.
+    # accepts the following options in a symbol-to-value hash:
+    #
+    # [:file or :name] the (file) name to associate with the stream; default: <tt>'(string)'</tt>
+    # [:line] the initial line number; default: +1+
+    # [:column] the initial column number; default: +0+
+    # 
+    def initialize( data, options = {} )    # for 1.8
+      @data = data.to_s
+      @data.equal?( data ) and @data = @data.clone
+      @data.freeze
+      @string = @data
+      @position = options.fetch :position, 0
+      @line = options.fetch :line, 1
+      @column = options.fetch :column, 0
+      @markers = []
+      @name ||= options[ :file ] || options[ :name ] # || '(string)'
+      mark
+    end
+    
+    #
+    # identical to #peek, except it returns the character value as a String
+    # 
+    def look( k = 1 )                        # for 1.8
+      k == 0 and return nil
+      k += 1 if k < 0
+      
+      index = @position + k - 1
+      index < 0 and return nil
+      
+      c = @data[ index ] and c.chr
+    end
+    
   end
   
   def size
@@ -406,10 +465,10 @@ class StringStream
   # rewinds the stream back to the start and clears out any existing marker entries
   # 
   def reset
-    @position = 0
-    @line = 1
-    @column = 0
+    initial_location = @markers.first
+    @position, @line, @column = initial_location
     @markers.clear
+    @markers << initial_location
     return self
   end
   
@@ -417,16 +476,16 @@ class StringStream
   # advance the stream by one character; returns the character consumed
   # 
   def consume
-    c = @data[@position] || EOF
+    c = @data[ @position ] || EOF
     if @position < @data.length
       @column += 1
-      if c == ?\n
+      if c == NEWLINE
         @line += 1
         @column = 0
       end
       @position += 1
     end
-    return(c)
+    return( c )
   end
   
   #
@@ -435,25 +494,12 @@ class StringStream
   # value of +k+ returns previous characters consumed, where <tt>k = -1</tt> is the last
   # character consumed. <tt>k = 0</tt> has undefined behavior and returns +nil+
   # 
-  def peek(k = 1)
+  def peek( k = 1 )
     k == 0 and return nil
     k += 1 if k < 0
     index = @position + k - 1
     index < 0 and return nil
-    @data[index] or EOF
-  end
-  
-  #
-  # identical to #peek, except it returns the character value as a String
-  # 
-  def look(k = 1)
-    k == 0 and return nil
-    k += 1 if k < 0
-    
-    index = @position + k - 1
-    index < 0 and return nil
-    
-    c = @data[index] and c.chr
+    @data[ index ] or EOF
   end
   
   #
@@ -461,10 +507,10 @@ class StringStream
   # if <tt>k >= 0</tt>, return the next k characters
   # if <tt>k < 0</tt>, return the previous <tt>|k|</tt> characters
   # 
-  def through(k)
-    if k >= 0 then @data[ @position, k ] else
-      start = (@position + k).at_least( 0 ) # start cannot be negative or index will wrap around
-      @data[ start ... @position ]
+  def through( k )
+    if k >= 0 then @string[ @position, k ] else
+      start = ( @position + k ).at_least( 0 ) # start cannot be negative or index will wrap around
+      @string[ start ... @position ]
     end
   end
   
@@ -472,7 +518,7 @@ class StringStream
   alias >> look
   
   # operator style look-behind
-  def <<(k)
+  def <<( k )
     self << -k
   end
   
@@ -486,7 +532,7 @@ class StringStream
   # This is an extra utility method for use inside lexer actions if needed.
   # 
   def beginning_of_line?
-    @position.zero? or @data[@position - 1] == ?\n
+    @position.zero? or @data[ @position - 1 ] == NEWLINE
   end
   
   #
@@ -494,7 +540,7 @@ class StringStream
   # This is an extra utility method for use inside lexer actions if needed.
   # 
   def end_of_line?
-    @data[@position] == ?\n if @position >= @data.length
+    @data[ @position ] == NEWLINE #if @position < @data.length
   end
   
   #
@@ -515,14 +561,14 @@ class StringStream
   
   alias eof? end_of_string?
   alias bof? beginning_of_string?
-
+  
   #
   # record the current stream location parameters in the stream's marker table and
   # return an integer-valued bookmark that may be used to restore the stream's
   # position with the #rewind method. This method is used to implement backtracking.
   # 
   def mark
-    state = [@position, @line, @column].freeze
+    state = [ @position, @line, @column ].freeze
     @markers << state
     return @markers.length - 1
   end
@@ -531,10 +577,10 @@ class StringStream
   # restore the stream to an earlier location recorded by #mark. If no marker value is
   # provided, the last marker generated by #mark will be used.
   # 
-  def rewind(marker = @markers.length - 1, release = true)
-    (marker >= 0 and location = @markers[marker]) or return(self)
+  def rewind( marker = @markers.length - 1, release = true )
+    ( marker >= 0 and location = @markers[ marker ] ) or return( self )
     @position, @line, @column = location
-    release(marker) if release
+    release( marker ) if release
     return self
   end
   
@@ -556,9 +602,9 @@ class StringStream
   # let go of the bookmark data for the marker and all marker
   # values created after the marker.
   # 
-  def release(marker = @markers.length - 1)
-    marker.between?(1, @markers.length - 1) or return
-    @markers[marker, @markers.length - marker ] = nil
+  def release( marker = @markers.length - 1 )
+    marker.between?( 1, @markers.length - 1 ) or return
+    @markers.pop( @markers.length - marker )
     return self
   end
   
@@ -567,15 +613,15 @@ class StringStream
   # note: if +index+ is before the current position, the +line+ and +column+
   #       attributes of the stream will probably be incorrect
   # 
-  def seek(index)
+  def seek( index )
     index = index.bound( 0, @data.length )  # ensures index is within the stream's range
     if index > @position
       skipped = through( index - @position )
-      if lc = skipped.count("\n") and lc.zero?
+      if lc = skipped.count( "\n" ) and lc.zero?
         @column += skipped.length
       else
         @line += lc
-        @column = skipped.length - skipped.rindex("\n") - 1
+        @column = skipped.length - skipped.rindex( "\n" ) - 1
       end
     end
     @position = index
@@ -589,29 +635,29 @@ class StringStream
   # * +before_chars+ characters before the cursor (6 characters by default)
   # * +after_chars+ characters after the cursor (10 characters by default)
   # 
-  def inspect(before_chars = 6, after_chars = 10)
+  def inspect( before_chars = 6, after_chars = 10 )
     before = through( -before_chars ).inspect
-    @position - before_chars > 0 and before.insert(0, '... ')
+    @position - before_chars > 0 and before.insert( 0, '... ' )
     
     after = through( after_chars ).inspect
     @position + after_chars + 1 < @data.length and after << ' ...'
     
     location = "#@position / line #@line:#@column"
-    "#<#{self.class}: #{before} | #{after} @ #{location}>"
+    "#<#{ self.class }: #{ before } | #{ after } @ #{ location }>"
   end
   
   #
   # return the string slice between position +start+ and +stop+
   # 
-  def substring(start, stop)
-    @data[start, stop - start + 1]
+  def substring( start, stop )
+    @string[ start, stop - start + 1 ]
   end
   
   #
   # identical to String#[]
   # 
-  def [](start, *args)
-    @data[start, *args]
+  def []( start, *args )
+    @string[ start, *args ]
   end
 end
 
@@ -640,31 +686,34 @@ class FileStream < StringStream
   # see StringStream.new for a list of additional options
   # the constructer accepts
   # 
-  def initialize(file, options = {})
+  def initialize( file, options = {} )
     case file
     when $stdin then
       data = $stdin.read
       @name = '(stdin)'
+    when ARGF
+      data = file.read
+      @name = file.path
     when ::File then
       file = file.clone
-      file.reopen(file.path, 'r')
+      file.reopen( file.path, 'r' )
       @name = file.path
       data = file.read
       file.close
     else
-      if file.respond_to?(:read)
+      if file.respond_to?( :read )
         data = file.read
-        if file.respond_to?(:name) then @name = file.name
-        elsif file.respond_to?(:path) then @name = file.path
+        if file.respond_to?( :name ) then @name = file.name
+        elsif file.respond_to?( :path ) then @name = file.path
         end
       else
         @name = file.to_s
-        if test(?f, @name) then data = File.read(@name)
+        if test( ?f, @name ) then data = File.read( @name )
         else raise ArgumentError, "could not find an existing file at %p" % @name
         end
       end
     end
-    super(data, options)
+    super( data, options )
   end
   
 end
@@ -749,7 +798,7 @@ class CommonTokenStream
     @tokens.each_with_index { |t, i| t.index = i }
     @position = 
       if first_token = @tokens.find { |t| t.channel == @channel }
-        @tokens.index(first_token)
+        @tokens.index( first_token )
       else @tokens.length
       end
   end
@@ -762,18 +811,18 @@ class CommonTokenStream
   # behavior to CommonTokenStream.new, if a block is provided, tokens will be
   # yielded and discarded if the block returns a +false+ or +nil+ value.
   # 
-  def rebuild(token_source = nil)
+  def rebuild( token_source = nil )
     if token_source.nil?
       @token_source.reset rescue nil
     else @token_source = token_source
     end
-    @tokens = block_given? ? @token_source.select { |token| yield(token) } :   
+    @tokens = block_given? ? @token_source.select { |token| yield( token ) } :   
                              @token_source.to_a
     @tokens.each_with_index { |t, i| t.index = i }
     @last_marker = nil
     @position = 
       if first_token = @tokens.find { |t| t.channel == @channel }
-        @tokens.index(first_token)
+        @tokens.index( first_token )
       else @tokens.length
       end
     return self
@@ -782,7 +831,7 @@ class CommonTokenStream
   #
   # tune the stream to a new channel value
   # 
-  def tune_to(channel)
+  def tune_to( channel )
     @channel = channel
   end
   
@@ -808,7 +857,7 @@ class CommonTokenStream
   # 
   def reset
     @position = 0
-    @position += 1 while token = @tokens[@position] and
+    @position += 1 while token = @tokens[ @position ] and
                          token.channel != @channel
     @last_marker = nil
     return self
@@ -821,15 +870,28 @@ class CommonTokenStream
     @last_marker = @position
   end
   
-  def release(marker = nil)
+  def release( marker = nil )
     # do nothing
   end
   
   
-  def rewind(marker = @last_marker, release = true)
-    seek(marker)
+  def rewind( marker = @last_marker, release = true )
+    seek( marker )
   end
   
+  #
+  # saves the current stream position, yields to the block,
+  # and then ensures the stream's position is restored before
+  # returning the value of the block
+  #  
+  def hold( pos = @position )
+    block_given? or return enum_for( :hold, pos )
+    begin
+      yield
+    ensure
+      seek( pos )
+    end
+  end
   
   ###### Stream Navigation ###########################################
   
@@ -837,11 +899,11 @@ class CommonTokenStream
   # advance the stream one step to the next on-channel token
   # 
   def consume
-    token = @tokens[@position] || EOF_TOKEN
+    token = @tokens[ @position ] || EOF_TOKEN
     if @position < @tokens.length
-      @position = future?(2) || @tokens.length
+      @position = future?( 2 ) || @tokens.length
     end
-    return(token)
+    return( token )
   end
   
   #
@@ -849,8 +911,8 @@ class CommonTokenStream
   # note: seek does not check whether or not the
   #       token at the specified position is on-channel,
   #
-  def seek(index)
-    @position = index.to_i.bound(0, @tokens.length)
+  def seek( index )
+    @position = index.to_i.bound( 0, @tokens.length )
     return self
   end
   
@@ -860,16 +922,16 @@ class CommonTokenStream
   # value of +k+ returns previous on-channel tokens consumed, where <tt>k = -1</tt> is the last
   # on-channel token consumed. <tt>k = 0</tt> has undefined behavior and returns +nil+
   # 
-  def peek(k = 1)
-    tk = look(k) and return(tk.type)
+  def peek( k = 1 )
+    tk = look( k ) and return( tk.type )
   end
   
   #
   # operates simillarly to #peek, but returns the full token object at look-ahead position +k+
   #
-  def look(k = 1)
-    index = future?(k) or return nil
-    @tokens.fetch(index, EOF_TOKEN)
+  def look( k = 1 )
+    index = future?( k ) or return nil
+    @tokens.fetch( index, EOF_TOKEN )
   end
   
   alias >> look
@@ -881,21 +943,21 @@ class CommonTokenStream
   # returns the index of the on-channel token at look-ahead position +k+ or nil if no other
   # on-channel tokens exist
   # 
-  def future?(k = 1)
+  def future?( k = 1 )
     @position == -1 and fill_buffer
     
     case
     when k == 0 then nil
-    when k < 0 then past?(-k)
+    when k < 0 then past?( -k )
     when k == 1 then @position
     else
       # since the stream only yields on-channel
       # tokens, the stream can't just go to the
       # next position, but rather must skip
       # over off-channel tokens
-      (k - 1).times.inject(@position) do |cursor, |
+      ( k - 1 ).times.inject( @position ) do |cursor, |
         begin
-          tk = @tokens.at(cursor += 1) or return(cursor)
+          tk = @tokens.at( cursor += 1 ) or return( cursor )
           # ^- if tk is nil (i.e. i is outside array limits)
         end until tk.channel == @channel
         cursor
@@ -907,7 +969,7 @@ class CommonTokenStream
   # returns the index of the on-channel token at look-behind position +k+ or nil if no other
   # on-channel tokens exist before the current token
   # 
-  def past?(k = 1)
+  def past?( k = 1 )
     @position == -1 and fill_buffer
     
     case
@@ -915,10 +977,10 @@ class CommonTokenStream
     when @position - k < 0 then nil
     else
       
-      k.times.inject(@position) do |cursor, |
+      k.times.inject( @position ) do |cursor, |
         begin
-          cursor <= 0 and return(nil)
-          tk = @tokens.at(cursor -= 1) or return(nil)
+          cursor <= 0 and return( nil )
+          tk = @tokens.at( cursor -= 1 ) or return( nil )
         end until tk.channel == @channel
         cursor
       end
@@ -931,9 +993,44 @@ class CommonTokenStream
   # If no block is provided, the method returns an Enumerator object.
   # #each accepts the same arguments as #tokens
   # 
-  def each(*args)
-    block_given? or return enum_for(:each, *args)
-    tokens(*args).each { |token| yield(token) }
+  def each( *args )
+    block_given? or return enum_for( :each, *args )
+    tokens( *args ).each { |token| yield( token ) }
+  end
+  
+  
+  #
+  # yields each token in the stream with the given channel value
+  # If no channel value is given, the stream's tuned channel value will be used.
+  # If no block is given, an enumerator will be returned. 
+  # 
+  def each_on_channel( channel = @channel )
+    block_given? or return enum_for( :each_on_channel, channel )
+    for token in @tokens
+      token.channel == channel and yield( token )
+    end
+  end
+  
+  #
+  # iterates through the token stream, yielding each on channel token along the way.
+  # After iteration has completed, the stream's position will be restored to where
+  # it was before #walk was called. While #each or #each_on_channel does not change
+  # the positions stream during iteration, #walk advances through the stream. This
+  # makes it possible to look ahead and behind the current token during iteration.
+  # If no block is given, an enumerator will be returned. 
+  # 
+  def walk
+    block_given? or return enum_for( :walk )
+    initial_position = @position
+    begin
+      while token = look and token.type != EOF
+        consume
+        yield( token )
+      end
+      return self
+    ensure
+      @position = initial_position
+    end
   end
   
   # 
@@ -944,36 +1041,36 @@ class CommonTokenStream
   # yielded and filtered out of the return array if the block returns a +false+
   # or +nil+ value. 
   # 
-  def tokens(start = nil, stop = nil)
+  def tokens( start = nil, stop = nil )
     stop.nil?  || stop >= @tokens.length and stop = @tokens.length - 1
     start.nil? || stop < 0 and start = 0
-    tokens = @tokens[start..stop]
+    tokens = @tokens[ start..stop ]
     
     if block_given?
-      tokens.delete_if { |t| not yield(t) }
+      tokens.delete_if { |t| not yield( t ) }
     end
     
     return( tokens )
   end
   
   
-  def at(i)
+  def at( i )
     @tokens.at i
   end
   
   #
   # identical to Array#[], as applied to the stream's token buffer
   # 
-  def [](i, *args)
-    @tokens[i, *args]
+  def []( i, *args )
+    @tokens[ i, *args ]
   end
   
   ###### Standard Conversion Methods ###############################
   def inspect
     string = "#<%p: @token_source=%p @ %p/%p" %
-      [self.class, @token_source.class, @position, @tokens.length]
-    tk = look(-1) and string << " #{tk.inspect} <--"
-    tk = look( 1) and string << " --> #{tk.inspect}"
+      [ self.class, @token_source.class, @position, @tokens.length ]
+    tk = look( -1 ) and string << " #{ tk.inspect } <--"
+    tk = look( 1 ) and string << " --> #{ tk.inspect }"
     string << '>'
   end
   
@@ -981,10 +1078,10 @@ class CommonTokenStream
   # fetches the text content of all tokens between +start+ and +stop+ and
   # joins the chunks into a single string
   # 
-  def extract_text(start = 0, stop = @tokens.length - 1)
-    start = start.to_i.at_least(0)
-    stop = stop.to_i.at_most(@tokens.length)
-    @tokens[start..stop].map! { |t| t.text }.join('')
+  def extract_text( start = 0, stop = @tokens.length - 1 )
+    start = start.to_i.at_least( 0 )
+    stop = stop.to_i.at_most( @tokens.length )
+    @tokens[ start..stop ].map! { |t| t.text }.join( '' )
   end
   
   alias to_s extract_text

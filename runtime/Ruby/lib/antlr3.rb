@@ -4,7 +4,7 @@
 =begin LICENSE
 
 [The "BSD licence"]
-Copyright (c) 2009 Kyle Yetter
+Copyright (c) 2009-2010 Kyle Yetter
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -93,11 +93,20 @@ antlr3/dot.rb::
   extra utilities to generate DOT map specifications for graphical.
   representations of ASTs
 
+@author Kyle Yetter
+
 =end
 
 module ANTLR3
-
-  LIBRARY_PATH  = ::File.expand_path(::File.dirname(__FILE__))
+  
+  # :stopdoc:
+  # BEGIN PATHS -- do not modify
+  
+  LIBRARY_PATH  = ::File.expand_path( ::File.dirname( __FILE__ ) ).freeze
+  PROJECT_PATH  = ::File.dirname( LIBRARY_PATH ).freeze
+  DATA_PATH     = ::File.join( PROJECT_PATH, 'java' ).freeze
+  
+  # END PATHS
   # :startdoc:
   
   # Returns the library path for the module. If any arguments are given,
@@ -105,25 +114,49 @@ module ANTLR3
   # <tt>File.join</tt>.
   #
   def self.library_path( *args )
-    File.expand_path(::File.join(LIBRARY_PATH, *args))
+    ::File.expand_path( ::File.join( LIBRARY_PATH, *args ) )
   end
   
   # Returns the lpath for the module. If any arguments are given,
   # they will be joined to the end of the path using
   # <tt>File.join</tt>.
   #
-  def self.project_path( *args )
-    library_path('..', *args)
+  def self.data_path( *args )
+    ::File.expand_path( ::File.join( DATA_PATH, *args ) )
   end
   
   # This is used internally in a handful of locations in the runtime library
   # where assumptions have been made that a condition will never happen
   # under normal usage conditions and thus an ANTLR3::Bug error will be
   # raised if the condition does occur.
-  def self.bug!(message = nil)
-    bug = Bug.new(message)
-    bug.set_backtrace(caller)
-    raise(bug)
+  def self.bug!( message = nil )
+    bug = Bug.new( message )
+    bug.set_backtrace( caller )
+    raise( bug )
+  end
+  
+  @antlr_jar = nil
+  
+  def self.antlr_jar=( path )
+    @antlr_jar = path ? File.expand_path( path.to_s ) : path
+  end
+  
+  def self.antlr_jar
+    @antlr_jar and return( @antlr_jar )
+    
+    path = data_path "antlr-full-#{ ANTLR_VERSION_STRING }.jar"
+    if env_path = ENV[ 'RUBY_ANTLR_JAR' ]
+      if File.file?( env_path ) then return File.expand_path( env_path ) end
+      
+      warn( 
+        "#{ __FILE__ }:#{ __LINE__ }: " <<
+        "ignoring environmental variable RUBY_ANTLR_JAR (=%p) " % env_path <<
+        "as it is not the path to an existing file\n" <<
+        "  -> trying default jar path %p instead" % path
+      )
+    end
+    
+    File.exists?( path ) ? path : nil
   end
   
   ##############################################################################################
@@ -133,7 +166,9 @@ module ANTLR3
   # Tree classes are only used by tree parsers or AST-building parsers
   # Thus, they're not essential for everything ANTLR generates and
   # are autoloaded on-demand
-  tree_classes = [
+  autoload :AST, 'antlr3/tree'
+  
+  tree_classes = [ 
     :Tree, :TreeAdaptor, :BaseTree, :BaseTreeAdaptor,
     :CommonTree, :CommonErrorNode, :CommonTreeAdaptor,
     :TreeNodeStream, :CommonTreeNodeStream, :TreeParser,
@@ -141,7 +176,7 @@ module ANTLR3
     :RewriteRuleTokenStream, :RewriteRuleSubtreeStream,
     :RewriteRuleNodeStream
   ]
-  autoload :AST, 'antlr3/tree'
+  
   for klass in tree_classes
     autoload klass, 'antlr3/tree'
   end
@@ -158,15 +193,20 @@ module ANTLR3
   
   autoload :Template, 'antlr3/template'
   
-  $LOAD_PATH.include?(library_path) or $LOAD_PATH.unshift( library_path )
+  $LOAD_PATH.include?( library_path ) or $LOAD_PATH.unshift( library_path )
+  
 end  # module ANTLR3
+
 
 require 'set'
 require 'antlr3/util'
 require 'antlr3/version'
-require 'antlr3/constants'
-require 'antlr3/error'
-require 'antlr3/token'
-require 'antlr3/recognizers'
-require 'antlr3/dfa'
-require 'antlr3/streams'
+
+unless $0 == 'antlr4ruby'
+  require 'antlr3/constants'
+  require 'antlr3/error'
+  require 'antlr3/token'
+  require 'antlr3/recognizers'
+  require 'antlr3/dfa'
+  require 'antlr3/streams'
+end
