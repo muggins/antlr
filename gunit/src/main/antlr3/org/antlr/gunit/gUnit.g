@@ -84,7 +84,7 @@ header	:	'@header' ACTION
 		{
 		int pos1, pos2;
 		if ( (pos1=$ACTION.text.indexOf("package"))!=-1 && (pos2=$ACTION.text.indexOf(';'))!=-1 ) {
-			grammarInfo.setHeader($ACTION.text.substring(pos1+8, pos2).trim());	// substring the package path
+			grammarInfo.setGrammarPackage($ACTION.text.substring(pos1+8, pos2).trim());	// substring the package path
 		}
 		else {
 			System.err.println("error(line "+$ACTION.getLine()+"): invalid header");
