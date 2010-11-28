@@ -489,7 +489,7 @@ partial void Leave_<ruleName>();
 // $ANTLR start "<ruleName>"
 // <fileName>:<description>
 [GrammarRule("<ruleName>")]
-<csharpVisibilityMap.(ruleDescriptor.modifier)> <returnType()> <ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>)
+<csharpVisibilityMap.(ruleDescriptor.modifier); null="private"> <returnType()> <ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>)
 {
 	Enter_<ruleName>();
 	EnterRule("<ruleName>", <ruleDescriptor.index>);
@@ -635,7 +635,7 @@ partial void Leave_<ruleName>();
 
 // $ANTLR start "<ruleName>"
 [GrammarRule("<ruleName>")]
-<csharpVisibilityMap.(ruleDescriptor.modifier)> void m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>)
+<csharpVisibilityMap.(ruleDescriptor.modifier); null="private"> void m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>)
 {
 	Enter_<ruleName>();
 	EnterRule("<ruleName>", <ruleDescriptor.index>);
