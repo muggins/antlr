@@ -39,6 +39,13 @@ csharpVisibilityMap ::= [
 	default:"private"
 ]
 
+// System.Boolean.ToString() returns "True" and "False", but the proper C# literals are "true" and "false"
+booleanLiteral ::= [
+	"True":"true",
+	"False":"false",
+	default:"false"
+]
+
 /** The overall file structure of a recognizer; stores methods for rules
  *  and cyclic DFAs plus support code.
  */
@@ -286,7 +293,7 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 		new bool[]
 		{
 			false, // invalid decision
-			<grammar.decisions:{d | <d.dfa.hasSynPred; null="false">}; wrap="\n    ", separator=", ">
+			<grammar.decisions:{d | <booleanLiteral.(d.dfa.hasSynPred)>}; wrap="\n    ", separator=", ">
 		};
 #else
 	private static readonly bool[] decisionCanBacktrack = new bool[0];
