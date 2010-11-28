@@ -53,15 +53,6 @@ namespace Antlr.Runtime
      */
     public class DFA
     {
-        public DFA()
-            : this( new SpecialStateTransitionHandler( SpecialStateTransitionDefault ) )
-        {
-        }
-        public DFA( SpecialStateTransitionHandler specialStateTransition )
-        {
-            this.SpecialStateTransition = specialStateTransition ?? new SpecialStateTransitionHandler( SpecialStateTransitionDefault );
-        }
-
         protected short[] eot;
         protected short[] eof;
         protected char[] min;
@@ -76,6 +67,24 @@ namespace Antlr.Runtime
         protected BaseRecognizer recognizer;
 
         public readonly bool debug = false;
+
+        public DFA()
+            : this( new SpecialStateTransitionHandler( SpecialStateTransitionDefault ) )
+        {
+        }
+
+        public DFA( SpecialStateTransitionHandler specialStateTransition )
+        {
+            this.SpecialStateTransition = specialStateTransition ?? new SpecialStateTransitionHandler( SpecialStateTransitionDefault );
+        }
+
+        public virtual string Description
+        {
+            get
+            {
+                return "n/a";
+            }
+        }
 
         /** <summary>
          *  From the input stream, predict what alternative will succeed
@@ -203,7 +212,7 @@ namespace Antlr.Runtime
                 return;
             }
             NoViableAltException nvae =
-                new NoViableAltException( GetDescription(),
+                new NoViableAltException( Description,
                                          decisionNumber,
                                          s,
                                          input );
@@ -229,11 +238,6 @@ namespace Antlr.Runtime
         static int SpecialStateTransitionDefault( DFA dfa, int s, IIntStream input )
         {
             return -1;
-        }
-
-        public virtual string GetDescription()
-        {
-            return "n/a";
         }
 
         /** <summary>

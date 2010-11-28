@@ -51,14 +51,14 @@ namespace Antlr.Runtime.Tree
 
         public virtual object Pattern()
         {
-            if ( ttype == TreePatternLexer.BEGIN )
+            if ( ttype == TreePatternLexer.Begin )
             {
                 return ParseTree();
             }
-            else if ( ttype == TreePatternLexer.ID )
+            else if ( ttype == TreePatternLexer.Id )
             {
                 object node = ParseNode();
-                if ( ttype == TreePatternLexer.EOF )
+                if ( ttype == CharStreamConstants.EndOfFile )
                 {
                     return node;
                 }
@@ -69,7 +69,7 @@ namespace Antlr.Runtime.Tree
 
         public virtual object ParseTree()
         {
-            if ( ttype != TreePatternLexer.BEGIN )
+            if ( ttype != TreePatternLexer.Begin )
                 throw new InvalidOperationException("No beginning.");
 
             ttype = tokenizer.NextToken();
@@ -78,12 +78,12 @@ namespace Antlr.Runtime.Tree
             {
                 return null;
             }
-            while ( ttype == TreePatternLexer.BEGIN ||
-                    ttype == TreePatternLexer.ID ||
-                    ttype == TreePatternLexer.PERCENT ||
-                    ttype == TreePatternLexer.DOT )
+            while ( ttype == TreePatternLexer.Begin ||
+                    ttype == TreePatternLexer.Id ||
+                    ttype == TreePatternLexer.Percent ||
+                    ttype == TreePatternLexer.Dot )
             {
-                if ( ttype == TreePatternLexer.BEGIN )
+                if ( ttype == TreePatternLexer.Begin )
                 {
                     object subtree = ParseTree();
                     adaptor.AddChild( root, subtree );
@@ -99,7 +99,7 @@ namespace Antlr.Runtime.Tree
                 }
             }
 
-            if ( ttype != TreePatternLexer.END )
+            if ( ttype != TreePatternLexer.End )
                 throw new InvalidOperationException("No end.");
 
             ttype = tokenizer.NextToken();
@@ -110,16 +110,16 @@ namespace Antlr.Runtime.Tree
         {
             // "%label:" prefix
             string label = null;
-            if ( ttype == TreePatternLexer.PERCENT )
+            if ( ttype == TreePatternLexer.Percent )
             {
                 ttype = tokenizer.NextToken();
-                if ( ttype != TreePatternLexer.ID )
+                if ( ttype != TreePatternLexer.Id )
                 {
                     return null;
                 }
                 label = tokenizer.sval.ToString();
                 ttype = tokenizer.NextToken();
-                if ( ttype != TreePatternLexer.COLON )
+                if ( ttype != TreePatternLexer.Colon )
                 {
                     return null;
                 }
@@ -127,7 +127,7 @@ namespace Antlr.Runtime.Tree
             }
 
             // Wildcard?
-            if ( ttype == TreePatternLexer.DOT )
+            if ( ttype == TreePatternLexer.Dot )
             {
                 ttype = tokenizer.NextToken();
                 IToken wildcardPayload = new CommonToken( 0, "." );
@@ -141,7 +141,7 @@ namespace Antlr.Runtime.Tree
             }
 
             // "ID" or "ID[arg]"
-            if ( ttype != TreePatternLexer.ID )
+            if ( ttype != TreePatternLexer.Id )
             {
                 return null;
             }
@@ -154,7 +154,7 @@ namespace Antlr.Runtime.Tree
             string text = tokenName;
             // check for arg
             string arg = null;
-            if ( ttype == TreePatternLexer.ARG )
+            if ( ttype == TreePatternLexer.Arg )
             {
                 arg = tokenizer.sval.ToString();
                 text = arg;

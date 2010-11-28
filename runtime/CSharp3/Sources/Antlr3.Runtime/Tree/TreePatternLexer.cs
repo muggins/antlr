@@ -36,14 +36,13 @@ namespace Antlr.Runtime.Tree
 
     public class TreePatternLexer
     {
-        public const int EOF = -1;
-        public const int BEGIN = 1;
-        public const int END = 2;
-        public const int ID = 3;
-        public const int ARG = 4;
-        public const int PERCENT = 5;
-        public const int COLON = 6;
-        public const int DOT = 7;
+        public const int Begin = 1;
+        public const int End = 2;
+        public const int Id = 3;
+        public const int Arg = 4;
+        public const int Percent = 5;
+        public const int Colon = 6;
+        public const int Dot = 7;
 
         /** <summary>The tree pattern to lex like "(A B C)"</summary> */
         protected string pattern;
@@ -72,7 +71,7 @@ namespace Antlr.Runtime.Tree
         public virtual int NextToken()
         {
             sval.Length = 0; // reset, but reuse buffer
-            while ( c != EOF )
+            while ( c != CharStreamConstants.EndOfFile )
             {
                 if ( c == ' ' || c == '\n' || c == '\r' || c == '\t' )
                 {
@@ -89,35 +88,36 @@ namespace Antlr.Runtime.Tree
                         sval.Append( (char)c );
                         Consume();
                     }
-                    return ID;
+                    return Id;
                 }
                 if ( c == '(' )
                 {
                     Consume();
-                    return BEGIN;
+                    return Begin;
                 }
                 if ( c == ')' )
                 {
                     Consume();
-                    return END;
+                    return End;
                 }
                 if ( c == '%' )
                 {
                     Consume();
-                    return PERCENT;
+                    return Percent;
                 }
                 if ( c == ':' )
                 {
                     Consume();
-                    return COLON;
+                    return Colon;
                 }
                 if ( c == '.' )
                 {
                     Consume();
-                    return DOT;
+                    return Dot;
                 }
                 if ( c == '[' )
-                { // grab [x] as a string, returning x
+                {
+                    // grab [x] as a string, returning x
                     Consume();
                     while ( c != ']' )
                     {
@@ -137,13 +137,13 @@ namespace Antlr.Runtime.Tree
                         Consume();
                     }
                     Consume();
-                    return ARG;
+                    return Arg;
                 }
                 Consume();
                 error = true;
-                return EOF;
+                return CharStreamConstants.EndOfFile;
             }
-            return EOF;
+            return CharStreamConstants.EndOfFile;
         }
 
         protected virtual void Consume()
@@ -151,7 +151,7 @@ namespace Antlr.Runtime.Tree
             p++;
             if ( p >= n )
             {
-                c = EOF;
+                c = CharStreamConstants.EndOfFile;
             }
             else
             {
