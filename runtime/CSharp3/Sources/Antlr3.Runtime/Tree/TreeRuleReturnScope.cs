@@ -4,7 +4,7 @@
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2008-2010 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,22 +35,33 @@ namespace Antlr.Runtime.Tree
     /** <summary>
      *  This is identical to the ParserRuleReturnScope except that
      *  the start property is a tree nodes not Token object
-     *  when you are parsing trees.  To be generic the tree node types
-     *  have to be Object.
+     *  when you are parsing trees.
      *  </summary>
      */
     [System.Serializable]
-    public class TreeRuleReturnScope : RuleReturnScope
+    public class TreeRuleReturnScope<TTree> : IRuleReturnScope<TTree>
     {
-        [System.CLSCompliant( false )]
-        public object start;
+        private TTree _start;
 
         /** <summary>Gets the first node or root node of tree matched for this rule.</summary> */
-        public override object Start
+        public TTree Start
         {
             get
             {
-                return start;
+                return _start;
+            }
+
+            set
+            {
+                _start = value;
+            }
+        }
+
+        TTree IRuleReturnScope<TTree>.Stop
+        {
+            get
+            {
+                return default(TTree);
             }
         }
     }

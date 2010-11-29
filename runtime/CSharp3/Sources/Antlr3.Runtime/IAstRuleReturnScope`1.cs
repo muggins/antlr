@@ -1,10 +1,10 @@
-/*
+﻿/*
  * [The "BSD licence"]
  * Copyright (c) 2005-2008 Terence Parr
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008-2010 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2010 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,24 +32,11 @@
 
 namespace Antlr.Runtime
 {
-    /// <summary>
-    /// Rules can have start/stop info.
-    /// </summary>
-    /// <typeparam name="TLabel">The element type of the input stream.</typeparam>
-    public interface IRuleReturnScope<TLabel>
+    /** <summary>AST rules have trees</summary> */
+    public interface IAstRuleReturnScope<TAstLabel>
     {
-        /// <summary>
-        /// Gets the start element from the input stream
-        /// </summary>
-        TLabel Start
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the stop element from the input stream
-        /// </summary>
-        TLabel Stop
+        /** <summary>Has a value potentially if output=AST;</summary> */
+        TAstLabel Tree
         {
             get;
         }

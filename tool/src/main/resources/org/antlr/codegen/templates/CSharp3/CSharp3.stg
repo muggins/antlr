@@ -390,7 +390,7 @@ parser(grammar, name, scopes, tokens, tokenNames, rules, numRules, bitsets,
  */
 treeParser(grammar, name, scopes, tokens, tokenNames, globalAction, rules,
            numRules, bitsets, labelType={<ASTLabelType>}, ASTLabelType="object",
-           superClass={<if(actions.(actionScope).superClass)><actions.(actionScope).superClass><else>Antlr.Runtime.Tree.<if(filterMode)><if(buildAST)>TreeRewriter<else>TreeFilter<endif><else>TreeParser<endif><endif>},
+           superClass={<if(actions.(actionScope).superClass)><actions.(actionScope).superClass><else>Antlr.Runtime.Tree.<if(filterMode)><if(buildAST)>TreeRewriter\<<labelType>\><else>TreeFilter<endif><else>TreeParser<endif><endif>},
            members={<actions.treeparser.members>},
            filterMode) ::= <<
 <genericParser(inputStreamType="ITreeNodeStream", rewriteElementType="Node", ...)>
@@ -554,7 +554,7 @@ catch (<e.decl>)
 ruleDeclarations() ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
 <returnType()> retval = new <returnType()>();
-retval.start = input.LT(1);<\n>
+retval.Start = (<labelType>)input.LT(1);<\n>
 <else>
 <ruleDescriptor.returnScope.attributes:{ a |
 <a.type> <a.name> = <if(a.initValue)><a.initValue><else><initValue(a.type)><endif>;
@@ -616,7 +616,7 @@ return<if(!ruleDescriptor.isSynPred)>
 ruleCleanUp() ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
 <if(!TREE_PARSER)>
-retval.stop = input.LT(-1);<\n>
+retval.Stop = (<labelType>)input.LT(-1);<\n>
 <endif>
 <endif>
 >>
@@ -1458,7 +1458,7 @@ ruleLabelDef(label) ::= <<
  */
 returnScope(scope) ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
-public <!static !>class <ruleDescriptor:returnStructName()> : <if(TREE_PARSER)>Tree<else>Parser<endif>RuleReturnScope
+public class <ruleDescriptor:returnStructName()> : <if(TREE_PARSER)>Tree<else>Parser<endif>RuleReturnScope\<<labelType>\><@ruleReturnInterfaces()>
 {
 	<scope.attributes:{public <it.decl>;}; separator="\n">
 	<@ruleReturnMembers()>
@@ -1555,11 +1555,11 @@ ruleLabelPropertyRef_text(scope,attr) ::= <<
   input.TreeAdaptor.GetTokenStartIndex(<scope>.Start),
   input.TreeAdaptor.GetTokenStopIndex(<scope>.Start))):null)
 <else>
-(<scope>!=null?input.ToString(<scope>.start,<scope>.stop):null)
+(<scope>!=null?input.ToString(<scope>.Start,<scope>.Stop):null)
 <endif>
 >>
 
-ruleLabelPropertyRef_st(scope,attr) ::= "(<scope>!=null?<scope>.st:null)"
+ruleLabelPropertyRef_st(scope,attr) ::= "(<scope>!=null?<scope>.Template:null)"
 
 /** Isolated $RULE ref ok in lexer as it's a Token */
 lexerRuleLabel(label) ::= "<label>"
@@ -1598,7 +1598,7 @@ input.TokenStream.ToString(
 input.ToString(retval.Start,input.LT(-1))
 <endif>
 >>
-rulePropertyRef_st(scope,attr) ::= "retval.st"
+rulePropertyRef_st(scope,attr) ::= "retval.Template"
 
 lexerRulePropertyRef_text(scope,attr) ::= "Text"
 lexerRulePropertyRef_type(scope,attr) ::= "_type"
@@ -1612,8 +1612,8 @@ lexerRulePropertyRef_int(scope,attr) ::= "int.Parse(<scope>.Text)"
 
 // setting $st and $tree is allowed in local rule. everything else
 // is flagged as error
-ruleSetPropertyRef_tree(scope,attr,expr) ::= "retval.tree =<expr>;"
-ruleSetPropertyRef_st(scope,attr,expr) ::= "retval.st =<expr>;"
+ruleSetPropertyRef_tree(scope,attr,expr) ::= "retval.Tree = <expr>;"
+ruleSetPropertyRef_st(scope,attr,expr) ::= "retval.Template =<expr>;"
 
 /** How to execute an action (only when not backtracking) */
 execAction(action) ::= <<

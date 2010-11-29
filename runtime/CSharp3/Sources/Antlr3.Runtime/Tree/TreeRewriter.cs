@@ -34,13 +34,13 @@ namespace Antlr.Runtime.Tree
 {
     using Console = System.Console;
 
-    public class TreeRewriter : TreeParser
+    public class TreeRewriter<TTree> : TreeParser
     {
         protected ITokenStream originalTokenStream;
         protected ITreeAdaptor originalAdaptor;
 
-        System.Func<TreeRuleReturnScope> topdown_func;
-        System.Func<TreeRuleReturnScope> bottomup_func;
+        System.Func<IAstRuleReturnScope<TTree>> topdown_func;
+        System.Func<IAstRuleReturnScope<TTree>> bottomup_func;
 
         public TreeRewriter( ITreeNodeStream input )
             : this( input, new RecognizerSharedState() )
@@ -55,7 +55,7 @@ namespace Antlr.Runtime.Tree
             bottomup_func = () => Bottomup();
         }
 
-        public virtual object ApplyOnce( object t, System.Func<TreeRuleReturnScope> whichRule )
+        public virtual object ApplyOnce( object t, System.Func<IAstRuleReturnScope<TTree>> whichRule )
         {
             if ( t == null )
                 return null;
@@ -67,15 +67,21 @@ namespace Antlr.Runtime.Tree
                 input = new CommonTreeNodeStream( originalAdaptor, t );
                 ( (CommonTreeNodeStream)input ).TokenStream = originalTokenStream;
                 BacktrackingLevel = 1;
-                TreeRuleReturnScope r = whichRule();
+                IAstRuleReturnScope<TTree> r = whichRule();
                 BacktrackingLevel = 0;
                 if ( Failed )
                     return t;
-                if ( r != null && !t.Equals( r.Tree ) && r.Tree != null )
-                { // show any transformations
-                    Console.Out.WriteLine( ( (CommonTree)t ).ToStringTree() + " -> " +
-                                       ( (CommonTree)r.Tree ).ToStringTree() );
+
+                if (typeof(CommonTree).IsAssignableFrom(typeof(TTree)))
+                {
+                    if (r != null && !t.Equals(r.Tree) && r.Tree != null)
+                    {
+                        // show any transformations
+                        Console.Out.WriteLine(((CommonTree)t).ToStringTree() + " -> " +
+                                           ((CommonTree)(object)r.Tree).ToStringTree());
+                    }
                 }
+
                 if ( r != null && r.Tree != null )
                     return r.Tree;
                 else
@@ -87,7 +93,7 @@ namespace Antlr.Runtime.Tree
             return t;
         }
 
-        public virtual object ApplyRepeatedly( object t, System.Func<TreeRuleReturnScope> whichRule )
+        public virtual object ApplyRepeatedly( object t, System.Func<IAstRuleReturnScope<TTree>> whichRule )
         {
             bool treeChanged = true;
             while ( treeChanged )
@@ -109,11 +115,12 @@ namespace Antlr.Runtime.Tree
         // methods the downup strategy uses to do the up and down rules.
         // to override, just define tree grammar rule topdown and turn on
         // filter=true.
-        public virtual TreeRuleReturnScope Topdown()
+        public virtual IAstRuleReturnScope<TTree> Topdown()
         {
             return null;
         }
-        public virtual TreeRuleReturnScope Bottomup()
+
+        public virtual IAstRuleReturnScope<TTree> Bottomup()
         {
             return null;
         }

@@ -4,7 +4,7 @@
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2008-2010 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,26 +56,35 @@ namespace Antlr.Runtime
      *  satisfy the superclass interface.
      *  </remarks>
      */
-    public class ParserRuleReturnScope : RuleReturnScope
+    public class ParserRuleReturnScope<TToken> : IRuleReturnScope<TToken>
+        where TToken : IToken
     {
-        [CLSCompliant( false )]
-        public IToken start;
-        [CLSCompliant( false )]
-        public IToken stop;
+        private TToken _start;
+        private TToken _stop;
 
-        public override object Start
+        public TToken Start
         {
             get
             {
-                return start;
+                return _start;
+            }
+
+            set
+            {
+                _start = value;
             }
         }
 
-        public override object Stop
+        public TToken Stop
         {
             get
             {
-                return stop;
+                return _stop;
+            }
+
+            set
+            {
+                _stop = value;
             }
         }
     }
