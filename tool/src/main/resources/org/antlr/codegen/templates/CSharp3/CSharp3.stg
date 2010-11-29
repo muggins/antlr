@@ -1586,7 +1586,7 @@ lexerRuleLabelPropertyRef_int(scope,attr) ::=
     "(<scope>!=null?int.Parse(<scope>.Text):0)"
 
 // Somebody may ref $template or $tree or $stop within a rule:
-rulePropertyRef_start(scope,attr) ::= "retval.Start)"
+rulePropertyRef_start(scope,attr) ::= "retval.Start"
 rulePropertyRef_stop(scope,attr) ::= "retval.Stop"
 rulePropertyRef_tree(scope,attr) ::= "retval.Tree"
 rulePropertyRef_text(scope,attr) ::= <<
