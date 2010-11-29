@@ -67,6 +67,14 @@ namespace Antlr.Runtime
             this._channel = channel;
         }
 
+        public int Channel
+        {
+            get
+            {
+                return _channel;
+            }
+        }
+
         /** Reset this token stream by setting its token source. */
         public override ITokenSource TokenSource
         {
@@ -141,7 +149,7 @@ namespace Antlr.Runtime
         /** Given a starting index, return the index of the first on-channel
          *  token.
          */
-        protected int SkipOffTokenChannels(int i)
+        protected virtual int SkipOffTokenChannels(int i)
         {
             Sync(i);
             while (_tokens[i].Channel != _channel)
@@ -153,7 +161,7 @@ namespace Antlr.Runtime
             return i;
         }
 
-        protected int SkipOffTokenChannelsReverse(int i)
+        protected virtual int SkipOffTokenChannelsReverse(int i)
         {
             while (i >= 0 && ((IToken)_tokens[i]).Channel != _channel)
             {
