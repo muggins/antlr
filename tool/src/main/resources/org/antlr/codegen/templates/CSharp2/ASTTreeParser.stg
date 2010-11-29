@@ -54,9 +54,9 @@ ruleDeclarations() ::= <<
 noRewrite(rewriteBlockLevel, treeLevel) ::= <<
 <if(backtracking)>if ( <actions.(actionScope).synpredgate> ) {<endif>
 <if(rewriteMode)>
-retval.tree = (<ASTLabelType>)_first_0;
-if ( adaptor.GetParent(retval.Tree)!=null && adaptor.IsNil( adaptor.GetParent(retval.Tree) ) )
-    retval.tree = (<ASTLabelType>)adaptor.GetParent(retval.Tree);
+retval.Tree = (<ASTLabelType>)_first_0;
+if (adaptor.GetParent(retval.Tree)!=null && adaptor.IsNil(adaptor.GetParent(retval.Tree)))
+    retval.Tree = (<ASTLabelType>)adaptor.GetParent(retval.Tree);
 <endif>
 <if(backtracking)>}<endif>
 >>
@@ -77,15 +77,14 @@ _last = (<ASTLabelType>)input.LT(1);
 <if(rewriteMode)>
 <if(backtracking)>if ( <actions.(actionScope).synpredgate> )<endif>
 <if(root.el.rule)>
-if ( _first_<enclosingTreeLevel>==null ) _first_<enclosingTreeLevel> = (<ASTLabelType>) <root.el.label>.Tree;
+if ( _first_<enclosingTreeLevel>==null ) _first_<enclosingTreeLevel> = <root.el.label>.Tree;
 <else>
 if ( _first_<enclosingTreeLevel>==null ) _first_<enclosingTreeLevel> = <root.el.label>;
 <endif>
 <endif>
 <actionsAfterRoot:element()>
 <if(nullableChildList)>
-if ( input.LA(1) == TokenTypes.Down )
-{
+if ( input.LA(1)==TokenTypes.Down ) {
     Match(input, TokenTypes.Down, null); <checkRuleBacktrackFailure()>
     <children:element()>
     Match(input, TokenTypes.Up, null); <checkRuleBacktrackFailure()>
@@ -117,19 +116,14 @@ tokenRef(token,label,elementIndex,hetero) ::= <<
 _last = (<ASTLabelType>)input.LT(1);
 <super.tokenRef(...)>
 <if(!rewriteMode)>
-<if(backtracking)>
-if ( state.backtracking == 0 )
-{
-<endif>
+<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) {<endif>
 <if(hetero)>
 <label>_tree = new <hetero>(<label>);
 <else>
-	<label>_tree = (<ASTLabelType>)adaptor.DupNode(<label>);
+<label>_tree = (<ASTLabelType>)adaptor.DupNode(<label>);
 <endif><\n>
-	adaptor.AddChild(root_<treeLevel>, <label>_tree);
-<if(backtracking)>
-}
-<endif>
+adaptor.AddChild(root_<treeLevel>, <label>_tree);
+<if(backtracking)>}<endif>
 <else> <! rewrite mode !>
 <if(backtracking)>if ( <actions.(actionScope).synpredgate> )<endif>
 if ( _first_<treeLevel>==null ) _first_<treeLevel> = <label>;
@@ -147,19 +141,14 @@ tokenRefRuleRoot(token,label,elementIndex,hetero) ::= <<
 _last = (<ASTLabelType>)input.LT(1);
 <super.tokenRef(...)>
 <if(!rewriteMode)>
-<if(backtracking)>
-if ( state.backtracking == 0 )
-{
-<endif>
+<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) {<endif>
 <if(hetero)>
 <label>_tree = new <hetero>(<label>);
 <else>
-	<label>_tree = (<ASTLabelType>)adaptor.DupNode(<label>);
+<label>_tree = (<ASTLabelType>)adaptor.DupNode(<label>);
 <endif><\n>
-	root_<treeLevel> = (<ASTLabelType>)adaptor.BecomeRoot(<label>_tree, root_<treeLevel>);
-<if(backtracking)>
-}
-<endif>
+root_<treeLevel> = (<ASTLabelType>)adaptor.BecomeRoot(<label>_tree, root_<treeLevel>);
+<if(backtracking)>}<endif>
 <endif>
 >>
 
@@ -183,7 +172,6 @@ adaptor.AddChild(root_<treeLevel>, <label>_tree);
 if ( _first_<treeLevel>==null ) _first_<treeLevel> = <label>;
 <endif>
 >>
-
 
 // SET AST
 
@@ -240,7 +228,7 @@ _last = (<ASTLabelType>)input.LT(1);
 <if(!rewriteMode)>
 adaptor.AddChild(root_<treeLevel>, <label>.Tree);
 <else> <! rewrite mode !>
-if ( _first_<treeLevel>==null ) _first_<treeLevel> = (<ASTLabelType>) <label>.Tree;
+if ( _first_<treeLevel>==null ) _first_<treeLevel> = <label>.Tree;
 <endif>
 >>
 
@@ -255,7 +243,7 @@ ruleRefRuleRoot(rule,label,elementIndex,args,scope) ::= <<
 _last = (<ASTLabelType>)input.LT(1);
 <super.ruleRef(...)>
 <if(!rewriteMode)>
-<if(backtracking)>if ( state.backtracking == 0 ) <endif>root_<treeLevel> = (<ASTLabelType>)adaptor.BecomeRoot(<label>.Tree, root_<treeLevel>);
+<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) <endif>root_<treeLevel> = (<ASTLabelType>)adaptor.BecomeRoot(<label>.Tree, root_<treeLevel>);
 <endif>
 >>
 
@@ -290,7 +278,7 @@ _last = (<ASTLabelType>)input.LT(1);
 >>
 
 /** Streams for token refs are tree nodes now; override to
- *  change nextToken to nextNode.
+ *  change NextToken to NextNode.
  */
 createRewriteNodeFromElement(token,hetero,scope) ::= <<
 <if(hetero)>
@@ -303,13 +291,8 @@ stream_<token>.NextNode()
 ruleCleanUp() ::= <<
 <super.ruleCleanUp()>
 <if(!rewriteMode)>
-<if(backtracking)>
-if ( <actions.(actionScope).synpredgate> )
-{
-<endif>
-	retval.tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
-<if(backtracking)>
-}
-<endif>
+<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) {<\n><endif>
+retval.Tree = (<ASTLabelType>)adaptor.RulePostProcessing(root_0);
+<if(backtracking)>}<endif>
 <endif>
 >>

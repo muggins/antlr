@@ -32,8 +32,6 @@
 
 namespace Antlr.Runtime {
     using System.Collections.Generic;
-    using ArgumentException = System.ArgumentException;
-    using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
     using CLSCompliant = System.CLSCompliantAttribute;
     using IndexOutOfRangeException = System.IndexOutOfRangeException;
     using StringBuilder = System.Text.StringBuilder;
@@ -195,7 +193,7 @@ namespace Antlr.Runtime {
 
         /** add n elements to buffer */
         protected virtual void Fetch(int n) {
-            for (int i = 1; i <= n; i++) {
+            for (int i = 0; i < n; i++) {
                 IToken t = TokenSource.NextToken();
                 t.TokenIndex = _tokens.Count;
                 _tokens.Add(t);

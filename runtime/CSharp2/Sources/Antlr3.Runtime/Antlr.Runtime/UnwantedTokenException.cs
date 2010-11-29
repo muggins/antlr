@@ -32,18 +32,38 @@
 
 namespace Antlr.Runtime {
     using System.Collections.Generic;
+    using Exception = System.Exception;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>An extra token while parsing a TokenStream</summary> */
     [System.Serializable]
     public class UnwantedTokenException : MismatchedTokenException {
+        public UnwantedTokenException() {
+        }
+
+        public UnwantedTokenException(string message)
+            : base(message) {
+        }
+
+        public UnwantedTokenException(string message, Exception innerException)
+            : base(message, innerException) {
+        }
+
         public UnwantedTokenException(int expecting, IIntStream input)
             : base(expecting, input) {
         }
 
         public UnwantedTokenException(int expecting, IIntStream input, IList<string> tokenNames)
             : base(expecting, input, tokenNames) {
+        }
+
+        public UnwantedTokenException(string message, int expecting, IIntStream input, IList<string> tokenNames)
+            : base(message, expecting, input, tokenNames) {
+        }
+
+        public UnwantedTokenException(string message, int expecting, IIntStream input, IList<string> tokenNames, Exception innerException)
+            : base(message, expecting, input, tokenNames, innerException) {
         }
 
         protected UnwantedTokenException(SerializationInfo info, StreamingContext context)

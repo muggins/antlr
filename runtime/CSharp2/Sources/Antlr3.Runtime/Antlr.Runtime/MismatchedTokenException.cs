@@ -37,6 +37,7 @@ namespace Antlr.Runtime {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using ArgumentNullException = System.ArgumentNullException;
+    using Exception = System.Exception;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
@@ -45,6 +46,17 @@ namespace Antlr.Runtime {
     public class MismatchedTokenException : RecognitionException {
         private readonly int _expecting = TokenTypes.Invalid;
         private readonly ReadOnlyCollection<string> _tokenNames;
+
+        public MismatchedTokenException() {
+        }
+
+        public MismatchedTokenException(string message)
+            : base(message) {
+        }
+
+        public MismatchedTokenException(string message, Exception innerException)
+            : base(message, innerException) {
+        }
 
         public MismatchedTokenException(int expecting, IIntStream input)
             : this(expecting, input, null) {
@@ -56,6 +68,22 @@ namespace Antlr.Runtime {
 
             if (tokenNames != null)
                 this._tokenNames = new List<string>(tokenNames).AsReadOnly();
+        }
+        public MismatchedTokenException(string message, int expecting, IIntStream input, IList<string> tokenNames)
+            : base(message, input) {
+            this._expecting = expecting;
+
+            if (tokenNames != null) {
+                this._tokenNames = new ReadOnlyCollection<string>(new List<string>(tokenNames));
+            }
+        }
+
+        public MismatchedTokenException(string message, int expecting, IIntStream input, IList<string> tokenNames, Exception innerException)
+            : base(message, input, innerException) {
+            this._expecting = expecting;
+
+            if (tokenNames != null)
+                this._tokenNames = new ReadOnlyCollection<string>(new List<string>(tokenNames));
         }
 
         protected MismatchedTokenException(SerializationInfo info, StreamingContext context)

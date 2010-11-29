@@ -31,18 +31,30 @@
  */
 
 namespace Antlr.Runtime.Tree {
+    using Exception = System.Exception;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
     /** <summary>No elements within a (...)+ in a rewrite rule</summary> */
     [System.Serializable]
     public class RewriteEarlyExitException : RewriteCardinalityException {
-        public RewriteEarlyExitException()
-            : base(null) {
+        public RewriteEarlyExitException() {
         }
 
         public RewriteEarlyExitException(string elementDescription)
             : base(elementDescription) {
+        }
+
+        public RewriteEarlyExitException(string elementDescription, Exception innerException)
+            : base(elementDescription, innerException) {
+        }
+
+        public RewriteEarlyExitException(string message, string elementDescription)
+            : base(message, elementDescription) {
+        }
+
+        public RewriteEarlyExitException(string message, string elementDescription, Exception innerException)
+            : base(message, elementDescription, innerException) {
         }
 
         protected RewriteEarlyExitException(SerializationInfo info, StreamingContext context)

@@ -97,6 +97,7 @@
     <Compile Include="Antlr.Runtime\BufferedTokenStream.cs" />
     <Compile Include="Antlr.Runtime\CharStreamConstants.cs" />
     <Compile Include="Antlr.Runtime\GrammarRuleAttribute.cs" />
+    <Compile Include="Antlr.Runtime\IAstRuleReturnScope`1.cs" />
     <Compile Include="Antlr.Runtime\ITokenStreamInformation.cs" />
     <Compile Include="Antlr.Runtime\LegacyCommonTokenStream.cs" />
     <Compile Include="Antlr.Runtime\TokenConstants.cs" />

@@ -48,17 +48,11 @@ public static readonly string[] ruleNames =
 		"invalidRule", <grammar.allImportedRules:{rST | "<rST.name>"}; wrap="\n	", separator=", ">
 	};<\n>
 <endif>
-public static readonly bool[] decisionCanBacktrack = new bool[] {
-    false, // invalid decision
-    <grammar.decisions:{d | <d.dfa.hasSynPred; null="false">}; wrap="\n    ", separator=", ">
-};<\n>
-<if(grammar.grammarIsRoot)> <! grammar imports other grammar(s) !>
-    private int ruleLevel = 0;
-    public int RuleLevel {
-	get { return ruleLevel; }
-    }
-    public void IncRuleLevel() { ruleLevel++; }
-    public void DecRuleLevel() { ruleLevel--; }
+<if(grammar.grammarIsRoot)><! grammar imports other grammar(s) !>
+	int ruleLevel = 0;
+	public virtual int RuleLevel { get { return ruleLevel; } }
+	public virtual void IncRuleLevel() { ruleLevel++; }
+	public virtual void DecRuleLevel() { ruleLevel--; }
 <if(profile)>
 	<ctorForProfilingRootGrammar()>
 <else>
@@ -211,9 +205,8 @@ if (RuleLevel == 0)
 //}<\n>
 //>>
 
-//@synpred.start() ::= "dbg.BeginBacktrack(state.backtracking);"
-
-//@synpred.stop() ::= "dbg.EndBacktrack(state.backtracking, success);"
+//@insertSynpreds.start() ::= "dbg.BeginBacktrack( state.backtracking );"
+//@insertSynpreds.stop() ::= "dbg.EndBacktrack( state.backtracking, success );"
 
 // Common debug event triggers used by region overrides below
 
@@ -231,8 +224,11 @@ if (RuleLevel == 0)
 //}<\n>
 //>>
 
-//enterDecision() ::=
-//    "try { dbg.enterDecision(<decisionNumber>, decisionCanBacktrack[<decisionNumber>]);<\n>"
+//enterDecision() ::= <<
+//try
+//{
+//	dbg.EnterDecision( <decisionNumber> );<\n>
+//>>
 
 //exitDecision() ::= <<
 //}
@@ -287,9 +283,9 @@ if (RuleLevel == 0)
 //@matchSet.mismatchedSetException() ::=
 //	"dbg.RecognitionException( mse );"
 
-//@dfaState.noViableAltException() ::= "dbg.RecognitionException(nvae_d<decisionNumber>s<stateNumber>);"
+//@dfaState.noViableAltException() ::= "dbg.RecognitionException( nvae );"
 
-//@dfaStateSwitch.noViableAltException() ::= "dbg.RecognitionException(nvae_d<decisionNumber>s<stateNumber>);"
+//@dfaStateSwitch.noViableAltException() ::= "dbg.RecognitionException( nvae );"
 
 //dfaDecision(decisionNumber,description) ::= <<
 //try
@@ -307,7 +303,7 @@ if (RuleLevel == 0)
 //@cyclicDFA.errorMethod() ::= <<
 //public override void Error( NoViableAltException nvae )
 //{
-//    dbg.RecognitionException(nvae);
+//	((DebugParser)recognizer).dbg.RecognitionException( nvae );
 //}
 //>>
 
