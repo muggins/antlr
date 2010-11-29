@@ -87,7 +87,7 @@ replaceTextInLine() ::= <<
 	retval.Template);
 <else>
 ((TokenRewriteStream)input).Replace(
-	((IToken)retval.Start).TokenIndex,
+	retval.Start.TokenIndex,
 	input.LT(-1).TokenIndex,
 	retval.Template);
 <endif>

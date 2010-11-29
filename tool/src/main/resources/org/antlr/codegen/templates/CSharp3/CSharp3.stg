@@ -1544,7 +1544,7 @@ tokenLabelPropertyRef_pos(scope,attr) ::= "(<scope>!=null?<scope>.CharPositionIn
 tokenLabelPropertyRef_channel(scope,attr) ::= "(<scope>!=null?<scope>.Channel:0)"
 tokenLabelPropertyRef_index(scope,attr) ::= "(<scope>!=null?<scope>.TokenIndex:0)"
 tokenLabelPropertyRef_tree(scope,attr) ::= "<scope>_tree"
-tokenLabelPropertyRef_int(scope,attr) ::= "(<scope>!=null?Integer.valueOf(<scope>.Text):0)"
+tokenLabelPropertyRef_int(scope,attr) ::= "(<scope>!=null?int.Parse(<scope>.Text):0)"
 
 ruleLabelPropertyRef_start(scope,attr) ::= "(<scope>!=null?((<labelType>)<scope>.Start):null)"
 ruleLabelPropertyRef_stop(scope,attr) ::= "(<scope>!=null?((<labelType>)<scope>.Stop):null)"
@@ -1583,12 +1583,12 @@ lexerRuleLabelPropertyRef_text(scope,attr) ::=
     "(<scope>!=null?<scope>.Text:null)"
 
 lexerRuleLabelPropertyRef_int(scope,attr) ::=
-    "(<scope>!=null?Integer.valueOf(<scope>.Text):0)"
+    "(<scope>!=null?int.Parse(<scope>.Text):0)"
 
 // Somebody may ref $template or $tree or $stop within a rule:
-rulePropertyRef_start(scope,attr) ::= "((<labelType>)retval.Start)"
-rulePropertyRef_stop(scope,attr) ::= "((<labelType>)retval.Stop)"
-rulePropertyRef_tree(scope,attr) ::= "((<ASTLabelType>)retval.Tree)"
+rulePropertyRef_start(scope,attr) ::= "retval.Start)"
+rulePropertyRef_stop(scope,attr) ::= "retval.Stop"
+rulePropertyRef_tree(scope,attr) ::= "retval.Tree"
 rulePropertyRef_text(scope,attr) ::= <<
 <if(TREE_PARSER)>
 input.TokenStream.ToString(
