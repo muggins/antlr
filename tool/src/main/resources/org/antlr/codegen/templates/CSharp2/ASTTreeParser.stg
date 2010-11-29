@@ -71,7 +71,7 @@ _last = (<ASTLabelType>)input.LT(1);
 <ASTLabelType> _save_last_<treeLevel> = _last;
 <ASTLabelType> _first_<treeLevel> = null;
 <if(!rewriteMode)>
-<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.Nil;
+<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.Nil();
 <endif>
 <root:element()>
 <if(rewriteMode)>

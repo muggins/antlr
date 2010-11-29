@@ -52,8 +52,7 @@ public override string ToString() 		{ return (st == null) ? string.Empty : st.To
 
 @genericParser.members() ::= <<
 <@super.members()>
-protected StringTemplateGroup templateLib =
-  new StringTemplateGroup("<name>Templates", typeof(AngleBracketTemplateLexer));
+protected StringTemplateGroup templateLib = new StringTemplateGroup("<name>Templates", typeof(AngleBracketTemplateLexer) );
 
 public StringTemplateGroup TemplateLib
 {

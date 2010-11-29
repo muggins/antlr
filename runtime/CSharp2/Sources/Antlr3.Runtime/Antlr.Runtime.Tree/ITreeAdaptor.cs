@@ -74,7 +74,7 @@ namespace Antlr.Runtime.Tree {
          *  use "t=adaptor.nil(); t.addChild(x); t.addChild(y);"
          *  </summary>
          */
-        object Nil { get; }
+        object Nil();
 
         /** <summary>
          *  Return a tree node representing an error.  This node records the

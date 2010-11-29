@@ -237,8 +237,8 @@ namespace Antlr.Runtime.Tests
 		{
 			// emulates construction of ^(5 6)
 			ITreeAdaptor adaptor = new CommonTreeAdaptor();
-			CommonTree root_0 = (CommonTree)adaptor.Nil;
-			CommonTree root_1 = (CommonTree)adaptor.Nil;
+			CommonTree root_0 = (CommonTree)adaptor.Nil();
+			CommonTree root_1 = (CommonTree)adaptor.Nil();
 			root_1 = (CommonTree)adaptor.BecomeRoot(new CommonTree(new CommonToken(5)), root_1);
 
 			adaptor.AddChild(root_1, new CommonTree(new CommonToken(6)));
@@ -336,7 +336,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.Nil;
+			CommonTree newChildren = (CommonTree)adaptor.Nil();
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 
@@ -355,7 +355,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.Nil;
+			CommonTree newChildren = (CommonTree)adaptor.Nil();
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 
@@ -374,7 +374,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.Nil;
+			CommonTree newChildren = (CommonTree)adaptor.Nil();
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 
@@ -441,7 +441,7 @@ namespace Antlr.Runtime.Tests
 			t.AddChild(new CommonTree(new CommonToken(99, "c")));
 			t.AddChild(new CommonTree(new CommonToken(99, "d")));
 
-			CommonTree newChildren = (CommonTree)adaptor.Nil;
+			CommonTree newChildren = (CommonTree)adaptor.Nil();
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "x")));
 			newChildren.AddChild(new CommonTree(new CommonToken(99, "y")));
 

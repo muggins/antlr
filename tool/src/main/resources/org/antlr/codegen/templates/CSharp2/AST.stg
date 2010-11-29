@@ -50,7 +50,7 @@ TreeAdaptor = treeAdaptor ?? new CommonTreeAdaptor();
 
 /** Add an adaptor property that knows how to build trees */
 parserMembers() ::= <<
-partial void CreateTreeAdaptor(ref ITreeAdaptor adaptor);
+void CreateTreeAdaptor(ref ITreeAdaptor adaptor) {}
 
 private ITreeAdaptor adaptor;
 public ITreeAdaptor TreeAdaptor
@@ -94,7 +94,7 @@ ruleLabelDefs() ::= <<
 <if(autoAST)>
 <if(outerAlt)>
 <if(!rewriteMode)>
-root_0 = (<ASTLabelType>)adaptor.Nil;<\n>
+root_0 = (<ASTLabelType>)adaptor.Nil();<\n>
 <endif>
 <endif>
 <endif>
@@ -178,7 +178,7 @@ if ( <actions.(actionScope).synpredgate> ) {<\n>
 <endif>
 <prevRuleRootRef()>.tree = root_0;
 <rewriteCodeLabels()>
-root_0 = (<ASTLabelType>)adaptor.Nil;
+root_0 = (<ASTLabelType>)adaptor.Nil();
 <alts:rewriteAlt(); separator="else ">
 <! if tree parser and rewrite=true !>
 <if(TREE_PARSER)>
@@ -296,7 +296,7 @@ rewriteEmptyAlt() ::= "root_0 = null;"
 rewriteTree(root,children,description,enclosingTreeLevel,treeLevel) ::= <<
 // <fileName>:<description>
 {
-<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.Nil;
+<ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.Nil();
 <root:rewriteElement()>
 <children:rewriteElement()>
 adaptor.AddChild(root_<enclosingTreeLevel>, root_<treeLevel>);

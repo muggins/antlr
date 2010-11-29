@@ -48,8 +48,8 @@ namespace Antlr.Runtime.Tree {
         protected IDictionary<object, int> treeToUniqueIDMap;
         protected int uniqueNodeID = 1;
 
-        public virtual object Nil {
-            get { return Create(null); }
+        public virtual object Nil() {
+            return Create(null);
         }
 
         /** <summary>

@@ -103,12 +103,10 @@ namespace Antlr.Runtime.Debug {
             return d;
         }
 
-        public virtual object Nil {
-            get {
-                object node = adaptor.Nil;
-                dbg.NilNode(node);
-                return node;
-            }
+        public virtual object Nil() {
+            object node = adaptor.Nil();
+            dbg.NilNode(node);
+            return node;
         }
 
         public virtual bool IsNil(object tree) {

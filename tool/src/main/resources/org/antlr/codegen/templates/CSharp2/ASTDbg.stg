@@ -29,23 +29,30 @@
 */
 
 /** Template overrides to add debugging to AST stuff.  Dynamic inheritance
- *  hierarchy is set up as ASTDbg : AST : Dbg : C# by code generator.
+ *  hierarchy is set up as ASTDbg : AST : Dbg : Java by code generator.
  */
 group ASTDbg;
 
 parserMembers() ::= <<
+// Implement this function in your helper file to use a custom tree adaptor
+void InitializeTreeAdaptor() {}
 protected DebugTreeAdaptor adaptor;
+
 public ITreeAdaptor TreeAdaptor
 {
-	get { 
-<if(grammar.grammarIsRoot)>
-		return this.adaptor;
-<else>
-		this.adaptor = (DebugTreeAdaptor)adaptor; // delegator sends dbg adaptor 
-<endif><\n>
-    		<grammar.directDelegates:{g|<g:delegateName()>.TreeAdaptor = this.adaptor;}>
+	get
+	{
+		return adaptor;
 	}
-	set { this.adaptor = new DebugTreeAdaptor(dbg, value); }
+	set
+	{
+<if(grammar.grammarIsRoot)>
+		this.adaptor = new DebugTreeAdaptor(dbg,adaptor);
+<else>
+		this.adaptor = (DebugTreeAdaptor)adaptor; // delegator sends dbg adaptor
+<endif><\n>
+		<grammar.directDelegates:{g|<g:delegateName()>.TreeAdaptor = this.adaptor;}>
+	}
 }<\n>
 >>
 
@@ -54,29 +61,23 @@ parserCtorBody() ::= <<
 >>
 
 createListenerAndHandshake() ::= <<
-DebugEventSocketProxy dbg = new DebugEventSocketProxy(this, port, adaptor);
-DebugListener = dbg;
-<!
-Original line follows, replaced by the next two ifs:
-set<inputStreamType>(new Debug<inputStreamType>(input,dbg));
- !>
-<if(PARSER)>
-TokenStream = new DebugTokenStream(input,dbg);<\n>
-<endif>
-<if(TREE_PARSER)>
-TokenStream = new DebugTreeNodeStream(input,dbg);<\n>
-<endif>
-try {
-    dbg.Handshake();
-} catch (IOException ioe) {
-    ReportError(ioe);
+DebugEventSocketProxy proxy = new DebugEventSocketProxy( this, port, <if(TREE_PARSER)>input.TreeAdaptor<else>adaptor<endif> );
+DebugListener = proxy;
+<inputStreamType> = new Debug<inputStreamType>( input, proxy );
+try
+{
+	proxy.Handshake();
+}
+catch ( IOException ioe )
+{
+	ReportError( ioe );
 }
 >>
 
 @ctorForRootGrammar.finally() ::= <<
 ITreeAdaptor adap = new CommonTreeAdaptor();
 TreeAdaptor = adap;
-dbg.TreeAdaptor = adap;
+proxy.TreeAdaptor = adap;
 >>
 
 @ctorForProfilingRootGrammar.finally() ::=<<
@@ -84,13 +85,13 @@ ITreeAdaptor adap = new CommonTreeAdaptor();
 TreeAdaptor = adap;
 >>
 
-@ctorForPredefinedListener.superClassRef() ::= "base(input, dbg)"
+@ctorForPredefinedListener.superClassRef() ::= ": base( input, dbg )"
 
 @ctorForPredefinedListener.finally() ::=<<
-<if(grammar.grammarIsRoot)> <! don't create new adaptor for delegates !>
+<if(grammar.grammarIsRoot)><! don't create new adaptor for delegates !>
 ITreeAdaptor adap = new CommonTreeAdaptor();
 TreeAdaptor = adap;<\n>
 <endif>
 >>
 
-//@rewriteElement.pregen() ::= "dbg.Location(<e.line>,<e.pos>);"
+//@rewriteElement.pregen() ::= "dbg.Location( <e.line>, <e.pos> );"

@@ -126,7 +126,7 @@ namespace Antlr.Runtime.Tree {
             string tokenName = tokenizer.sval.ToString();
             ttype = tokenizer.NextToken();
             if (tokenName.Equals("nil")) {
-                return adaptor.Nil;
+                return adaptor.Nil();
             }
             string text = tokenName;
             // check for arg
