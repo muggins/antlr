@@ -1,8 +1,8 @@
 <!--
 
- [The "BSD licence"]
+ [The "BSD license"]
 
- ANTLR        - Copyright (c) 2005-2008 Terence Parr
+ ANTLR        - Copyright (c) 2005-2010 Terence Parr
  Maven Plugin - Copyright (c) 2009      Jim Idle
 
  All rights reserved.
@@ -64,7 +64,7 @@
          we cannot use the paren pom to control the version number
          and MUST update <version> in this pom manually!
          -->
-    <version>3.3-SNAPSHOT</version>
+    <version>3.3.1-SNAPSHOT</version>
     <name>Maven plugin for ANTLR V3</name>
     <prerequisites>
         <maven>2.0</maven>
