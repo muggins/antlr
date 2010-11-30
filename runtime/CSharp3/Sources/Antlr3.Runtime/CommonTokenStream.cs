@@ -95,12 +95,7 @@ namespace Antlr.Runtime
             if (_p == -1)
                 Setup();
             _p++;
-            Sync(_p);
-            while (_tokens[_p].Channel != _channel)
-            {
-                _p++;
-                Sync(_p);
-            }
+            _p = SkipOffTokenChannels(_p);
         }
 
         protected override IToken LB(int k)
@@ -174,14 +169,7 @@ namespace Antlr.Runtime
         protected override void Setup()
         {
             _p = 0;
-            Sync(0);
-            int i = 0;
-            while (_tokens[i].Channel != _channel)
-            {
-                i++;
-                Sync(i);
-            }
-            _p = i;
+            _p = SkipOffTokenChannels(_p);
         }
     }
 }
