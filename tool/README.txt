@@ -124,13 +124,15 @@ antlr-3.3/gunit-maven-plugin
 antlr-3.3/pom.xml
 antlr-3.3/runtime
 antlr-3.3/tool
+antlr-3.3/lib
 
-This is the source.  You should also grab the antlr-3.3.jar
-file from the website because it has all of the jars you need
-combined into one. Then you need to add antlr-3.3.jar to your CLASSPATH or
-add to arg list; e.g., on unix:
+This is the source and java binaries.  You could grab the
+antlr-3.3-complete.jar file from the website, but it's in lib dir.
+It has all of the jars you need combined into one. Then you need to
+add antlr-3.3-complete.jar to your CLASSPATH or add
+to arg list; e.g., on unix:
 
-$ java -cp "/usr/local/lib/antlr-3.3.jar:$CLASSPATH" org.antlr.Tool Test.g
+$ java -cp "/usr/local/lib/antlr-3.3-complete.jar:$CLASSPATH" org.antlr.Tool Test.g
 
 Please see the FAQ
 
