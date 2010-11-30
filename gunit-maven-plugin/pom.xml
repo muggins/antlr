@@ -176,7 +176,7 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>3.3-SNAPSHOT</version>
+            <version>3.3</version>
         </dependency>
 
         <!--
@@ -185,7 +185,7 @@
         <dependency>
             <groupId>${groupId}</groupId>
             <artifactId>gunit</artifactId>
-            <version>3.3-SNAPSHOT</version>
+            <version>3.3</version>
         </dependency>
 
         <!--
@@ -225,7 +225,7 @@
                 <version>2.0.2</version>
                 <configuration>
                     <source>1.5</source>
-                    <target>1.5</target>
+                    <target>jsr14</target>
                 </configuration>
             </plugin>
             <plugin>

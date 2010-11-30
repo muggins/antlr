@@ -145,22 +145,6 @@ Jim Idle - March 2009
 
     </developers>
 
-    <!-- Where are the continuous integration details for this project then John?
-      -->
-    <ciManagement>
-        <system>hudson</system>
-        <url>http://antlr.org/hudson/job/Maven_Plugin/lastSuccessfulBuild/</url>
-        <notifiers>
-            <notifier>
-                <type>rss</type>
-                
-                <configuration>
-                    <url>http://antlr.org/hudson/job/Maven_Plugin/rssAll</url>
-                </configuration>
-            </notifier>
-        </notifiers>
-    </ciManagement>
-
     <!-- Where do we track bugs for this project?
       -->
     <issueManagement>
@@ -289,7 +273,7 @@ Jim Idle - March 2009
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>3.3-SNAPSHOT</version>
+            <version>3.3</version>
         </dependency>
 
         <!--

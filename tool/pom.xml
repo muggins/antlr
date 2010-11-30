@@ -59,7 +59,7 @@
 
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr3-maven-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.2</version>
                 <configuration>
                     <libDirectory>target/generated-sources/antlr/org/antlr/grammar/v3</libDirectory>
                 </configuration>
@@ -77,6 +77,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>antlr-maven-plugin</artifactId>
+                <version>2.2</version>
                 <configuration>
                     <sourceDirectory>src/main/antlr2/org/antlr/grammar/v2</sourceDirectory>
                     <grammars>antlr.g codegen.g, antlr.print.g, assign.types.g, buildnfa.g, define.g</grammars>
@@ -94,7 +95,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.5</source>
-                    <target>1.5</target>
+                    <target>jsr14</target>
                     <sourceDirectory>src</sourceDirectory>
                 </configuration>
             </plugin>
