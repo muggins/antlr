@@ -592,9 +592,12 @@ lexerRuleLabelDefs() ::= <<
   ruleDescriptor.ruleLabels]
     :{<labelType> <it.label.text>=null;}; separator="\n"
 >
-<ruleDescriptor.charLabels:{int <it.label.text>;}; separator="\n">
+<[ruleDescriptor.charLabels,
+  ruleDescriptor.charListLabels]
+    :{int <it.label.text>;}; separator="\n">
 <[ruleDescriptor.tokenListLabels,
-  ruleDescriptor.ruleListLabels]
+  ruleDescriptor.ruleListLabels,
+  ruleDescriptor.charListLabels]
     :{List list_<it.label.text>=null;}; separator="\n"
 >
 >>
