@@ -1634,20 +1634,6 @@
 /* End PBXJavaArchiveBuildPhase section */
 
 /* Begin PBXLegacyTarget section */
-		1A994CDA12A84C33001853FF /* SimpleC */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = 1A994CDE12A84C51001853FF /* Build configuration list for PBXLegacyTarget "SimpleC" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = /Users/acondit/source/antlr_src/code/antlr/main/runtime/ObjC/Framework/build/Debug/Examples/SimpleC;
-			dependencies = (
-			);
-			name = SimpleC;
-			passBuildSettingsInEnvironment = 1;
-			productName = SimpleC;
-		};
 		F76287450B7151E3006AA7EF /* Regenerate fuzzy */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "-jar /Library/Java/Extensions/antlr-3.3.1.jar Fuzzy.g";
@@ -2091,7 +2077,6 @@
 				F762878E0B7155AF006AA7EF /* Regenerate simplectree */,
 				F7CD475C0C64D22800FF933A /* treerewrite */,
 				F7CD47610C64D23800FF933A /* Regenerate treerewrite */,
-				1A994CDA12A84C33001853FF /* SimpleC */,
 			);
 		};
 /* End PBXProject section */
@@ -3116,35 +3101,6 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = ANTLRBitsetTest;
 				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		1A994CDB12A84C33001853FF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PROCESS_GRAMMAR = YES;
-				PRODUCT_NAME = SimpleC;
-			};
-			name = Debug;
-		};
-		1A994CDC12A84C33001853FF /* Debug with StringTemplate Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = SimpleC;
-			};
-			name = "Debug with StringTemplate Debug";
-		};
-		1A994CDD12A84C33001853FF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = SimpleC;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -4660,16 +4616,6 @@
 				1A348BEE11D2D0A2000C72FC /* Debug */,
 				1A348BEF11D2D0A2000C72FC /* Debug with StringTemplate Debug */,
 				1A348BF011D2D0A2000C72FC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1A994CDE12A84C51001853FF /* Build configuration list for PBXLegacyTarget "SimpleC" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1A994CDB12A84C33001853FF /* Debug */,
-				1A994CDC12A84C33001853FF /* Debug with StringTemplate Debug */,
-				1A994CDD12A84C33001853FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
