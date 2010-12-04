@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+December 4, 2010
+
+* TreeWizard ctor needed a default tree adapator.
+
 November 29, 2010 -- ANTLR v3.3
 
 November 23, 2010
