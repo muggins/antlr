@@ -36,6 +36,8 @@ namespace Antlr.Runtime.Tree
 
     public class TreeRewriter<TTree> : TreeParser
     {
+        protected bool showTransformations;
+
         protected ITokenStream originalTokenStream;
         protected ITreeAdaptor originalAdaptor;
 
@@ -72,15 +74,8 @@ namespace Antlr.Runtime.Tree
                 if ( Failed )
                     return t;
 
-                if (typeof(CommonTree).IsAssignableFrom(typeof(TTree)))
-                {
-                    if (r != null && !t.Equals(r.Tree) && r.Tree != null)
-                    {
-                        // show any transformations
-                        Console.Out.WriteLine(((CommonTree)t).ToStringTree() + " -> " +
-                                           ((CommonTree)(object)r.Tree).ToStringTree());
-                    }
-                }
+                if (showTransformations && r != null && !t.Equals(r.Tree) && r.Tree != null)
+                    ReportTransformation(t, r.Tree);
 
                 if ( r != null && r.Tree != null )
                     return r.Tree;
@@ -90,6 +85,7 @@ namespace Antlr.Runtime.Tree
             catch ( RecognitionException )
             {
             }
+
             return t;
         }
 
@@ -107,6 +103,12 @@ namespace Antlr.Runtime.Tree
 
         public virtual object Downup( object t )
         {
+            return Downup( t, false );
+        }
+
+        public virtual object Downup( object t, bool showTransformations )
+        {
+            this.showTransformations = showTransformations;
             TreeVisitor v = new TreeVisitor( new CommonTreeAdaptor() );
             t = v.Visit( t, ( o ) => ApplyOnce( o, topdown_func ), ( o ) => ApplyRepeatedly( o, bottomup_func ) );
             return t;
@@ -123,6 +125,18 @@ namespace Antlr.Runtime.Tree
         public virtual IAstRuleReturnScope<TTree> Bottomup()
         {
             return null;
+        }
+
+        /** Override this if you need transformation tracing to go somewhere
+         *  other than stdout or if you're not using ITree-derived trees.
+         */
+        protected virtual void ReportTransformation(object oldTree, object newTree)
+        {
+            ITree old = oldTree as ITree;
+            ITree @new = newTree as ITree;
+            string oldMessage = old != null ? old.ToStringTree() : "??";
+            string newMessage = @new != null ? @new.ToStringTree() : "??";
+            Console.WriteLine("{0} -> {1}", oldMessage, newMessage);
         }
     }
 }
