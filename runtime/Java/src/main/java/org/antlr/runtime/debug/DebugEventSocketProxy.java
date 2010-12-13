@@ -84,7 +84,7 @@ public class DebugEventSocketProxy extends BlankDebugEventListener {
 			out.println("ANTLR "+ DebugEventListener.PROTOCOL_VERSION);
 			out.println("grammar \""+ grammarFileName);
 			out.flush();
-			ack();			
+			ack();
 		}
 	}
 
@@ -139,7 +139,7 @@ public class DebugEventSocketProxy extends BlankDebugEventListener {
 	}
 
 	public void enterDecision(int decisionNumber, boolean couldBacktrack) {
-		transmit("enterDecision\t"+decisionNumber);
+		transmit("enterDecision\t"+decisionNumber+"\t"+couldBacktrack);
 	}
 
 	public void exitDecision(int decisionNumber) {
@@ -260,7 +260,7 @@ public class DebugEventSocketProxy extends BlankDebugEventListener {
 		serializeText(buf, text);
 	}
 
-	
+
 	// A S T  E v e n t s
 
 	public void nilNode(Object t) {

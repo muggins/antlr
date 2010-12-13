@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+December 12, 2010
+
+* Send couldBacktrack now to enterDecision in debug protocol
+
 December 4, 2010
 
 * TreeWizard ctor needed a default tree adapator.
