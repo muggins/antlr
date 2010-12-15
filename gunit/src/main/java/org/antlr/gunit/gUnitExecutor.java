@@ -27,17 +27,26 @@
 */
 package org.antlr.gunit;
 
-import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.reflect.*;
 import org.antlr.runtime.*;
-import org.antlr.runtime.tree.*;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.antlr.runtime.tree.TreeAdaptor;
+import org.antlr.runtime.tree.TreeNodeStream;
 import org.antlr.stringtemplate.CommonGroupLoader;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.StringTemplateGroupLoader;
 import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class gUnitExecutor implements ITestSuite {
 	public GrammarInfo grammarInfo;
@@ -368,7 +377,7 @@ public class gUnitExecutor implements ITestSuite {
             }
 
             /** Invalid input */
-            if ( tokens.index()!=tokens.size() ) {
+            if ( tokens.index()!=tokens.size()-1 ) {
             	//throw new InvalidInputException();
             	ps2.print("Invalid input");
             }
@@ -536,7 +545,7 @@ public class gUnitExecutor implements ITestSuite {
             }
 
             /** Invalid input */
-            if ( tokens.index()!=tokens.size() ) {
+            if ( tokens.index()!=tokens.getNumberOfOnChannelTokens() ) {
             	//throw new InvalidInputException();
             	ps2.print("Invalid input");
             }

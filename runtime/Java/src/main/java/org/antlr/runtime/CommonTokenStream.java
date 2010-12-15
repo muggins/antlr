@@ -133,6 +133,18 @@ public class CommonTokenStream extends BufferedTokenStream {
         p = i;
     }
 
+	/** Count EOF just once. */
+	public int getNumberOfOnChannelTokens() {
+		int n = 0;
+		fill();
+		for (int i = 0; i < tokens.size(); i++) {
+			Token t = tokens.get(i);
+			if ( t.getChannel()==channel ) n++;
+			if ( t.getType()==Token.EOF ) break;
+		}
+		return n;
+	}
+
     /** Reset this token stream by setting its token source. */
     public void setTokenSource(TokenSource tokenSource) {
         super.setTokenSource(tokenSource);

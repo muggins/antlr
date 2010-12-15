@@ -28,6 +28,7 @@
 package org.antlr.gunit;
 
 import junit.framework.TestCase;
+import org.antlr.runtime.*;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.TreeAdaptor;
@@ -40,13 +41,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Lexer;
-import org.antlr.runtime.Parser;
-import org.antlr.runtime.TokenStream;
 
 /** All gUnit-generated JUnit class should extend this class 
  *  which implements the essential methods for triggering
@@ -157,6 +151,7 @@ public abstract class gUnitBaseTest extends TestCase {
 	}
 	
 	// Invoke target parser.rule
+	
 	public Object execParser(String testRuleName, int line, String testInput, boolean isFile) throws Exception {
 		CharStream input;
 		/** Set up ANTLR input stream based on input source, file or String */
@@ -247,7 +242,7 @@ public abstract class gUnitBaseTest extends TestCase {
 			this.stderr = "";
 			
 			/** Invalid input */
-            if ( tokens.index()!=tokens.size() ) {
+            if ( tokens.index()!=tokens.size()-1 ) {
             	//throw new InvalidInputException();
             	this.stderr += "Stopped parsing at token index "+tokens.index()+": ";
             }
@@ -419,7 +414,7 @@ public abstract class gUnitBaseTest extends TestCase {
 			this.stderr = null;
 			
 			/** Invalid input */
-            if ( tokens.index()!=tokens.size() ) {
+            if ( tokens.index()!=tokens.size()-1 ) {
             	throw new InvalidInputException();
             }
 			
