@@ -1,10 +1,13 @@
 gUnit
-July 31, 2009
 
 Leon, Jen-Yuan Su
 leonsu at mac com
 
 CHANGES
+
+December 15, 2010
+
+* TJP gunit checked tokens.index() != size instead of size()-1
 
 November 26, 2010
 
