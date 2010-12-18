@@ -545,7 +545,7 @@ public class gUnitExecutor implements ITestSuite {
             }
 
             /** Invalid input */
-            if ( tokens.index()!=tokens.getNumberOfOnChannelTokens() ) {
+            if ( tokens.index()!=tokens.size()-1 ) {
             	//throw new InvalidInputException();
             	ps2.print("Invalid input");
             }
