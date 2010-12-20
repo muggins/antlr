@@ -99,6 +99,10 @@ namespace <actions.(actionScope).namespace>
 <endif>
 >>
 
+lexerInputStreamType() ::= <<
+<actions.(actionScope).inputStreamType; null="ICharStream">
+>>
+
 lexer(grammar, name, tokens, scopes, rules, numRules, labelType="CommonToken",
       filterMode, superClass={<if(actions.(actionScope).superClass)><actions.(actionScope).superClass><else>Antlr.Runtime.Lexer<endif>}) ::= <<
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "<ANTLRVersion>")]
@@ -122,12 +126,12 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 		OnCreated();
 	}
 
-	public <grammar.recognizerName>(ICharStream input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}> )
+	public <grammar.recognizerName>(<lexerInputStreamType()> input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}> )
 		: this(input, new RecognizerSharedState()<grammar.delegators:{g|, <g:delegateName()>}>)
 	{
 	}
 
-	public <grammar.recognizerName>(ICharStream input, RecognizerSharedState state<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>)
+	public <grammar.recognizerName>(<lexerInputStreamType()> input, RecognizerSharedState state<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>)
 		: base(input, state)
 	{
 <if(memoize)>
@@ -148,7 +152,7 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 	private static readonly bool[] decisionCanBacktrack = new bool[0];
 
 <if(grammar.hasDelegates)>
-	public override ICharStream CharStream
+	public override <lexerInputStreamType()> CharStream
 	{
 		get
 		{

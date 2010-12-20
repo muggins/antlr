@@ -46,30 +46,37 @@ using RewriteRuleITokenStream = Antlr.Runtime.Tree.RewriteRuleTokenStream;<\n>
 
 parserCtorBody() ::= <<
 <super.parserCtorBody()>
-ITreeAdaptor treeAdaptor = null;
+<treeAdaptorType()> treeAdaptor = default(<treeAdaptorType()>);
 CreateTreeAdaptor(ref treeAdaptor);
-TreeAdaptor = treeAdaptor ?? new CommonTreeAdaptor();
+
+TreeAdaptor = treeAdaptor<if(!actions.(actionScope).treeAdaptorType)> ?? new CommonTreeAdaptor()<endif>;
+
 >>
 
 /** Add an adaptor property that knows how to build trees */
 parserMembers() ::= <<
 // Implement this function in your helper file to use a custom tree adaptor
-partial void CreateTreeAdaptor(ref ITreeAdaptor adaptor);
+partial void CreateTreeAdaptor(ref <treeAdaptorType()> adaptor);
 
-private ITreeAdaptor adaptor;
+private <treeAdaptorType()> adaptor;
 
-public ITreeAdaptor TreeAdaptor
+public <treeAdaptorType()> TreeAdaptor
 {
 	get
 	{
 		return adaptor;
 	}
+
 	set
 	{
 		this.adaptor = value;
 		<grammar.directDelegates:{g|<g:delegateName()>.TreeAdaptor = this.adaptor;}>
 	}
 }
+>>
+
+treeAdaptorType() ::= <<
+<actions.(actionScope).treeAdaptorType; null="ITreeAdaptor">
 >>
 
 @returnScope.ruleReturnInterfaces() ::= <<
