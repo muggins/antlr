@@ -33,6 +33,7 @@
 namespace Antlr.Runtime.Debug
 {
     using System.Collections.Generic;
+    using System.Linq;
     using ParseTree = Antlr.Runtime.Tree.ParseTree;
 
     /** <summary>
@@ -54,11 +55,12 @@ namespace Antlr.Runtime.Debug
             callStack.Push( root );
         }
 
-        public virtual ParseTree GetTree()
+        public virtual ParseTree Tree
         {
-            var enumerator = callStack.GetEnumerator();
-            enumerator.MoveNext();
-            return enumerator.Current;
+            get
+            {
+                return callStack.First();
+            }
         }
 
         /** <summary>
