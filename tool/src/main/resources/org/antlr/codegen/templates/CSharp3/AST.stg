@@ -91,14 +91,14 @@ public <ASTLabelType> Tree { get { return _tree; } set { _tree = value; } }
 /** Add a variable to track rule's return AST */
 ruleDeclarations() ::= <<
 <super.ruleDeclarations()>
-<ASTLabelType> root_0 = null;<\n>
+<ASTLabelType> root_0 = default(<ASTLabelType>);<\n>
 >>
 
 ruleLabelDefs() ::= <<
 <super.ruleLabelDefs()>
 <[ruleDescriptor.tokenLabels,ruleDescriptor.wildcardTreeLabels,ruleDescriptor.wildcardTreeListLabels]
-	:{<ASTLabelType> <it.label.text>_tree=null;}; separator="\n">
-<ruleDescriptor.tokenListLabels:{<ASTLabelType> <it.label.text>_tree=null;}; separator="\n">
+	:{<ASTLabelType> <it.label.text>_tree = default(<ASTLabelType>);}; separator="\n">
+<ruleDescriptor.tokenListLabels:{<ASTLabelType> <it.label.text>_tree = default(<ASTLabelType>);}; separator="\n">
 <ruleDescriptor.allTokenRefsInAltsWithRewrites
 	:{RewriteRule<rewriteElementType>Stream stream_<it>=new RewriteRule<rewriteElementType>Stream(adaptor,"token <it>");}; separator="\n">
 <ruleDescriptor.allRuleRefsInAltsWithRewrites

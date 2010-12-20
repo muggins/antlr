@@ -46,8 +46,8 @@ group ASTTreeParser;
 /** Add a variable to track last element matched */
 ruleDeclarations() ::= <<
 <super.ruleDeclarations()>
-<ASTLabelType> _first_0 = null;
-<ASTLabelType> _last = null;<\n>
+<ASTLabelType> _first_0 = default(<ASTLabelType>);
+<ASTLabelType> _last = default(<ASTLabelType>);<\n>
 >>
 
 /** What to emit when there is no rewrite rule.  For auto build
@@ -71,7 +71,7 @@ tree(root, actionsAfterRoot, children, nullableChildList,
 _last = (<ASTLabelType>)input.LT(1);
 {
 <ASTLabelType> _save_last_<treeLevel> = _last;
-<ASTLabelType> _first_<treeLevel> = null;
+<ASTLabelType> _first_<treeLevel> = default(<ASTLabelType>);
 <if(!rewriteMode)>
 <ASTLabelType> root_<treeLevel> = (<ASTLabelType>)adaptor.Nil();
 <endif>

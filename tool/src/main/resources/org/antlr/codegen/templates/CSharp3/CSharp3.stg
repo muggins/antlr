@@ -581,7 +581,7 @@ ruleScopeCleanUp() ::= <<
 
 ruleLabelDefs() ::= <<
 <[ruleDescriptor.tokenLabels,ruleDescriptor.tokenListLabels,ruleDescriptor.wildcardTreeLabels,ruleDescriptor.wildcardTreeListLabels]
-    :{<labelType> <it.label.text>=null;}; separator="\n"
+    :{<labelType> <it.label.text> = default(<labelType>);}; separator="\n"
 >
 <[ruleDescriptor.tokenListLabels,ruleDescriptor.ruleListLabels,ruleDescriptor.wildcardTreeListLabels]
     :{List list_<it.label.text>=null;}; separator="\n"
@@ -594,7 +594,7 @@ lexerRuleLabelDefs() ::= <<
 <[ruleDescriptor.tokenLabels,
   ruleDescriptor.tokenListLabels,
   ruleDescriptor.ruleLabels]
-    :{<labelType> <it.label.text>=null;}; separator="\n"
+    :{<labelType> <it.label.text> = default(<labelType>);}; separator="\n"
 >
 <[ruleDescriptor.charLabels,
   ruleDescriptor.charListLabels]
