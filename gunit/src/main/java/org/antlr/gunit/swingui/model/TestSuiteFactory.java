@@ -27,10 +27,6 @@
 */
 package org.antlr.gunit.swingui.model;
 
-import org.antlr.gunit.swingui.parsers.ANTLRv3Lexer;
-import org.antlr.gunit.swingui.parsers.ANTLRv3Parser;
-import org.antlr.gunit.swingui.parsers.StGUnitLexer;
-import org.antlr.gunit.swingui.parsers.StGUnitParser;
 import org.antlr.gunit.swingui.runner.TestSuiteAdapter;
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -42,12 +38,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestSuiteFactory {
-    
+
     private static String TEMPLATE_FILE = "org/antlr/gunit/swingui/gunit.stg";
     private static StringTemplateGroup templates;
     public static final String TEST_SUITE_EXT = ".gunit";
     public static final String GRAMMAR_EXT = ".g";
-    
+
     static  {
         ClassLoader loader = TestSuiteFactory.class.getClassLoader();
         InputStream in = loader.getResourceAsStream(TEMPLATE_FILE);
@@ -57,24 +53,24 @@ public class TestSuiteFactory {
         Reader rd = new InputStreamReader(in);
         templates = new StringTemplateGroup(rd);
     }
-    
+
     /**
-     * Factory method: create a testsuite from ANTLR grammar.  Save the test 
+     * Factory method: create a testsuite from ANTLR grammar.  Save the test
      * suite file in the same directory of the grammar file.
      * @param grammarFile ANTLRv3 grammar file.
      * @return test suite object
      */
     public static TestSuite createTestSuite(File grammarFile) {
         if(grammarFile != null && grammarFile.exists() && grammarFile.isFile()) {
-            
+
             final String fileName = grammarFile.getName();
             final String grammarName = fileName.substring(0, fileName.lastIndexOf('.'));
             final String grammarDir = grammarFile.getParent();
             final File testFile = new File(grammarDir + File.separator + grammarName + TEST_SUITE_EXT);
-            
+
             final TestSuite result = new TestSuite(grammarName, testFile);
             result.rules = loadRulesFromGrammar(grammarFile);
-            
+
             if(saveTestSuite(result)) {
                 return result;
             } else {
@@ -85,10 +81,10 @@ public class TestSuiteFactory {
         }
     }
 
-    
+
     /* Load rules from an ANTLR grammar file. */
     private static List<Rule> loadRulesFromGrammar(File grammarFile) {
-        
+
         // get all the rule names
         final List<String> ruleNames = new ArrayList<String>();
         try {
@@ -110,7 +106,7 @@ public class TestSuiteFactory {
         }
 
         return ruleList;
-    }    
+    }
 
     /* Save testsuite to *.gunit file. */
     public static boolean saveTestSuite(TestSuite testSuite) {
@@ -119,14 +115,14 @@ public class TestSuiteFactory {
             FileWriter fw = new FileWriter(testSuite.getTestSuiteFile());
             fw.write(data);
             fw.flush();
-            fw.close();    
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
-    
+
     /**
      * Get the text script from the testSuite.
      * @param testSuite
@@ -136,10 +132,10 @@ public class TestSuiteFactory {
         if(testSuite == null) return null;
         StringTemplate gUnitScript = templates.getInstanceOf("gUnitFile");
         gUnitScript.setAttribute("testSuite", testSuite);
-        
-        return gUnitScript.toString();        
+
+        return gUnitScript.toString();
     }
-    
+
     /**
      * From textual script to program model.
      * @param file testsuite file (.gunit)
@@ -155,7 +151,7 @@ public class TestSuiteFactory {
             throw new RuntimeException("Can't find grammar file associated with gunit file: "+file.getAbsoluteFile());
 
         TestSuite result = new TestSuite("", file);
-        
+
         // read in test suite
         try {
             final Reader reader = new BufferedReader(new FileReader(file));
@@ -166,11 +162,11 @@ public class TestSuiteFactory {
             parser.adapter = adapter;
             parser.gUnitDef();
             result.setTokens(tokens);
-            reader.close();            
+            reader.close();
         } catch (Exception ex) {
             throw new RuntimeException("Error reading test suite file.\n" + ex.getMessage());
         }
-        
+
         // load un-tested rules from grammar
         final List<Rule> completeRuleList = loadRulesFromGrammar(grammarFile);
         for(Rule rule: completeRuleList) {
@@ -182,7 +178,7 @@ public class TestSuiteFactory {
 
         return result;
     }
-    
+
     /**
      * Get the grammar file of the testsuite file in the same directory.
      * @param testsuiteFile
