@@ -27,6 +27,10 @@
 */
 package org.antlr.gunit.swingui.model;
 
+import org.antlr.gunit.swingui.parsers.ANTLRv3Lexer;
+import org.antlr.gunit.swingui.parsers.ANTLRv3Parser;
+import org.antlr.gunit.swingui.parsers.StGUnitLexer;
+import org.antlr.gunit.swingui.parsers.StGUnitParser;
 import org.antlr.gunit.swingui.runner.TestSuiteAdapter;
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
