@@ -59,7 +59,7 @@
 - (void) fill:(NSInteger) n;
 - (id) LT:(NSInteger) i;
 - (id) LB:(NSInteger) i;
-- (id) currentSymbol;
+- (id) getCurrentSymbol;
 - (NSInteger) getIndex;
 - (void) setIndex:(NSInteger)i;
 - (NSInteger) mark;
