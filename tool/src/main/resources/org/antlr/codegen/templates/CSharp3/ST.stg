@@ -45,6 +45,7 @@ using Antlr3.ST.Language;
 private StringTemplate _st;
 public StringTemplate Template { get { return _st; } set { _st = value; } }
 public override string ToString() { return (Template==null) ? string.Empty : Template.ToString(); }
+<@super.ruleReturnMembers()>
 >>
 
 @genericParser.members() ::= <<

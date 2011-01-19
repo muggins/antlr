@@ -407,14 +407,14 @@ treeParser(grammar, name, scopes, tokens, tokenNames, globalAction, rules,
  */
 synpredRule(ruleName, ruleDescriptor, block, description, nakedBlock) ::=
 <<
-partial void Enter_<ruleName>_fragment();
-partial void Leave_<ruleName>_fragment();
+partial void EnterRule_<ruleName>_fragment();
+partial void LeaveRule_<ruleName>_fragment();
 
 // $ANTLR start <ruleName>
 public <!final !>void <ruleName>_fragment(<ruleDescriptor.parameterScope:parameterScope(scope=it)>)
 {
 	<ruleLabelDefs()>
-	Enter_<ruleName>_fragment();
+	EnterRule_<ruleName>_fragment();
 	EnterRule("<ruleName>_fragment", <ruleDescriptor.index>);
 	TraceIn("<ruleName>_fragment", <ruleDescriptor.index>);
 	try
@@ -425,7 +425,7 @@ public <!final !>void <ruleName>_fragment(<ruleDescriptor.parameterScope:paramet
 	{
 		TraceOut("<ruleName>_fragment", <ruleDescriptor.index>);
 		LeaveRule("<ruleName>_fragment", <ruleDescriptor.index>);
-		Leave_<ruleName>_fragment();
+		LeaveRule_<ruleName>_fragment();
 	}
 }
 // $ANTLR end <ruleName>
@@ -488,15 +488,15 @@ rule(ruleName,ruleDescriptor,block,emptyRule,description,exceptions,finally,memo
 <ruleAttributeScope(scope=ruleDescriptor.ruleScope)>
 <returnScope(scope=ruleDescriptor.returnScope)>
 
-partial void Enter_<ruleName>();
-partial void Leave_<ruleName>();
+partial void EnterRule_<ruleName>();
+partial void LeaveRule_<ruleName>();
 
 // $ANTLR start "<ruleName>"
 // <fileName>:<description>
 [GrammarRule("<ruleName>")]
 <csharpVisibilityMap.(ruleDescriptor.modifier); null="private"> <returnType()> <ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>)
 {
-	Enter_<ruleName>();
+	EnterRule_<ruleName>();
 	EnterRule("<ruleName>", <ruleDescriptor.index>);
 	TraceIn("<ruleName>", <ruleDescriptor.index>);
 	<ruleScopeSetUp()>
@@ -533,7 +533,7 @@ partial void Leave_<ruleName>();
 	{
 		TraceOut("<ruleName>", <ruleDescriptor.index>);
 		LeaveRule("<ruleName>", <ruleDescriptor.index>);
-		Leave_<ruleName>();
+		LeaveRule_<ruleName>();
 		<memoize()>
 		<ruleScopeCleanUp()>
 		<finally>
@@ -555,7 +555,7 @@ catch (<e.decl>)
 
 ruleDeclarations() ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
-<returnType()> retval = new <returnType()>();
+<returnType()> retval = new <returnType()>(this);
 retval.Start = (<labelType>)input.LT(1);<\n>
 <else>
 <ruleDescriptor.returnScope.attributes:{ a |
@@ -568,8 +568,8 @@ int <ruleDescriptor.name>_StartIndex = input.Index;
 >>
 
 ruleScopeSetUp() ::= <<
-<ruleDescriptor.useScopes:{<it>_stack.Push(new <it>_scope());<it>_scopeInit(<it>_stack.Peek());}; separator="\n">
-<ruleDescriptor.ruleScope:{<it.name>_stack.Push(new <it.name>_scope());<it.name>_scopeInit(<it.name>_stack.Peek());}; separator="\n">
+<ruleDescriptor.useScopes:{<it>_stack.Push(new <it>_scope(this));<it>_scopeInit(<it>_stack.Peek());}; separator="\n">
+<ruleDescriptor.ruleScope:{<it.name>_stack.Push(new <it.name>_scope(this));<it.name>_scopeInit(<it.name>_stack.Peek());}; separator="\n">
 >>
 
 ruleScopeCleanUp() ::= <<
@@ -638,14 +638,14 @@ if (state.backtracking > 0) { Memoize(input, <ruleDescriptor.index>, <ruleDescri
  *  fragment rules.
  */
 lexerRule(ruleName,nakedBlock,ruleDescriptor,block,memoize) ::= <<
-partial void Enter_<ruleName>();
-partial void Leave_<ruleName>();
+partial void EnterRule_<ruleName>();
+partial void LeaveRule_<ruleName>();
 
 // $ANTLR start "<ruleName>"
 [GrammarRule("<ruleName>")]
 <csharpVisibilityMap.(ruleDescriptor.modifier); null="private"> void m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>)
 {
-	Enter_<ruleName>();
+	EnterRule_<ruleName>();
 	EnterRule("<ruleName>", <ruleDescriptor.index>);
 	TraceIn("<ruleName>", <ruleDescriptor.index>);
 	<ruleScopeSetUp()>
@@ -674,7 +674,7 @@ partial void Leave_<ruleName>();
 	{
 		TraceOut("<ruleName>", <ruleDescriptor.index>);
 		LeaveRule("<ruleName>", <ruleDescriptor.index>);
-		Leave_<ruleName>();
+		LeaveRule_<ruleName>();
 		<ruleScopeCleanUp()>
 		<memoize()>
 	}
@@ -1383,6 +1383,9 @@ attributeScope(scope) ::= <<
 protected sealed partial class <scope.name>_scope
 {
 	<scope.attributes:{public <it.decl>;}; separator="\n">
+
+	public <scope.name>_scope(<grammar.recognizerName> grammar) { OnCreated(grammar); }
+	partial void OnCreated(<grammar.recognizerName> grammar);
 }
 <if(scope.actions.scopeinit)>
 protected void <scope.name>_scopeInit( <scope.name>_scope scope )
@@ -1469,6 +1472,11 @@ returnScope(scope) ::= <<
 	<@ruleReturnMembers()>
 }
 <endif>
+>>
+
+@returnScope.ruleReturnMembers() ::= <<
+public <ruleDescriptor:returnStructName()>(<grammar.recognizerName> grammar) {OnCreated(grammar);}
+partial void OnCreated(<grammar.recognizerName> grammar);
 >>
 
 parameterScope(scope) ::= <<
