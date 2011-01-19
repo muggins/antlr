@@ -1,10 +1,10 @@
 /*
  * [The "BSD licence"]
- * Copyright (c) 2005-2008 Terence Parr
+ * Copyright (c) 2011 Terence Parr
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008-2009 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2011 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,24 +49,6 @@ namespace Antlr.Runtime.Tree
      */
     public class CommonTreeAdaptor : BaseTreeAdaptor
     {
-        /** <summary>
-         *  Duplicate a node.  This is part of the factory;
-         *  override if you want another kind of node to be built.
-         *  </summary>
-         *
-         *  <remarks>
-         *  I could use reflection to prevent having to override this
-         *  but reflection is slow.
-         *  </remarks>
-         */
-        public override object DupNode( object t )
-        {
-            if ( t == null )
-                return null;
-
-            return ( (ITree)t ).DupNode();
-        }
-
         public override object Create( IToken payload )
         {
             return new CommonTree( payload );
@@ -113,63 +95,6 @@ namespace Antlr.Runtime.Tree
         }
 
         /** <summary>
-         *  Track start/stop token for subtree root created for a rule.
-         *  Only works with Tree nodes.  For rules that match nothing,
-         *  seems like this will yield start=i and stop=i-1 in a nil node.
-         *  Might be useful info so I'll not force to be i..i.
-         *  </summary>
-         */
-        public override void SetTokenBoundaries( object t, IToken startToken, IToken stopToken )
-        {
-            if ( t == null )
-                return;
-
-            int start = 0;
-            int stop = 0;
-
-            if ( startToken != null )
-                start = startToken.TokenIndex;
-
-            if ( stopToken != null )
-                stop = stopToken.TokenIndex;
-
-            ( (ITree)t ).TokenStartIndex = start;
-            ( (ITree)t ).TokenStopIndex = stop;
-        }
-
-        public override int GetTokenStartIndex( object t )
-        {
-            if ( t == null )
-                return -1;
-
-            return ( (ITree)t ).TokenStartIndex;
-        }
-
-        public override int GetTokenStopIndex( object t )
-        {
-            if ( t == null )
-                return -1;
-
-            return ( (ITree)t ).TokenStopIndex;
-        }
-
-        public override string GetText( object t )
-        {
-            if ( t == null )
-                return null;
-
-            return ( (ITree)t ).Text;
-        }
-
-        public override int GetType( object t )
-        {
-            if ( t == null )
-                return TokenTypes.Invalid;
-
-            return ( (ITree)t ).Type;
-        }
-
-        /** <summary>
          *  What is the Token associated with this node?  If
          *  you are not using CommonTree, then you must
          *  override this in your own adaptor.
@@ -182,58 +107,6 @@ namespace Antlr.Runtime.Tree
                 return ( (CommonTree)t ).Token;
             }
             return null; // no idea what to do
-        }
-
-        public override object GetChild( object t, int i )
-        {
-            if ( t == null )
-                return null;
-
-            return ( (ITree)t ).GetChild( i );
-        }
-
-        public override int GetChildCount( object t )
-        {
-            if ( t == null )
-                return 0;
-
-            return ( (ITree)t ).ChildCount;
-        }
-
-        public override object GetParent( object t )
-        {
-            if ( t == null )
-                return null;
-
-            return ( (ITree)t ).Parent;
-        }
-
-        public override void SetParent( object t, object parent )
-        {
-            if ( t != null )
-                ( (ITree)t ).Parent = (ITree)parent;
-        }
-
-        public override int GetChildIndex( object t )
-        {
-            if ( t == null )
-                return 0;
-
-            return ( (ITree)t ).ChildIndex;
-        }
-
-        public override void SetChildIndex( object t, int index )
-        {
-            if ( t != null )
-                ( (ITree)t ).ChildIndex = index;
-        }
-
-        public override void ReplaceChildren( object parent, int startChildIndex, int stopChildIndex, object t )
-        {
-            if ( parent != null )
-            {
-                ( (ITree)parent ).ReplaceChildren( startChildIndex, stopChildIndex, t );
-            }
         }
     }
 }

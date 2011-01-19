@@ -1,10 +1,10 @@
 /*
  * [The "BSD licence"]
- * Copyright (c) 2005-2008 Terence Parr
+ * Copyright (c) 2011 Terence Parr
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2011 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,12 +60,66 @@ namespace Antlr.Runtime.Tree
          *  Override if you want another kind of node to be built.
          *  </remarks>
          */
-        object Create( IToken payload );
+        object Create(IToken payload);
+
+        /** <summary>
+         *  Create a new node derived from a token, with a new token type.
+         *  This is invoked from an imaginary node ref on right side of a
+         *  rewrite rule as IMAG[$tokenLabel].
+         *  </summary>
+         *
+         *  <remarks>
+         *  This should invoke createToken(Token).
+         *  </remarks>
+         */
+        object Create(int tokenType, IToken fromToken);
+
+        /** <summary>
+         *  Same as create(tokenType,fromToken) except set the text too.
+         *  This is invoked from an imaginary node ref on right side of a
+         *  rewrite rule as IMAG[$tokenLabel, "IMAG"].
+         *  </summary>
+         *
+         *  <remarks>
+         *  This should invoke createToken(Token).
+         *  </remarks>
+         */
+        object Create(int tokenType, IToken fromToken, string text);
+
+        /** <summary>
+         *  Same as create(fromToken) except set the text too.
+         *  This is invoked when the <c>text</c> terminal option is set, as in
+         *  IMAG&lt;text='IMAG'&gt;.
+         *  </summary>
+         *
+         *  <remarks>
+         *  This should invoke createToken(Token).
+         *  </remarks>
+         */
+        object Create(IToken fromToken, string text);
+
+        /** <summary>
+         *  Create a new node derived from a token, with a new token type.
+         *  This is invoked from an imaginary node ref on right side of a
+         *  rewrite rule as IMAG["IMAG"].
+         *  </summary>
+         *
+         *  <remarks>
+         *  This should invoke createToken(int,String).
+         *  </remarks>
+         */
+        object Create(int tokenType, string text);
 
         /** <summary>Duplicate a single tree node.</summary>
          *  <remarks>Override if you want another kind of node to be built.</remarks>
          */
-        object DupNode( object treeNode );
+        object DupNode(object treeNode);
+
+        object DupNode(int type, object treeNode);
+
+        object DupNode(object treeNode, string text);
+
+        object DupNode(int type, object treeNode, string text);
 
         /** <summary>Duplicate tree recursively, using dupNode() for each node</summary> */
         object DupTree( object tree );
@@ -194,42 +248,6 @@ namespace Antlr.Runtime.Tree
          *  </remarks>
          */
         object BecomeRoot( IToken newRoot, object oldRoot );
-
-        /** <summary>
-         *  Create a new node derived from a token, with a new token type.
-         *  This is invoked from an imaginary node ref on right side of a
-         *  rewrite rule as IMAG[$tokenLabel].
-         *  </summary>
-         *
-         *  <remarks>
-         *  This should invoke createToken(Token).
-         *  </remarks>
-         */
-        object Create( int tokenType, IToken fromToken );
-
-        /** <summary>
-         *  Same as create(tokenType,fromToken) except set the text too.
-         *  This is invoked from an imaginary node ref on right side of a
-         *  rewrite rule as IMAG[$tokenLabel, "IMAG"].
-         *  </summary>
-         *
-         *  <remarks>
-         *  This should invoke createToken(Token).
-         *  </remarks>
-         */
-        object Create( int tokenType, IToken fromToken, string text );
-
-        /** <summary>
-         *  Create a new node derived from a token, with a new token type.
-         *  This is invoked from an imaginary node ref on right side of a
-         *  rewrite rule as IMAG["IMAG"].
-         *  </summary>
-         *
-         *  <remarks>
-         *  This should invoke createToken(int,String).
-         *  </remarks>
-         */
-        object Create( int tokenType, string text );
 
         #endregion
 

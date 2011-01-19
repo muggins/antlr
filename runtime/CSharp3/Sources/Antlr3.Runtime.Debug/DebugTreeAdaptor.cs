@@ -1,10 +1,10 @@
 /*
  * [The "BSD licence"]
- * Copyright (c) 2005-2008 Terence Parr
+ * Copyright (c) 2011 Terence Parr
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008-2009 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2011 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -114,6 +114,27 @@ namespace Antlr.Runtime.Debug
             return d;
         }
 
+        public object DupNode(int type, object treeNode)
+        {
+            object d = adaptor.DupNode(type, treeNode);
+            dbg.CreateNode(d);
+            return d;
+        }
+
+        public object DupNode(object treeNode, string text)
+        {
+            object d = adaptor.DupNode(treeNode, text);
+            dbg.CreateNode(d);
+            return d;
+        }
+
+        public object DupNode(int type, object treeNode, string text)
+        {
+            object d = adaptor.DupNode(type, treeNode, text);
+            dbg.CreateNode(d);
+            return d;
+        }
+
         public virtual object Nil()
         {
             object node = adaptor.Nil();
@@ -180,6 +201,13 @@ namespace Antlr.Runtime.Debug
         {
             object node = adaptor.Create( tokenType, text );
             dbg.CreateNode( node );
+            return node;
+        }
+
+        public object Create(IToken fromToken, string text)
+        {
+            object node = adaptor.Create(fromToken, text);
+            dbg.CreateNode(node);
             return node;
         }
 

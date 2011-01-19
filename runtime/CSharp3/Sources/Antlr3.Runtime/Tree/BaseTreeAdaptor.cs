@@ -1,10 +1,10 @@
 /*
  * [The "BSD licence"]
- * Copyright (c) 2005-2008 Terence Parr
+ * Copyright (c) 2011 Terence Parr
  * All rights reserved.
  *
  * Conversion to C#:
- * Copyright (c) 2008-2009 Sam Harwell, Pixel Mine, Inc.
+ * Copyright (c) 2011 Sam Harwell, Pixel Mine, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@ namespace Antlr.Runtime.Tree
 {
     using System.Collections.Generic;
 
+    using ArgumentNullException = System.ArgumentNullException;
     using Exception = System.Exception;
     using IDictionary = System.Collections.IDictionary;
     using NotSupportedException = System.NotSupportedException;
@@ -81,6 +82,28 @@ namespace Antlr.Runtime.Tree
         public virtual bool IsNil( object tree )
         {
             return ( (ITree)tree ).IsNil;
+        }
+
+        public virtual object DupNode(int type, object treeNode)
+        {
+            object t = DupNode(treeNode);
+            SetType(t, type);
+            return t;
+        }
+
+        public virtual object DupNode(object treeNode, string text)
+        {
+            object t = DupNode(treeNode);
+            SetText(t, text);
+            return t;
+        }
+
+        public virtual object DupNode(int type, object treeNode, string text)
+        {
+            object t = DupNode(treeNode);
+            SetType(t, type);
+            SetText(t, text);
+            return t;
         }
 
         public virtual object DupTree( object tree )
@@ -219,9 +242,8 @@ namespace Antlr.Runtime.Tree
         public virtual object Create( int tokenType, IToken fromToken )
         {
             fromToken = CreateToken( fromToken );
-            //((ClassicToken)fromToken).setType(tokenType);
             fromToken.Type = tokenType;
-            ITree t = (ITree)Create( fromToken );
+            object t = Create( fromToken );
             return t;
         }
 
@@ -233,20 +255,35 @@ namespace Antlr.Runtime.Tree
             fromToken = CreateToken( fromToken );
             fromToken.Type = tokenType;
             fromToken.Text = text;
-            ITree t = (ITree)Create( fromToken );
-            return t;
+            object result = Create(fromToken);
+            return result;
+        }
+
+        public virtual object Create(IToken fromToken, string text)
+        {
+            if (fromToken == null)
+                throw new ArgumentNullException("fromToken");
+
+            fromToken = CreateToken(fromToken);
+            fromToken.Text = text;
+            object result = Create(fromToken);
+            return result;
         }
 
         public virtual object Create( int tokenType, string text )
         {
             IToken fromToken = CreateToken( tokenType, text );
-            ITree t = (ITree)Create( fromToken );
+            object t = Create( fromToken );
             return t;
         }
 
         public virtual int GetType( object t )
         {
-            return ( (ITree)t ).Type;
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return TokenTypes.Invalid;
+
+            return tree.Type;
         }
 
         public virtual void SetType( object t, int type )
@@ -256,7 +293,11 @@ namespace Antlr.Runtime.Tree
 
         public virtual string GetText( object t )
         {
-            return ( (ITree)t ).Text;
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return null;
+
+            return tree.Text;
         }
 
         public virtual void SetText( object t, string text )
@@ -266,12 +307,21 @@ namespace Antlr.Runtime.Tree
 
         public virtual object GetChild( object t, int i )
         {
-            return ( (ITree)t ).GetChild( i );
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return null;
+
+            return tree.GetChild(i);
         }
 
         public virtual void SetChild( object t, int i, object child )
         {
-            ( (ITree)t ).SetChild( i, (ITree)child );
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return;
+
+            ITree childTree = GetTree(child);
+            tree.SetChild(i, childTree);
         }
 
         public virtual object DeleteChild( object t, int i )
@@ -281,7 +331,11 @@ namespace Antlr.Runtime.Tree
 
         public virtual int GetChildCount( object t )
         {
-            return ( (ITree)t ).ChildCount;
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return 0;
+
+            return tree.ChildCount;
         }
 
         public virtual int GetUniqueID( object node )
@@ -337,15 +391,127 @@ namespace Antlr.Runtime.Tree
         public abstract IToken CreateToken( IToken fromToken );
 
         public abstract object Create( IToken payload );
-        public abstract object DupNode( object treeNode );
+
+        /** <summary>
+         *  Duplicate a node.  This is part of the factory;
+         *  override if you want another kind of node to be built.
+         *  </summary>
+         *
+         *  <remarks>
+         *  I could use reflection to prevent having to override this
+         *  but reflection is slow.
+         *  </remarks>
+         */
+        public virtual object DupNode(object treeNode)
+        {
+            ITree tree = GetTree(treeNode);
+            if (tree == null)
+                return null;
+
+            return tree.DupNode();
+        }
+
         public abstract IToken GetToken( object t );
-        public abstract void SetTokenBoundaries( object t, IToken startToken, IToken stopToken );
-        public abstract int GetTokenStartIndex( object t );
-        public abstract int GetTokenStopIndex( object t );
-        public abstract object GetParent( object t );
-        public abstract void SetParent( object t, object parent );
-        public abstract int GetChildIndex( object t );
-        public abstract void SetChildIndex( object t, int index );
-        public abstract void ReplaceChildren( object parent, int startChildIndex, int stopChildIndex, object t );
+
+        /** <summary>
+         *  Track start/stop token for subtree root created for a rule.
+         *  Only works with Tree nodes.  For rules that match nothing,
+         *  seems like this will yield start=i and stop=i-1 in a nil node.
+         *  Might be useful info so I'll not force to be i..i.
+         *  </summary>
+         */
+        public virtual void SetTokenBoundaries(object t, IToken startToken, IToken stopToken)
+        {
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return;
+
+            int start = 0;
+            int stop = 0;
+
+            if (startToken != null)
+                start = startToken.TokenIndex;
+            if (stopToken != null)
+                stop = stopToken.TokenIndex;
+
+            tree.TokenStartIndex = start;
+            tree.TokenStopIndex = stop;
+        }
+
+        public virtual int GetTokenStartIndex(object t)
+        {
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return -1;
+
+            return tree.TokenStartIndex;
+        }
+
+        public virtual int GetTokenStopIndex(object t)
+        {
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return -1;
+
+            return tree.TokenStopIndex;
+        }
+
+        public virtual object GetParent(object t)
+        {
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return null;
+
+            return tree.Parent;
+        }
+
+        public virtual void SetParent(object t, object parent)
+        {
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return;
+
+            ITree parentTree = GetTree(parent);
+            tree.Parent = parentTree;
+        }
+
+        public virtual int GetChildIndex(object t)
+        {
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return 0;
+
+            return tree.ChildIndex;
+        }
+
+        public virtual void SetChildIndex(object t, int index)
+        {
+            ITree tree = GetTree(t);
+            if (tree == null)
+                return;
+
+            tree.ChildIndex = index;
+        }
+
+        public virtual void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t)
+        {
+            ITree tree = GetTree(parent);
+            if (tree == null)
+                return;
+
+            tree.ReplaceChildren(startChildIndex, stopChildIndex, t);
+        }
+
+        protected virtual ITree GetTree(object t)
+        {
+            if (t == null)
+                return null;
+
+            ITree tree = t as ITree;
+            if (tree == null)
+                throw new NotSupportedException();
+
+            return tree;
+        }
     }
 }

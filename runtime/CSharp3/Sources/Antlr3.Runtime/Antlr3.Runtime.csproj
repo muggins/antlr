@@ -65,6 +65,7 @@
     <Compile Include="IAstRuleReturnScope`1.cs" />
     <Compile Include="ICharStream.cs" />
     <Compile Include="IIntStream.cs" />
+    <Compile Include="IRuleReturnScope.cs" />
     <Compile Include="IToken.cs" />
     <Compile Include="ITokenSource.cs" />
     <Compile Include="ITokenStream.cs" />
