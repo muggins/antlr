@@ -91,6 +91,7 @@
     <Compile Include="TokenRewriteStream.cs" />
     <Compile Include="Tree\BaseTree.cs" />
     <Compile Include="Tree\BaseTreeAdaptor.cs" />
+    <Compile Include="Tree\AntlrRuntime_BaseTreeDebugView.cs" />
     <Compile Include="Tree\BufferedTreeNodeStream.cs" />
     <Compile Include="Tree\CommonErrorNode.cs" />
     <Compile Include="Tree\CommonTree.cs" />
