@@ -86,13 +86,6 @@ using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using RewriteRuleITokenStream = Antlr.Runtime.Tree.RewriteRuleTokenStream;
 <endif>
-using Stack = System.Collections.Generic.Stack\<object>;
-using List = System.Collections.IList;
-using ArrayList = System.Collections.Generic.List\<object>;
-<if(backtracking)>
-using Map = System.Collections.IDictionary;
-using HashMap = System.Collections.Generic.Dictionary\<object, object>;
-<endif>
 <@end>
 
 <if(actions.(actionScope).namespace)>
@@ -582,7 +575,7 @@ ruleLabelDefs() ::= <<
     :{<labelType> <it.label.text> = default(<labelType>);}; separator="\n"
 >
 <[ruleDescriptor.tokenListLabels,ruleDescriptor.ruleListLabels,ruleDescriptor.wildcardTreeListLabels]
-    :{List list_<it.label.text>=null;}; separator="\n"
+    :{List\<<ASTLabelType>\> list_<it.label.text> = null;}; separator="\n"
 >
 <ruleDescriptor.ruleLabels:ruleLabelDef(label=it); separator="\n">
 <ruleDescriptor.ruleListLabels:ruleLabelDef(label=it); separator="\n">
@@ -594,13 +587,15 @@ lexerRuleLabelDefs() ::= <<
   ruleDescriptor.ruleLabels]
     :{<labelType> <it.label.text> = default(<labelType>);}; separator="\n"
 >
-<[ruleDescriptor.charLabels,
-  ruleDescriptor.charListLabels]
-    :{int <it.label.text>;}; separator="\n">
+<[ruleDescriptor.charListLabels,
+  ruleDescriptor.charLabels]
+	:{int <it.label.text> = 0;}; separator="\n"
+>
 <[ruleDescriptor.tokenListLabels,
-  ruleDescriptor.ruleListLabels,
-  ruleDescriptor.charListLabels]
-    :{List list_<it.label.text>=null;}; separator="\n"
+  ruleDescriptor.ruleListLabels]
+    :{List\<<labelType>\> list_<it.label.text> = null;}; separator="\n"
+>
+<ruleDescriptor.charListLabels:{List\<int\> list_<it.label.text> = null;}; separator="\n"
 >
 >>
 
@@ -875,7 +870,7 @@ tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 >>
 
 listLabel(label,elem) ::= <<
-if (list_<label>==null) list_<label>=new ArrayList();
+if (list_<label>==null) list_<label>=new List\<<labelType>\>();
 list_<label>.Add(<elem>);<\n>
 >>
 
