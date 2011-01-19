@@ -188,8 +188,8 @@ namespace Antlr.Runtime.Tree
             this.tokenNameToTypeMap = ComputeTokenTypes( tokenNames );
         }
 
-        public TreeWizard( string[] tokenNames ) :
-            this( null, tokenNames )
+        public TreeWizard( string[] tokenNames )
+            : this( new CommonTreeAdaptor(), tokenNames )
         {
         }
 
