@@ -61,6 +61,7 @@
     <Compile Include="EarlyExitException.cs" />
     <Compile Include="FailedPredicateException.cs" />
     <Compile Include="GrammarRuleAttribute.cs" />
+    <Compile Include="IAstRuleReturnScope.cs" />
     <Compile Include="IAstRuleReturnScope`1.cs" />
     <Compile Include="ICharStream.cs" />
     <Compile Include="IIntStream.cs" />
