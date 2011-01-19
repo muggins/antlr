@@ -72,7 +72,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Antlr3 Include="FastSimpleExpression.g3" />
+    <Antlr3 Include="FastSimpleExpression.g3">
+      <Generator>MSBuild:Compile</Generator>
+    </Antlr3>
     <Compile Include="FastSimpleExpressionLexerHelper.cs">
       <DependentUpon>FastSimpleExpression.g3</DependentUpon>
     </Compile>
@@ -81,11 +83,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Antlr3 Include="JavaCompat\Expr.g3" />
+    <Antlr3 Include="JavaCompat\Expr.g3">
+      <Generator>MSBuild:Compile</Generator>
+    </Antlr3>
   </ItemGroup>
   <ItemGroup>
     <Antlr3 Include="BuildOptions\DebugGrammar.g3">
       <!--<GrammarOptions>-debug</GrammarOptions>-->
+      <Generator>MSBuild:Compile</Generator>
     </Antlr3>
     <Compile Include="BuildOptions\DebugGrammarLexerHelper.cs">
       <DependentUpon>DebugGrammar.g3</DependentUpon>
@@ -97,6 +102,7 @@
   <ItemGroup>
     <Antlr3 Include="BuildOptions\DebugTreeGrammar.g3">
       <!--<GrammarOptions>-debug</GrammarOptions>-->
+      <Generator>MSBuild:Compile</Generator>
     </Antlr3>
     <Compile Include="BuildOptions\DebugTreeGrammarHelper.cs">
       <DependentUpon>DebugTreeGrammar.g3</DependentUpon>
@@ -116,6 +122,7 @@
   <ItemGroup>
     <None Include="BuildOptions\ProfileGrammar.g3">
       <!--<GrammarOptions>-profile</GrammarOptions>-->
+      <Generator>MSBuild:Compile</Generator>
     </None>
     <None Include="BuildOptions\ProfileGrammarLexerHelper.cs">
       <DependentUpon>ProfileGrammar.g3</DependentUpon>
@@ -127,6 +134,7 @@
   <ItemGroup>
     <None Include="BuildOptions\ProfileTreeGrammar.g3">
       <!--<GrammarOptions>-profile</GrammarOptions>-->
+      <Generator>MSBuild:Compile</Generator>
     </None>
     <None Include="BuildOptions\ProfileTreeGrammarHelper.cs">
       <DependentUpon>ProfileTreeGrammar.g3</DependentUpon>
