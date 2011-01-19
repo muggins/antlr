@@ -125,7 +125,7 @@ root_0 = (<ASTLabelType>)adaptor.Nil();<\n>
 /** ID and track it for use in a rewrite rule */
 tokenRefTrack(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRefBang(...)> <! Track implies no auto AST construction!>
-<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) <endif>stream_<token>.Add(<label>);<\n>
+<if(backtracking)>if (<actions.(actionScope).synpredgate>) <endif>stream_<token>.Add(<label>);<\n>
 >>
 
 /** ids+=ID and track it for use in a rewrite rule; adds to ids *and*
@@ -139,7 +139,7 @@ tokenRefTrackAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 /** ^(ID ...) track for rewrite */
 tokenRefRuleRootTrack(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRefBang(...)>
-<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) <endif>stream_<token>.Add(<label>);<\n>
+<if(backtracking)>if (<actions.(actionScope).synpredgate>) <endif>stream_<token>.Add(<label>);<\n>
 >>
 
 /** Match ^(label+=TOKEN ...) track for rewrite */
@@ -151,7 +151,7 @@ tokenRefRuleRootTrackAndListLabel(token,label,elementIndex,terminalOptions) ::= 
 /** rule when output=AST and tracking for rewrite */
 ruleRefTrack(rule,label,elementIndex,args,scope) ::= <<
 <super.ruleRef(...)>
-<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) <endif>stream_<rule.name>.Add(<label>.Tree);
+<if(backtracking)>if (<actions.(actionScope).synpredgate>) <endif>stream_<rule.name>.Add(<label>.Tree);
 >>
 
 /** x+=rule when output=AST and tracking for rewrite */
@@ -163,7 +163,7 @@ ruleRefTrackAndListLabel(rule,label,elementIndex,args,scope) ::= <<
 /** ^(rule ...) rewrite */
 ruleRefRuleRootTrack(rule,label,elementIndex,args,scope) ::= <<
 <ruleRefRuleRoot(...)>
-<if(backtracking)>if ( <actions.(actionScope).synpredgate> ) <endif>stream_<rule>.Add(<label>.Tree);
+<if(backtracking)>if (<actions.(actionScope).synpredgate>) <endif>stream_<rule>.Add(<label>.Tree);
 >>
 
 /** ^(x+=rule ...) rewrite */
@@ -195,7 +195,7 @@ rewriteCode(
 // rule list labels: <referencedRuleListLabels; separator=", ">
 // wildcard labels: <[referencedWildcardLabels,referencedWildcardListLabels]; separator=", ">
 <if(backtracking)>
-if ( <actions.(actionScope).synpredgate> ) {<\n>
+if (<actions.(actionScope).synpredgate>) {<\n>
 <endif>
 <prevRuleRootRef()>.Tree = root_0;
 <rewriteCodeLabels()>
@@ -263,7 +263,7 @@ rewriteOptionalBlock(
 	description) ::=
 <<
 // <fileName>:<description>
-if ( <referencedElementsDeep:{el | stream_<el>.HasNext}; separator="||"> )
+if (<referencedElementsDeep:{el | stream_<el>.HasNext}; separator="||">)
 {
 	<alt>
 }
@@ -290,7 +290,7 @@ rewritePositiveClosureBlock(
 	referencedElements, // elements in immediately block; no nested blocks
 	description) ::=
 <<
-if ( !(<referencedElements:{el | stream_<el>.HasNext}; separator="||">) )
+if (!(<referencedElements:{el | stream_<el>.HasNext}; separator="||">))
 {
 	throw new RewriteEarlyExitException();
 }

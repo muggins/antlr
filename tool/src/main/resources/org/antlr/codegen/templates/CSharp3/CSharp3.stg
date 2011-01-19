@@ -267,7 +267,7 @@ public override bool AlreadyParsedRule(IIntStream input, int ruleIndex)
 
 actionGate() ::= "state.backtracking == 0"
 
-filteringActionGate() ::= "state.backtracking==1"
+filteringActionGate() ::= "state.backtracking == 1"
 
 /** How to generate a parser */
 genericParser(grammar, name, scopes, tokens, tokenNames, rules, numRules,
@@ -1094,10 +1094,10 @@ int LA<decisionNumber>_<stateNumber> = input.LA(<k>);<\n>
 else
 {
 <if(eotPredictsAlt)>
-	alt<decisionNumber>=<eotPredictsAlt>;
+	alt<decisionNumber> = <eotPredictsAlt>;
 <else>
 	<ruleBacktrackFailure()>
-	NoViableAltException nvae = new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);<\n>
+	NoViableAltException nvae = new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);
 	DebugRecognitionException(nvae);
 	<@noViableAltException()>
 	throw nvae;<\n>
@@ -1126,18 +1126,18 @@ int LA<decisionNumber>_<stateNumber> = input.LA(<k>);<\n>
 <edges; separator="\nelse "><\n>
 <if(eotPredictsAlt)>
 <if(!edges)>
-alt<decisionNumber>=<eotPredictsAlt>; <! if no edges, don't gen ELSE !>
+alt<decisionNumber> = <eotPredictsAlt>;<! if no edges, don't gen ELSE !>
 <else>
 else
 {
-	alt<decisionNumber>=<eotPredictsAlt>;
+	alt<decisionNumber> = <eotPredictsAlt>;
 }<\n>
 <endif>
 <endif>
 >>
 
 /** An accept state indicates a unique alternative has been predicted */
-dfaAcceptState(alt) ::= "alt<decisionNumber>=<alt>;"
+dfaAcceptState(alt) ::= "alt<decisionNumber> = <alt>;"
 
 /** A simple edge with an expression.  If the expression is satisfied,
  *  enter to the target state.  To handle gated productions, we may
@@ -1166,7 +1166,7 @@ default:
 <else>
 	{
 		<ruleBacktrackFailure()>
-		NoViableAltException nvae = new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);<\n>
+		NoViableAltException nvae = new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input);
 		DebugRecognitionException(nvae);
 		<@noViableAltException()>
 		throw nvae;
@@ -1332,7 +1332,7 @@ s = -1;
 <if(semPredState)><! return input cursor to state before we rewound !>
 input.Seek(index<decisionNumber>_<stateNumber>);<\n>
 <endif>
-if ( s>=0 ) return s;
+if (s >= 0) return s;
 break;
 >>
 
@@ -1340,7 +1340,7 @@ break;
  *  state to jump to next if successful.
  */
 cyclicDFAEdge(labelExpr, targetStateNumber, edgeNumber, predicates) ::= <<
-if ( (<labelExpr>) <if(predicates)>&& (<predicates>)<endif>) {s = <targetStateNumber>;}<\n>
+if ((<labelExpr>)<if(predicates)> && (<predicates>)<endif>) {s = <targetStateNumber>;}<\n>
 >>
 
 /** An edge pointing at end-of-token; essentially matches any char;
@@ -1625,7 +1625,7 @@ ruleSetPropertyRef_st(scope,attr,expr) ::= "retval.Template =<expr>;"
 /** How to execute an action (only when not backtracking) */
 execAction(action) ::= <<
 <if(backtracking)>
-if ( <actions.(actionScope).synpredgate> )
+if (<actions.(actionScope).synpredgate>)
 {
 	<action>
 }
