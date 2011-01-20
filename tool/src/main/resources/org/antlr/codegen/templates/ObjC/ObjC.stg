@@ -280,6 +280,9 @@ lexerHeaderFile( LEXER,
 }>
 #pragma mark Rule return scopes end
 #pragma mark Tokens
+#ifdef EOF
+#undef EOF
+#endif
 <tokens:{#define <it.name> <it.type>}; separator="\n">
 <! @interface <grammar.recognizerName> <@superClassName>: <superClass><@end> { !>
 @interface <className()> <@superClassName>: <superClass><@end> { // line 283
@@ -565,6 +568,9 @@ typedef enum {
 
 <cyclicDFAs:cyclicDFAInterface()>
 #pragma mark Tokens
+#ifdef EOF
+#undef EOF
+#endif
 <tokens:{#define <it.name> <it.type>}; separator="\n">
 #pragma mark Dynamic Global Scopes
 <scopes:{<if(it.isDynamicGlobalScope)><globalAttributeScopeDecl(scope=it)><endif>}>
@@ -596,6 +602,8 @@ typedef enum {
  }
 
 // start of action-actionScope-methodsDecl
++ (id) new<className()>:(id\<ANTLRTreeNodeStream\>)aStream;
+
 <actions.(actionScope).methodsDecl>
 
 <@methodsdecl()>
