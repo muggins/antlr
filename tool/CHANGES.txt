@@ -7,6 +7,15 @@ University of San Francisco
 
 CHANGES
 
+January 20, 2011
+
+* TokenRewriteStream had dead code; updated insertBefore followed by
+  replace or delete.  If input is abc and I did insertBefore(2,"y"), where
+  'c' is index 2, then did delete of 2 previously defined functionality
+  was to ignore the insert. that's weird; fixed to keep insert.  Also
+  Delete special case of replace (text==null):
+  	  D.i-j.u D.x-y.v	| boundaries overlap => combine to max(min)..max(right)
+
 December 12, 2010
 
 * Send couldBacktrack now to enterDecision in debug protocol
