@@ -340,7 +340,7 @@ public <grammar.recognizerName>(<inputStreamType> input, RecognizerSharedState s
 
 <if(cyclicDFAs)>
 	#region DFA
-	<cyclicDFAs:{dfa | private readonly DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
+	<cyclicDFAs:{dfa | private DFA<dfa.decisionNumber> dfa<dfa.decisionNumber>;}; separator="\n">
 
 	protected override void InitDFAs()
 	{
