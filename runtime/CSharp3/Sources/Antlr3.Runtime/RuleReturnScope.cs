@@ -41,7 +41,7 @@ namespace Antlr.Runtime
         /// <summary>
         /// Gets the start element from the input stream
         /// </summary>
-        TLabel Start
+        new TLabel Start
         {
             get;
         }
@@ -49,7 +49,7 @@ namespace Antlr.Runtime
         /// <summary>
         /// Gets the stop element from the input stream
         /// </summary>
-        TLabel Stop
+        new TLabel Stop
         {
             get;
         }
