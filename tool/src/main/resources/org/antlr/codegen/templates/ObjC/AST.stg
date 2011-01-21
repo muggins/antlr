@@ -29,14 +29,16 @@ group AST;
 
 @genericParserHeaderFile.memVars() ::= <<
 /* AST parserHeaderFile.memVars */
-<@super.memVars()>
-<parsermemVars()>
+NSInteger ruleLevel;
+NSArray *ruleNames;
+<@super.memVars()>  /* super.memVars */
+<parsermemVars()>   /* parsermemVars */
 >>
 
 @genericParserHeaderFile.methodsdecl() ::= <<
 /* AST parserHeaderFile.methodsdecl */
-<@super.methodsdecl()>
-<parserMethodsDecl()>
+<@super.methodsdecl()>  /* super.methodsdecl */
+<parserMethodsDecl()>   /* parserMethodsDecl */
 >>
 
 @genericParser.methods() ::= <<

@@ -658,7 +658,7 @@ genericParser(  grammar,
 {
     #pragma mark Bitsets
     <bitsets:bitsetInit(name={FOLLOW_<it.name>_in_<it.inName><it.tokenIndex>}, words64=it.bits)>
-    [ANTLRBaseRecognizer setTokenNames:[[[NSArray alloc] initWithObjects:@"\<invalid>", @"\<EOR>", @"\<DOWN>", @"\<UP>", <tokenNames:{@<it>}; separator=", ", wrap="\n ">, nil] retain]];
+    [ANTLRBaseRecognizer setTokenNames:[[NSArray arrayWithObjects:@"\<invalid>", @"\<EOR>", @"\<DOWN>", @"\<UP>", <tokenNames:{@<it>}; separator=", ", wrap="\n ">, nil] retain]];
     <synpreds:{pred | <synpred(pred)>}>
 }
 
@@ -1831,7 +1831,7 @@ ruleLabelDef(label) ::= <<
 returnScopeInterface(scope) ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
 /* returnScopeInterface */
-@interface <ruleDescriptor:returnStructName()> :ANTLR<if(TREE_PARSER)>Tree<else>Parser<endif>RuleReturnScope { /* returnScopeInterface line 1806 */
+@interface <ruleDescriptor:returnStructName()> :ANTLR<if(TREE_PARSER)>Tree<else>Parser<endif>RuleReturnScope { /* returnScopeInterface line 1838 */
 <@memVars()> /* start of memVars() */
 <if(scope.attributes)>
 <scope.attributes:{a|<a.type> <a.name>;}; separator="\n"><\n>
@@ -1893,7 +1893,6 @@ parameterSetAttributeRef(attr,expr) ::= "<attr.name> = <expr>;"
  * grammar name directly
  */
 scopeAttributeRef(scope,attr,index,negIndex) ::= <<
-/* scopeAttributeRef */
 <if(negIndex)>
 ([((<scope>_Scope *)[<scope>_stack objectAtIndex:[<scope>_stack size]-<negIndex>-1)]).<attr.name>
 <else>
