@@ -626,9 +626,9 @@ genericParser(  grammar,
                 cyclicDFAs,          // parser init -- initializes the DFAs
                 bitsets,
                 inputStreamType,
-                superClass="ANTLRParser",
-                ASTLabelType="ANTLRCommonTree",
-                labelType="id<ANTLRToken>",
+                superClass,
+                ASTLabelType,
+                labelType,
                 members,
                 rewriteElementType,
                 filterMode
@@ -659,6 +659,7 @@ genericParser(  grammar,
     #pragma mark Bitsets
     <bitsets:bitsetInit(name={FOLLOW_<it.name>_in_<it.inName><it.tokenIndex>}, words64=it.bits)>
     [ANTLRBaseRecognizer setTokenNames:[[NSArray arrayWithObjects:@"\<invalid>", @"\<EOR>", @"\<DOWN>", @"\<UP>", <tokenNames:{@<it>}; separator=", ", wrap="\n ">, nil] retain]];
+    [ANTLRBaseRecognizer setGrammarFileName:@"<fileName>"];
     <synpreds:{pred | <synpred(pred)>}>
 }
 
@@ -700,6 +701,10 @@ genericParser(  grammar,
     <@dealloc()>
     [super dealloc];
 }
+
+/* members */
+<members> 
+
 // start actions.actionScope.methods
 <actions.(actionScope).methods>
 // start methods()
@@ -736,6 +741,9 @@ parser( grammar,
 <genericParser(inputStreamType="id\<ANTLRTokenStream>", rewriteElementType="ANTLRCommonToken", ...)>
 >>
 
+/** How to generate a tree parser; same as parser except the input
+ *  stream is a different type.
+ */
 treeParser( grammar,
         name,
         scopes,
@@ -1978,7 +1986,7 @@ tokenLabelPropertyRef_pos(scope,attr) ::= "(<scope>!=nil?[<scope> getCharPositio
 tokenLabelPropertyRef_channel(scope,attr) ::= "(<scope>!=nil?[<scope> getChannel]:0)"
 tokenLabelPropertyRef_index(scope,attr) ::= "(<scope>!=nil?[<scope> getTokenIndex]:0)"
 tokenLabelPropertyRef_tree(scope,attr) ::= "<scope>_tree"
-tokenLabelPropertyRef_int(scope,attr) ::= "(<scope>!=nil?[[<scope> getText] integerValue]:0]"
+tokenLabelPropertyRef_int(scope,attr) ::= "(<scope>!=nil?[[<scope> getText] integerValue]:0)"
 
 ruleLabelPropertyRef_start(scope,attr) ::= "(<scope>!=nil?((<labelType> *)<scope>.startToken):nil)"
 ruleLabelPropertyRef_stop(scope,attr) ::= "(<scope>!=nil?((<labelType> *)<scope>.stopToken):nil)"
