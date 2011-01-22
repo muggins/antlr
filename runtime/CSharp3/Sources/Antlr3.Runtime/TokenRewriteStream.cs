@@ -35,6 +35,8 @@ namespace Antlr.Runtime
     using System.Collections.Generic;
 
     using ArgumentException = System.ArgumentException;
+    using Console = System.Console;
+    using Math = System.Math;
     using DebuggerDisplay = System.Diagnostics.DebuggerDisplayAttribute;
     using Exception = System.Exception;
     using StringBuilder = System.Text.StringBuilder;
@@ -111,12 +113,19 @@ namespace Antlr.Runtime
             // outer
             protected TokenRewriteStream stream;
 
+            protected RewriteOperation(TokenRewriteStream stream, int index)
+            {
+                this.stream = stream;
+                this.index = index;
+            }
+
             protected RewriteOperation( TokenRewriteStream stream, int index, object text )
             {
                 this.index = index;
                 this.text = text;
                 this.stream = stream;
             }
+
             /** <summary>
              *  Execute the rewrite operation by possibly adding to the buffer.
              *  Return the index of the next token to operate on.
@@ -126,16 +135,17 @@ namespace Antlr.Runtime
             {
                 return index;
             }
+
             public override string ToString()
             {
                 string opName = this.GetType().Name;
-                int index = opName.IndexOf( '$' );
-                opName = opName.Substring( index + 1 );
-                return "<" + opName + "@" + this.index + ":\"" + text + "\">";
+                int dindex = opName.IndexOf( '$' );
+                opName = opName.Substring( dindex + 1 );
+                return string.Format("<{0}@{1}({2}):\"{3}\">", opName, index, stream._tokens[index].Text, text);
             }
         }
 
-        class InsertBeforeOp : RewriteOperation
+        private class InsertBeforeOp : RewriteOperation
         {
             public InsertBeforeOp( TokenRewriteStream stream, int index, object text ) :
                 base( stream, index, text )
@@ -156,7 +166,7 @@ namespace Antlr.Runtime
          *  instructions.
          *  </summary>
          */
-        class ReplaceOp : RewriteOperation
+        private class ReplaceOp : RewriteOperation
         {
             public int lastIndex;
             public ReplaceOp( TokenRewriteStream stream, int from, int to, object text )
@@ -164,6 +174,7 @@ namespace Antlr.Runtime
             {
                 lastIndex = to;
             }
+
             public override int Execute( StringBuilder buf )
             {
                 if ( text != null )
@@ -172,21 +183,15 @@ namespace Antlr.Runtime
                 }
                 return lastIndex + 1;
             }
-            public override string ToString()
-            {
-                return "<ReplaceOp@" + index + ".." + lastIndex + ":\"" + text + "\">";
-            }
-        }
 
-        class DeleteOp : ReplaceOp
-        {
-            public DeleteOp( TokenRewriteStream stream, int from, int to ) :
-                base( stream, from, to, null )
-            {
-            }
             public override string ToString()
             {
-                return "<DeleteOp@" + index + ".." + lastIndex + ">";
+                if (text == null)
+                {
+                    return string.Format("<DeleteOp@{0}({1})..{2}({3})>", index, stream._tokens[index].Text, lastIndex, stream._tokens[lastIndex].Text);
+                }
+
+                return string.Format("<ReplaceOp@{0}({1})..{2}({3}):\"{4}\">", index, stream._tokens[index].Text, lastIndex, stream._tokens[lastIndex].Text, text);
             }
         }
 
@@ -279,7 +284,6 @@ namespace Antlr.Runtime
         {
             // to insert after, just insert before next index (even if past end)
             InsertBefore( programName, index + 1, text );
-            //addToSortedRewriteList(programName, new InsertAfterOp(index,text));
         }
 
         public virtual void InsertBefore( IToken t, object text )
@@ -299,7 +303,6 @@ namespace Antlr.Runtime
 
         public virtual void InsertBefore( string programName, int index, object text )
         {
-            //addToSortedRewriteList(programName, new InsertBeforeOp(index,text));
             RewriteOperation op = new InsertBeforeOp( this, index, text );
             IList<RewriteOperation> rewrites = GetProgram( programName );
             op.instructionIndex = rewrites.Count;
@@ -522,8 +525,12 @@ namespace Antlr.Runtime
          *  R.i-j.u R.x-y.v	| x-y in i-j			ERROR
          *  R.i-j.u R.x-y.v	| boundaries overlap	ERROR
          *
-         *  I.i.u R.x-y.v | i in x-y				delete I
-         *  I.i.u R.x-y.v | i not in x-y			leave alone, nonoverlapping
+         *  Delete special case of replace (text==null):
+         *  D.i-j.u D.x-y.v	| boundaries overlap	combine to max(min)..max(right)
+         *
+         *  I.i.u R.x-y.v | i in (x+1)-y			delete I (since insert before
+         *											we're not deleting i)
+         *  I.i.u R.x-y.v | i not in (x+1)-y		leave alone, nonoverlapping
          *  R.x-y.v I.i.u | i in x-y				ERROR
          *  R.x-y.v I.x.u 							R.x-y.uv (combine, delete I)
          *  R.x-y.v I.i.u | i not in x-y			leave alone, nonoverlapping
@@ -573,7 +580,14 @@ namespace Antlr.Runtime
                 for ( int j = 0; j < inserts.Count; j++ )
                 {
                     InsertBeforeOp iop = (InsertBeforeOp)inserts[j];
-                    if ( iop.index >= rop.index && iop.index <= rop.lastIndex )
+                    if (iop.index == rop.index)
+                    {
+                        // E.g., insert before 2, delete 2..2; update replace
+                        // text to include insert before, kill insert
+                        rewrites[iop.instructionIndex] = null;
+                        rop.text = iop.text.ToString() + (rop.text != null ? rop.text.ToString() : string.Empty);
+                    }
+                    else if (iop.index > rop.index && iop.index <= rop.lastIndex)
                     {
                         // delete insert as it's a no-op.
                         rewrites[iop.instructionIndex] = null;
@@ -595,7 +609,17 @@ namespace Antlr.Runtime
                         prevRop.lastIndex < rop.index || prevRop.index > rop.lastIndex;
                     bool same =
                         prevRop.index == rop.index && prevRop.lastIndex == rop.lastIndex;
-                    if ( !disjoint && !same )
+                    // Delete special case of replace (text==null):
+                    // D.i-j.u D.x-y.v	| boundaries overlap	combine to max(min)..max(right)
+                    if (prevRop.text == null && rop.text == null && !disjoint)
+                    {
+                        //System.out.println("overlapping deletes: "+prevRop+", "+rop);
+                        rewrites[prevRop.instructionIndex] = null; // kill first delete
+                        rop.index = Math.Min(prevRop.index, rop.index);
+                        rop.lastIndex = Math.Max(prevRop.lastIndex, rop.lastIndex);
+                        Console.WriteLine("new rop " + rop);
+                    }
+                    else if ( !disjoint && !same )
                     {
                         throw new ArgumentException( "replace op boundaries of " + rop +
                                                            " overlap with previous " + prevRop );
