@@ -7,9 +7,13 @@ University of San Francisco
 
 CHANGES
 
+January 25, 2011
+
+* Improve error messages for no viable alt parse exceptions
+
 January 20, 2011
 
-* TokenRewriteStream had dead code; updated insertBefore followed by
+* TokenRewriteStream had dead code; also updated insertBefore followed by
   replace or delete.  If input is abc and I did insertBefore(2,"y"), where
   'c' is index 2, then did delete of 2 previously defined functionality
   was to ignore the insert. that's weird; fixed to keep insert.  Also

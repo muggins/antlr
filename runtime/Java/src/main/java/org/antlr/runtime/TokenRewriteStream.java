@@ -112,7 +112,7 @@ public class TokenRewriteStream extends CommonTokenStream {
 			String opName = getClass().getName();
 			int $index = opName.indexOf('$');
 			opName = opName.substring($index+1, opName.length());
-			return "<"+opName+"@"+index+"("+tokens.get(index).getText()+")"+
+			return "<"+opName+"@"+tokens.get(index)+
 				   ":\""+text+"\">";
 		}
 	}
@@ -147,11 +147,11 @@ public class TokenRewriteStream extends CommonTokenStream {
 		}
 		public String toString() {
 			if ( text==null ) {
-				return "<DeleteOp@"+index+"("+tokens.get(index).getText()+")"+
-					   ".."+lastIndex+"("+tokens.get(lastIndex).getText()+")"+">";
+				return "<DeleteOp@"+tokens.get(index)+
+					   ".."+tokens.get(lastIndex)+">";
 			}
-			return "<ReplaceOp@"+index+"("+tokens.get(index).getText()+")"+
-				   ".."+lastIndex+"("+tokens.get(lastIndex).getText()+")"+":\""+text+"\">";
+			return "<ReplaceOp@"+tokens.get(index)+
+				   ".."+tokens.get(lastIndex)+":\""+text+"\">";
 		}
 	}
 
