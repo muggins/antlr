@@ -33,24 +33,14 @@ import org.antlr.tool.Grammar;
 
 public class CSharp2Target extends Target 
 {
-	protected StringTemplate chooseWhereCyclicDFAsGo(Tool tool,
-													 CodeGenerator generator,
-													 Grammar grammar,
-													 StringTemplate recognizerST,
-													 StringTemplate cyclicDFAST)
-	{
-		return recognizerST;
-	}
+    @Override
+    public String encodeIntAsCharEscape(int v) {
+        return "\\x" + Integer.toHexString(v).toUpperCase();
+    }
 
-	public String encodeIntAsCharEscape(int v)
-	{
-		if (v <= 127)
-		{
-			String hex1 = Integer.toHexString(v | 0x10000).substring(3, 5);
-			return "\\x" + hex1;
-		}
-		String hex = Integer.toHexString(v | 0x10000).substring(1, 5);
-		return "\\u" + hex;
-	}
+    @Override
+    public String getTarget64BitStringFromValue(long word) {
+        return "0x" + Long.toHexString(word).toUpperCase();
+    }
 }
 

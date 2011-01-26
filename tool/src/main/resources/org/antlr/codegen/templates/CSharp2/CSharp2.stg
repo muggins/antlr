@@ -1566,7 +1566,7 @@ ruleLabelPropertyRef_text(scope,attr) ::= <<
 <endif>
 >>
 
-ruleLabelPropertyRef_st(scope,attr) ::= "(<scope>!=null?<scope>.ST:null)"
+ruleLabelPropertyRef_st(scope,attr) ::= "(<scope>!=null?<scope>.Template:null)"
 
 /** Isolated $RULE ref ok in lexer as it's a Token */
 lexerRuleLabel(label) ::= "<label>"
@@ -1605,7 +1605,7 @@ input.TokenStream.ToString(
 input.ToString(retval.Start,input.LT(-1))
 <endif>
 >>
-rulePropertyRef_st(scope,attr) ::= "retval.ST"
+rulePropertyRef_st(scope,attr) ::= "retval.Template"
 
 lexerRulePropertyRef_text(scope,attr) ::= "Text"
 lexerRulePropertyRef_type(scope,attr) ::= "_type"
@@ -1620,7 +1620,7 @@ lexerRulePropertyRef_int(scope,attr) ::= "int.Parse(<scope>.Text)"
 // setting $st and $tree is allowed in local rule. everything else
 // is flagged as error
 ruleSetPropertyRef_tree(scope,attr,expr) ::= "retval.Tree = <expr>;"
-ruleSetPropertyRef_st(scope,attr,expr) ::= "retval.ST =<expr>;"
+ruleSetPropertyRef_st(scope,attr,expr) ::= "retval.Template =<expr>;"
 
 /** How to execute an action (only when not backtracking) */
 execAction(action) ::= <<
