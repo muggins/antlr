@@ -32,7 +32,7 @@
 
 namespace Antlr.Runtime.Misc
 {
-    using IndexOutOfRangeException = System.IndexOutOfRangeException;
+    using ArgumentException = System.ArgumentException;
 
     /** <summary>
      *  A lookahead queue that knows how to mark/release locations
@@ -216,7 +216,7 @@ namespace Antlr.Runtime.Misc
             if (k == 1)
                 return _previousElement;
 
-            throw new IndexOutOfRangeException("can't look backwards more than one token in this stream");
+            throw new ArgumentException("can't look backwards more than one token in this stream");
         }
     }
 }

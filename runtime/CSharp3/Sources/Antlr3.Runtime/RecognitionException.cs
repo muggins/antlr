@@ -34,9 +34,9 @@ namespace Antlr.Runtime
 {
     using Antlr.Runtime.Tree;
 
+    using ArgumentException = System.ArgumentException;
     using ArgumentNullException = System.ArgumentNullException;
     using Exception = System.Exception;
-    using NonSerialized = System.NonSerializedAttribute;
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
@@ -160,19 +160,25 @@ namespace Antlr.Runtime
                     this._line = _token.Line;
                     this._charPositionInLine = _token.CharPositionInLine;
                 }
-                if (input is ITreeNodeStream)
+
+                ITreeNodeStream tns = input as ITreeNodeStream;
+                if (tns != null)
                 {
-                    ExtractInformationFromTreeNodeStream(input);
-                }
-                else if (input is ICharStream)
-                {
-                    this._c = input.LA(1);
-                    this._line = ((ICharStream)input).Line;
-                    this._charPositionInLine = ((ICharStream)input).CharPositionInLine;
+                    ExtractInformationFromTreeNodeStream(tns);
                 }
                 else
                 {
-                    this._c = input.LA(1);
+                    ICharStream charStream = input as ICharStream;
+                    if (charStream != null)
+                    {
+                        this._c = input.LA(1);
+                        this._line = ((ICharStream)input).Line;
+                        this._charPositionInLine = ((ICharStream)input).CharPositionInLine;
+                    }
+                    else
+                    {
+                        this._c = input.LA(1);
+                    }
                 }
             }
         }
@@ -320,8 +326,9 @@ namespace Antlr.Runtime
             info.AddValue("ApproximateLineInfo", _approximateLineInfo);
         }
 
-        protected virtual void ExtractInformationFromTreeNodeStream(IIntStream input)
+        protected virtual void ExtractInformationFromTreeNodeStream(ITreeNodeStream input)
         {
+            this._node = input.LT(1);
             ITokenStreamInformation streamInformation = input as ITokenStreamInformation;
             if (streamInformation != null)
             {
@@ -337,9 +344,7 @@ namespace Antlr.Runtime
             }
             else
             {
-                ITreeNodeStream nodes = (ITreeNodeStream)input;
-                this._node = nodes.LT(1);
-                ITreeAdaptor adaptor = nodes.TreeAdaptor;
+                ITreeAdaptor adaptor = input.TreeAdaptor;
                 IToken payload = adaptor.GetToken(_node);
                 if (payload != null)
                 {
@@ -348,7 +353,7 @@ namespace Antlr.Runtime
                     {
                         // imaginary node; no line/pos info; scan backwards
                         int i = -1;
-                        object priorNode = nodes.LT(i);
+                        object priorNode = input.LT(i);
                         while (priorNode != null)
                         {
                             IToken priorPayload = adaptor.GetToken(priorNode);
@@ -361,11 +366,19 @@ namespace Antlr.Runtime
                                 break;
                             }
                             --i;
-                            priorNode = nodes.LT(i);
+                            try
+                            {
+                                priorNode = input.LT(i);
+                            }
+                            catch (ArgumentException)
+                            {
+                                priorNode = null;
+                            }
                         }
                     }
                     else
-                    { // node created from real token
+                    {
+                        // node created from real token
                         this._line = payload.Line;
                         this._charPositionInLine = payload.CharPositionInLine;
                     }
