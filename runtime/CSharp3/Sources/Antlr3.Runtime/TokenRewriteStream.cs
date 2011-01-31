@@ -141,7 +141,7 @@ namespace Antlr.Runtime
                 string opName = this.GetType().Name;
                 int dindex = opName.IndexOf( '$' );
                 opName = opName.Substring( dindex + 1 );
-                return string.Format("<{0}@{1}({2}):\"{3}\">", opName, index, stream._tokens[index].Text, text);
+                return string.Format("<{0}@{1}:\"{2}\">", opName, stream._tokens[index], text);
             }
         }
 
@@ -188,10 +188,10 @@ namespace Antlr.Runtime
             {
                 if (text == null)
                 {
-                    return string.Format("<DeleteOp@{0}({1})..{2}({3})>", index, stream._tokens[index].Text, lastIndex, stream._tokens[lastIndex].Text);
+                    return string.Format("<DeleteOp@{0}..{1}>", stream._tokens[index], stream._tokens[lastIndex]);
                 }
 
-                return string.Format("<ReplaceOp@{0}({1})..{2}({3}):\"{4}\">", index, stream._tokens[index].Text, lastIndex, stream._tokens[lastIndex].Text, text);
+                return string.Format("<ReplaceOp@{0}..{1}:\"{2}\">", stream._tokens[index], stream._tokens[lastIndex], text);
             }
         }
 
