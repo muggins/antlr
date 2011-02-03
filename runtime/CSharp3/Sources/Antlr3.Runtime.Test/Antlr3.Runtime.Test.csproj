@@ -126,6 +126,12 @@
     <Compile Include="StringTemplateOutput.g3.parser.cs">
       <DependentUpon>StringTemplateOutput.g3</DependentUpon>
     </Compile>
+    <Compile Include="TestActionFeatures.g3.lexer.cs">
+      <DependentUpon>TestActionFeatures.g3</DependentUpon>
+    </Compile>
+    <Compile Include="TestActionFeatures.g3.parser.cs">
+      <DependentUpon>TestActionFeatures.g3</DependentUpon>
+    </Compile>
     <Compile Include="TestDotTreeGenerator.cs" />
     <Compile Include="TestFastLexer.cs" />
   </ItemGroup>
@@ -141,6 +147,9 @@
       <DependentUpon>ProfileGrammar.g3</DependentUpon>
     </None>
     <Antlr3 Include="StringTemplateOutput.g3">
+      <Generator>MSBuild:Compile</Generator>
+    </Antlr3>
+    <Antlr3 Include="TestActionFeatures.g3">
       <Generator>MSBuild:Compile</Generator>
     </Antlr3>
   </ItemGroup>
