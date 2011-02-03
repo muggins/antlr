@@ -34,15 +34,15 @@ namespace Antlr.Runtime.Tree
 {
     using Console = System.Console;
 
-    public class TreeRewriter<TTree> : TreeParser
+    public class TreeRewriter : TreeParser
     {
         protected bool showTransformations;
 
         protected ITokenStream originalTokenStream;
         protected ITreeAdaptor originalAdaptor;
 
-        System.Func<IAstRuleReturnScope<TTree>> topdown_func;
-        System.Func<IAstRuleReturnScope<TTree>> bottomup_func;
+        System.Func<IAstRuleReturnScope> topdown_func;
+        System.Func<IAstRuleReturnScope> bottomup_func;
 
         public TreeRewriter( ITreeNodeStream input )
             : this( input, new RecognizerSharedState() )
@@ -57,7 +57,7 @@ namespace Antlr.Runtime.Tree
             bottomup_func = () => Bottomup();
         }
 
-        public virtual object ApplyOnce( object t, System.Func<IAstRuleReturnScope<TTree>> whichRule )
+        public virtual object ApplyOnce( object t, System.Func<IAstRuleReturnScope> whichRule )
         {
             if ( t == null )
                 return null;
@@ -69,7 +69,7 @@ namespace Antlr.Runtime.Tree
                 input = new CommonTreeNodeStream( originalAdaptor, t );
                 ( (CommonTreeNodeStream)input ).TokenStream = originalTokenStream;
                 BacktrackingLevel = 1;
-                IAstRuleReturnScope<TTree> r = whichRule();
+                IAstRuleReturnScope r = whichRule();
                 BacktrackingLevel = 0;
                 if ( Failed )
                     return t;
@@ -89,7 +89,7 @@ namespace Antlr.Runtime.Tree
             return t;
         }
 
-        public virtual object ApplyRepeatedly( object t, System.Func<IAstRuleReturnScope<TTree>> whichRule )
+        public virtual object ApplyRepeatedly( object t, System.Func<IAstRuleReturnScope> whichRule )
         {
             bool treeChanged = true;
             while ( treeChanged )
@@ -117,12 +117,12 @@ namespace Antlr.Runtime.Tree
         // methods the downup strategy uses to do the up and down rules.
         // to override, just define tree grammar rule topdown and turn on
         // filter=true.
-        public virtual IAstRuleReturnScope<TTree> Topdown()
+        public virtual IAstRuleReturnScope Topdown()
         {
             return null;
         }
 
-        public virtual IAstRuleReturnScope<TTree> Bottomup()
+        public virtual IAstRuleReturnScope Bottomup()
         {
             return null;
         }
