@@ -47,6 +47,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\antlrcs\main\Antlr3.StringTemplate\Antlr3.StringTemplate.csproj">
+      <Project>{B5910BE2-DE21-4AA9-95C1-486F42B9E794}</Project>
+      <Name>Antlr3.StringTemplate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Antlr3.Runtime.Debug\Antlr3.Runtime.Debug.csproj">
       <Project>{5EE27A90-B023-42C9-AAF1-52B0424C5D0B}</Project>
       <Name>Antlr3.Runtime.Debug</Name>
@@ -116,6 +120,12 @@
     <Compile Include="SlimParsing\Tree\ITreeAdaptor`1.cs" />
     <Compile Include="SlimParsing\Tree\ITreeFactory.cs" />
     <Compile Include="SlimParsing\Tree\ITreeNodeStream`1.cs" />
+    <Compile Include="StringTemplateOutput.g3.lexer.cs">
+      <DependentUpon>StringTemplateOutput.g3</DependentUpon>
+    </Compile>
+    <Compile Include="StringTemplateOutput.g3.parser.cs">
+      <DependentUpon>StringTemplateOutput.g3</DependentUpon>
+    </Compile>
     <Compile Include="TestDotTreeGenerator.cs" />
     <Compile Include="TestFastLexer.cs" />
   </ItemGroup>
@@ -130,6 +140,9 @@
     <None Include="BuildOptions\ProfileGrammarParserHelper.cs">
       <DependentUpon>ProfileGrammar.g3</DependentUpon>
     </None>
+    <Antlr3 Include="StringTemplateOutput.g3">
+      <Generator>MSBuild:Compile</Generator>
+    </Antlr3>
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildOptions\ProfileTreeGrammar.g3">
