@@ -197,8 +197,11 @@ public class <grammar.recognizerName> extends <@superClassName><superClass><@end
     <tokens:{public static final int <it.name>=<it.type>;}; separator="\n">
 
     // delegates
-    <grammar.delegates:
-         {g|public <g.recognizerName> <g:delegateName()>;}; separator="\n">
+    <grammar.delegates: {g|public <g.recognizerName> <g:delegateName()>;}; separator="\n">
+    public <superClass>[] getDelegates() {
+        return new <superClass>[] {<grammar.delegates: {g|<g:delegateName()>}; separator = ", ">};
+    }
+
     // delegators
     <grammar.delegators:
          {g|public <g.recognizerName> <g:delegateName()>;}; separator="\n">

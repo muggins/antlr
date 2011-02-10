@@ -7,6 +7,16 @@ University of San Francisco
 
 CHANGES
 
+February 10, 2011
+
+* Added method to generated Java code to return the array of delegates; e.g.,
+    import Sub1, Sub2;
+  yields:
+
+    public Parser[] getDelegates() {
+        return new Parser[] {gSub1, gSub2};
+    }
+
 January 25, 2011
 
 * Improve error messages for no viable alt parse exceptions
