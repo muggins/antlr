@@ -21,7 +21,7 @@ class clean(_clean):
         _clean.run(self)
 
         import fnmatch
-        
+
         # kill temporary files
         patterns = [
             # generic tempfiles
@@ -31,12 +31,12 @@ class clean(_clean):
             't[0-9]*Lexer.py', 't[0-9]*Parser.py',
             '*.tokens', '*__.g',
             ]
-            
+
         for path in ('antlr3', 'unittests', 'tests'):
             path = os.path.join(os.path.dirname(__file__), path)
             if os.path.isdir(path):
                 for root, dirs, files in os.walk(path, topdown=True):
-                    graveyard = []                    
+                    graveyard = []
                     for pat in patterns:
                         graveyard.extend(fnmatch.filter(files, pat))
 
@@ -52,7 +52,7 @@ class clean(_clean):
                                 filePath, exc
                                 )
 
-            
+
 class TestError(DistutilsError):
     pass
 
@@ -75,10 +75,10 @@ class unittest(Command):
 
     def initialize_options(self):
         self.xml_output = None
-    
+
     def finalize_options(self):
         pass
-    
+
     def run(self):
         testDir = os.path.join(os.path.dirname(__file__), 'unittests')
         if not os.path.isdir(testDir):
@@ -92,10 +92,10 @@ class unittest(Command):
         import unittest
         import traceback
         import StringIO
-        
+
         suite = unittest.TestSuite()
         loadFailures = []
-        
+
         # collect tests from all unittests/test*.py files
         testFiles = []
         for testPath in glob.glob(os.path.join(testDir, 'test*.py')):
@@ -112,19 +112,19 @@ class unittest(Command):
                 testMod = imp.load_module(
                     testID, modFile, modPathname, modDescription
                     )
-                
+
                 suite.addTests(
                     unittest.defaultTestLoader.loadTestsFromModule(testMod)
                     )
-                
+
             except Exception:
                 buf = StringIO.StringIO()
                 traceback.print_exc(file=buf)
-                
+
                 loadFailures.append(
                     (os.path.basename(testPath), buf.getvalue())
-                    )              
-         
+                    )
+
         if self.xml_output:
             import xmlrunner
             runner = xmlrunner.XMLTestRunner(
@@ -140,12 +140,12 @@ class unittest(Command):
                 )
             sys.stderr.write(error)
             sys.stderr.write('\n')
-            
+
         if not result.wasSuccessful() or loadFailures:
             raise TestError(
                 "Unit test suite failed!",
                 )
-            
+
 
 class functest(Command):
     """Run functional tests for package"""
@@ -162,7 +162,7 @@ class functest(Command):
         ('xml-output=', None,
          "Directory for JUnit compatible XML files."),
         ]
-    
+
     boolean_options = []
 
     def initialize_options(self):
@@ -170,18 +170,17 @@ class functest(Command):
         self.antlr_version = 'HEAD'
         self.antlr_jar = None
         self.xml_output = None
-    
+
     def finalize_options(self):
         pass
 
-    
     def run(self):
         import glob
         import imp
         import unittest
         import traceback
         import StringIO
-        
+
         testDir = os.path.join(os.path.dirname(__file__), 'tests')
         if not os.path.isdir(testDir):
             raise DistutilsFileError(
@@ -210,7 +209,7 @@ class functest(Command):
 
         classpath.extend([
             os.path.join(rootDir, 'lib', 'antlr-2.7.7.jar'),
-            os.path.join(rootDir, 'lib', 'stringtemplate-3.2.jar'),
+            os.path.join(rootDir, 'lib', 'stringtemplate-3.2.1.jar'),
             os.path.join(rootDir, 'lib', 'junit-4.2.jar')
             ])
         os.environ['CLASSPATH'] = ':'.join(classpath)
@@ -219,7 +218,7 @@ class functest(Command):
 
         suite = unittest.TestSuite()
         loadFailures = []
-        
+
         # collect tests from all tests/t*.py files
         testFiles = []
         for testPath in glob.glob(os.path.join(testDir, 't*.py')):
@@ -234,7 +233,7 @@ class functest(Command):
                 and os.path.basename(testPath)[:-3] != self.testcase
                 ):
                 continue
-            
+
             testFiles.append(testPath)
 
         testFiles.sort()
@@ -248,20 +247,19 @@ class functest(Command):
                 testMod = imp.load_module(
                     testID, modFile, modPathname, modDescription
                     )
-                
+
                 suite.addTests(
                     unittest.defaultTestLoader.loadTestsFromModule(testMod)
                     )
-                
+
             except Exception:
                 buf = StringIO.StringIO()
                 traceback.print_exc(file=buf)
-                
+
                 loadFailures.append(
                     (os.path.basename(testPath), buf.getvalue())
-                    )              
-                
-            
+                    )
+
         if self.xml_output:
             import xmlrunner
             runner = xmlrunner.XMLTestRunner(
@@ -278,12 +276,12 @@ class functest(Command):
                 )
             sys.stderr.write(error)
             sys.stderr.write('\n')
-            
+
         if not result.wasSuccessful() or loadFailures:
             raise TestError(
                 "Functional test suite failed!",
                 )
-            
+
 
 setup(name='antlr_python_runtime',
       version='3.1.3',
@@ -299,8 +297,6 @@ setup(name='antlr_python_runtime',
       This is the runtime package for ANTLR3, which is required to use parsers
       generated by ANTLR3.
       '''),
-      
-      
       cmdclass={'unittest': unittest,
                 'functest': functest,
                 'clean': clean

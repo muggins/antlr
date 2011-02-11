@@ -221,7 +221,6 @@ class T(testbase.ANTLRTest):
         self.failUnlessEqual("hello world", found)
 
 
-    @testbase.broken("Grammar parse fails, must be fixed by Ter", RuntimeError)
     def testIndirectTemplateConstructor(self):
         templates = textwrap.dedent(
             '''\
