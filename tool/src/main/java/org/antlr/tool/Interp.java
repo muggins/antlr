@@ -96,7 +96,7 @@ public class Interp {
 		}
 
 		String lexerGrammarText = parser.getLexerGrammar();
-		Grammar lexer = new Grammar();
+		Grammar lexer = new Grammar(tool);
 		lexer.importTokenVocabulary(parser);
 		lexer.fileName = grammarFileName;
 		lexer.setTool(tool);

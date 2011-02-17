@@ -7,6 +7,11 @@ University of San Francisco
 
 CHANGES
 
+February 17, 2011
+
+* Add -language L option to override language=L option in grammar.  Same
+  grammar can yield multiple parsers in different languages now.
+  
 February 10, 2011
 
 * Added method to generated Java code to return the array of delegates; e.g.,

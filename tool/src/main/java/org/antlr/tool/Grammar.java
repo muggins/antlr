@@ -513,10 +513,13 @@ public class Grammar {
 	/** Useful for when you are sure that you are not part of a composite
 	 *  already.  Used in Interp/RandomPhrase and testing.
 	 */
-	public Grammar() {
+	public Grammar() { this((Tool)null); }
+
+	public Grammar(Tool tool) {
+		setTool(tool);
 		builtFromString = true;
 		composite = new CompositeGrammar(this);
-		target = CodeGenerator.loadLanguageTarget((String)getOption("language"));		
+		target = CodeGenerator.loadLanguageTarget((String)getOption("language"));
 	}
 
 	/** Used for testing; only useful on noncomposite grammars.*/
@@ -532,8 +535,7 @@ public class Grammar {
 	public Grammar(Tool tool, String grammarString)
 		throws antlr.RecognitionException
 	{
-		this();
-		setTool(tool);
+		this(tool);
 		setFileName("<string>");
 		StringReader r = new StringReader(grammarString);
 		parseAndBuildAST(r);

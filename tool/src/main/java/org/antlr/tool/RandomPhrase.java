@@ -153,7 +153,8 @@ public class RandomPhrase {
 			random = new Random(seed);
 
 			CompositeGrammar composite = new CompositeGrammar();
-			Grammar parser = new Grammar(new Tool(), grammarFileName, composite);
+			Tool tool = new Tool();
+			Grammar parser = new Grammar(tool, grammarFileName, composite);
 			composite.setDelegationRoot(parser);
 
 			FileReader fr = new FileReader(grammarFileName);
@@ -176,7 +177,7 @@ public class RandomPhrase {
 			}
 
 			String lexerGrammarText = parser.getLexerGrammar();
-			Grammar lexer = new Grammar();
+			Grammar lexer = new Grammar(tool);
 			lexer.importTokenVocabulary(parser);
 			lexer.fileName = grammarFileName;
 			if ( lexerGrammarText!=null ) {

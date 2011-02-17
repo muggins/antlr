@@ -69,6 +69,8 @@ public class Tool {
     private boolean showBanner = true;
     private static boolean exitNow = false;
 
+	public String forcedLanguageOption; // -language L on command line
+
     // The internal options are for my use on the command line during dev
     //
     public static boolean internalOption_PrintGrammarTree = false;
@@ -171,24 +173,33 @@ public class Tool {
                     }
                 }
             }
-            else if (args[i].equals("-lib")) {
-                if (i + 1 >= args.length) {
-                    System.err.println("missing library directory with -lib option; ignoring");
-                }
-                else {
-                    i++;
-                    setLibDirectory(args[i]);
-                    if (getLibraryDirectory().endsWith("/") ||
-                        getLibraryDirectory().endsWith("\\")) {
-                        setLibDirectory(getLibraryDirectory().substring(0, getLibraryDirectory().length() - 1));
-                    }
-                    File outDir = new File(getLibraryDirectory());
-                    if (!outDir.exists()) {
-                        ErrorManager.error(ErrorManager.MSG_DIR_NOT_FOUND, getLibraryDirectory());
-                        setLibDirectory(".");
-                    }
-                }
-            }
+			else if (args[i].equals("-lib")) {
+				if (i + 1 >= args.length) {
+					System.err.println("missing library directory with -lib option; ignoring");
+				}
+				else {
+					i++;
+					setLibDirectory(args[i]);
+					if (getLibraryDirectory().endsWith("/") ||
+						getLibraryDirectory().endsWith("\\")) {
+						setLibDirectory(getLibraryDirectory().substring(0, getLibraryDirectory().length() - 1));
+					}
+					File outDir = new File(getLibraryDirectory());
+					if (!outDir.exists()) {
+						ErrorManager.error(ErrorManager.MSG_DIR_NOT_FOUND, getLibraryDirectory());
+						setLibDirectory(".");
+					}
+				}
+			}
+			else if (args[i].equals("-language")) {
+				if (i + 1 >= args.length) {
+					System.err.println("missing language name; ignoring");
+				}
+				else {
+					i++;
+					forcedLanguageOption = args[i];
+				}
+			}
             else if (args[i].equals("-nfa")) {
                 setGenerate_NFA_dot(true);
             }
@@ -490,10 +501,10 @@ public class Tool {
                     }
                     try {
                         StringReader sr = new StringReader(lexerGrammarStr);
-                        Grammar lexerGrammar = new Grammar();
+                        Grammar lexerGrammar = new Grammar(this);
                         lexerGrammar.composite.watchNFAConversion = internalOption_watchNFAConversion;
                         lexerGrammar.implicitLexer = true;
-                        lexerGrammar.setTool(this);
+                        //lexerGrammar.setTool(this);
                         File lexerGrammarFullFile =
                             new File(getFileDirectory(lexerGrammarFileName), lexerGrammarFileName);
                         lexerGrammar.setFileName(lexerGrammarFullFile.toString());
@@ -726,7 +737,8 @@ public class Tool {
         System.err.println("  -message-format name  specify output style for messages");
         System.err.println("  -verbose              generate ANTLR version and other information");
         System.err.println("  -make                 only build if generated files older than grammar");
-        System.err.println("  -version              print the version of ANTLR and exit.");
+		System.err.println("  -version              print the version of ANTLR and exit.");
+		System.err.println("  -language L           override language grammar option; generate L");
         System.err.println("  -X                    display extended argument list");
     }
 
