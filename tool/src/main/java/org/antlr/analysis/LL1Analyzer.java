@@ -232,11 +232,8 @@ public class LL1Analyzer {
 		// compute FIRST of transition 0
 		LookaheadSet tset = null;
 		// if transition 0 is a rule call and we don't want FOLLOW, check cache
-        if ( !chaseFollowTransitions && transition0 instanceof RuleClosureTransition ) {
-			LookaheadSet prev = FIRSTCache.get((NFAState)transition0.target);
-			if ( prev!=null ) {
-				tset = new LookaheadSet(prev);
-			}
+		if ( !chaseFollowTransitions && transition0 instanceof RuleClosureTransition ) {
+			tset = FIRSTCache.get((NFAState)transition0.target);
 		}
 
 		// if not in cache, must compute
@@ -247,6 +244,8 @@ public class LL1Analyzer {
 				FIRSTCache.put((NFAState)transition0.target, tset);
 			}
 		}
+
+        LookaheadSet tsetCached = tset; // tset is stored in cache. We can't return the same instance
 
 		// did we fall off the end?
 		if ( grammar.type!=Grammar.LEXER && tset.member(Label.EOR_TOKEN_TYPE) ) {
@@ -272,11 +271,12 @@ public class LL1Analyzer {
 		if ( transition1!=null ) {
 			LookaheadSet tset1 =
 				_FIRST((NFAState)transition1.target, chaseFollowTransitions);
-			tset1.orInPlace(tset); // tset cached; or into new set
+			tset1.orInPlace(tset);
 			tset = tset1;
 		}
 
-		return tset;
+		// never return a cached set; clone
+		return tset==tsetCached ? new LookaheadSet(tset) : tset;
 	}
 
 	/** Is there a non-syn-pred predicate visible from s that is not in

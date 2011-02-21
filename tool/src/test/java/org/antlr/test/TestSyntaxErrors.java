@@ -84,9 +84,29 @@ public class TestSyntaxErrors extends BaseTest {
 			"  ;\n";
 		System.out.println(grammar);
 		String found = execParser("T.g", grammar, "TParser", "TLexer", "a", "((i))z", false);
-		String expecting = "input line 1:5 no viable alternative at input 'z'\n";
+		String expecting = "{4,7,8}\n";
 		String result = stderrDuringParse.replaceAll(".*?/input ", "input ");
 		assertEquals(expecting, result);
 	}
 
+	@Test public void testLL1ErrorInfo() throws Exception {
+		String grammar =
+			"grammar T;\n" +
+			"start : animal (AND acClass)? service EOF;\n" +
+			"animal : (DOG | CAT );\n" +
+			"service : (HARDWARE | SOFTWARE) ;\n" +
+			"AND : 'and';\n" +
+			"DOG : 'dog';\n" +
+			"CAT : 'cat';\n" +
+			"HARDWARE: 'hardware';\n" +
+			"SOFTWARE: 'software';\n" +
+			"WS : ' ' {skip();} ;" +
+			"acClass\n" +
+			"@init\n" +
+			"{ System.out.println(computeContextSensitiveRuleFOLLOW().toString(tokenNames)); }\n" +
+			"  : ;\n";
+		String result = execParser("T.g", grammar, "TParser", "TLexer", "start", "dog and software", false);
+		String expecting = "{HARDWARE,SOFTWARE}\n";
+		assertEquals(expecting, result);
+	}
 }
