@@ -84,7 +84,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"  ;\n";
 		System.out.println(grammar);
 		String found = execParser("T.g", grammar, "TParser", "TLexer", "a", "((i))z", false);
-		String expecting = "{4,7,8}\n";
+		String expecting = "input line 1:0 no viable alternative at input '('\n";
 		String result = stderrDuringParse.replaceAll(".*?/input ", "input ");
 		assertEquals(expecting, result);
 	}
