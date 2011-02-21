@@ -7,6 +7,11 @@ University of San Francisco
 
 CHANGES
 
+February 21, 2011
+
+* Fixed http://www.antlr.org/jira/browse/ANTLR-437 thanks to Vladislav Kuzkokov.
+  added unit test.
+
 February 17, 2011
 
 * Add -language L option to override language=L option in grammar.  Same
