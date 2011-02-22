@@ -68,7 +68,8 @@ public class CompositeGrammarTree {
 
 	/** Find an option by looking up towards the root grammar rather than down */
 	public Object getOption(String key) {
-		if ( grammar.tool!=null && grammar.tool.forcedLanguageOption!=null ) {
+		if ( grammar.tool!=null && key!=null && key.equals("language") &&
+			 grammar.tool.forcedLanguageOption!=null ) {
 			return grammar.tool.forcedLanguageOption;
 		}
 		Object o = grammar.getLocallyDefinedOption(key);
