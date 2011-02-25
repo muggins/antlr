@@ -12,6 +12,8 @@
 
 @implementation ANTLRInputStream
 
+@synthesize encoding;
+
 + (id) newANTLRInputStream
 {
     return [[ANTLRInputStream alloc] init];
@@ -52,19 +54,8 @@
       readBufferSize:(NSInteger)theRBSize
             encoding:(NSStringEncoding)theEncoding
 {
-    NSData *myData;
-    NSFileHandle *isr;
-    NSURL *aURL;
-    NSError *error;
-    if ( self = [super init] ) {
-        myData = [NSData data];
-        if ( theEncoding != 0 ) {
-            isr = [NSFileHandle fileHandleForReadingFromURL:aURL error:&error];
-        }
-        else {
-            isr = [NSFileHandle fileHandleForReadingFromURL:aURL error:&error];
-        }
-        [self load:isr size:theSize readBufferSize:theRBSize];
+    if ( self = [super initWithReader:anInput size:theSize readBufferSize:theRBSize] ) {
+        [self load:theSize readBufferSize:theRBSize];
     }
     return self;
 }

@@ -10,8 +10,10 @@
 #import "AntlrReaderStream.h"
 
 @interface ANTLRInputStream : ANTLRReaderStream {
-
+    NSStringEncoding encoding;
 }
+
+@property (assign) NSStringEncoding encoding;
 
 + (id) newANTLRInputStream;
 + (id) newANTLRInputStream:(NSFileHandle *)anInput;

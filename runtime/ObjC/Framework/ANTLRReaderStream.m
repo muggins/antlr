@@ -11,6 +11,10 @@
 
 @implementation ANTLRReaderStream
 
+@synthesize fh;
+@synthesize size;
+@synthesize rbSize;
+
 static NSInteger READ_BUFFER_SIZE = 1024;
 static NSInteger INITIAL_BUFFER_SIZE = 1024;
 
@@ -45,18 +49,31 @@ static NSInteger INITIAL_BUFFER_SIZE = 1024;
     return [[ANTLRReaderStream alloc] initWithReader:r size:aSize readBufferSize:aReadChunkSize];
 }
 
-- (id) initWithReader:(NSFileHandle *)r size:(NSInteger)aSize readBufferSize:(NSInteger)aReadChunkSize
+- (id) init
 {
     if (self = [super init]) {
-        [self load:r size:aSize readBufferSize:aReadChunkSize];
+        fh = nil;
+        rbSize = READ_BUFFER_SIZE;
+        size = INITIAL_BUFFER_SIZE;
     }
     return self;
 }
 
-- (void) load:(NSFileHandle *) r size:(NSInteger)aSize readBufferSize:(NSInteger)aReadChunkSize
+- (id) initWithReader:(NSFileHandle *)r size:(NSInteger)aSize readBufferSize:(NSInteger)aReadChunkSize
+{
+    if (self = [super init]) {
+        fh = r;
+        rbSize = aSize;
+        size = aReadChunkSize;
+        [self load:aSize readBufferSize:aReadChunkSize];
+    }
+    return self;
+}
+
+- (void) load:(NSInteger)aSize readBufferSize:(NSInteger)aReadChunkSize
 {
     NSData *retData;
-    if ( r==nil ) {
+    if ( fh==nil ) {
         return;
     }
     if ( aSize<=0 ) {
@@ -69,7 +86,7 @@ static NSInteger INITIAL_BUFFER_SIZE = 1024;
     @try {
         int numRead=0;
         p = 0;
-        retData = [r readDataToEndOfFile];
+        retData = [fh readDataToEndOfFile];
         numRead = [retData length];
         NSLog( @"read %d chars; p was %d is now %d", n, p, (p+numRead) );
         p += numRead;
@@ -78,7 +95,7 @@ static NSInteger INITIAL_BUFFER_SIZE = 1024;
         NSLog( @"n=%d", n );
     }
     @finally {
-        [r closeFile];
+        [fh closeFile];
     }
 }
 
@@ -126,5 +143,9 @@ static NSInteger INITIAL_BUFFER_SIZE = 1024;
     }
 }
 
+- (void) close
+{
+    [fh closeFile];
+}
 
 @end
