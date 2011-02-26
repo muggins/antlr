@@ -80,7 +80,7 @@
                 <version>2.2</version>
                 <configuration>
                     <sourceDirectory>src/main/antlr2/org/antlr/grammar/v2</sourceDirectory>
-                    <grammars>antlr.g codegen.g, antlr.print.g, assign.types.g, buildnfa.g, define.g</grammars>
+                    <grammars>antlr.g codegen.g, antlr.print.g, assign.types.g, buildnfa.g, left.recur.rules.g define.g</grammars>
                 </configuration>
                 <executions>
                     <execution>
