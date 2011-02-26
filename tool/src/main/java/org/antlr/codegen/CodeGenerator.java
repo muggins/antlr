@@ -83,7 +83,7 @@ public class CodeGenerator {
 	public static int MIN_SWITCH_ALTS = MSA_DEFAULT;
 	public boolean GENERATE_SWITCHES_WHEN_POSSIBLE = true;
 	public static boolean EMIT_TEMPLATE_DELIMITERS = false;
-	public final static int MADSI_DEFAULT = 50; // do lots of states inline (needed for expression rules)
+	public final static int MADSI_DEFAULT = 60; // do lots of states inline (needed for expression rules)
 	public static int MAX_ACYCLIC_DFA_STATES_INLINE = MADSI_DEFAULT;
 
 	public static String classpathTemplateRootDirectoryName =

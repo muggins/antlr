@@ -7,15 +7,23 @@ University of San Francisco
 
 CHANGES
 
-DEV BRANCH:
+February 26, 2011
 
-* -Xmaxinlinedfastates went to 50 from 10 for forcing prediction in left-
+* All finally {} have comment now to suppress warning.
+
+* removed ; from {;} blank method
+
+* Added @SuppressWarnings({"unchecked", "deprecation"}) to front of each
+  generated class.
+
+February 25, 2011
+
+* -Xmaxinlinedfastates went to 60 from 10 for forcing prediction in left-
   recursive expression rules to stay in rule; preds use a parameter.
 
-* trees know where they came from now start..stop tokens; todo: use for
-  better err handling.
+* trees know where they came from now start..stop tokens; todo: use for better err handling.
 
-* Got immediate left-recursion working.
+* Got immediate left-recursion working for rules. Added TestLeftRecursion.java
 
 February 21, 2011
 
