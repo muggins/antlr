@@ -103,7 +103,8 @@ this.showActions = showActions;
         |   alternative
         |   element
         |	single_rewrite
-        |   EOR {s="EOR";}
+        |	rewrite
+        |   EOR// {s="EOR";}
         )
         {return normalize(buf.toString());}
     ;
@@ -269,7 +270,7 @@ countAltsForBlock returns [int n=0]
 	;
 
 alternative
-    :   #( ALT (element)+ EOA )
+    :   #( ALT (element)* EOA )
     ;
 
 exceptionGroup
@@ -284,6 +285,11 @@ exceptionHandler
 finallyClause
     :    #("finally" ACTION)
     ;
+
+rewrite
+	:	#( REWRITES ( single_rewrite )+ )
+	|
+	;
 
 single_rewrite
 	:	#( REWRITE {out(" ->");} (SEMPRED {out(" {"+#SEMPRED.getText()+"}?");})?
@@ -308,14 +314,9 @@ rewrite_template
 	     )
 	;
 
-rewrite
-	:	#(REWRITES (single_rewrite)*)
-	|
-	;
-
 element
-    :   #(ROOT element)
-    |   #(BANG element)
+    :   #(ROOT element) {out("^");}
+    |   #(BANG element) {out("!");}
     |   atom
     |   #(NOT {out("~");} element)
     |   #(RANGE atom {out("..");} atom)
@@ -363,8 +364,8 @@ atom
 			   (rarg:ARG_ACTION	{out("["+#rarg.toString()+"]");})?
 			   (ast_suffix)?
              )
-		|   #( TOKEN_REF		{out(#atom.toString());} 
-               
+		|   #( TOKEN_REF		{out(#atom.toString());}
+
 			   (targ:ARG_ACTION	{out("["+#targ.toString()+"]");} )?
 			   (ast_suffix)?
              )

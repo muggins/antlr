@@ -239,7 +239,7 @@ public class TestLeftRecursion extends BaseTest {
 			"    |   ('~'^|'!'^) e\n" +
 			"    |   e ('*'^|'/'^|'%'^) e\n" +
 			"    |   e ('+'^|'-'^) e\n" +
-			"    |   e ('<' '<' | '>' '>' '>' | '>' '>') e\n" +
+			"    |   e ('<'^ '<' | '>'^ '>' '>' | '>'^ '>') e\n" +
 			"    |   e ('<='^ | '>='^ | '>'^ | '<'^) e\n" +
 			"    |   e 'instanceof'^ e\n" +
 			"    |   e ('=='^ | '!='^) e\n" +
@@ -248,7 +248,7 @@ public class TestLeftRecursion extends BaseTest {
 			"    |   e '|'^ e\n" +
 			"    |   e '&&'^ e\n" +
 			"    |   e '||'^ e\n" +
-			"//    |   e '?' e ':' e\n" +
+			"    |   e '?' e ':' e\n" +
 			"    |   e ('='<assoc=right>^\n" +
 			"          |'+='<assoc=right>^\n" +
 			"          |'-='<assoc=right>^\n" +
@@ -260,7 +260,6 @@ public class TestLeftRecursion extends BaseTest {
 			"          |'>>='<assoc=right>^\n" +
 			"          |'>>>='<assoc=right>^\n" +
 			"          |'<<='<assoc=right>^\n" +
-			"          |'<<<='<assoc=right>^\n" +
 			"          |'%='<assoc=right>^) e\n" +
 			"    ;\n" +
 			"type: ID \n" +
@@ -289,6 +288,9 @@ public class TestLeftRecursion extends BaseTest {
 			"a=b=c+d.e","(= a (= b (+ c (. d e))))",
 			"a|b&c",	"(| a (& b c))",
 			"(a|b)&c",	"(& (| a b) c)",
+			"a > b",	"(> a b)",
+			"a >> b",	"(> a b)",  // text is from one token
+			"a < b",	"(< a b)",
 
 			"(T)x",							"(( T x)",
 			"new A().b",					"(. (new A () b)",

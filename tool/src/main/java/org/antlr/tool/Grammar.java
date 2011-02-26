@@ -710,7 +710,7 @@ public class Grammar {
 		leftRecursiveRuleWalker.setASTNodeClass("org.antlr.tool.GrammarAST");
 		boolean isLeftRec = false;
 		try {
-			//System.out.println("TESTING "+ruleAST.enclosingRuleName);
+			System.out.println("TESTING "+ruleAST.enclosingRuleName);
 			isLeftRec = leftRecursiveRuleWalker.rec_rule(ruleAST, this);
 		}
 		catch (RecognitionException re) {
@@ -3152,7 +3152,8 @@ outer:
 	}
 
 	public String toString() {
-		return grammarTreeToString(grammarTree);
+		return "FFFFFFFFFFFFFF";
+	//	return grammarTreeToString(grammarTree);
 	}
 
 	public String grammarTreeToString(GrammarAST t) {

@@ -62,6 +62,8 @@ public class GrammarAST extends BaseAST {
 	/** This AST node was created from what token? */
     public TokenWithIndex token = null;
 
+	public String textOverride;
+
 	/** What token indexes bracket all tokens associated with this node
 	 *  and below?
 	 */
@@ -260,6 +262,7 @@ public class GrammarAST extends BaseAST {
     }
 
     public String getText() {
+		if ( textOverride!=null ) return textOverride;
         if ( token!=null ) {
             return token.getText();
         }
@@ -271,7 +274,7 @@ public class GrammarAST extends BaseAST {
 	}
 
 	public void setText(String text) {
-		token.setText(text);
+		textOverride = text; // don't alt tokens as others might see
 	}
 
     public int getType() {

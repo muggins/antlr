@@ -146,7 +146,7 @@ block
     :   #(  BLOCK
             (optionsSpec)?
             ( #( ALT (element)+ EOA ) (rewrite)? )+
-            EOB   
+            EOB
          )
     ;
 
@@ -155,15 +155,17 @@ outerAlternative returns [boolean isLeftRec=false]
 {
 GrammarAST alt=#outerAlternative, rew=(GrammarAST)alt.getNextSibling();
 if ( rew.getType()!=REWRITES ) rew = null;
+System.out.println("alt "+alt.toStringTree());
 }
     :   (binaryMultipleOp)=> binaryMultipleOp
                              {binaryAlt(alt, rew, outerAlt); isLeftRec=true;}
-    |   (binary)=>           b:binary       
+    |   (binary)=>           b:binary
                              {binaryAlt(alt, rew, outerAlt); isLeftRec=true;}
     |   (ternary)=>          ternary
                              {ternaryAlt(alt, rew, outerAlt); isLeftRec=true;}
     |   (prefix)=>           prefix
-                             {prefixAlt(alt, rew, outerAlt); isLeftRec=true;}
+                             {prefixAlt(alt, rew, outerAlt);}
+                             // prefix alone not enough to trigger match
     |   (suffix)=>           s:suffix
                              {suffixAlt(alt, rew, outerAlt); isLeftRec=true;}
     |   #( ALT (element)+ EOA ) // "other" case
@@ -172,22 +174,22 @@ if ( rew.getType()!=REWRITES ) rew = null;
 
 binary
 {GrammarAST op=null;}
-    :   #( ALT recurseNoLabel op=token recurse EOA ) {setTokenPrec(op, outerAlt);}
+    :   #( ALT (BACKTRACK_SEMPRED)? recurseNoLabel op=token recurse EOA ) {setTokenPrec(op, outerAlt);}
     ;
 
 binaryMultipleOp
 {GrammarAST op=null;}
-    :   #( ALT recurseNoLabel #( BLOCK ( #( ALT op=token EOA {setTokenPrec(op, outerAlt);} ) )+ EOB ) recurse EOA )
+    :   #( ALT (BACKTRACK_SEMPRED)? recurseNoLabel #( BLOCK ( #( ALT op=token EOA {setTokenPrec(op, outerAlt);} ) )+ EOB ) recurse EOA )
     ;
 
 ternary
 {GrammarAST op=null;}
-    : #( ALT recurseNoLabel op=token recurse token recurse EOA ) {setTokenPrec(op, outerAlt);}
+    : #( ALT (BACKTRACK_SEMPRED)? recurseNoLabel op=token recurse token recurse EOA ) {setTokenPrec(op, outerAlt);}
     ;
 
-prefix : #( ALT {setTokenPrec((GrammarAST)_t, outerAlt);} ({!_t.getText().equals(ruleName)}? element)+ recurse EOA ) ;
+prefix : #( ALT (BACKTRACK_SEMPRED)? {setTokenPrec((GrammarAST)_t, outerAlt);} ({!_t.getText().equals(ruleName)}? element)+ recurse EOA ) ;
 
-suffix : #( ALT recurseNoLabel {setTokenPrec((GrammarAST)_t, outerAlt);} (e:element)+  EOA ) ;
+suffix : #( ALT (BACKTRACK_SEMPRED)? recurseNoLabel {setTokenPrec((GrammarAST)_t, outerAlt);} (e:element)+  EOA ) ;
 
 recurse
     :   #(ASSIGN ID recurseNoLabel)
@@ -241,20 +243,20 @@ element
     |	#(PLUS_ASSIGN ID element)
     |   ebnf
     |   tree
-    |   #( SYNPRED block ) 
+    |   #( SYNPRED block )
     |   FORCED_ACTION
     |   ACTION
     |   SEMPRED
     |   SYN_SEMPRED
     |   BACKTRACK_SEMPRED
     |   GATED_SEMPRED
-    |   EPSILON 
+    |   EPSILON
     ;
 
 ebnf:   block
-    |   #( OPTIONAL block ) 
-    |   #( CLOSURE block )  
-    |   #( POSITIVE_CLOSURE block ) 
+    |   #( OPTIONAL block )
+    |   #( CLOSURE block )
+    |   #( POSITIVE_CLOSURE block )
     ;
 
 tree:   #(TREE_BEGIN  element (element)*  )

@@ -517,6 +517,7 @@ public class Tool {
                         sr.close();
 
                         lexerGrammar.composite.assignTokenTypes();
+						lexerGrammar.addRulesForSyntacticPredicates();
                         lexerGrammar.composite.defineGrammarSymbols();
                         lexerGrammar.composite.createNFAs();
 

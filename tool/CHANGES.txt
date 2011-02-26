@@ -16,7 +16,9 @@ February 26, 2011
 * Added @SuppressWarnings({"unchecked", "deprecation"}) to front of each
   generated class.
 
-February 25, 2011
+* -print wasn't always showing ^ and ! in grammar
+
+ February 25, 2011
 
 * -Xmaxinlinedfastates went to 60 from 10 for forcing prediction in left-
   recursive expression rules to stay in rule; preds use a parameter.

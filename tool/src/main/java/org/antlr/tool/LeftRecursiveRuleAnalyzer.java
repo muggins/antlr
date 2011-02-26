@@ -1,8 +1,8 @@
 package org.antlr.tool;
 
+import antlr.collections.AST;
 import org.antlr.codegen.CodeGenerator;
-import org.antlr.grammar.v2.ANTLRParser;
-import org.antlr.grammar.v2.LeftRecursiveRuleWalker;
+import org.antlr.grammar.v2.*;
 import org.antlr.stringtemplate.CommonGroupLoader;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
@@ -86,6 +86,7 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		altTree = GrammarAST.dupTree(altTree);
 		rewriteTree = GrammarAST.dupTree(rewriteTree);
 
+		stripSynPred(altTree);
 		stripLeftRecursion(altTree);
 
 		// rewrite e to be e_[rec_arg]
@@ -112,6 +113,7 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		altTree = GrammarAST.dupTree(altTree);
 		rewriteTree = GrammarAST.dupTree(rewriteTree);
 
+		stripSynPred(altTree);
 		stripLeftRecursion(altTree);
 
 		int nextPrec = nextPrecedence(alt);
@@ -136,6 +138,8 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		altTree = GrammarAST.dupTree(altTree);
 		rewriteTree = GrammarAST.dupTree(rewriteTree);
 
+		stripSynPred(altTree);
+
 		int nextPrec = precedence(alt);
 		// rewrite e to be e_[rec_arg]
 		StringTemplate refST = recRuleTemplates.getInstanceOf("recRuleRef");
@@ -159,6 +163,7 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 	public void suffixAlt(GrammarAST altTree, GrammarAST rewriteTree, int alt) {
 		altTree = GrammarAST.dupTree(altTree);
 		rewriteTree = GrammarAST.dupTree(rewriteTree);
+		stripSynPred(altTree);
 		stripLeftRecursion(altTree);
 		StringTemplate nameST = recRuleTemplates.getInstanceOf("recRuleName");
 		nameST.setAttribute("ruleName", ruleName);
@@ -174,6 +179,7 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 	public void otherAlt(GrammarAST altTree, GrammarAST rewriteTree, int alt) {
 		altTree = GrammarAST.dupTree(altTree);
 		rewriteTree = GrammarAST.dupTree(rewriteTree);
+		stripSynPred(altTree);
 		stripLeftRecursion(altTree);
 		String altText = text(altTree);
 
@@ -251,20 +257,38 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		return t;
 	}
 
-	public void stripLeftRecursion(GrammarAST t) {
-		GrammarAST rref = (GrammarAST)t.getFirstChild();
-		if ( rref.getType()== ANTLRParser.RULE_REF ) {
+	public void stripSynPred(GrammarAST altAST) {
+		GrammarAST t = (GrammarAST)altAST.getFirstChild();
+		if ( t.getType()==ANTLRParser.BACKTRACK_SEMPRED ||
+			 t.getType()==ANTLRParser.SYNPRED ||
+			 t.getType()==ANTLRParser.SYN_SEMPRED )
+		{
+			altAST.setFirstChild(t.getNextSibling()); // kill it
+		}
+	}
+
+	public void stripLeftRecursion(GrammarAST altAST) {
+		GrammarAST rref = (GrammarAST)altAST.getFirstChild();
+		if ( rref.getType()== ANTLRParser.RULE_REF &&
+			 rref.getText().equals(ruleName))
+		{
 			// remove rule ref
-			t.setFirstChild(rref.getNextSibling());
+			altAST.setFirstChild(rref.getNextSibling());
 			// reset index so it prints properly
-			GrammarAST newFirstChild = (GrammarAST) t.getFirstChild();
-			t.startIndex = newFirstChild.startIndex;
+			GrammarAST newFirstChild = (GrammarAST) altAST.getFirstChild();
+			altAST.startIndex = newFirstChild.startIndex;
 		}
 	}
 
 	public String text(GrammarAST t) {
 		if ( t==null ) return null;
-		return g.tokenBuffer.toOriginalString(t.startIndex, t.stopIndex);
+		try {
+			return new ANTLRTreePrinter().toString(t, grammar, true);
+		}
+		catch (Exception e) {
+			ErrorManager.error(ErrorManager.MSG_BAD_AST_STRUCTURE, e);
+		}
+		return null;
 	}
 
 	public int precedence(int alt) {

@@ -49,7 +49,7 @@ public class Rule {
 			new HashSet() {
                 {
                     add("k"); add("greedy"); add("memoize");
-                    add("backtrack"); add("strategy");
+                    add("backtrack");
                 }
             };
 
