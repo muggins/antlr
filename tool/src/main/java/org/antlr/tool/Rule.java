@@ -28,7 +28,6 @@
 package org.antlr.tool;
 
 import antlr.CommonToken;
-import org.antlr.analysis.LookaheadSet;
 import org.antlr.analysis.NFAState;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.grammar.v2.ANTLRParser;
@@ -64,12 +63,6 @@ public class Rule {
 	public GrammarAST argActionAST;
 
 	public GrammarAST EORNode;
-
-	/** The set of all tokens reachable from the start state w/o leaving
-	 *  via the accept state.  If it reaches the accept state, FIRST
-	 *  includes EOR_TOKEN_TYPE.
-	 */
-	public LookaheadSet FIRST;
 
 	/** The return values of a rule and predefined rule attributes */
 	public AttributeScope returnScope;
@@ -151,9 +144,6 @@ public class Rule {
 	 */
 	protected Map<String, List<GrammarAST>>[] altToRuleRefMap;
 
-	/** Track which alts have rewrite rules associated with them. 1..n */
-	protected boolean[] altsWithRewrites;
-
 	/** Do not generate start, stop etc... in a return value struct unless
 	 *  somebody references $r.start somewhere.
 	 */
@@ -174,7 +164,6 @@ public class Rule {
 		this.grammar = grammar;
 		altToTokenRefMap = new Map[numberOfAlts+1];
 		altToRuleRefMap = new Map[numberOfAlts+1];
-		altsWithRewrites = new boolean[numberOfAlts+1];
 		for (int alt=1; alt<=numberOfAlts; alt++) {
 			altToTokenRefMap[alt] = new HashMap<String, List<GrammarAST>>();
 			altToRuleRefMap[alt] = new HashMap<String, List<GrammarAST>>();
@@ -312,18 +301,17 @@ public class Rule {
 	 */
 	public Set getAllTokenRefsInAltsWithRewrites() {
 		String output = (String)grammar.getOption("output");
-		Set tokens = new HashSet();
+		Set<String> tokens = new HashSet<String>();
 		if ( output==null || !output.equals("AST") ) {
 			// return nothing if not generating trees; i.e., don't do for templates
 			return tokens;
 		}
+		//System.out.println("blk "+tree.findFirstType(ANTLRParser.BLOCK).toStringTree());
 		for (int i = 1; i <= numberOfAlts; i++) {
-			if ( altsWithRewrites[i] ) {
-				Map m = altToTokenRefMap[i];
-				Set s = m.keySet();
-				for (Iterator it = s.iterator(); it.hasNext();) {
+			if ( hasRewrite(i) ) {
+				Map<String, List<GrammarAST>> m = altToTokenRefMap[i];
+				for (String tokenName : m.keySet()) {
 					// convert token name like ID to ID, "void" to 31
-					String tokenName = (String) it.next();
 					int ttype = grammar.getTokenType(tokenName);
 					String label = grammar.generator.getTokenTypeAsTargetLabel(ttype);
 					tokens.add(label);
@@ -344,7 +332,7 @@ public class Rule {
 	public Set getAllRuleRefsInAltsWithRewrites() {
 		Set rules = new HashSet();
 		for (int i = 1; i <= numberOfAlts; i++) {
-			if ( altsWithRewrites[i] ) {
+			if ( hasRewrite(i) ) {
 				Map m = altToRuleRefMap[i];
 				rules.addAll(m.keySet());
 			}
@@ -357,31 +345,12 @@ public class Rule {
 	}
 
 	public boolean hasRewrite(int i) {
-		if ( i >= altsWithRewrites.length ) {
-			ErrorManager.internalError("alt "+i+" exceeds number of "+name+
-									   "'s alts ("+altsWithRewrites.length+")");
-			return false;
-		}
-		return altsWithRewrites[i];
-	}
-
-	/** Track which rules have rewrite rules.  Pass in the ALT node
-	 *  for the alt so we can check for problems when output=template,
-	 *  rewrite=true, and grammar type is tree parser.
-	 */
-	public void trackAltsWithRewrites(GrammarAST altAST, int outerAltNum) {
-		if ( grammar.type==Grammar.TREE_PARSER &&
-			 grammar.buildTemplate() &&
-			 grammar.getOption("rewrite")!=null &&
-			 grammar.getOption("rewrite").equals("true")
-			)
-		{
-			GrammarAST firstElementAST = (GrammarAST)altAST.getFirstChild();
-			grammar.sanity.ensureAltIsSimpleNodeOrTree(altAST,
-													   firstElementAST,
-													   outerAltNum);
-		}
-		altsWithRewrites[outerAltNum] = true;
+		GrammarAST blk = tree.findFirstType(ANTLRParser.BLOCK);
+		GrammarAST alt = blk.getBlockALT(i);
+		GrammarAST rew = (GrammarAST)alt.getNextSibling();
+		if ( rew!=null && rew.getType()==ANTLRParser.REWRITES ) return true;
+		if ( alt.findFirstType(ANTLRParser.REWRITES)!=null ) return true;
+		return false;
 	}
 
 	/** Return the scope containing name */

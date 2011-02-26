@@ -240,6 +240,9 @@ options {
             if ( t.getType()==ANTLRParser.RULE_REF ) {
                 label = t.getText();
             }
+            else if ( t.getType()==ANTLRParser.TOKEN_REF ) {
+                label = t.getText();
+            }
             else if ( t.getType()==ANTLRParser.LABEL ) {
                 label = t.getText();
             }
@@ -342,6 +345,7 @@ StringTemplate rST;
 				}
 				}
     		|	RULE
+    		|   PREC_RULE // ignore
     		)
    		)+
     ;
@@ -506,10 +510,11 @@ block[String blockTemplateName, DFA dfa]
               // add the rewrite code as just another element in the alt :)
               // (unless it's a " -> ..." rewrite
               // ( -> ... )
+              GrammarAST firstRewriteAST = (GrammarAST)r.findFirstType(REWRITE);
               boolean etc =
-              	r.getType()==REWRITE &&
-              	r.getFirstChild()!=null &&
-		  		r.getFirstChild().getType()==ETC;
+              	r.getType()==REWRITES &&
+              	firstRewriteAST.getFirstChild()!=null &&
+		  		firstRewriteAST.getFirstChild().getType()==ETC;
     		  if ( rew!=null && !etc ) { alt.setAttribute("rew", rew); }
     		  // add this alt to the list of alts for this block
               code.setAttribute("alts",alt);
@@ -545,9 +550,9 @@ if ( blockNestingLevel==RULE_BLOCK_NESTING_LEVEL && grammar.buildAST() ) {
 			setcode = getTokenElementST("matchSet", "set", #s, null, null);
 		}
 		setcode.setAttribute("elementIndex", i);
-		if ( grammar.type!=Grammar.LEXER ) {
-			generator.generateLocalFOLLOW(#s,"set",currentRuleName,i);
-        }
+//		if ( grammar.type!=Grammar.LEXER ) {
+//			generator.generateLocalFOLLOW(#s,"set",currentRuleName,i);
+//        }
         setcode.setAttribute("s",
             generator.genSetExpr(templates,#s.getSetValue(),1,false));
         StringTemplate altcode=templates.getInstanceOf("alt");
@@ -590,22 +595,6 @@ finallyClause[StringTemplate ruleST]
 
 alternative returns [StringTemplate code=templates.getInstanceOf("alt")]
 {
-/*
-// TODO: can we use Rule.altsWithRewrites???
-if ( blockNestingLevel==RULE_BLOCK_NESTING_LEVEL ) {
-	GrammarAST aRewriteNode = #alternative.findFirstType(REWRITE);
-	if ( grammar.buildAST() &&
-		 (aRewriteNode!=null||
-		 (#alternative.getNextSibling()!=null &&
-		  #alternative.getNextSibling().getType()==REWRITE)) )
-	{
-		currentAltHasASTRewrite = true;
-	}
-	else {
-		currentAltHasASTRewrite = false;
-	}
-}
-*/
 if ( blockNestingLevel==RULE_BLOCK_NESTING_LEVEL && grammar.buildAST() ) {
     Rule r = grammar.getRule(currentRuleName);
     currentAltHasASTRewrite = r.hasRewrite(outerAltNum);
@@ -1058,7 +1047,8 @@ setElement
 rewrite returns [StringTemplate code=null]
 {
 StringTemplate alt;
-if ( #rewrite.getType()==REWRITE ) {
+//GrammarAST firstRewriteAST = (GrammarAST)#rewrite.getFirstChild();
+if ( #rewrite.getType()==REWRITES ) {
 	if ( generator.grammar.buildTemplate() ) {
 		code = templates.getInstanceOf("rewriteTemplate");
 	}
@@ -1098,26 +1088,29 @@ else {
 		code.setAttribute("rewriteBlockLevel", Utils.integer(OUTER_REWRITE_NESTING_LEVEL));
 }
 }
-	:	(
-			{rewriteRuleRefs = new HashSet();}
-			#( r:REWRITE (pred:SEMPRED)? alt=rewrite_alternative )
-			{
-            rewriteBlockNestingLevel = OUTER_REWRITE_NESTING_LEVEL;
-			List predChunks = null;
-			if ( #pred!=null ) {
-				//predText = #pred.getText();
-        		predChunks = generator.translateAction(currentRuleName,#pred);
-			}
-			String description =
-			    grammar.grammarTreeToString(#r,false);
-			description = generator.target.getTargetStringLiteralFromString(description);
-			code.setAttribute("alts.{pred,alt,description}",
-							  predChunks,
-							  alt,
-							  description);
-			pred=null;
-			}
-		)*
+	:	#(REWRITES
+            (
+                {rewriteRuleRefs = new HashSet();}
+                #( r:REWRITE (pred:SEMPRED)? alt=rewrite_alternative )
+                {
+                rewriteBlockNestingLevel = OUTER_REWRITE_NESTING_LEVEL;
+                List predChunks = null;
+                if ( #pred!=null ) {
+                    //predText = #pred.getText();
+                    predChunks = generator.translateAction(currentRuleName,#pred);
+                }
+                String description =
+                    grammar.grammarTreeToString(#r,false);
+                description = generator.target.getTargetStringLiteralFromString(description);
+                code.setAttribute("alts.{pred,alt,description}",
+                                  predChunks,
+                                  alt,
+                                  description);
+                pred=null;
+                }
+            )*
+		)
+	|
 	;
 
 rewrite_block[String blockTemplateName] returns [StringTemplate code=null]

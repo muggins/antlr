@@ -40,7 +40,7 @@ options {
     codeGenBitsetTestThreshold=999;
 }
 
-{ 
+{
 
 protected Grammar grammar;
 protected GrammarAST root;
@@ -197,7 +197,7 @@ tokenSpec
 	;
 
 rules
-    :   ( rule )+
+    :   ( rule | PREC_RULE )+
     ;
 
 rule
@@ -251,7 +251,7 @@ Rule r = null;
 
 countAltsForRule returns [int n=0]
     :   #( RULE id:ID (modifier)? ARG RET (OPTIONS)? ("scope")? (AMPERSAND)*
-           #(  BLOCK (OPTIONS)? (ALT (REWRITE)* {n++;})+ EOB )
+           #(  BLOCK (OPTIONS)? (ALT (REWRITES)? {n++;})+ EOB )
            (exceptionGroup)?
            EOR
          )
@@ -319,23 +319,26 @@ blockAction
 	;
 
 alternative
+/*
 {
 if ( grammar.type!=Grammar.LEXER && grammar.getOption("output")!=null && blockLevel==1 ) {
-	GrammarAST aRewriteNode = #alternative.findFirstType(REWRITE); // alt itself has rewrite?
-	GrammarAST rewriteAST = (GrammarAST)#alternative.getNextSibling();
-	// we have a rewrite if alt uses it inside subrule or this alt has one
-	// but don't count -> ... rewrites, which mean "do default auto construction"
-	if ( aRewriteNode!=null||
-		 (rewriteAST!=null &&
-		  rewriteAST.getType()==REWRITE &&
-		  rewriteAST.getFirstChild()!=null &&
-		  rewriteAST.getFirstChild().getType()!=ETC) )
-	{
-		Rule r = grammar.getRule(currentRuleName);
-		r.trackAltsWithRewrites(#alternative,this.outerAltNum);
-	}
+    GrammarAST aRewriteNode = alternative_AST_in.findFirstType(REWRITES); // alt itself has rewrite?
+    GrammarAST rewriteAST = (GrammarAST)alternative_AST_in.getNextSibling();
+    GrammarAST firstRewriteAST = (GrammarAST)alternative_AST_in.findFirstType(REWRITE);
+    // we have a rewrite if alt uses it inside subrule or this alt has one
+    // but don't count -> ... rewrites, which mean "do default auto construction"
+    if ( aRewriteNode!=null||
+         (firstRewriteAST!=null &&
+          firstRewriteAST.getType()==REWRITE &&
+          firstRewriteAST.getFirstChild()!=null &&
+          firstRewriteAST.getFirstChild().getType()!=ETC) )
+    {
+        Rule r = grammar.getRule(currentRuleName);
+        r.trackAltsWithRewrites(alternative_AST_in,this.outerAltNum);
+    }
 }
 }
+*/
     :   #( ALT (element)+ EOA )
     ;
 
@@ -419,7 +422,7 @@ element
         #GATED_SEMPRED.outerAltNum = this.outerAltNum;
         trackInlineAction(#GATED_SEMPRED);
         }
-    |   EPSILON 
+    |   EPSILON
     ;
 
 ebnf:   (dotLoop)=> dotLoop // .* or .+
@@ -435,7 +438,7 @@ dotLoop
 {
     GrammarAST block = (GrammarAST)#dotLoop.getFirstChild();
 }
-    :   (   #( CLOSURE dotBlock )           
+    :   (   #( CLOSURE dotBlock )
         |   #( POSITIVE_CLOSURE dotBlock )
         )
         {
@@ -488,7 +491,7 @@ atom[GrammarAST scope]
     		}
     	}
     	}
-    |   s:STRING_LITERAL 
+    |   s:STRING_LITERAL
     	{
     	if ( grammar.type!=Grammar.LEXER ) {
     		Rule rule = grammar.getRule(currentRuleName);
@@ -508,21 +511,24 @@ ast_suffix
 
 rewrite
 {
+// track top level REWRITES node, store stuff there
 currentRewriteRule = #rewrite; // has to execute during guessing
 if ( grammar.buildAST() ) {
-    #rewrite.rewriteRefsDeep = new HashSet<GrammarAST>();
+    currentRewriteRule.rewriteRefsDeep = new HashSet<GrammarAST>();
 }
 }
-	:	(
-            #( REWRITE (pred:SEMPRED)? rewrite_alternative )
-            {
-            if ( #pred!=null ) {
-                #pred.outerAltNum = this.outerAltNum;
-                trackInlineAction(#pred);
-            }
-            }
-        )*
-        //{System.out.println("-> refs = "+#rewrite.rewriteRefs);}
+	:	#(REWRITES
+            (   #( REWRITE (pred:SEMPRED)? rewrite_alternative )
+                {
+                if ( #pred!=null ) {
+                    #pred.outerAltNum = this.outerAltNum;
+                    trackInlineAction(#pred);
+                }
+                }
+            )*
+        )
+//        {System.out.println("-> refs = "+currentRewriteRule.rewriteRefsDeep);}
+    |
 	;
 
 rewrite_block
@@ -589,10 +595,11 @@ if ( !imaginary && grammar.buildAST() &&
         currentRewriteBlock.rewriteRefsShallow.add(#rewrite_atom);
         currentRewriteBlock.rewriteRefsDeep.add(#rewrite_atom);
     }
+    //System.out.println("adding "+#rewrite_atom.getText()+" to "+currentRewriteRule.getText());
     currentRewriteRule.rewriteRefsDeep.add(#rewrite_atom);
 }
 }
-    :   RULE_REF 
+    :   RULE_REF
     |   ( #(TOKEN_REF
             (arg:ARG_ACTION)?
            )
@@ -616,7 +623,7 @@ if ( !imaginary && grammar.buildAST() &&
     ;
 
 rewrite_template
-    :	#( ALT EPSILON EOA ) 
+    :	#( ALT EPSILON EOA )
    	|	#( TEMPLATE (id:ID|ind:ACTION)
 	       #( ARGLIST
                 ( #( ARG arg:ID a:ACTION )

@@ -355,7 +355,7 @@ public class Tool {
     }
     }
      */
-    
+
     /**
      * Checks to see if the list of outputFiles all exist, and have
      * last-modified timestamps which are later than the last-modified
@@ -456,40 +456,42 @@ public class Tool {
                     continue;
                 }
 
-                Grammar grammar = getRootGrammar(grammarFileName);
+                Grammar rootGrammar = getRootGrammar(grammarFileName);
                 // we now have all grammars read in as ASTs
                 // (i.e., root and all delegates)
-                grammar.composite.assignTokenTypes();
-                grammar.composite.defineGrammarSymbols();
-                grammar.composite.createNFAs();
+				rootGrammar.composite.assignTokenTypes();
+				rootGrammar.composite.translateLeftRecursiveRules();
+				rootGrammar.addRulesForSyntacticPredicates();
+				rootGrammar.composite.defineGrammarSymbols();
+                rootGrammar.composite.createNFAs();
 
-                generateRecognizer(grammar);
+                generateRecognizer(rootGrammar);
 
                 if (isPrintGrammar()) {
-                    grammar.printGrammar(System.out);
+                    rootGrammar.printGrammar(System.out);
                 }
 
                 if (isReport()) {
-					GrammarReport2 greport = new GrammarReport2(grammar);
+					GrammarReport2 greport = new GrammarReport2(rootGrammar);
 					System.out.print(greport.toString());
-//                    GrammarReport greport = new GrammarReport(grammar);
+//                    GrammarReport greport = new GrammarReport(rootGrammar);
 //                    System.out.println(greport.toString());
 //                    // print out a backtracking report too (that is not encoded into log)
 //                    System.out.println(greport.getBacktrackingReport());
                 }
                 if (isProfile()) {
-                    GrammarReport greport = new GrammarReport(grammar);
+                    GrammarReport greport = new GrammarReport(rootGrammar);
                     Stats.writeReport(GrammarReport.GRAMMAR_STATS_FILENAME,
                                       greport.toNotifyString());
                 }
 
                 // now handle the lexer if one was created for a merged spec
-                String lexerGrammarStr = grammar.getLexerGrammar();
-                //System.out.println("lexer grammar:\n"+lexerGrammarStr);
-                if (grammar.type == Grammar.COMBINED && lexerGrammarStr != null) {
-                    lexerGrammarFileName = grammar.getImplicitlyGeneratedLexerFileName();
+                String lexerGrammarStr = rootGrammar.getLexerGrammar();
+                //System.out.println("lexer rootGrammar:\n"+lexerGrammarStr);
+                if (rootGrammar.type == Grammar.COMBINED && lexerGrammarStr != null) {
+                    lexerGrammarFileName = rootGrammar.getImplicitlyGeneratedLexerFileName();
                     try {
-                        Writer w = getOutputFile(grammar, lexerGrammarFileName);
+                        Writer w = getOutputFile(rootGrammar, lexerGrammarFileName);
                         w.write(lexerGrammarStr);
                         w.close();
                     }
@@ -509,7 +511,7 @@ public class Tool {
                             new File(getFileDirectory(lexerGrammarFileName), lexerGrammarFileName);
                         lexerGrammar.setFileName(lexerGrammarFullFile.toString());
 
-                        lexerGrammar.importTokenVocabulary(grammar);
+                        lexerGrammar.importTokenVocabulary(rootGrammar);
                         lexerGrammar.parseAndBuildAST(sr);
 
                         sr.close();
@@ -757,7 +759,6 @@ public class Tool {
         System.err.println("  -Xnfastates             for nondeterminisms, list NFA states for each path");
         System.err.println("  -Xm m                   max number of rule invocations during conversion           [" + NFAContext.MAX_SAME_RULE_INVOCATIONS_PER_NFA_CONFIG_STACK + "]");
         System.err.println("  -Xmaxdfaedges m         max \"comfortable\" number of edges for single DFA state     [" + DFA.MAX_STATE_TRANSITIONS_FOR_TABLE + "]");
-//        System.err.println("  -Xconversiontimeout t   set NFA conversion timeout (ms) for each decision          [" + DFA.MAX_TIME_PER_DFA_CREATION + "]");
         System.err.println("  -Xmaxinlinedfastates m  max DFA states before table used rather than inlining      [" + CodeGenerator.MADSI_DEFAULT +"]");
         System.err.println("  -Xmaxswitchcaselabels m don't generate switch() statements for dfas bigger  than m [" + CodeGenerator.MSCL_DEFAULT +"]");
 		System.err.println("  -Xminswitchalts m       don't generate switch() statements for dfas smaller than m [" + CodeGenerator.MSA_DEFAULT + "]");
@@ -766,8 +767,8 @@ public class Tool {
 
     /**
      * Set the threshold of case labels beyond which ANTLR will not instruct the target template
-     * to generate switch() { case xxx: ... 
-     * 
+     * to generate switch() { case xxx: ...
+     *
      * @param maxSwitchCaseLabels Maximum number of case lables that ANTLR should allow the target code
      */
     public void setMaxSwitchCaseLabels(int maxSwitchCaseLabels) {
@@ -783,7 +784,7 @@ public class Tool {
     public void setMinSwitchAlts(int minSwitchAlts) {
         CodeGenerator.MIN_SWITCH_ALTS = minSwitchAlts;
     }
-    
+
     /**
      * Set the location (base directory) where output files should be produced
      * by the ANTLR tool.
@@ -1236,7 +1237,7 @@ public class Tool {
     public void setMessageFormat(String format) {
         ErrorManager.setFormat(format);
     }
-	
+
     /** Provide the List of all grammar file names that the ANTLR tool should process.
      *
      * @param grammarFileNames The list of grammar files to process

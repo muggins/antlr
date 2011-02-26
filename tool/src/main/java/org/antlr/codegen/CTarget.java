@@ -185,7 +185,7 @@ public class CTarget extends Target {
      *  Because we must support Unicode character sets and have chosen
      *  to have the lexer match UTF32 characters, then we must encode
      *  string matches to use 32 bit character arrays. Here then we
-     *  must produce the C array and cater for the case where the 
+     *  must produce the C array and cater for the case where the
      *  lexer has been encoded with a string such as 'xyz\n',
      */
     @Override
@@ -294,7 +294,7 @@ public class CTarget extends Target {
         // the default size. If it is then whack it all the way up to the maximum that
         // we can sensibly get away with.
         //
-        if (CodeGenerator.MAX_ACYCLIC_DFA_STATES_INLINE == CodeGenerator.MADSI_DEFAULT) {
+        if (CodeGenerator.MAX_ACYCLIC_DFA_STATES_INLINE == CodeGenerator.MAX_ACYCLIC_DFA_STATES_INLINE ) {
 
             CodeGenerator.MAX_ACYCLIC_DFA_STATES_INLINE = 65535;
         }

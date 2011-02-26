@@ -77,17 +77,16 @@ public class CodeGenerator {
 	 *  limit will be hit only for lexers where wildcard in a UNICODE
 	 *  vocabulary environment would generate a SWITCH with 65000 labels.
 	 */
-        public final static int MSCL_DEFAULT = 300;
+	public final static int MSCL_DEFAULT = 300;
 	public static int MAX_SWITCH_CASE_LABELS = MSCL_DEFAULT;
-        public final static int MSA_DEFAULT = 3;
+	public final static int MSA_DEFAULT = 3;
 	public static int MIN_SWITCH_ALTS = MSA_DEFAULT;
 	public boolean GENERATE_SWITCHES_WHEN_POSSIBLE = true;
-	//public static boolean GEN_ACYCLIC_DFA_INLINE = true;
 	public static boolean EMIT_TEMPLATE_DELIMITERS = false;
-        public final static int MADSI_DEFAULT = 10;
-	public static int MAX_ACYCLIC_DFA_STATES_INLINE = 10;
+	public final static int MADSI_DEFAULT = 50; // do lots of states inline (needed for expression rules)
+	public static int MAX_ACYCLIC_DFA_STATES_INLINE = MADSI_DEFAULT;
 
-	public String classpathTemplateRootDirectoryName =
+	public static String classpathTemplateRootDirectoryName =
 		"org/antlr/codegen/templates";
 
 	/** Which grammar are we generating code for?  Each generator
@@ -455,7 +454,7 @@ public class CodeGenerator {
 		}
 		outputFileST.setAttribute("synpreds", synpredNames);
 		headerFileST.setAttribute("synpreds", synpredNames);
-		
+
 		// all recognizers can see Grammar object
 		recognizerST.setAttribute("grammar", grammar);
 
@@ -1050,7 +1049,7 @@ public class CodeGenerator {
 		org.antlr.grammar.v2.ANTLRLexer lexer = new org.antlr.grammar.v2.ANTLRLexer(new StringReader(templateActionText));
 		lexer.setFilename(grammar.getFileName());
 		lexer.setTokenObjectClass("antlr.TokenWithIndex");
-		TokenStreamRewriteEngine tokenBuffer = new TokenStreamRewriteEngine(lexer);
+		TokenStreamRewriteEngine tokenBuffer = new ANTLRTokenStream(lexer);
 		tokenBuffer.discard(ANTLRParser.WS);
 		tokenBuffer.discard(ANTLRParser.ML_COMMENT);
 		tokenBuffer.discard(ANTLRParser.COMMENT);

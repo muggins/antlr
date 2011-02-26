@@ -201,11 +201,27 @@ tokenSpec
 	;
 
 rules
-    :   ( rule )+
+    :   ( rule|precRule )+
     ;
 
 rule
     :   #( RULE id:ID
+           (modifier)?
+           {out(#id.getText());}
+           #(ARG (arg:ARG_ACTION {out("["+#arg.getText()+"]");} )? )
+           #(RET (ret:ARG_ACTION {out(" returns ["+#ret.getText()+"]");} )? )
+           (optionsSpec)?
+           (ruleScopeSpec)?
+		   (ruleAction)*
+           {out(" : ");}
+           b:block[false]
+           (exceptionGroup)?
+           EOR {out(";\n");}
+         )
+    ;
+
+precRule
+    :   #( PREC_RULE id:ID
            (modifier)?
            {out(#id.getText());}
            #(ARG (arg:ARG_ACTION {out("["+#arg.getText()+"]");} )? )
@@ -249,7 +265,7 @@ int numAlts = countAltsForBlock(#block);
     ;
 
 countAltsForBlock returns [int n=0]
-    :   #( BLOCK (OPTIONS)? (ALT (REWRITE)* {n++;})+ EOB )
+    :   #( BLOCK (OPTIONS)? (ALT (REWRITES)? {n++;})+ EOB )
 	;
 
 alternative
@@ -293,7 +309,8 @@ rewrite_template
 	;
 
 rewrite
-	:	(single_rewrite)*
+	:	#(REWRITES (single_rewrite)*)
+	|
 	;
 
 element

@@ -181,7 +181,8 @@ public class ErrorManager {
 	public static final int MSG_AST_OP_IN_ALT_WITH_REWRITE = 165;
     public static final int MSG_WILDCARD_AS_ROOT = 166;
     public static final int MSG_CONFLICTING_OPTION_IN_TREE_FILTER = 167;
-
+	public static final int MSG_ILLEGAL_OPTION_VALUE = 168;
+	public static final int MSG_ALL_OPS_NEED_SAME_ASSOC = 169;
 
 	// GRAMMAR WARNINGS
 	public static final int MSG_GRAMMAR_NONDETERMINISM = 200; // A predicts alts 1,2
@@ -601,7 +602,7 @@ public class ErrorManager {
 	}
 
 	public static void resetErrorState() {
-        threadToListenerMap = new HashMap();        
+        threadToListenerMap = new HashMap();
         ErrorState ec = new ErrorState();
 		threadToErrorStateMap.put(Thread.currentThread(), ec);
 	}

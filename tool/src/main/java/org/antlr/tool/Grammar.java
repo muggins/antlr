@@ -148,7 +148,7 @@ public class Grammar {
 	 *  including whitespace tokens etc...  I use this to extract
 	 *  lexer rules from combined grammars.
 	 */
-	protected TokenStreamRewriteEngine tokenBuffer;
+	public TokenStreamRewriteEngine tokenBuffer;
 	public static final String IGNORE_STRING_IN_GRAMMAR_FILE_NAME = "__";
 	public static final String AUTO_GENERATED_TOKEN_NAME_PREFIX = "T__";
 
@@ -262,16 +262,16 @@ public class Grammar {
 			new HashMap() {{put("greedy","true");}};
 
 	// Token options are here to avoid contaminating Token object in runtime
-	
+
 	/** Legal options for terminal refs like ID<node=MyVarNode> */
 	public static final Set legalTokenOptions =
 			new HashSet() {
 				{
 				add(defaultTokenOption);
-                add("associativity");
+                add("assoc");
 				}
 			};
-	
+
 	public static final String defaultTokenOption = "node";
 
 	/** Is there a global fixed lookahead set for this grammar?
@@ -338,7 +338,7 @@ public class Grammar {
 
 	/** A list of all rules that are in any left-recursive cycle.  There
 	 *  could be multiple cycles, but this is a flat list of all problematic
-	 *  rules.
+	 *  rules. This is stuff we couldn't refactor to precedence rule.
 	 */
 	protected Set<Rule> leftRecursiveRules;
 
@@ -348,14 +348,26 @@ public class Grammar {
 	 */
 	protected boolean externalAnalysisAbort;
 
-	public int numNonLLStar = 0; // hack to track for -report	
+	public int numNonLLStar = 0; // hack to track for -report
 
 	/** When we read in a grammar, we track the list of syntactic predicates
 	 *  and build faux rules for them later.  See my blog entry Dec 2, 2005:
 	 *  http://www.antlr.org/blog/antlr3/lookahead.tml
 	 *  This maps the name (we make up) for a pred to the AST grammar fragment.
 	 */
-	protected LinkedHashMap nameToSynpredASTMap;
+	protected LinkedHashMap<String, GrammarAST> nameToSynpredASTMap;
+
+	/** Each left-recursive precedence rule must define precedence array
+	 *  for binary operators like:
+	 *
+	 *  	static int[] e_prec = new int[tokenNames.length];
+	 *  	static {
+   	 *  		e_prec[75] = 1;
+	 *  	}
+	 *  Track and we push into parser later; this is computed
+	 *  early when we look for prec rules.
+	 */
+	public List<String> precRuleInitCodeBlocks = new ArrayList<String>();
 
     /** At least one rule has memoize=true */
     public boolean atLeastOneRuleMemoizes;
@@ -507,7 +519,7 @@ public class Grammar {
 		if ( composite.delegateGrammarTreeRoot==null ) {
 			composite.setDelegationRoot(this);
 		}
-		target = CodeGenerator.loadLanguageTarget((String)getOption("language"));		
+		target = CodeGenerator.loadLanguageTarget((String)getOption("language"));
 	}
 
 	/** Useful for when you are sure that you are not part of a composite
@@ -613,7 +625,7 @@ public class Grammar {
 		// in case they have a merged lexer/parser, send lexer rules to
 		// new grammar.
 		lexer.setTokenObjectClass("antlr.TokenWithIndex");
-		tokenBuffer = new TokenStreamRewriteEngine(lexer);
+		tokenBuffer = new ANTLRTokenStream(lexer);
 		tokenBuffer.discard(ANTLRParser.WS);
 		tokenBuffer.discard(ANTLRParser.ML_COMMENT);
 		tokenBuffer.discard(ANTLRParser.COMMENT);
@@ -646,19 +658,15 @@ public class Grammar {
 		}
 
 		grammarTree = (GrammarAST)parser.getAST();
+
+		if ( grammarTree!=null ) System.out.println("grammar tree: "+grammarTree.toStringTree());
+
+		grammarTree.setUnknownTokenBoundaries();
+
 		setFileName(lexer.getFilename()); // the lexer #src might change name
 		if ( grammarTree==null || grammarTree.findFirstType(ANTLRParser.RULE)==null ) {
 			ErrorManager.error(ErrorManager.MSG_NO_RULES, getFileName());
 			return;
-		}
-
-		// Get syn pred rules and add to existing tree
-		List synpredRules =
-			getArtificialRulesForSyntacticPredicates(parser,
-													 nameToSynpredASTMap);
-		for (int i = 0; i < synpredRules.size(); i++) {
-			GrammarAST rAST = (GrammarAST) synpredRules.get(i);
-			grammarTree.addChild(rAST);
 		}
 	}
 
@@ -695,6 +703,32 @@ public class Grammar {
             // superClass set in template target::treeParser
         }
     }
+
+	public void translateLeftRecursiveRule(GrammarAST ruleAST) {
+		LeftRecursiveRuleAnalyzer leftRecursiveRuleWalker =
+			new LeftRecursiveRuleAnalyzer(this, ruleAST.enclosingRuleName);
+		leftRecursiveRuleWalker.setASTNodeClass("org.antlr.tool.GrammarAST");
+		boolean isLeftRec = false;
+		try {
+			//System.out.println("TESTING "+ruleAST.enclosingRuleName);
+			isLeftRec = leftRecursiveRuleWalker.rec_rule(ruleAST, this);
+		}
+		catch (RecognitionException re) {
+			ErrorManager.error(ErrorManager.MSG_BAD_AST_STRUCTURE, re);
+		}
+		if ( !isLeftRec ) return;
+		List<String> rules = new ArrayList<String>();
+		rules.add( leftRecursiveRuleWalker.getArtificialPrecStartRule() ) ;
+		rules.add( leftRecursiveRuleWalker.getArtificialOpPrecRule() );
+		rules.add( leftRecursiveRuleWalker.getArtificialPrimaryRule() );
+		for (String r : rules) {
+			GrammarAST t = parseArtificialRule(r);
+			addRule(grammarTree, t);
+			//System.out.println(t.toStringTree());
+		}
+
+		//precRuleInitCodeBlocks.add( precRuleWalker.getOpPrecJavaCode() );
+	}
 
 	public void defineGrammarSymbols() {
 		if ( Tool.internalOption_PrintGrammarTree ) {
@@ -836,29 +870,48 @@ public class Grammar {
 		}
 		//System.out.println("tokens rule: "+matchTokenRuleST.toString());
 
-		ANTLRLexer lexer = new ANTLRLexer(new StringReader(matchTokenRuleST.toString()));
+//		ANTLRLexer lexer = new ANTLRLexer(new StringReader(matchTokenRuleST.toString()));
+//		lexer.setTokenObjectClass("antlr.TokenWithIndex");
+//		TokenStreamRewriteEngine tokbuf =
+//			new ANTLRTokenStream(lexer);
+//		tokbuf.discard(ANTLRParser.WS);
+//		tokbuf.discard(ANTLRParser.ML_COMMENT);
+//		tokbuf.discard(ANTLRParser.COMMENT);
+//		tokbuf.discard(ANTLRParser.SL_COMMENT);
+//		ANTLRParser parser = new ANTLRParser(tokbuf);
+//		parser.setGrammar(this);
+//		parser.setGtype(ANTLRParser.LEXER_GRAMMAR);
+//		parser.setASTNodeClass("org.antlr.tool.GrammarAST");
+//		try {
+//			parser.rule();
+//			if ( Tool.internalOption_PrintGrammarTree ) {
+//				System.out.println("Tokens rule: "+parser.getAST().toStringTree());
+//			}
+//		}
+//		catch (Exception e) {
+//			ErrorManager.error(ErrorManager.MSG_ERROR_CREATING_ARTIFICIAL_RULE,
+//							   e);
+//		}
+		GrammarAST r = parseArtificialRule(matchTokenRuleST.toString());
+		addRule(grammarAST, r);
+		//addRule((GrammarAST)parser.getAST());
+		//return (GrammarAST)parser.getAST();
+		return r;
+	}
+
+	public GrammarAST parseArtificialRule(String ruleText) {
+		ANTLRLexer lexer = new ANTLRLexer(new StringReader(ruleText));
 		lexer.setTokenObjectClass("antlr.TokenWithIndex");
-		TokenStreamRewriteEngine tokbuf =
-			new TokenStreamRewriteEngine(lexer);
+		TokenStreamRewriteEngine tokbuf = new ANTLRTokenStream(lexer);
 		tokbuf.discard(ANTLRParser.WS);
 		tokbuf.discard(ANTLRParser.ML_COMMENT);
 		tokbuf.discard(ANTLRParser.COMMENT);
 		tokbuf.discard(ANTLRParser.SL_COMMENT);
 		ANTLRParser parser = new ANTLRParser(tokbuf);
 		parser.setGrammar(this);
-		parser.setGtype(ANTLRParser.LEXER_GRAMMAR);
+		parser.setGtype(this.type);
 		parser.setASTNodeClass("org.antlr.tool.GrammarAST");
-		try {
-			parser.rule();
-			if ( Tool.internalOption_PrintGrammarTree ) {
-				System.out.println("Tokens rule: "+parser.getAST().toStringTree());
-			}
-			GrammarAST p = grammarAST;
-			while ( p.getType()!=ANTLRParser.LEXER_GRAMMAR ) {
-				p = (GrammarAST)p.getNextSibling();
-			}
-			p.addChild(parser.getAST());
-		}
+		try { parser.rule(); }
 		catch (Exception e) {
 			ErrorManager.error(ErrorManager.MSG_ERROR_CREATING_ARTIFICIAL_RULE,
 							   e);
@@ -866,29 +919,47 @@ public class Grammar {
 		return (GrammarAST)parser.getAST();
 	}
 
+
+	public void addRule(GrammarAST grammarTree, GrammarAST t) {
+		GrammarAST p = (GrammarAST)grammarTree.getFirstChild();
+		while ( p!=null &&
+				p.getType()!=ANTLRParser.RULE &&
+			    p.getType()!=ANTLRParser.PREC_RULE )
+		{
+			p = (GrammarAST)p.getNextSibling();
+		}
+		if ( p!=null ) grammarTree.addChild(t);
+	}
+
 	/** for any syntactic predicates, we need to define rules for them; they will get
 	 *  defined automatically like any other rule. :)
 	 */
-	protected List getArtificialRulesForSyntacticPredicates(ANTLRParser parser,
-															LinkedHashMap nameToSynpredASTMap)
+	protected List getArtificialRulesForSyntacticPredicates(LinkedHashMap<String,GrammarAST> nameToSynpredASTMap)
 	{
-		List rules = new ArrayList();
+		List<GrammarAST> rules = new ArrayList<GrammarAST>();
 		if ( nameToSynpredASTMap==null ) {
 			return rules;
 		}
-		Set predNames = nameToSynpredASTMap.keySet();
 		boolean isLexer = grammarTree.getType()==ANTLRParser.LEXER_GRAMMAR;
-		for (Iterator it = predNames.iterator(); it.hasNext();) {
-			String synpredName = (String)it.next();
-			GrammarAST fragmentAST =
-				(GrammarAST) nameToSynpredASTMap.get(synpredName);
+		for (String synpredName : nameToSynpredASTMap.keySet()) {
+			GrammarAST fragmentAST = nameToSynpredASTMap.get(synpredName);
 			GrammarAST ruleAST =
-				parser.createSimpleRuleAST(synpredName,
-										   fragmentAST,
-										   isLexer);
+				ANTLRParser.createSimpleRuleAST(synpredName,
+												fragmentAST,
+												isLexer);
 			rules.add(ruleAST);
 		}
 		return rules;
+	}
+
+	public void addRulesForSyntacticPredicates() {
+		// Get syn pred rules and add to existing tree
+		List synpredRules =
+			getArtificialRulesForSyntacticPredicates(nameToSynpredASTMap);
+		for (int i = 0; i < synpredRules.size(); i++) {
+			GrammarAST rAST = (GrammarAST) synpredRules.get(i);
+			grammarTree.addChild(rAST);
+		}
 	}
 
 	/** Walk the list of options, altering this Grammar object according
@@ -1516,7 +1587,7 @@ outer:
 	public void defineLexerRuleFoundInParser(antlr.Token ruleToken,
 											 GrammarAST ruleAST)
 	{
-		//System.out.println("rule tree is:\n"+ruleAST.toStringTree());
+//		System.out.println("rule tree is:\n"+ruleAST.toStringTree());
 		/*
 		String ruleText = tokenBuffer.toOriginalString(ruleAST.ruleStartTokenIndex,
 											   ruleAST.ruleStopTokenIndex);
@@ -1528,8 +1599,8 @@ outer:
 		buf.append("\" ");
 		buf.append(ruleAST.getLine());
 		buf.append("\n");
-		for (int i=ruleAST.ruleStartTokenIndex;
-			 i<=ruleAST.ruleStopTokenIndex && i<tokenBuffer.size();
+		for (int i=ruleAST.startIndex;
+			 i<=ruleAST.stopIndex && i<tokenBuffer.size();
 			 i++)
 		{
 			TokenWithIndex t = (TokenWithIndex)tokenBuffer.getToken(i);
@@ -1795,11 +1866,11 @@ outer:
 	 */
 	public Set<String> getLabels(Set<GrammarAST> rewriteElements, int labelType) {
 		Set<String> labels = new HashSet<String>();
-		for (Iterator it = rewriteElements.iterator(); it.hasNext();) {
-			GrammarAST el = (GrammarAST) it.next();
+		for (GrammarAST el : rewriteElements) {
 			if ( el.getType()==ANTLRParser.LABEL ) {
 				String labelName = el.getText();
 				Rule enclosingRule = getLocallyDefinedRule(el.enclosingRuleName);
+				if ( enclosingRule==null ) continue;
 				LabelElementPair pair = enclosingRule.getLabel(labelName);
                 /*
                 // if tree grammar and we have a wildcard, only notice it
@@ -2526,7 +2597,7 @@ outer:
 		NFAState decisionNFAStartState = getDecisionNFAStartState(decision);
 		String autoBacktrack =
 			(String)getBlockOption(decisionNFAStartState.associatedASTNode, "backtrack");
-		
+
 		if ( autoBacktrack==null ) {
 			autoBacktrack = (String)nfa.grammar.getOption("backtrack");
 		}
@@ -2580,7 +2651,7 @@ outer:
 	 *  interfaces.  It is not my intention that people use subcomposites.
 	 *  Only the outermost grammar should be used from outside code.  The
 	 *  other grammar components are specifically generated to work only
-	 *  with the master/root. 
+	 *  with the master/root.
 	 *
 	 *  delegatedRules = imported - overridden
 	 */
@@ -2621,7 +2692,7 @@ outer:
 	public List<Grammar> getDirectDelegates() {
 		return composite.getDirectDelegates(this);
 	}
-	
+
 	/** Get delegates below direct delegates */
 	public List<Grammar> getIndirectDelegates() {
 		return composite.getIndirectDelegates(this);

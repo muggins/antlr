@@ -158,7 +158,7 @@ grammarSpec
 	;
 
 rules
-    :   ( rule )+
+    :   ( rule | PREC_RULE )+
     ;
 
 rule
@@ -279,15 +279,18 @@ finallyClause
     ;
 
 rewrite
-	:	(
-			{
-			if ( grammar.getOption("output")==null ) {
-				ErrorManager.grammarError(ErrorManager.MSG_REWRITE_OR_OP_WITH_NO_OUTPUT_OPTION,
-										  grammar, #rewrite.token, currentRuleName);
-			}
-			}
-			#( REWRITE (SEMPRED)? (ALT|TEMPLATE|ACTION|ETC) )
-		)*
+	:	#(REWRITES
+            (
+                {
+                if ( grammar.getOption("output")==null ) {
+                    ErrorManager.grammarError(ErrorManager.MSG_REWRITE_OR_OP_WITH_NO_OUTPUT_OPTION,
+                                              grammar, #rewrite.token, currentRuleName);
+                }
+                }
+                #( REWRITE (SEMPRED)? (ALT|TEMPLATE|ACTION|ETC) )
+            )*
+		)
+	|
 	;
 
 element returns [StateCluster g=null]

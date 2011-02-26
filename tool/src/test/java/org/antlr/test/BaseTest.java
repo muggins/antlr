@@ -51,7 +51,7 @@ public abstract class BaseTest {
 
 	public static final String jikes = null;//"/usr/bin/jikes";
 	public static final String pathSep = System.getProperty("path.separator");
-    
+
    /**
     * When runnning from Maven, the junit tests are run via the surefire plugin. It sets the
     * classpath for the test environment into the following property. We need to pick this up
@@ -62,11 +62,11 @@ public abstract class BaseTest {
     /**
      * Build up the full classpath we need, including the surefire path (if present)
      */
-    public static final String CLASSPATH = System.getProperty("java.class.path") + (SUREFIRE_CLASSPATH.equals("") ? "" : pathSep + SUREFIRE_CLASSPATH); 
-    
+    public static final String CLASSPATH = System.getProperty("java.class.path") + (SUREFIRE_CLASSPATH.equals("") ? "" : pathSep + SUREFIRE_CLASSPATH);
+
 	public String tmpdir = null;
 
-    /** reset during setUp and set to true if we find a problem */  
+    /** reset during setUp and set to true if we find a problem */
     protected boolean lastTestFailed = false;
 
 	/** If error during parser execution, store stderr here; can't return
@@ -335,6 +335,7 @@ public abstract class BaseTest {
 													String lexerName,
 													boolean debug)
 	{
+		System.out.println(grammarStr);
 		boolean allIsWell =
 			antlr(grammarFileName, grammarFileName, grammarStr, debug);
 		if ( lexerName!=null ) {
@@ -364,6 +365,44 @@ public abstract class BaseTest {
 									   boolean debug)
 	{
         this.stderrDuringParse = null;
+		writeRecognizerAndCompile(parserName, treeParserName, lexerName, parserStartRuleName, treeParserStartRuleName, parserBuildsTrees, parserBuildsTemplate, treeParserBuildsTrees, debug);
+
+		return execRecognizer();
+	}
+
+	public String execRecognizer() {
+		try {
+			String[] args = new String[] {
+				"java", "-classpath", tmpdir+pathSep+CLASSPATH,
+				"Test", new File(tmpdir, "input").getAbsolutePath()
+			};
+			//String cmdLine = "java -classpath "+CLASSPATH+pathSep+tmpdir+" Test " + new File(tmpdir, "input").getAbsolutePath();
+			//System.out.println("execParser: "+cmdLine);
+			Process process =
+				Runtime.getRuntime().exec(args, null, new File(tmpdir));
+			StreamVacuum stdoutVacuum = new StreamVacuum(process.getInputStream());
+			StreamVacuum stderrVacuum = new StreamVacuum(process.getErrorStream());
+			stdoutVacuum.start();
+			stderrVacuum.start();
+			process.waitFor();
+			stdoutVacuum.join();
+			stderrVacuum.join();
+			String output = null;
+			output = stdoutVacuum.toString();
+			if ( stderrVacuum.toString().length()>0 ) {
+				this.stderrDuringParse = stderrVacuum.toString();
+				//System.err.println("exec stderrVacuum: "+ stderrVacuum);
+			}
+			return output;
+		}
+		catch (Exception e) {
+			System.err.println("can't exec recognizer");
+			e.printStackTrace(System.err);
+		}
+		return null;
+	}
+
+	public void writeRecognizerAndCompile(String parserName, String treeParserName, String lexerName, String parserStartRuleName, String treeParserStartRuleName, boolean parserBuildsTrees, boolean parserBuildsTemplate, boolean treeParserBuildsTrees, boolean debug) {
 		if ( treeParserBuildsTrees && parserBuildsTrees ) {
 			writeTreeAndTreeTestFile(parserName,
 									 treeParserName,
@@ -397,35 +436,6 @@ public abstract class BaseTest {
 		}
 
 		compile("Test.java");
-		try {
-			String[] args = new String[] {
-				"java", "-classpath", tmpdir+pathSep+CLASSPATH,
-				"Test", new File(tmpdir, "input").getAbsolutePath()
-			};
-			//String cmdLine = "java -classpath "+CLASSPATH+pathSep+tmpdir+" Test " + new File(tmpdir, "input").getAbsolutePath();
-			//System.out.println("execParser: "+cmdLine);
-			Process process =
-				Runtime.getRuntime().exec(args, null, new File(tmpdir));
-			StreamVacuum stdoutVacuum = new StreamVacuum(process.getInputStream());
-			StreamVacuum stderrVacuum = new StreamVacuum(process.getErrorStream());
-			stdoutVacuum.start();
-			stderrVacuum.start();
-			process.waitFor();
-			stdoutVacuum.join();
-			stderrVacuum.join();
-			String output = null;
-			output = stdoutVacuum.toString();
-			if ( stderrVacuum.toString().length()>0 ) {
-				this.stderrDuringParse = stderrVacuum.toString();
-				//System.err.println("exec stderrVacuum: "+ stderrVacuum);
-			}
-			return output;
-		}
-		catch (Exception e) {
-			System.err.println("can't exec recognizer");
-			e.printStackTrace(System.err);
-		}
-		return null;
 	}
 
 	protected void checkGrammarSemanticsError(ErrorQueue equeue,
@@ -470,7 +480,7 @@ public abstract class BaseTest {
 				   foundMsg instanceof GrammarSemanticsMessage);
 		assertEquals(expectedMessage.arg, foundMsg.arg);
 	}
-    
+
     protected void checkError(ErrorQueue equeue,
                               Message expectedMessage)
         throws Exception
@@ -852,7 +862,7 @@ public abstract class BaseTest {
         }
         return buf.toString();
     }
-    
+
     /**
      * When looking at a result set that consists of a Map/HashTable
      * we cannot rely on the output order, as the hashing algorithm or other aspects
@@ -860,23 +870,23 @@ public abstract class BaseTest {
      * we take the Map, convert the keys to a List, sort them and Stringify the Map, which is a
      * bit of a hack, but guarantees that we get the same order on all systems. We assume that
      * the keys are strings.
-     * 
+     *
      * @param m The Map that contains keys we wish to return in sorted order
      * @return A string that represents all the keys in sorted order.
      */
     public String sortMapToString(Map m) {
-        
+
         System.out.println("Map toString looks like: " + m.toString());
         // Pass in crap, and get nothing back
         //
         if  (m == null) {
             return null;
         }
-        
+
         // Sort the keys in the Map
         //
         TreeMap nset = new TreeMap(m);
-        
+
         System.out.println("Tree map looks like: " + nset.toString());
         return nset.toString();
     }

@@ -25,7 +25,9 @@ header {
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/package org.antlr.grammar.v2;
+*/
+
+package org.antlr.grammar.v2;
 import java.util.*;
 import java.io.*;
 import org.antlr.analysis.*;
@@ -41,9 +43,11 @@ import antlr.NoViableAltException;
 import antlr.ParserSharedInputState;
 import antlr.collections.impl.BitSet;
 import antlr.collections.AST;
+import antlr.collections.ASTEnumeration;
 import antlr.ASTFactory;
 import antlr.ASTPair;
 import antlr.TokenWithIndex;
+import antlr.TokenStreamRewriteEngine;
 import antlr.collections.impl.ASTArray;
 }
 
@@ -75,9 +79,11 @@ tokens {
 	OPTIONS="options";
 	TOKENS="tokens";
 	PARSER="parser";
-	
+
     LEXER;
     RULE;
+    PREC_RULE;
+    RECURSIVE_RULE_REF; // flip recursive RULE_REF to RECURSIVE_RULE_REF in prec rules
     BLOCK;
     OPTIONAL;
     CLOSURE;
@@ -109,6 +115,7 @@ tokens {
     BACKTRACK_SEMPRED; // auto backtracking mode syn pred converted to sempred
     FRAGMENT="fragment";
     DOT;
+    REWRITES;
 }
 
 {
@@ -130,7 +137,7 @@ tokens {
     public void setGtype(int gtype) {
         this.gtype = gtype;
         }
-	
+
     protected String currentRuleName = null;
 	protected GrammarAST currentBlockAST = null;
 	protected boolean atTreeRoot; // are we matching a tree root in tree grammar?
@@ -200,10 +207,17 @@ tokens {
 		return p;
 	}
 
-	public GrammarAST createSimpleRuleAST(String name,
-										  GrammarAST block,
-										  boolean fragment)
+	public static GrammarAST createSimpleRuleAST(String name,
+												  GrammarAST block,
+												  boolean fragment)
    {
+		ASTFactory astFactory =
+			new ASTFactory() {
+				{
+					setASTNodeClass(GrammarAST.class);
+					setASTNodeClass("org.antlr.tool.GrammarAST");
+				}
+			};
    		GrammarAST modifier = null;
    		if ( fragment ) {
    			modifier = #[FRAGMENT,"fragment"];
@@ -387,14 +401,14 @@ rules
 
 rule!
 {
-GrammarAST modifier=null, blk=null, blkRoot=null, eob=null;
-int start = ((TokenWithIndex)LT(1)).getIndex();
+GrammarAST modifier=null, blk=null, eob=null;
 int startLine = LT(1).getLine();
 GrammarAST opt = null;
 Map opts = null;
+TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:
-	(	d:DOC_COMMENT	
+	(	d:DOC_COMMENT
 	)?
 	(	p1:"protected"	{modifier=#p1;}
 	|	p2:"public"		{modifier=#p2;}
@@ -416,13 +430,9 @@ Map opts = null;
 	(a:ruleActions)?
 	colon:COLON
 	{
-	blkRoot = #[BLOCK,"BLOCK"];
-	blkRoot.setBlockOptions(opts);
-	blkRoot.setLine(colon.getLine());
-	blkRoot.setColumn(colon.getColumn());
 	eob = #[EOB,"<end-of-block>"];
     }
-	b:altList[opts] {blk = #b;}
+	b:ruleAltList[opts] {blk = #b;}
 	semi:SEMI
 	( ex:exceptionGroup )?
     {
@@ -433,14 +443,14 @@ Map opts = null;
 	eor.setLine(semi.getLine());
 	eor.setColumn(semi.getColumn());
 	GrammarAST root = #[RULE,"rule"];
-	root.ruleStartTokenIndex = start;
-	root.ruleStopTokenIndex = stop;
 	root.setLine(startLine);
 	root.setBlockOptions(opts);
     #rule = #(root,
               #ruleName,modifier,#(#[ARG,"ARG"],#aa),#(#[RET,"RET"],#rt),
               opt,#scopes,#a,blk,ex,eor);
+    #rule.setTreeEnclosingRuleNameDeeply(currentRuleName);
 	currentRuleName=null;
+    ##.setTokenBoundaries(start,LT(0));
     }
 	;
 
@@ -455,7 +465,7 @@ ruleAction
 
 throwsSpec
 	:	"throws" id ( COMMA id )*
-		
+
 	;
 
 ruleScopeSpec
@@ -473,11 +483,36 @@ int column = LT(1).getColumn();
 		}
 	;
 
+ruleAltList[Map opts]
+{
+	GrammarAST blkRoot = #[BLOCK,"BLOCK"];
+	blkRoot.setBlockOptions(opts);
+	blkRoot.setLine(LT(0).getLine()); // set to : or (
+	blkRoot.setColumn(LT(0).getColumn());
+	GrammarAST save = currentBlockAST;
+	currentBlockAST = #blkRoot;
+	TokenWithIndex start = (TokenWithIndex)LT(1);
+}
+    :   a1:alternative rewrite
+		{if (LA(1)==OR||(LA(2)==QUESTION||LA(2)==PLUS||LA(2)==STAR)) prefixWithSynPred(#a1);}
+        (   ( OR! a2:alternative rewrite
+              {if (LA(1)==OR||(LA(2)==QUESTION||LA(2)==PLUS||LA(2)==STAR)) prefixWithSynPred(#a2);}
+            )+
+        |
+        )
+        {
+        #ruleAltList = #(blkRoot,#ruleAltList,#[EOB,"<end-of-block>"]);
+        currentBlockAST = save;
+        ##.setTokenBoundaries(start,LT(0));
+        }
+    ;
+
 /** Build #(BLOCK ( #(ALT ...) EOB )+ ) */
 block
 {
 GrammarAST save = currentBlockAST;
 Map opts=null;
+	TokenWithIndex start = (TokenWithIndex)LT(1);
 }
     :   lp:LPAREN^ {#lp.setType(BLOCK); #lp.setText("BLOCK");}
 		(
@@ -499,8 +534,8 @@ Map opts=null;
 		a1:alternative rewrite
 		{if (LA(1)==OR||(LA(2)==QUESTION||LA(2)==PLUS||LA(2)==STAR)) prefixWithSynPred(#a1);}
 		( OR! a2:alternative rewrite
-		  {if (LA(1)==OR||(LA(2)==QUESTION||LA(2)==PLUS||LA(2)==STAR)) prefixWithSynPred(#a2);}
-		)*
+          {if (LA(1)==OR||(LA(2)==QUESTION||LA(2)==PLUS||LA(2)==STAR)) prefixWithSynPred(#a2);}
+        )*
 
         rp:RPAREN!
         {
@@ -509,64 +544,61 @@ Map opts=null;
         eob.setLine(rp.getLine());
         eob.setColumn(rp.getColumn());
         #block.addChild(eob);
-        }
-    ;
-
-altList[Map opts]
-{
-	GrammarAST blkRoot = #[BLOCK,"BLOCK"];
-	blkRoot.setBlockOptions(opts);
-	blkRoot.setLine(LT(0).getLine()); // set to : or (
-	blkRoot.setColumn(LT(0).getColumn());
-	GrammarAST save = currentBlockAST;
-	currentBlockAST = #blkRoot;
-}
-    :   a1:alternative rewrite
-		{if (LA(1)==OR||(LA(2)==QUESTION||LA(2)==PLUS||LA(2)==STAR)) prefixWithSynPred(#a1);}
-    	( OR! a2:alternative rewrite
-    	  {if (LA(1)==OR||(LA(2)==QUESTION||LA(2)==PLUS||LA(2)==STAR)) prefixWithSynPred(#a2);} )*
-        {
-        #altList = #(blkRoot,#altList,#[EOB,"<end-of-block>"]);
-        currentBlockAST = save;
+        ##.setTokenBoundaries(start,LT(0));
         }
     ;
 
 alternative
 {
+    // ALT and EOA have indexes tracking start/stop of entire alt
     GrammarAST eoa = #[EOA, "<end-of-alt>"];
     GrammarAST altRoot = #[ALT,"ALT"];
+    altRoot.token.setIndex(((TokenWithIndex)LT(1)).getIndex());
     altRoot.setLine(LT(1).getLine());
     altRoot.setColumn(LT(1).getColumn());
+    Token start=LT(1);
 }
-    :   ( el:element )+
-        {
-            if ( #alternative==null ) {
-                #alternative = #(altRoot,#[EPSILON,"epsilon"],eoa);
+    :   (
+            ( el:element )+
+            {
+                if ( #alternative==null ) {
+                    #alternative = #(altRoot,#[EPSILON,"epsilon"],eoa);
+                }
+                else {
+                    // we have a real list of stuff
+                    #alternative = #(altRoot, #alternative, eoa);
+                }
+                eoa.token.setIndex(((TokenWithIndex)LT(0)).getIndex());
             }
-            else {
-            	// we have a real list of stuff
-               	#alternative = #(altRoot, #alternative, eoa);
+        |   {
+            GrammarAST eps = #[EPSILON,"epsilon"];
+            eps.setLine(LT(0).getLine()); // get line/col of '|' or ':' (prev token)
+            eps.setColumn(LT(0).getColumn());
+            #alternative = #(altRoot,eps,eoa);
             }
-        }
-    |   {
-    	GrammarAST eps = #[EPSILON,"epsilon"];
-		eps.setLine(LT(0).getLine()); // get line/col of '|' or ':' (prev token)
-		eps.setColumn(LT(0).getColumn());
-    	#alternative = #(altRoot,eps,eoa);
-    	}
+        )
+        {##.setTokenBoundaries(start,LT(0));}
     ;
 
 exceptionGroup
-	:	( exceptionHandler )+ ( finallyClause )?
-	|	finallyClause
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
+	:	(
+			( exceptionHandler )+ ( finallyClause )?
+		|	finallyClause
+		)
+        {##.setTokenBoundaries(start,LT(0));}
     ;
 
 exceptionHandler
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
     :    "catch"^ ARG_ACTION ACTION
+        {##.setTokenBoundaries(start,LT(0));}
     ;
 
 finallyClause
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
     :    "finally"^ ACTION
+        {##.setTokenBoundaries(start,LT(0));}
     ;
 
 element
@@ -577,6 +609,7 @@ elementNoOptionSpec
 {
     IntSet elements=null;
     GrammarAST sub, sub2;
+	TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:	(	id (ASSIGN^|PLUS_ASSIGN^) (atom|block)
 			( sub=ebnfSuffix[(GrammarAST)currentAST.root,false]! {#elementNoOptionSpec=sub;} )?
@@ -591,27 +624,34 @@ elementNoOptionSpec
 			}
 		|   t3:tree
 		)
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 atom
-    :   range (ROOT^|BANG^)?
-    |   (   options {
-            // TOKEN_REF WILDCARD could match terminal here then WILDCARD next
-            generateAmbigWarnings=false;
-        }
-        :   // grammar.rule but ensure no spaces. "A . B" is not a qualified ref
-        	// We do here rather than lexer so we can build a tree
-            {LT(1).getColumn()+LT(1).getText().length()==LT(2).getColumn()&&
-			 LT(2).getColumn()+1==LT(3).getColumn()}?
-			id w:WILDCARD^ (terminal|ruleref) {#w.setType(DOT);}
-        |   terminal
-        |   ruleref
-        )
-    |	notSet (ROOT^|BANG^)?
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
+    :   (
+			range (ROOT^|BANG^)?
+		|   (   options {
+				// TOKEN_REF WILDCARD could match terminal here then WILDCARD next
+				generateAmbigWarnings=false;
+			}
+			:   // grammar.rule but ensure no spaces. "A . B" is not a qualified ref
+				// We do here rather than lexer so we can build a tree
+				{LT(1).getColumn()+LT(1).getText().length()==LT(2).getColumn()&&
+				 LT(2).getColumn()+1==LT(3).getColumn()}?
+				id w:WILDCARD^ (terminal|ruleref) {#w.setType(DOT);}
+			|   terminal
+			|   ruleref
+			)
+		|	notSet (ROOT^|BANG^)?
+		)
+        {##.setTokenBoundaries(start,LT(0));}
     ;
 
 ruleref
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
     :   rr:RULE_REF^ ( ARG_ACTION )? (ROOT^|BANG^)?
+        {##.setTokenBoundaries(start,LT(0));}
     ;
 
 notSet
@@ -619,21 +659,25 @@ notSet
     int line = LT(1).getLine();
     int col = LT(1).getColumn();
     GrammarAST subrule=null;
+	TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:	n:NOT^
 		(	notTerminal
         |   block
 		)
         {#notSet.setLine(line); #notSet.setColumn(col);}
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 treeRoot
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
     :   {atTreeRoot=true;}
         (   id (ASSIGN^|PLUS_ASSIGN^) (atom|block)
 	    |   atom
 	    |   block
 	    )
         {atTreeRoot=false;}
+        {##.setTokenBoundaries(start,LT(0));}
     ;
 
 tree:   TREE_BEGIN^ treeRoot ( element )+ RPAREN! ;
@@ -643,6 +687,7 @@ ebnf!
 {
     int line = LT(1).getLine();
     int col = LT(1).getColumn();
+	TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:	b:block
 		(	QUESTION    {#ebnf=#([OPTIONAL,"?"],#b);}
@@ -654,7 +699,7 @@ ebnf!
 			     Character.isUpperCase(currentRuleName.charAt(0)) )
 		    {
                 // ignore for lexer rules in combined
-		    	#ebnf = #(#[SYNPRED,"=>"],#b); 
+		    	#ebnf = #(#[SYNPRED,"=>"],#b);
 		    }
 		    else {
 		    	// create manually specified (...)=> predicate;
@@ -667,11 +712,13 @@ ebnf!
         |   {#ebnf = #b;}
 		)
 		{#ebnf.setLine(line); #ebnf.setColumn(col);}
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 range!
 {
 GrammarAST subrule=null, root=null;
+TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:	c1:CHAR_LITERAL RANGE c2:CHAR_LITERAL
 		{
@@ -682,54 +729,70 @@ GrammarAST subrule=null, root=null;
 		root = #range;
 		}
 //    	(subrule=ebnfSuffix[root,false] {#range=subrule;})?
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 terminal
 {
 GrammarAST ebnfRoot=null, subrule=null;
+TokenWithIndex start = (TokenWithIndex)LT(1);
 }
-    :   cl:CHAR_LITERAL^ ( elementOptions[#cl]! )? (ROOT^|BANG^)?
+    :   (
+			cl:CHAR_LITERAL^ ( elementOptions[#cl]! )? (ROOT^|BANG^)?
 
-	|   tr:TOKEN_REF^
-            ( elementOptions[#tr]! )?
-			( ARG_ACTION )? // Args are only valid for lexer rules
-            (ROOT^|BANG^)?
+		|   tr:TOKEN_REF^
+				( elementOptions[#tr]! )?
+				( ARG_ACTION )? // Args are only valid for lexer rules
+				(ROOT^|BANG^)?
 
-	|   sl:STRING_LITERAL^ ( elementOptions[#sl]! )? (ROOT^|BANG^)?
+		|   sl:STRING_LITERAL^ ( elementOptions[#sl]! )? (ROOT^|BANG^)?
 
-	|   wi:WILDCARD (ROOT^|BANG^)?
-	    {
-		if ( atTreeRoot ) {
-		    ErrorManager.syntaxError(
-			    ErrorManager.MSG_WILDCARD_AS_ROOT,grammar,wi,null,null);
-	    }
-	    }
+		|   wi:WILDCARD (ROOT^|BANG^)?
+			{
+			if ( atTreeRoot ) {
+				ErrorManager.syntaxError(
+					ErrorManager.MSG_WILDCARD_AS_ROOT,grammar,wi,null,null);
+			}
+			}
+        )
+        {
+        ##.setTokenBoundaries(start,LT(0));
+        }
 	;
 
 elementOptions[GrammarAST terminalAST]
-	:	OPEN_ELEMENT_OPTION^ defaultNodeOption[terminalAST] CLOSE_ELEMENT_OPTION!
-	|	OPEN_ELEMENT_OPTION^ elementOption[terminalAST] (SEMI! elementOption[terminalAST])* CLOSE_ELEMENT_OPTION!
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
+	:	(
+			OPEN_ELEMENT_OPTION^ defaultNodeOption[terminalAST] CLOSE_ELEMENT_OPTION!
+		|	OPEN_ELEMENT_OPTION^ elementOption[terminalAST] (SEMI! elementOption[terminalAST])* CLOSE_ELEMENT_OPTION!
+        )
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 defaultNodeOption[GrammarAST terminalAST]
 {
 StringBuffer buf = new StringBuffer();
+TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:	i:id {buf.append(#i.getText());} (WILDCARD i2:id {buf.append("."+#i2.getText());})*
 	    {terminalAST.setTerminalOption(grammar,Grammar.defaultTokenOption,buf.toString());}
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 elementOption[GrammarAST terminalAST]
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
 	:	a:id ASSIGN^ (b:id|s:STRING_LITERAL)
 		{
 		Object v = (#b!=null)?#b.getText():#s.getText();
 		terminalAST.setTerminalOption(grammar,#a.getText(),v);
+        ##.setTokenBoundaries(start,LT(0));
 		}
 	;
 
 ebnfSuffix[GrammarAST elemAST, boolean inRewrite] returns [GrammarAST subrule=null]
 {
-GrammarAST ebnfRoot=null;
+	GrammarAST ebnfRoot=null;
+    TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:!	(	QUESTION {ebnfRoot = #[OPTIONAL,"?"];}
    		|	STAR     {ebnfRoot = #[CLOSURE,"*"];}
@@ -753,6 +816,7 @@ GrammarAST ebnfRoot=null;
   		       #(blkRoot,alt,eob)
   		      );
   		currentBlockAST = save;
+        subrule.setTokenBoundaries(start,LT(0));
    		}
     ;
 
@@ -774,22 +838,31 @@ id	:	TOKEN_REF {#id.setType(ID);}
 
 rewrite
 {
-    GrammarAST root = new GrammarAST();
+    GrammarAST root = #[REWRITES, "REWRITES"];
+    TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:!
 		( options { warnWhenFollowAmbig=false;}
 		: rew:REWRITE pred:SEMPRED alt:rewrite_alternative
-	      {root.addChild( #(#rew, #pred, #alt) );}
+	      {
+	      root.addChild( #(#rew, #pred, #alt) );
+	      #rew.setTokenBoundaries(#alt.token,LT(0));
+	      }
 	    )*
 		rew2:REWRITE alt2:rewrite_alternative
         {
+        TokenWithIndex stop = (TokenWithIndex)LT(0);
+        //if ( stop.getType() == REWRITE ) stop =
         root.addChild( #(#rew2, #alt2) );
-        #rewrite = (GrammarAST)root.getFirstChild();
+        root.token.setIndex(start.getIndex());
+        #rewrite = root;
+        ##.setTokenBoundaries(start,LT(0));
         }
 	|
 	;
 
 rewrite_block
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
     :   lp:LPAREN^ {#lp.setType(BLOCK); #lp.setText("BLOCK");}
 		rewrite_alternative
         RPAREN!
@@ -798,6 +871,7 @@ rewrite_block
         eob.setLine(lp.getLine());
         eob.setColumn(lp.getColumn());
         #rewrite_block.addChild(eob);
+        ##.setTokenBoundaries(start,LT(0));
         }
     ;
 
@@ -807,56 +881,69 @@ rewrite_alternative
     GrammarAST altRoot = #[ALT,"ALT"];
     altRoot.setLine(LT(1).getLine());
     altRoot.setColumn(LT(1).getColumn());
+    TokenWithIndex start = (TokenWithIndex)LT(1);
 }
-    :	{grammar.buildTemplate()}? rewrite_template
+    :	(
+            {grammar.buildTemplate()}? rewrite_template
 
-    |	{grammar.buildAST()}? ( rewrite_element )+
-        {
-            if ( #rewrite_alternative==null ) {
-                #rewrite_alternative = #(altRoot,#[EPSILON,"epsilon"],eoa);
+        |	{grammar.buildAST()}? ( rewrite_element )+
+            {
+                if ( #rewrite_alternative==null ) {
+                    #rewrite_alternative = #(altRoot,#[EPSILON,"epsilon"],eoa);
+                }
+                else {
+                    #rewrite_alternative = #(altRoot, #rewrite_alternative,eoa);
+                }
             }
-            else {
-                #rewrite_alternative = #(altRoot, #rewrite_alternative,eoa);
-            }
-        }
 
-   	|   {#rewrite_alternative = #(altRoot,#[EPSILON,"epsilon"],eoa);}
+        |   {#rewrite_alternative = #(altRoot,#[EPSILON,"epsilon"],eoa);}
 
-   	|	{grammar.buildAST()}? ETC
+        |	{grammar.buildAST()}? ETC
+   	    )
+   	    {##.setTokenBoundaries(start,LT(0));}
     ;
 
 rewrite_element
 {
 GrammarAST subrule=null;
+TokenWithIndex start = (TokenWithIndex)LT(1);
 }
-	:	t:rewrite_atom
-    	( subrule=ebnfSuffix[#t,true] {#rewrite_element=subrule;} )?
-	|   rewrite_ebnf
-	|   tr:rewrite_tree
-    	( subrule=ebnfSuffix[#tr,true] {#rewrite_element=subrule;} )?
+	:	(
+            t:rewrite_atom
+            ( subrule=ebnfSuffix[#t,true] {#rewrite_element=subrule;} )?
+        |   rewrite_ebnf
+        |   tr:rewrite_tree
+            ( subrule=ebnfSuffix[#tr,true] {#rewrite_element=subrule;} )?
+    	)
+    	{##.setTokenBoundaries(start,LT(0));}
 	;
 
 rewrite_atom
 {
 GrammarAST subrule=null;
+TokenWithIndex start = (TokenWithIndex)LT(1);
 }
-    :   tr:TOKEN_REF^ (elementOptions[#tr]!)? (ARG_ACTION)? // for imaginary nodes
-    |   rr:RULE_REF
-	|   cl:CHAR_LITERAL^ (elementOptions[#cl]!)?
-	|   sl:STRING_LITERAL^ (elementOptions[#sl]!)?
-	|!  d:DOLLAR i:id // reference to a label in a rewrite rule
-		{
-		#rewrite_atom = #[LABEL,i_AST.getText()];
-		#rewrite_atom.setLine(#d.getLine());
-		#rewrite_atom.setColumn(#d.getColumn());
-		}
-	|	ACTION
+    :   (
+            tr:TOKEN_REF^ (elementOptions[#tr]!)? (ARG_ACTION)? // for imaginary nodes
+        |   rr:RULE_REF
+        |   cl:CHAR_LITERAL^ (elementOptions[#cl]!)?
+        |   sl:STRING_LITERAL^ (elementOptions[#sl]!)?
+        |!  d:DOLLAR i:id // reference to a label in a rewrite rule
+            {
+            #rewrite_atom = #[LABEL,i_AST.getText()];
+            #rewrite_atom.setLine(#d.getLine());
+            #rewrite_atom.setColumn(#d.getColumn());
+            }
+        |	ACTION
+	    )
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 rewrite_ebnf!
 {
     int line = LT(1).getLine();
     int col = LT(1).getColumn();
+    TokenWithIndex start = (TokenWithIndex)LT(1);
 }
 	:	b:rewrite_block
 		(	QUESTION    {#rewrite_ebnf=#([OPTIONAL,"?"],#b);}
@@ -864,12 +951,16 @@ rewrite_ebnf!
 		|	PLUS	    {#rewrite_ebnf=#([POSITIVE_CLOSURE,"+"],#b);}
 		)
 		{#rewrite_ebnf.setLine(line); #rewrite_ebnf.setColumn(col);}
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
-rewrite_tree :
+rewrite_tree
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
+    :
 	TREE_BEGIN^
         rewrite_atom ( rewrite_element )*
     RPAREN!
+    {##.setTokenBoundaries(start,LT(0));}
 	;
 
 /** Build a tree for a template rewrite:
@@ -884,46 +975,59 @@ rewrite_tree :
 	-> {st-expr} // st-expr evaluates to ST
  */
 rewrite_template
-{Token st=null;}
-	:   // -> template(a={...},...) "..."
-		{LT(1).getText().equals("template")}? // inline
-		rewrite_template_head {st=LT(1);}
-		( DOUBLE_QUOTE_STRING_LITERAL! | DOUBLE_ANGLE_STRING_LITERAL! )
-		{#rewrite_template.addChild(#[st]);}
+{Token st=null; TokenWithIndex start = (TokenWithIndex)LT(1);}
+	:   (
+            // -> template(a={...},...) "..."
+            {LT(1).getText().equals("template")}? // inline
+            rewrite_template_head {st=LT(1);}
+            ( DOUBLE_QUOTE_STRING_LITERAL! | DOUBLE_ANGLE_STRING_LITERAL! )
+            {#rewrite_template.addChild(#[st]);}
 
-	|	// -> foo(a={...}, ...)
-		rewrite_template_head
+        |	// -> foo(a={...}, ...)
+            rewrite_template_head
 
-	|	// -> ({expr})(a={...}, ...)
-		rewrite_indirect_template_head
+        |	// -> ({expr})(a={...}, ...)
+            rewrite_indirect_template_head
 
-	|	// -> {...}
-		ACTION
+        |	// -> {...}
+            ACTION
+		)
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 /** -> foo(a={...}, ...) */
 rewrite_template_head
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
 	:	id lp:LPAREN^ {#lp.setType(TEMPLATE); #lp.setText("TEMPLATE");}
 		rewrite_template_args
 		RPAREN!
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 /** -> ({expr})(a={...}, ...) */
 rewrite_indirect_template_head
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
 	:	lp:LPAREN^ {#lp.setType(TEMPLATE); #lp.setText("TEMPLATE");}
 		ACTION
 		RPAREN!
 		LPAREN! rewrite_template_args RPAREN!
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 rewrite_template_args
-	:	rewrite_template_arg (COMMA! rewrite_template_arg)*
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
+	:	(
+	    rewrite_template_arg (COMMA! rewrite_template_arg)*
 		{#rewrite_template_args = #(#[ARGLIST,"ARGLIST"], rewrite_template_args);}
 	|	{#rewrite_template_args = #[ARGLIST,"ARGLIST"];}
+        )
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 rewrite_template_arg
+{TokenWithIndex start = (TokenWithIndex)LT(1);}
 	:   id a:ASSIGN^ {#a.setType(ARG); #a.setText("ARG");} ACTION
+        {##.setTokenBoundaries(start,LT(0));}
 	;
 
 class ANTLRLexer extends Lexer;

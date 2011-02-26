@@ -29,6 +29,7 @@
 import antlr.RecognitionException;
 import org.antlr.analysis.Label;
 import org.antlr.analysis.NFAState;
+import org.antlr.grammar.v2.ANTLRParser;
 import org.antlr.grammar.v2.AssignTokenTypesWalker;
 import org.antlr.misc.Utils;
 
@@ -344,6 +345,19 @@ public class CompositeGrammar {
 		ttypesWalker.defineTokens(delegateGrammarTreeRoot.grammar);
 	}
 
+	public void translateLeftRecursiveRules() {
+		List<Grammar> grammars = delegateGrammarTreeRoot.getPostOrderedGrammarList();
+		for (int i = 0; grammars!=null && i < grammars.size(); i++) {
+			Grammar g = (Grammar)grammars.get(i);
+			if ( !(g.type==Grammar.PARSER || g.type==Grammar.COMBINED) ) continue;
+			for (GrammarAST r : g.grammarTree.findAllType(ANTLRParser.RULE)) {
+				if ( !Character.isUpperCase(r.getFirstChild().getText().charAt(0)) ) {
+					g.translateLeftRecursiveRule(r);
+				}
+			}
+		}
+	}
+
 	public void defineGrammarSymbols() {
 		delegateGrammarTreeRoot.trimLexerImportsIntoCombined();
 		List<Grammar> grammars = delegateGrammarTreeRoot.getPostOrderedGrammarList();
@@ -363,11 +377,6 @@ public class CompositeGrammar {
 			return;
 		}
 		List<Grammar> grammars = delegateGrammarTreeRoot.getPostOrderedGrammarList();
-		List<String> names = new ArrayList<String>();
-		for (int i = 0; i < grammars.size(); i++) {
-			Grammar g = (Grammar) grammars.get(i);
-			names.add(g.name);
-		}
 		//System.out.println("### createNFAs for composite; grammars: "+names);
 		for (int i = 0; grammars!=null && i < grammars.size(); i++) {
 			Grammar g = (Grammar)grammars.get(i);

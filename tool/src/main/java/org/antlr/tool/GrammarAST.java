@@ -35,12 +35,10 @@ import org.antlr.analysis.DFA;
 import org.antlr.analysis.NFAState;
 import org.antlr.grammar.v2.ANTLRParser;
 import org.antlr.misc.IntSet;
+import org.antlr.misc.Interval;
 import org.antlr.stringtemplate.StringTemplate;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Grammars are first converted to ASTs using this class and then are
  *  converted to NFAs via a tree walker.
@@ -62,13 +60,14 @@ public class GrammarAST extends BaseAST {
 	public int ID = ++count;
 
 	/** This AST node was created from what token? */
-    public Token token = null;
+    public TokenWithIndex token = null;
+
+	/** What token indexes bracket all tokens associated with this node
+	 *  and below?
+	 */
+	public int startIndex=-1, stopIndex=-1;
 
     public String enclosingRuleName;
-
-	/** If this is a RULE node then track rule's start, stop tokens' index. */
-	public int ruleStartTokenIndex;
-	public int ruleStopTokenIndex;
 
     /** If this is a decision node, what is the lookahead DFA? */
     public DFA lookaheadDFA = null;
@@ -129,9 +128,9 @@ public class GrammarAST extends BaseAST {
 	 *  a label if someone does $tokenref or $ruleref in an action.
 	 */
 	public StringTemplate code;
-    
+
     /**
-     * 
+     *
      * @return
      */
     public Map<String, Object> getBlockOptions() {
@@ -139,13 +138,13 @@ public class GrammarAST extends BaseAST {
     }
 
     /**
-     * 
+     *
      * @param blockOptions
      */
     public void setBlockOptions(Map<String, Object> blockOptions) {
         this.blockOptions = blockOptions;
     }
-        
+
 	public GrammarAST() {;}
 
 	public GrammarAST(int t, String txt) {
@@ -154,21 +153,26 @@ public class GrammarAST extends BaseAST {
 
 	public void initialize(int i, String s) {
         token = new TokenWithIndex(i,s);
+		token.setIndex(-1);
     }
 
     public void initialize(AST ast) {
 		GrammarAST t = ((GrammarAST)ast);
+		this.startIndex = t.startIndex;
+		this.stopIndex = t.stopIndex;
 		this.token = t.token;
 		this.enclosingRuleName = t.enclosingRuleName;
-		this.ruleStartTokenIndex = t.ruleStartTokenIndex;
-		this.ruleStopTokenIndex = t.ruleStopTokenIndex;
 		this.setValue = t.setValue;
 		this.blockOptions = t.blockOptions;
 		this.outerAltNum = t.outerAltNum;
 	}
 
     public void initialize(Token token) {
-        this.token = token;
+        this.token = (TokenWithIndex)token;
+		if ( token!=null ) {
+			startIndex = ((TokenWithIndex) token).getIndex();
+			stopIndex = startIndex;
+		}
     }
 
     public DFA getLookaheadDFA() {
@@ -227,7 +231,7 @@ public class GrammarAST extends BaseAST {
 		}
         if ( key.equals("backtrack") && value.toString().equals("true") ) {
             grammar.composite.getRootGrammar().atLeastOneBacktrackOption = true;
-        }        
+        }
         options.put(key, value);
 		return key;
     }
@@ -395,6 +399,23 @@ public class GrammarAST extends BaseAST {
 		return null;
 	}
 
+	public List<GrammarAST> findAllType(int ttype) {
+		List<GrammarAST> nodes = new ArrayList<GrammarAST>();
+		_findAllType(ttype, nodes);
+		return nodes;
+	}
+
+	public void _findAllType(int ttype, List<GrammarAST> nodes) {
+		// check this node (the root) first
+		if ( this.getType()==ttype ) nodes.add(this);
+		// check children
+		GrammarAST child = (GrammarAST)this.getFirstChild();
+		while ( child!=null ) {
+			child._findAllType(ttype, nodes);
+			child = (GrammarAST)child.getNextSibling();
+		}
+	}
+
     public int getNumberOfChildrenWithType(int ttype) {
         AST p = this.getFirstChild();
         int n = 0;
@@ -528,6 +549,21 @@ public class GrammarAST extends BaseAST {
 		return result;
 	}
 
+	public static GrammarAST dupTree(GrammarAST t) {
+		if ( t==null ) {
+			return null;
+		}
+		GrammarAST root = dup(t);		// make copy of root
+		// copy all children of root.
+		t = (GrammarAST)t.getFirstChild();
+		while (t != null) {						// for each sibling of the root
+			GrammarAST d = dupTree(t);
+			root.addChild(d);
+			t = (GrammarAST)t.getNextSibling();
+		}
+		return root;
+	}
+
 	public void setTreeEnclosingRuleNameDeeply(String rname) {
 		GrammarAST t = this;
 		t.enclosingRuleName = rname;
@@ -538,4 +574,61 @@ public class GrammarAST extends BaseAST {
 		}
 	}
 
+	/** Track start/stop token for subtree root created for a rule.
+	 *  Only works with Tree nodes.  For rules that match nothing,
+	 *  seems like this will yield start=i and stop=i-1 in a nil node.
+	 *  Might be useful info so I'll not force to be i..i.
+	 */
+	public void setTokenBoundaries(Token startToken, Token stopToken) {
+		if ( startToken!=null ) startIndex = ((TokenWithIndex)startToken).getIndex();
+		if ( stopToken!=null ) stopIndex = ((TokenWithIndex)stopToken).getIndex();
+	}
+
+	/** For every node in this subtree, make sure it's start/stop token's
+	 *  are set.  Walk depth first, visit bottom up.  Only updates nodes
+	 *  with at least one token index < 0.
+	 */
+	public Interval setUnknownTokenBoundaries() {
+//		System.out.println(getText()+": START");
+		if ( getNumberOfChildren()==0 ) {
+			if ( startIndex<0 || stopIndex<0 ) {
+				startIndex = stopIndex = token.getIndex();
+				//System.out.println(getText()+": STOP "+startIndex);
+			}
+			return new Interval(startIndex, stopIndex);
+		}
+		GrammarAST t = (GrammarAST)this.getFirstChild();
+		int min = token.getIndex()>=0 ? token.getIndex() : Integer.MAX_VALUE;
+		int max = -1;
+		while (t != null) {
+			Interval I = t.setUnknownTokenBoundaries();
+			if ( I.a!=-1 ) min = Math.min(min, I.a);
+			max = Math.max(max, I.b);
+			t = (GrammarAST)t.getNextSibling();
+		}
+		if ( startIndex<0 || min < startIndex ) startIndex = min;
+		if ( stopIndex<0 || max > stopIndex ) stopIndex = max;
+		//System.out.println(getText()+": STOP "+startIndex+".."+stopIndex);
+		return new Interval(startIndex, stopIndex);
+	}
+
+	public GrammarAST getBlockALT(int i) {
+		if ( this.getType()!=ANTLRParser.BLOCK ) return null;
+		GrammarAST t = (GrammarAST)getFirstChild();
+		int j = 0;
+		while ( t!=null ) {
+			if ( t.getType()==ANTLRParser.ALT ) {
+				j++;
+				if ( j==i ) return t;
+			}
+			t = (GrammarAST)t.getNextSibling();
+		}
+		return null;
+	}
+
+//	@Override
+//	public String toString() {
+//		if ( startIndex==-1 && stopIndex==-1 ) return getText();
+//		return getText()+":"+startIndex+".."+stopIndex;
+//	}
 }

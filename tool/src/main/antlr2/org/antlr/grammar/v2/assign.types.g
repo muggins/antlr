@@ -232,19 +232,22 @@ rules
     :   ( rule )+
     ;
 
-rule
-    :   #( RULE id:ID {currentRuleName=#id.getText();}
-           (m:modifier)?
-           (ARG (ARG_ACTION)?)
-           (RET (ARG_ACTION)?)
-           (optionsSpec)?
-           (ruleScopeSpec)?
-       	   (AMPERSAND)*
-           b:block
-           (exceptionGroup)?
-           EOR
-           {trackTokenRule(#id,#m,#b);}
-         )
+rule:   #( RULE ruleBody)
+    |   #( PREC_RULE ruleBody)
+    ;
+
+ruleBody
+    :   id:ID {currentRuleName=#id.getText();}
+        (m:modifier)?
+        (ARG (ARG_ACTION)?)
+        (RET (ARG_ACTION)?)
+        (optionsSpec)?
+        (ruleScopeSpec)?
+        (AMPERSAND)*
+        b:block
+        (exceptionGroup)?
+        EOR
+        {trackTokenRule(#id,#m,#b);}
     ;
 
 modifier
@@ -284,7 +287,8 @@ finallyClause
     ;
 
 rewrite
-	:	( #( REWRITE (SEMPRED)? (ALT|TEMPLATE|ACTION|ETC) ) )*
+	:	#( REWRITES ( #( REWRITE (SEMPRED)? (ALT|TEMPLATE|ACTION|ETC) ) )* )
+	|
 	;
 
 element

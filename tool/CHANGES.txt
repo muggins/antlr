@@ -7,6 +7,16 @@ University of San Francisco
 
 CHANGES
 
+DEV BRANCH:
+
+* -Xmaxinlinedfastates went to 50 from 10 for forcing prediction in left-
+  recursive expression rules to stay in rule; preds use a parameter.
+
+* trees know where they came from now start..stop tokens; todo: use for
+  better err handling.
+
+* Got immediate left-recursion working.
+
 February 21, 2011
 
 * Fixed http://www.antlr.org/jira/browse/ANTLR-437 thanks to Vladislav Kuzkokov.
@@ -16,7 +26,7 @@ February 17, 2011
 
 * Add -language L option to override language=L option in grammar.  Same
   grammar can yield multiple parsers in different languages now.
-  
+
 February 10, 2011
 
 * Added method to generated Java code to return the array of delegates; e.g.,
@@ -92,7 +102,7 @@ July 20, 2010
 * code gen for AST and -profile didn't compile. had useless line:
 
              proxy.setTreeAdaptor(adap);
- 
+
 
 July 17, 2010
 
@@ -113,7 +123,7 @@ May 24, 2010
 * lexerStringRef was missing elementIndex attribute. i='import' didn't work
   in lexer.  Altered all target stg files.  Set in codegen.g
 
-* output=AST, rewrite=true for tree rewriters broken. nextNode for subtree 
+* output=AST, rewrite=true for tree rewriters broken. nextNode for subtree
   streams didn't dup node, it gave whole tree back.
 
 March 17, 2010
@@ -184,13 +194,13 @@ September 21, 2009 [Jim Idle]
 * Upgraded -X help output to include new optins and provide the default
   settings, as well as provide units for those settings that need them.
 
-* Change the C Target to overide the deafults for the new settings to 
+* Change the C Target to overide the deafults for the new settings to
   generate the most optimizable C code from the modern C compiler point of
   view. This is essentially to always use swtich statements unless there
   is absolutely no other option. C defaults are to use 1 for minimum and
   3000 for maximum number of alts that trigger switch(). This results in
   object code that is 30% smaller and up to 20% faster.
- 
+
 April 23, 2009
 
 * Added reset to TreeNodeStream interface.
@@ -259,7 +269,7 @@ This feature will be announced in 3.2, but I am integrating from my development 
   CommonTreeNodeStream is completely unbuffered unless you are
   backtracking.  No longer making a list of all nodes before tree parsing.
 
-* Added tree grammar filter=true mode.  
+* Added tree grammar filter=true mode.
 
   Altered templates:
 	Java.stg: added filterMode to genericParser and treeParser.
@@ -393,7 +403,7 @@ October 22, 2008
      *  means my parent is VARDEF and somewhere above that is a METHOD node.
      *  The first node in the context is not necessarily the root.  The context
      *  matcher stops matching and returns true when it runs out of context.
-     *  There is no way to force the first node to be the root. 
+     *  There is no way to force the first node to be the root.
      */
     public boolean inContext(String context) {...}
 
@@ -429,7 +439,7 @@ September 8, 2008
   defined in the generated method.
 
   a : x=A z=a {$x.text.equals($z.text)}? A
-    | y=A a A A 
+    | y=A a A A
     ;
 
 September 3, 2008
@@ -502,7 +512,7 @@ August 3, 2008
 * Didn't set _last in tree parser for rule ref track stuff (rewrite=true)
 
 August 2, 2008
- 
+
 * Benjamin found another rewrite engine bug.
 
 July 30, 2008
@@ -537,7 +547,7 @@ June 26, 2008
 
 * Added gParent ptr that points to immediate parent grammar. E.g.,
     // delegators
-    public MParser gM; 
+    public MParser gM;
     public M_S gS;
     public M_S gParent = gS; // NEW
 
@@ -556,7 +566,7 @@ June 4, 2008
   Also seem to be a problem with my class path during execution. Moved
   tmpdir for ahead of standard CLASSPATH.
 
-* By virtue of an improvement to StringTemplate, output newlines 
+* By virtue of an improvement to StringTemplate, output newlines
   in generated files should be normalized to whatever your host uses.
 
 June 3, 2008
@@ -629,7 +639,7 @@ warning(200): U.g:2:5: Decision can match input such as "A B" using multiple alt
 As a result, alternative(s) 2 were disabled for that input
 Semantic predicates were present but were hidden by actions.
 
-* Fixed issue where 
+* Fixed issue where
 r41
    : (INT -> INT) ( ('+' i=INT) -> ^($i $r41) )* ';'
    ;
@@ -758,7 +768,7 @@ February 4, 2008
 * BACKWARD INCOMPATIBILITY
   Added getSourceName to IntStream and TokenSource interfaces and also the
   BaseRecognizer.  Have to know where char come from for error messages.
-  Widespread change, but a trivial one. 
+  Widespread change, but a trivial one.
 
 January 17, 2008
 
@@ -786,7 +796,7 @@ January 12, 2008
 * Added recognizer methods to answer questions about current mismatched
   token error.  Useful now since i don't automatically recover inline
   to such errors (I throw exception):
-	mismatchIsUnwantedToken(IntStream input, int ttype) 
+	mismatchIsUnwantedToken(IntStream input, int ttype)
 	mismatchIsMissingToken(IntStream input, BitSet follow)
 
 * Added UnwantedTokenException and MissingTokenException to make
@@ -847,7 +857,7 @@ January 1-8, 2008
   broken up into multiple pieces using import).
 
 * Worked on composite grammars.  Had to refactor a lot of code to make
-  ANTLR deal with one meta grammar made up of multiple grammars.  I 
+  ANTLR deal with one meta grammar made up of multiple grammars.  I
   thought I had it sort of working back in August.  Yes, but barely. Lots
   of work to do it seemed.  Lots of clean up work.  Many new unit tests
   in TestCompositeGrammars.  Had to add new error messages warning about
@@ -912,7 +922,7 @@ December 29, 2007
 * Harald Muller pointed out that we need to use <initValue(attr.type)>
   in our tests for null token/rule property references. For int types
   we need 0 not null. (p!=null?p.line:0).  Changed scopeAttributeRef,
-  ruleLabelRef.  Also changed the known typed attributes like 
+  ruleLabelRef.  Also changed the known typed attributes like
   lexerRuleLabelPropertyRef_line to yield 0 upon null rule ref to
   be consistent with case when we don't know the type.  Fixes ANTLR-195.
   Added testTypeOfGuardedAttributeRefIsCorrect test and reset expected
@@ -1091,7 +1101,7 @@ August 15, 2007 -- Got rough draft of the grammar import working.
                    Submit to dev and then integrate into mainline.
 
 	All file changes/additions:
-	
+
 	README.txt	# edit
 	CHANGES.txt	# add
 	  Factored out the changes from the readme.
@@ -1853,7 +1863,7 @@ February 10, 2007
   a
   @after { System.out.println("ick"); }
     : 'a'
-    ;        
+    ;
     catch[RecognitionException e] { System.out.println("foo"); }
     catch[IOException e] { System.out.println("io"); }
     finally { System.out.println("foobar"); }
@@ -2015,7 +2025,7 @@ December 23, 2006
 * made BaseRecognizer.displayRecognitionError nonstatic so people can
   override it. Not sure why it was static before.
 
-* Removed state/decision message that comes out of no 
+* Removed state/decision message that comes out of no
   viable alternative exceptions, as that was too much.
   removed the decision number from the early exit exception
   also.  During development, you can simply override
@@ -2073,7 +2083,7 @@ December 15, 2006
   org.antlr.runtime.tree.Tree; needed to add get/set for token start/stop
   index so CommonTreeAdaptor can assume Tree interface not CommonTree
   implementation.  Otherwise, no way to create your own nodes that satisfy
-  Tree because CommonTreeAdaptor was doing 
+  Tree because CommonTreeAdaptor was doing
 
 	public int getTokenStartIndex(Object t) {
 		return ((CommonTree)t).startIndex;
@@ -2091,12 +2101,12 @@ December 15, 2006
 	/**  What is the largest token index (indexing from 0) for this node
 	 *   and its children?
 	 */
-	int getTokenStopIndex();	
+	int getTokenStopIndex();
 
 	void setTokenStopIndex(int index);
 
 December 13, 2006
- 
+
 * Added org.antlr.runtime.tree.DOTTreeGenerator so you can generate DOT
   diagrams easily from trees.
 
