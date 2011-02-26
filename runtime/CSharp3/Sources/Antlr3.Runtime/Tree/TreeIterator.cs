@@ -45,6 +45,7 @@ namespace Antlr.Runtime.Tree
         protected object root;
         protected object tree;
         protected bool firstTime = true;
+        private bool reachedEof;
 
         // navigation nodes to return during walk and at end
         public object up;
@@ -56,7 +57,7 @@ namespace Antlr.Runtime.Tree
          */
         protected Queue<object> nodes;
 
-        public TreeIterator( object tree )
+        public TreeIterator( CommonTree tree )
             : this( new CommonTreeAdaptor(), tree )
         {
         }
@@ -162,7 +163,9 @@ namespace Antlr.Runtime.Tree
                 }
             }
 
-            return Current != eof;
+            bool result = Current != eof || !reachedEof;
+            reachedEof = Current == eof;
+            return result;
         }
 
         public void Reset()
