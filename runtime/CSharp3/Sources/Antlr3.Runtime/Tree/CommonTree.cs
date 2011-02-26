@@ -32,6 +32,8 @@
 
 namespace Antlr.Runtime.Tree
 {
+    using System.Linq;
+
     using ArgumentNullException = System.ArgumentNullException;
     using CLSCompliant = System.CLSCompliantAttribute;
 
@@ -47,8 +49,7 @@ namespace Antlr.Runtime.Tree
     public class CommonTree : BaseTree
     {
         /** <summary>A single token is the payload</summary> */
-        [CLSCompliant( false )]
-        public IToken token;
+        private IToken _token;
 
         /** <summary>
          *  What token indexes bracket all tokens associated with this node
@@ -74,151 +75,169 @@ namespace Antlr.Runtime.Tree
             if (node == null)
                 throw new ArgumentNullException("node");
 
-            this.token = node.token;
+            this.Token = node.Token;
             this.startIndex = node.startIndex;
             this.stopIndex = node.stopIndex;
         }
 
         public CommonTree( IToken t )
         {
-            this.token = t;
+            this.Token = t;
         }
 
         #region Properties
+
         public override int CharPositionInLine
         {
             get
             {
-                if ( token == null || token.CharPositionInLine == -1 )
+                if ( Token == null || Token.CharPositionInLine == -1 )
                 {
                     if ( ChildCount > 0 )
-                    {
                         return Children[0].CharPositionInLine;
-                    }
+
                     return 0;
                 }
-                return token.CharPositionInLine;
+                return Token.CharPositionInLine;
             }
+
             set
             {
                 base.CharPositionInLine = value;
             }
         }
+
         public override int ChildIndex
         {
             get
             {
                 return childIndex;
             }
+
             set
             {
                 childIndex = value;
             }
         }
+
         public override bool IsNil
         {
             get
             {
-                return token == null;
+                return Token == null;
             }
         }
+
         public override int Line
         {
             get
             {
-                if ( token == null || token.Line == 0 )
+                if ( Token == null || Token.Line == 0 )
                 {
                     if ( ChildCount > 0 )
-                    {
                         return Children[0].Line;
-                    }
+
                     return 0;
                 }
-                return token.Line;
+
+                return Token.Line;
             }
+
             set
             {
                 base.Line = value;
             }
         }
+
         public override ITree Parent
         {
             get
             {
                 return parent;
             }
+
             set
             {
                 parent = (CommonTree)value;
             }
         }
+
         public override string Text
         {
             get
             {
-                if ( token == null )
+                if ( Token == null )
                     return null;
 
-                return token.Text;
+                return Token.Text;
             }
+
             set
             {
             }
         }
-        public virtual IToken Token
+
+        public IToken Token
         {
             get
             {
-                return token;
+                return _token;
             }
+
             set
             {
-                token = value;
+                _token = value;
             }
         }
+
         public override int TokenStartIndex
         {
             get
             {
-                if ( startIndex == -1 && token != null )
-                {
-                    return token.TokenIndex;
-                }
+                if ( startIndex == -1 && Token != null )
+                    return Token.TokenIndex;
+
                 return startIndex;
             }
+
             set
             {
                 startIndex = value;
             }
         }
+
         public override int TokenStopIndex
         {
             get
             {
-                if ( stopIndex == -1 && token != null )
+                if ( stopIndex == -1 && Token != null )
                 {
-                    return token.TokenIndex;
+                    return Token.TokenIndex;
                 }
                 return stopIndex;
             }
+
             set
             {
                 stopIndex = value;
             }
         }
+
         public override int Type
         {
             get
             {
-                if ( token == null )
+                if ( Token == null )
                     return TokenTypes.Invalid;
 
-                return token.Type;
+                return Token.Type;
             }
+
             set
             {
             }
         }
+
         #endregion
 
         public override ITree DupNode()
@@ -237,21 +256,21 @@ namespace Antlr.Runtime.Tree
             if ( Children == null )
             {
                 if ( startIndex < 0 || stopIndex < 0 )
-                {
-                    startIndex = stopIndex = token.TokenIndex;
-                }
+                    startIndex = stopIndex = Token.TokenIndex;
+
                 return;
             }
-            for ( int i = 0; i < Children.Count; i++ )
-            {
-                ( (CommonTree)Children[i] ).SetUnknownTokenBoundaries();
-            }
+
+            foreach (var child in Children.OfType<CommonTree>())
+                child.SetUnknownTokenBoundaries();
+
             if ( startIndex >= 0 && stopIndex >= 0 )
                 return; // already set
+
             if ( Children.Count > 0 )
             {
-                CommonTree firstChild = (CommonTree)Children[0];
-                CommonTree lastChild = (CommonTree)Children[Children.Count - 1];
+                ITree firstChild = Children[0];
+                ITree lastChild = Children[Children.Count - 1];
                 startIndex = firstChild.TokenStartIndex;
                 stopIndex = lastChild.TokenStopIndex;
             }
@@ -259,19 +278,16 @@ namespace Antlr.Runtime.Tree
 
         public override string ToString()
         {
-            if ( IsNil )
-            {
+            if (IsNil)
                 return "nil";
-            }
-            if ( Type == TokenTypes.Invalid )
-            {
+
+            if (Type == TokenTypes.Invalid)
                 return "<errornode>";
-            }
-            if ( token == null )
-            {
+
+            if (Token == null)
                 return string.Empty;
-            }
-            return token.Text;
+
+            return Token.Text;
         }
     }
 }
