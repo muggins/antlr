@@ -13,7 +13,7 @@ February 26, 2011
 
 * removed ; from {;} blank method
 
-* Added @SuppressWarnings({"unchecked", "deprecation"}) to front of each
+* Added @SuppressWarnings({"all"}) to front of each
   generated class.
 
 * -print wasn't always showing ^ and ! in grammar
