@@ -133,6 +133,12 @@
       <DependentUpon>TestActionFeatures.g3</DependentUpon>
     </Compile>
     <Compile Include="TestDotTreeGenerator.cs" />
+    <Compile Include="TestExpressionFeatures.g3.lexer.cs">
+      <DependentUpon>TestExpressionFeatures.g3</DependentUpon>
+    </Compile>
+    <Compile Include="TestExpressionFeatures.g3.parser.cs">
+      <DependentUpon>TestExpressionFeatures.g3</DependentUpon>
+    </Compile>
     <Compile Include="TestFastLexer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +156,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Antlr3>
     <Antlr3 Include="TestActionFeatures.g3">
+      <Generator>MSBuild:Compile</Generator>
+    </Antlr3>
+    <Antlr3 Include="TestExpressionFeatures.g3">
       <Generator>MSBuild:Compile</Generator>
     </Antlr3>
   </ItemGroup>
