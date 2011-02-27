@@ -88,13 +88,12 @@ class <grammar.recognizerName>(input: CharStream, state<grammar.delegators:{g|, 
 
     <scopes:{<if(it.isDynamicGlobalScope)><globalAttributeScope(scope=it)><endif>}>
 
-    def this(input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>: CharStream) = {
+    def this(input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>: CharStream) =
         this(input, new RecognizerSharedState()<grammar.delegators:{g|, <g:delegateName()>}>)
-    }
 
 <if(memoize)>
 <if(grammar.grammarIsRoot)>
-        state.ruleMemo = new java.util.HashMap[<numRules>+1]<\n> <! index from 1..n !>
+        state.ruleMemo = new Array[java.util.Map[_,_]](<numRules>+1)<\n> <! index from 1..n !>
 <endif>
 <endif>
         <grammar.directDelegates:
@@ -111,7 +110,7 @@ class <grammar.recognizerName>(input: CharStream, state<grammar.delegators:{g|, 
     <rules; separator="\n\n">
 
     <synpreds:{p | <lexerSynpred(p)>}>
-    <cyclicDFAs:{dfa | val dfa<dfa.decisionNumber> = new <grammar.recognizerName>.DFA<dfa.decisionNumber>(this)}; separator="\n">
+    <cyclicDFAs:{dfa | private val dfa<dfa.decisionNumber> = new <grammar.recognizerName>.DFA<dfa.decisionNumber>(this)}; separator="\n">
 }
 >>
 
@@ -122,7 +121,7 @@ class <grammar.recognizerName>(input: CharStream, state<grammar.delegators:{g|, 
  *  at backtracking==1.
  */
 filteringNextToken() ::= <<
-def nextToken(): Token = {
+override def nextToken(): Token = {
     while (true) {
         if ( input.LA(1)==CharStream.EOF ) {
             var eof: Token = new CommonToken((CharStream)input,Token.EOF,
@@ -164,13 +163,13 @@ def nextToken(): Token = {
     }
 }
 
-def memoize(input: IntStream,
+override def memoize(input: IntStream,
 		ruleIndex: Int,
 		ruleStartIndex: Int) = {
 if ( state.backtracking>1 ) super.memoize(input, ruleIndex, ruleStartIndex)
 }
 
-def alreadyParsedRule(input: IntStream, ruleIndex: Int):Boolean {
+override def alreadyParsedRule(input: IntStream, ruleIndex: Int):Boolean {
 if ( state.backtracking>1 ) return super.alreadyParsedRule(input, ruleIndex)
 return false
 }
@@ -214,9 +213,8 @@ class <grammar.recognizerName>(input: <inputStreamType>, state<grammar.delegator
 
     <@members>
     <! WARNING. bug in ST: this is cut-n-paste into Dbg.stg !>
-    def this(input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>: <inputStreamType>) = {
+    def this(input<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>: <inputStreamType>) =
         this(input, new RecognizerSharedState()<grammar.delegators:{g|, <g:delegateName()>}>)
-    }
 
         <parserCtorBody()>
         <grammar.directDelegates:
@@ -225,8 +223,8 @@ class <grammar.recognizerName>(input: <inputStreamType>, state<grammar.delegator
         <last(grammar.delegators):{g|gParent = <g:delegateName()>}>
     <@end>
 
-    override def getTokenNames(): Array[String] = tokenNames
-    override def getGrammarFileName() = "<fileName>"
+    override def getTokenNames: Array[String] = tokenNames
+    override def getGrammarFileName = "<fileName>"
 
     <members>
 
@@ -236,18 +234,19 @@ class <grammar.recognizerName>(input: <inputStreamType>, state<grammar.delegator
    appear to be defined in this recognizer. !>
     // Delegated rules
 <grammar.delegatedRules:{ruleDescriptor|
+    @throws(classOf[RecognitionException])
     def <ruleDescriptor.name>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): <returnType()> = \{ <if(ruleDescriptor.hasReturnValue)>return <endif><ruleDescriptor.grammar:delegateName()>.<ruleDescriptor.name>(<ruleDescriptor.parameterScope.attributes:{a|<a.name>}; separator=", ">) \}}; separator="\n">
 
     <synpreds:{p | <synpred(p)>}>
 
-    <cyclicDFAs:{dfa | val dfa<dfa.decisionNumber> = new <grammar.recognizerName>.DFA<dfa.decisionNumber>(this)}; separator="\n">
+    <cyclicDFAs:{dfa | private val dfa<dfa.decisionNumber> = new <grammar.recognizerName>.DFA<dfa.decisionNumber>(this)}; separator="\n">
 }
 >>
 
 parserCtorBody() ::= <<
 <if(memoize)>
 <if(grammar.grammarIsRoot)>
-this.state.ruleMemo = new java.util.HashMap[<length(grammar.allImportedRules)>+1];<\n> <! index from 1..n !>
+this.state.ruleMemo = new Array[java.util.Map[_,_]](<length(grammar.allImportedRules)>+1)<\n> <! index from 1..n !>
 <endif>
 <endif>
 <grammar.delegators:
@@ -281,10 +280,11 @@ treeParser(grammar, name, scopes, tokens, tokenNames, globalAction, rules,
 synpredRule(ruleName, ruleDescriptor, block, description, nakedBlock) ::=
 <<
 // $ANTLR start <ruleName>
+@throws(classOf[RecognitionException])
 def <ruleName>_fragment(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): Unit = {   
     <ruleLabelDefs()>
 <if(trace)>
-    traceIn("<ruleName>_fragment", <ruleDescriptor.index>);
+    traceIn("<ruleName>_fragment", <ruleDescriptor.index>)
     try {
         <block>
     }
@@ -299,22 +299,22 @@ def <ruleName>_fragment(<ruleDescriptor.parameterScope:parameterScope(scope=it)>
 >>
 
 synpred(name) ::= <<
-def <name>(): Boolean {
+final def <name>(): Boolean = {
     state.backtracking+=1
     <@start()>
-    var start = input.mark()
+    val start = input.mark()
     try {
         <name>_fragment() // can never throw exception
     } catch {
         case re: RecognitionException => 
         System.err.println("impossible: "+re)
     }
-    var success = !state.failed
+    val success = !state.failed
     input.rewind(start)
     <@stop()>
     state.backtracking-=1
     state.failed=false
-    return success
+    success
 }<\n>
 >>
 
@@ -347,8 +347,9 @@ rule(ruleName,ruleDescriptor,block,emptyRule,description,exceptions,finally,memo
 
 // $ANTLR start "<ruleName>"
 // <fileName>:<description>
-def <ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): <returnType()> = {
-    <if(trace)>traceIn("<ruleName>", <ruleDescriptor.index>);<endif>
+@throws(classOf[RecognitionException])
+final def <ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): <returnType()> = {
+    <if(trace)>traceIn("<ruleName>", <ruleDescriptor.index>)<endif>
     <ruleScopeSetUp()>
     <ruleDeclarations()>
     <ruleLabelDefs()>
@@ -396,7 +397,7 @@ catch (<e.decl>) {
 
 ruleDeclarations() ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
-var retval: <returnType()> = new <returnType()>()
+val retval = new <returnType()>()
 retval.start = input.LT(1)<\n>
 <else>
 <ruleDescriptor.returnScope.attributes:{ a |
@@ -404,7 +405,7 @@ var <a.name>: <a.type> = <if(a.initValue)><a.initValue><else><initValue(a.type)>
 }>
 <endif>
 <if(memoize)>
-var <ruleDescriptor.name>_StartIndex: Int = input.index()
+val <ruleDescriptor.name>_StartIndex = input.index()
 <endif>
 >>
 
@@ -428,14 +429,14 @@ ruleLabelDefs() ::= <<
     :{var list_<it.label.text>: java.util.List=null}; separator="\n"
 >
 <ruleDescriptor.ruleLabels:ruleLabelDef(label=it); separator="\n">
-<ruleDescriptor.ruleListLabels:{ll|RuleReturnScope <ll.label.text> = null}; separator="\n">
+<ruleDescriptor.ruleListLabels:{ll|var <ll.label.text>: RuleReturnScope = null}; separator="\n">
 >>
 
 lexerRuleLabelDefs() ::= <<
 <[ruleDescriptor.tokenLabels,
   ruleDescriptor.tokenListLabels,
   ruleDescriptor.ruleLabels]
-    :{<labelType> <it.label.text>=null}; separator="\n"
+    :{var <it.label.text>: <labelType>=null}; separator="\n"
 >
 <ruleDescriptor.charLabels:{int <it.label.text>;}; separator="\n">
 <[ruleDescriptor.tokenListLabels,
@@ -477,7 +478,8 @@ if ( state.backtracking>0 ) { memoize(input, <ruleDescriptor.index>, <ruleDescri
  */
 lexerRule(ruleName,nakedBlock,ruleDescriptor,block,memoize) ::= <<
 // $ANTLR start "<ruleName>"
-def m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): Unit = {
+@throws(classOf[RecognitionException])
+final def m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): Unit = {
     <if(trace)>traceIn("<ruleName>", <ruleDescriptor.index>)<endif>
     <ruleScopeSetUp()>
     <ruleDeclarations()>
@@ -513,6 +515,7 @@ def m<ruleName>(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): Unit 
  *  that chooses between lexer rules.
  */
 tokensRule(ruleName,nakedBlock,args,block,ruleDescriptor) ::= <<
+@throws(classOf[RecognitionException])
 def mTokens(): Unit = {
     <block><\n>
 }
@@ -529,7 +532,7 @@ var alt<decisionNumber> = <maxAlt>
 <decision>
 <@postdecision()>
 <@prebranch()>
-(alt<decisionNumber>) match {
+alt<decisionNumber> match {
     <alts:altSwitchCase()>
     case _ =>
 }
@@ -544,7 +547,7 @@ var alt<decisionNumber> = <maxAlt>
 <@predecision()>
 <decision>
 <@postdecision()>
-(alt<decisionNumber>) match {
+alt<decisionNumber> match {
     <alts:altSwitchCase()>
     case _ =>
 }
@@ -579,14 +582,13 @@ while (!loop<decisionNumber>_quitflag) {
     <@predecision()>
     <decision>
     <@postdecision()>
-    (alt<decisionNumber>) match {
+    alt<decisionNumber> match {
 	<alts:altSwitchCase()>
 	case _ =>
 	    if ( cnt<decisionNumber> >= 1 ) loop<decisionNumber>_quitflag = true
 	    else {
 	    <ruleBacktrackFailure()>
-            val eee: EarlyExitException =
-                new EarlyExitException(<decisionNumber>, input)
+            val eee = new EarlyExitException(<decisionNumber>, input)
             <@earlyExitException()>
             throw eee
       }
@@ -609,7 +611,7 @@ while (!loop<decisionNumber>_quitflag) {
     <@predecision()>
     <decision>
     <@postdecision()>
-    (alt<decisionNumber>) match {
+    alt<decisionNumber> match {
 	<alts:altSwitchCase()>
 	case _ => loop<decisionNumber>_quitflag = true
     }
@@ -689,7 +691,7 @@ charRef(char,label) ::= <<
 /** match a character range */
 charRangeRef(a,b,label) ::= <<
 <if(label)>
-<label> = input.LA(1);<\n>
+<label> = input.LA(1)<\n>
 <endif>
 matchRange(<a>,<b>); <checkRuleBacktrackFailure()>
 >>
@@ -698,22 +700,22 @@ matchRange(<a>,<b>); <checkRuleBacktrackFailure()>
 matchSet(s,label,elementIndex,postmatchCode="") ::= <<
 <if(label)>
 <if(LEXER)>
-<label>= input.LA(1);<\n>
+<label>= input.LA(1)<\n>
 <else>
-<label>=(<labelType>)input.LT(1);<\n>
+<label>=input.LT(1).asInstanceOf[<labelType>]<\n>
 <endif>
 <endif>
 if ( <s> ) {
     input.consume()
     <postmatchCode>
 <if(!LEXER)>
-    state.errorRecovery=false
+    state.errorRecovery=false<\n>
 <endif>
     <if(backtracking)>state.failed=false<endif>
 }
 else {
     <ruleBacktrackFailure()>
-    var mse = new MismatchedSetException(null,input)
+    val mse = new MismatchedSetException(null,input)
     <@mismatchedSetException()>
 <if(LEXER)>
     recover(mse)
@@ -737,11 +739,11 @@ matchSetAndListLabel(s,label,elementIndex,postmatchCode) ::= <<
 /** Match a string literal */
 lexerStringRef(string,label,elementIndex="0") ::= <<
 <if(label)>
-var <label>Start = getCharIndex()
+val <label>Start = getCharIndex()
 `match`(<string>)
 <checkRuleBacktrackFailure()>
-var <label>StartLine<elementIndex> = getLine()
-var <label>StartCharPos<elementIndex> = getCharPositionInLine()
+val <label>StartLine<elementIndex> = getLine()
+val <label>StartCharPos<elementIndex> = getCharPositionInLine()
 <label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, <label>Start, getCharIndex()-1)
 <label>.setLine(<label>StartLine<elementIndex>)
 <label>.setCharPositionInLine(<label>StartCharPos<elementIndex>)
@@ -753,7 +755,7 @@ var <label>StartCharPos<elementIndex> = getCharPositionInLine()
 
 wildcard(label,elementIndex) ::= <<
 <if(label)>
-<label>=(<labelType>)input.LT(1)<\n>
+<label>=input.LT(1).asInstanceOf[<labelType>]<\n>
 <endif>
 matchAny(input)
 <checkRuleBacktrackFailure()>
@@ -805,9 +807,9 @@ ruleRefAndListLabel(rule,label,elementIndex,args,scope) ::= <<
  */
 lexerRuleRef(rule,label,args,elementIndex,scope) ::= <<
 <if(label)>
-var <label>Start<elementIndex> = getCharIndex()
-var <label>StartLine<elementIndex> = getLine()
-var <label>StartCharPos<elementIndex> = getCharPositionInLine()
+val <label>Start<elementIndex> = getCharIndex()
+val <label>StartLine<elementIndex> = getLine()
+val <label>StartCharPos<elementIndex> = getCharPositionInLine()
 <if(scope)><scope:delegateName()>.<endif>m<rule.name>(<args; separator=", ">)
 <checkRuleBacktrackFailure()>
 <label> = new <labelType>(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, <label>Start<elementIndex>, getCharIndex()-1)
@@ -828,12 +830,12 @@ lexerRuleRefAndListLabel(rule,label,args,elementIndex,scope) ::= <<
 /** EOF in the lexer */
 lexerMatchEOF(label,elementIndex) ::= <<
 <if(label)>
-var <label>Start<elementIndex> = getCharIndex()
-var <label>StartLine<elementIndex> = getLine()
-var <label>StartCharPos<elementIndex> = getCharPositionInLine()
+val <label>Start<elementIndex> = getCharIndex()
+val <label>StartLine<elementIndex> = getLine()
+val <label>StartCharPos<elementIndex> = getCharPositionInLine()
 `match`(EOF)
 <checkRuleBacktrackFailure()>
-<labelType> <label> = new <labelType>(input, EOF, Token.DEFAULT_CHANNEL, <label>Start<elementIndex>, getCharIndex()-1)
+val <label> = new <labelType>(input, EOF, Token.DEFAULT_CHANNEL, <label>Start<elementIndex>, getCharIndex()-1)
 <label>.setLine(<label>StartLine<elementIndex>)
 <label>.setCharPositionInLine(<label>StartCharPos<elementIndex>)
 <else>
@@ -877,15 +879,14 @@ if ( !(<evalPredicate(...)>) ) {
 // F i x e d  D F A  (if-then-else)
 
 dfaState(k,edges,eotPredictsAlt,description,stateNumber,semPredState) ::= <<
-var LA<decisionNumber>_<stateNumber> = input.LA(<k>)<\n>
+val LA<decisionNumber>_<stateNumber> = input.LA(<k>)<\n>
 <edges; separator="\nelse ">
 else {
 <if(eotPredictsAlt)>
     alt<decisionNumber>=<eotPredictsAlt>
 <else>
     <ruleBacktrackFailure()>
-    val nvae: NoViableAltException =
-        new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input)<\n>
+    val nvae = new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input)<\n>
     <@noViableAltException()>
     throw nvae<\n>
 <endif>
@@ -898,7 +899,7 @@ else {
  *  expect "if ( LA(1)==X ) match(X);" and that's it.
  */
 dfaOptionalBlockState(k,edges,eotPredictsAlt,description,stateNumber,semPredState) ::= <<
-var LA<decisionNumber>_<stateNumber> = input.LA(<k>)<\n>
+val LA<decisionNumber>_<stateNumber> = input.LA(<k>)<\n>
 <edges; separator="\nelse ">
 >>
 
@@ -909,7 +910,7 @@ var LA<decisionNumber>_<stateNumber> = input.LA(<k>)<\n>
  *  anything other than 'a' predicts exiting.
  */
 dfaLoopbackState(k,edges,eotPredictsAlt,description,stateNumber,semPredState) ::= <<
-var LA<decisionNumber>_<stateNumber> = input.LA(<k>)<\n>
+val LA<decisionNumber>_<stateNumber> = input.LA(<k>)<\n>
 <edges; separator="\nelse "><\n>
 <if(eotPredictsAlt)>
 <if(!edges)>
@@ -941,15 +942,14 @@ if ( (<labelExpr>) <if(predicates)>&& (<predicates>)<endif>) {
  *  decides if this is possible: CodeGenerator.canGenerateSwitch().
  */
 dfaStateSwitch(k,edges,eotPredictsAlt,description,stateNumber,semPredState) ::= <<
-( input.LA(<k>) ) match {
+input.LA(<k>) match {
 <edges; separator="\n">
 case _ =>
 <if(eotPredictsAlt)>
     alt<decisionNumber>=<eotPredictsAlt>
 <else>
     <ruleBacktrackFailure()>
-    val nvae: NoViableAltException =
-        new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input)<\n>
+    val nvae = new NoViableAltException("<description>", <decisionNumber>, <stateNumber>, input)<\n>
     <@noViableAltException()>
     throw nvae<\n>
 <endif>
@@ -957,14 +957,14 @@ case _ =>
 >>
 
 dfaOptionalBlockStateSwitch(k,edges,eotPredictsAlt,description,stateNumber,semPredState) ::= <<
-( input.LA(<k>) ) match {
+input.LA(<k>) match {
     <edges; separator="\n">
     case _ =>
 }<\n>
 >>
 
 dfaLoopbackStateSwitch(k, edges,eotPredictsAlt,description,stateNumber,semPredState) ::= <<
-( input.LA(<k>) ) match {
+input.LA(<k>) match {
 <edges; separator="\n"><\n>
 case _ =>
 <if(eotPredictsAlt)>
@@ -1021,10 +1021,9 @@ val DFA<dfa.decisionNumber>_min: Array[Char] = DFA.unpackEncodedStringToUnsigned
 val DFA<dfa.decisionNumber>_max: Array[Char] = DFA.unpackEncodedStringToUnsignedChars(DFA<dfa.decisionNumber>_maxS)
 val DFA<dfa.decisionNumber>_accept: Array[Short] = DFA.unpackEncodedString(DFA<dfa.decisionNumber>_acceptS)
 val DFA<dfa.decisionNumber>_special: Array[Short] = DFA.unpackEncodedString(DFA<dfa.decisionNumber>_specialS)
-val numDFA<dfa.decisionNumber>States: Int = DFA<dfa.decisionNumber>_transitionS.length
-val DFA<dfa.decisionNumber>_transition: Array[Array[Short]] = new Array[Array[Short]](numDFA<dfa.decisionNumber>States)
+val DFA<dfa.decisionNumber>_transition = new Array[Array[Short]](DFA<dfa.decisionNumber>_transitionS.length)
 
-for (i \<- 0 until numDFA<dfa.decisionNumber>States) {
+for (i \<- DFA<dfa.decisionNumber>_transition.indices) {
     DFA<dfa.decisionNumber>_transition(i) = DFA.unpackEncodedString(DFA<dfa.decisionNumber>_transitionS(i))
 }
 
@@ -1045,18 +1044,19 @@ class DFA<dfa.decisionNumber> extends DFA {
     override def getDescription = "<dfa.description>"
     <@errorMethod()>
 <if(dfa.specialStateSTs)>
-    def specialStateTransition(int s, IntStream _input): Int = {
+    @throws(classOf[NoViableAltException])
+    override def specialStateTransition(s: Int, _input: IntStream):Int = {
         <if(LEXER)>
         val input = _input
         <endif>
         <if(PARSER)>
-        val input = (TokenStream)_input
+        val input = _input.asInstanceOf[TokenStream]
         <endif>
         <if(TREE_PARSER)>
-        val input = (TreeNodeStream)_input
+        val input = _input.asInstanceOf[TreeNodeStream]
         <endif>
     	val _s = s
-        ( s ) match {
+        s match {
         <dfa.specialStateSTs:{state |
         case <i0> => <! compressed special state numbers 0..n-1 !>
             <state>}; separator="\n">
@@ -1065,8 +1065,7 @@ class DFA<dfa.decisionNumber> extends DFA {
 <if(backtracking)>
         if (state.backtracking>0) {state.failed=true; return -1}<\n>
 <endif>
-        val nvae: NoViableAltException =
-            new NoViableAltException(getDescription(), <dfa.decisionNumber>, _s, input)
+        val nvae = new NoViableAltException(getDescription(), <dfa.decisionNumber>, _s, input)
         error(nvae)
         throw nvae
     }<\n>
@@ -1205,7 +1204,7 @@ var <label.label.text>: <ruleLabelType(referencedRule=label.referencedRule)> = <
  */
 returnScope(scope) ::= <<
 <if(ruleDescriptor.hasMultipleReturnValues)>
-class <ruleDescriptor:returnStructName()> extends <if(TREE_PARSER)>Tree<else>Parser<endif>RuleReturnScope {
+final class <ruleDescriptor:returnStructName()> extends <if(TREE_PARSER)>Tree<else>Parser<endif>RuleReturnScope {
     <scope.attributes:{var <it.name>: <it.type> = _}; separator="\n">
     <@ruleReturnMembers()>
 }
@@ -1213,7 +1212,7 @@ class <ruleDescriptor:returnStructName()> extends <if(TREE_PARSER)>Tree<else>Par
 >>
 
 parameterScope(scope) ::= <<
-<scope.attributes:{<it.decl>}; separator=", ">
+<scope.attributes:{<it.name>: <it.type>}; separator=", ">
 >>
 
 parameterAttributeRef(attr) ::= "<attr.name>"
@@ -1292,9 +1291,9 @@ tokenLabelPropertyRef_index(scope,attr) ::= "(if (<scope>!=null) <scope>.getToke
 tokenLabelPropertyRef_tree(scope,attr) ::= "<scope>_tree"
 tokenLabelPropertyRef_int(scope,attr) ::= "(if (<scope>!=null) Integer.valueOf(<scope>.getText()) else 0)"
 
-ruleLabelPropertyRef_start(scope,attr) ::= "(if (<scope>!=null) ((<labelType>)<scope>.start) else null)"
-ruleLabelPropertyRef_stop(scope,attr) ::= "(if (<scope>!=null) ((<labelType>)<scope>.stop) else null)"
-ruleLabelPropertyRef_tree(scope,attr) ::= "(if (<scope>!=null) ((<ASTLabelType>)<scope>.tree) else null)"
+ruleLabelPropertyRef_start(scope,attr) ::= "(if (<scope>!=null) <scope>.start.asInstanceOf[<labelType>] else null)"
+ruleLabelPropertyRef_stop(scope,attr) ::= "(if (<scope>!=null) <scope>.stop.asInstanceOf[<labelType>] else null)"
+ruleLabelPropertyRef_tree(scope,attr) ::= "(if (<scope>!=null) <scope>.tree.asInstanceOf[<ASTLabelType>] else null)"
 ruleLabelPropertyRef_text(scope,attr) ::= <<
 <if(TREE_PARSER)>
 (if (<scope>!=null) (input.getTokenStream().toString(
@@ -1326,9 +1325,9 @@ lexerRuleLabelPropertyRef_int(scope,attr) ::=
     "(if (<scope>!=null) Integer.valueOf(<scope>.getText()) else 0)"
 
 // Somebody may ref $template or $tree or $stop within a rule:
-rulePropertyRef_start(scope,attr) ::= "((<labelType>)retval.start)"
-rulePropertyRef_stop(scope,attr) ::= "((<labelType>)retval.stop)"
-rulePropertyRef_tree(scope,attr) ::= "((<ASTLabelType>)retval.tree)"
+rulePropertyRef_start(scope,attr) ::= "(retval.start.asInstanceOf[<labelType>])"
+rulePropertyRef_stop(scope,attr) ::= "(retval.stop.asInstanceOf[<labelType>])"
+rulePropertyRef_tree(scope,attr) ::= "(retval.tree.asInstanceOf[<ASTLabelType>])"
 rulePropertyRef_text(scope,attr) ::= <<
 <if(TREE_PARSER)>
 input.getTokenStream().toString(
