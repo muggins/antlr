@@ -659,7 +659,7 @@ public class Grammar {
 
 		grammarTree = (GrammarAST)parser.getAST();
 
-		if ( grammarTree!=null ) System.out.println("grammar tree: "+grammarTree.toStringTree());
+		//if ( grammarTree!=null ) System.out.println("grammar tree: "+grammarTree.toStringTree());
 
 		grammarTree.setUnknownTokenBoundaries();
 
@@ -710,7 +710,7 @@ public class Grammar {
 		leftRecursiveRuleWalker.setASTNodeClass("org.antlr.tool.GrammarAST");
 		boolean isLeftRec = false;
 		try {
-			System.out.println("TESTING "+ruleAST.enclosingRuleName);
+			//System.out.println("TESTING "+ruleAST.enclosingRuleName);
 			isLeftRec = leftRecursiveRuleWalker.rec_rule(ruleAST, this);
 		}
 		catch (RecognitionException re) {

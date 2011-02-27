@@ -50,7 +50,7 @@ import java.util.*;
  */
 public class CompositeGrammar {
 	public static final int MIN_RULE_INDEX = 1;
-	
+
 	public CompositeGrammarTree delegateGrammarTreeRoot;
 
 	/** Used during getRuleReferenceClosure to detect computation cycles */
@@ -348,11 +348,13 @@ public class CompositeGrammar {
 	public void translateLeftRecursiveRules() {
 		List<Grammar> grammars = delegateGrammarTreeRoot.getPostOrderedGrammarList();
 		for (int i = 0; grammars!=null && i < grammars.size(); i++) {
-			Grammar g = (Grammar)grammars.get(i);
+			Grammar g = grammars.get(i);
 			if ( !(g.type==Grammar.PARSER || g.type==Grammar.COMBINED) ) continue;
 			for (GrammarAST r : g.grammarTree.findAllType(ANTLRParser.RULE)) {
 				if ( !Character.isUpperCase(r.getFirstChild().getText().charAt(0)) ) {
-					g.translateLeftRecursiveRule(r);
+					if ( LeftRecursiveRuleAnalyzer.hasImmediateRecursiveRuleRefs(r, r.enclosingRuleName) ) {
+						g.translateLeftRecursiveRule(r);
+					}
 				}
 			}
 		}
@@ -362,11 +364,11 @@ public class CompositeGrammar {
 		delegateGrammarTreeRoot.trimLexerImportsIntoCombined();
 		List<Grammar> grammars = delegateGrammarTreeRoot.getPostOrderedGrammarList();
 		for (int i = 0; grammars!=null && i < grammars.size(); i++) {
-			Grammar g = (Grammar)grammars.get(i);
+			Grammar g = grammars.get(i);
 			g.defineGrammarSymbols();
 		}
 		for (int i = 0; grammars!=null && i < grammars.size(); i++) {
-			Grammar g = (Grammar)grammars.get(i);
+			Grammar g = grammars.get(i);
 			g.checkNameSpaceAndActions();
 		}
 		minimizeRuleSet();

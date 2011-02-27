@@ -249,6 +249,14 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		return t;
 	}
 
+	public static boolean hasImmediateRecursiveRuleRefs(GrammarAST t, String ruleName) {
+		if ( t==null ) return false;
+		for (GrammarAST rref : t.findAllType(RULE_REF)) {
+			if ( rref.getText().equals(ruleName) ) return true;
+		}
+		return false;
+	}
+
 	public GrammarAST replaceLastRuleRef(GrammarAST t, String name) {
 		if ( t==null ) return null;
 		GrammarAST last = null;

@@ -155,7 +155,7 @@ outerAlternative returns [boolean isLeftRec=false]
 {
 GrammarAST alt=#outerAlternative, rew=(GrammarAST)alt.getNextSibling();
 if ( rew.getType()!=REWRITES ) rew = null;
-System.out.println("alt "+alt.toStringTree());
+//System.out.println("alt "+alt.toStringTree());
 }
     :   (binaryMultipleOp)=> binaryMultipleOp
                              {binaryAlt(alt, rew, outerAlt); isLeftRec=true;}
