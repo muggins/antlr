@@ -306,7 +306,7 @@ public class TestLeftRecursion extends BaseTest {
 		String grammar =
 			"grammar T;\n" +
 			"s : e {System.out.println($e.v);} ;\n" +
-			"e returns [int v]\n" +
+			"e returns [int v, List<String> ignored]\n" +
 			"  : e '*' b=e {$v *= $b.v;}\n" +
 			"  | e '+' b=e {$v += $b.v;}\n" +
 			"  | INT {$v = $INT.int;}\n" +
@@ -316,6 +316,25 @@ public class TestLeftRecursion extends BaseTest {
 		String[] tests = {
 			"4",			"4",
 			"1+2",			"3",
+		};
+		runTests(grammar, tests, "s");
+	}
+
+	@Test public void testReturnValueAndActionsAndASTs() throws Exception {
+		String grammar =
+			"grammar T;\n" +
+			"options {output=AST;}\n" +
+			"s : e {System.out.print(\"v=\"+$e.v+\", \");} ;\n" +
+			"e returns [int v, List<String> ignored]\n" +
+			"  : e '*'^ b=e {$v *= $b.v;}\n" +
+			"  | e '+'^ b=e {$v += $b.v;}\n" +
+			"  | INT {$v = $INT.int;}\n" +
+			"  ;\n" +
+			"INT : '0'..'9'+ ;\n" +
+			"WS : (' '|'\\n') {skip();} ;\n";
+		String[] tests = {
+			"4",			"v=4, 4",
+			"1+2",			"v=3, (+ 1 2)",
 		};
 		runTests(grammar, tests, "s");
 	}
