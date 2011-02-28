@@ -21,6 +21,21 @@ public class TestLeftRecursion extends BaseTest {
 		assertEquals(expecting, found);
 	}
 
+	@Test public void testSemPred() throws Exception {
+		String grammar =
+			"grammar T;\n" +
+			"s : a {System.out.println($a.text);} ;\n" +
+			"a : a {true}? ID\n" +
+			"  | ID" +
+			"  ;\n" +
+			"ID : 'a'..'z'+ ;\n" +
+			"WS : (' '|'\\n') {skip();} ;\n";
+		String found = execParser("T.g", grammar, "TParser", "TLexer",
+								  "s", "a b c", debug);
+		String expecting = "abc\n";
+		assertEquals(expecting, found);
+	}
+
 	@Test public void testTernaryExpr() throws Exception {
 		String grammar =
 			"grammar T;\n" +
