@@ -28,23 +28,25 @@
 
 /** How to generate rules derived from left-recursive rules.
  *  These rely on recRuleDefArg(), recRuleAltPredicate(),
- *  recRuleArg(), recRuleSetResultAction() templates in main language.stg
+ *  recRuleArg(), recRuleSetResultAction(), recRuleSetReturnAction()
+ *  templates in main language.stg
  */
 group LeftRecursiveRules;
 
-recRuleStart(ruleName, minPrec, userRetvals, userRetvalNames) ::= <<
+recRuleName(ruleName) ::= "<ruleName>_"
+recPrimaryName(ruleName) ::= "<ruleName>_primary"
+
+recRuleStart(ruleName, minPrec, userRetvals, userRetvalAssignments) ::= <<
 <ruleName><if(userRetvals)> returns [<userRetvals>]<endif>
-  : rv_=<recRuleName(...)>[<minPrec>] <if(userRetvals)>{<userRetvalNames:{n| $<n>=$rv_.<n>;}>}<endif> ;
+  : <recRuleName(...)>[<minPrec>] <if(userRetvals)>{<userRetvalAssignments>}<endif> ;
 >>
 
-recRuleName(ruleName) ::= "<ruleName>_"
-
 recRule(ruleName, precArgDef, argName, alts, setResultAction, buildAST,
-        userRetvals, userRetvalNames) ::= <<
+        userRetvals, userRetvalAssignments) ::= <<
 <recRuleName(...)>[<precArgDef>]<if(userRetvals)> returns [<userRetvals>]<endif>
-    :   rv_=<ruleName>_primary
+    :   <recPrimaryName(...)>
     	<if(buildAST)>{<setResultAction>}<endif>
-    	<if(userRetvals)>{<userRetvalNames:{n| $<n>=$rv_.<n>;}>}<endif>
+    	<if(userRetvals)>{<userRetvalAssignments>}<endif>
         ( options {backtrack=false;}
         : ( options {backtrack=false;}
           : <alts; separator="\n        | ">
@@ -53,8 +55,8 @@ recRule(ruleName, precArgDef, argName, alts, setResultAction, buildAST,
     ;
 >>
 
-recPrimaryRule(ruleName, alts, userRetvals, userRetvalNames) ::= <<
-<ruleName>_primary<if(userRetvals)> returns [<userRetvals>]<endif>
+recPrimaryRule(ruleName, alts, userRetvals) ::= <<
+<recPrimaryName(...)><if(userRetvals)> returns [<userRetvals>]<endif>
 options {backtrack=true;}
     : <alts; separator="\n    | ">
     ;

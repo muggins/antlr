@@ -1,13 +1,9 @@
 package org.antlr.tool;
 
 import antlr.Token;
-import antlr.collections.AST;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.grammar.v2.*;
-import org.antlr.stringtemplate.CommonGroupLoader;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
-import org.antlr.stringtemplate.StringTemplateGroupLoader;
+import org.antlr.stringtemplate.*;
 import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
 
 import java.util.*;
@@ -204,7 +200,7 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		ruleST.setAttribute("ruleName", ruleName);
 		ruleST.setAttribute("minPrec", 0);
 		ruleST.setAttribute("userRetvals", retvals);
-		ruleST.setAttribute("userRetvalNames", getNamesFromArgAction(retvals.token));
+		fillRetValAssignments(ruleST, "recRuleName");
 
 		System.out.println("start: " + ruleST);
 		return ruleST.toString();
@@ -224,7 +220,7 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 			generator.getTemplates().getInstanceOf("recRuleSetResultAction");
 		ruleST.setAttribute("setResultAction", setResultST);
 		ruleST.setAttribute("userRetvals", retvals);
-		ruleST.setAttribute("userRetvalNames", getNamesFromArgAction(retvals.token));
+		fillRetValAssignments(ruleST, "recPrimaryName");
 
 		LinkedHashMap<Integer, String> opPrecRuleAlts = new LinkedHashMap<Integer, String>();
 		opPrecRuleAlts.putAll(binaryAlts);
@@ -253,7 +249,6 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		ruleST.setAttribute("alts", prefixAlts);
 		ruleST.setAttribute("alts", otherAlts);
 		ruleST.setAttribute("userRetvals", retvals);
-		ruleST.setAttribute("userRetvalNames", getNamesFromArgAction(retvals.token));
 		System.out.println(ruleST);
 		return ruleST.toString();
 	}
@@ -324,6 +319,21 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		int p = precedence(alt);
 		if ( altAssociativity.get(alt)==ASSOC.left ) p++;
 		return p;
+	}
+
+	public void fillRetValAssignments(StringTemplate ruleST, String srcName) {
+		if ( retvals==null ) return;
+
+		// complicated since we must be target-independent
+		for (String name : getNamesFromArgAction(retvals.token)) {
+			StringTemplate setRetValST =
+				generator.getTemplates().getInstanceOf("recRuleSetReturnAction");
+			StringTemplate ruleNameST = recRuleTemplates.getInstanceOf(srcName);
+			ruleNameST.setAttribute("ruleName", ruleName);
+			setRetValST.setAttribute("src", ruleNameST);
+			setRetValST.setAttribute("name", name);
+			ruleST.setAttribute("userRetvalAssignments",setRetValST);
+		}
 	}
 
 	public Collection<String> getNamesFromArgAction(Token t) {
