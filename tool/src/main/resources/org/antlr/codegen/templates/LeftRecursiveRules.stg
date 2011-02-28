@@ -32,13 +32,19 @@
  */
 group LeftRecursiveRules;
 
-recRuleStart(ruleName, maxPrec) ::= "<ruleName> : <recRuleName(...)>[<maxPrec>] ;"
+recRuleStart(ruleName, minPrec, userRetvals, userRetvalNames) ::= <<
+<ruleName><if(userRetvals)> returns [<userRetvals>]<endif>
+  : rv_=<recRuleName(...)>[<minPrec>] <if(userRetvals)>{<userRetvalNames:{n| $<n>=$rv_.<n>;}>}<endif> ;
+>>
 
 recRuleName(ruleName) ::= "<ruleName>_"
 
-recRule(ruleName, argDef, argName, alts, setResultAction, buildAST) ::= <<
-<recRuleName(...)>[<argDef>]
-    :   <ruleName>_primary <if(buildAST)>{<setResultAction>}<endif>
+recRule(ruleName, precArgDef, argName, alts, setResultAction, buildAST,
+        userRetvals, userRetvalNames) ::= <<
+<recRuleName(...)>[<precArgDef>]<if(userRetvals)> returns [<userRetvals>]<endif>
+    :   rv_=<ruleName>_primary
+    	<if(buildAST)>{<setResultAction>}<endif>
+    	<if(userRetvals)>{<userRetvalNames:{n| $<n>=$rv_.<n>;}>}<endif>
         ( options {backtrack=false;}
         : ( options {backtrack=false;}
           : <alts; separator="\n        | ">
@@ -47,8 +53,8 @@ recRule(ruleName, argDef, argName, alts, setResultAction, buildAST) ::= <<
     ;
 >>
 
-recPrimaryRule(ruleName, alts) ::= <<
-<ruleName>_primary
+recPrimaryRule(ruleName, alts, userRetvals, userRetvalNames) ::= <<
+<ruleName>_primary<if(userRetvals)> returns [<userRetvals>]<endif>
 options {backtrack=true;}
     : <alts; separator="\n    | ">
     ;

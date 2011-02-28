@@ -1,5 +1,6 @@
 package org.antlr.tool;
 
+import antlr.Token;
 import antlr.collections.AST;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.grammar.v2.*;
@@ -24,6 +25,8 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 	public LinkedHashMap<Integer, String> suffixAlts = new LinkedHashMap<Integer, String>();
 	public List<String> prefixAlts = new ArrayList<String>();
 	public List<String> otherAlts = new ArrayList<String>();
+
+	public GrammarAST retvals;
 
 	public StringTemplateGroup recRuleTemplates;
 	public String language;
@@ -54,6 +57,12 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 							   "PrecRules");
 			return;
 		}
+	}
+
+	@Override
+	public void setReturnValues(GrammarAST t) {
+		System.out.println(t);
+		retvals = t;
 	}
 
 	@Override
@@ -188,19 +197,34 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		//System.out.println("otherAlt " + alt + ": " + altText + ", rewrite=" + rewriteText);
 	}
 
+	// --------- get transformed rules ----------------
+
+	public String getArtificialPrecStartRule() {
+		StringTemplate ruleST = recRuleTemplates.getInstanceOf("recRuleStart");
+		ruleST.setAttribute("ruleName", ruleName);
+		ruleST.setAttribute("minPrec", 0);
+		ruleST.setAttribute("userRetvals", retvals);
+		ruleST.setAttribute("userRetvalNames", getNamesFromArgAction(retvals.token));
+
+		System.out.println("start: " + ruleST);
+		return ruleST.toString();
+	}
+
 	public String getArtificialOpPrecRule() {
 		StringTemplate ruleST = recRuleTemplates.getInstanceOf("recRule");
 		ruleST.setAttribute("ruleName", ruleName);
 		ruleST.setAttribute("buildAST", grammar.buildAST());
 		StringTemplate argDefST =
 			generator.getTemplates().getInstanceOf("recRuleDefArg");
-		ruleST.setAttribute("argDef", argDefST);
+		ruleST.setAttribute("precArgDef", argDefST);
 		StringTemplate ruleArgST =
 			generator.getTemplates().getInstanceOf("recRuleArg");
 		ruleST.setAttribute("argName", ruleArgST);
 		StringTemplate setResultST =
 			generator.getTemplates().getInstanceOf("recRuleSetResultAction");
 		ruleST.setAttribute("setResultAction", setResultST);
+		ruleST.setAttribute("userRetvals", retvals);
+		ruleST.setAttribute("userRetvalNames", getNamesFromArgAction(retvals.token));
 
 		LinkedHashMap<Integer, String> opPrecRuleAlts = new LinkedHashMap<Integer, String>();
 		opPrecRuleAlts.putAll(binaryAlts);
@@ -228,16 +252,9 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		ruleST.setAttribute("ruleName", ruleName);
 		ruleST.setAttribute("alts", prefixAlts);
 		ruleST.setAttribute("alts", otherAlts);
+		ruleST.setAttribute("userRetvals", retvals);
+		ruleST.setAttribute("userRetvalNames", getNamesFromArgAction(retvals.token));
 		System.out.println(ruleST);
-		return ruleST.toString();
-	}
-
-	public String getArtificialPrecStartRule() {
-		StringTemplate ruleST = recRuleTemplates.getInstanceOf("recRuleStart");
-		ruleST.setAttribute("ruleName", ruleName);
-		ruleST.setAttribute("maxPrec", 0);
-
-		System.out.println("start: "+ruleST);
 		return ruleST.toString();
 	}
 
@@ -307,6 +324,12 @@ public class LeftRecursiveRuleAnalyzer extends LeftRecursiveRuleWalker {
 		int p = precedence(alt);
 		if ( altAssociativity.get(alt)==ASSOC.left ) p++;
 		return p;
+	}
+
+	public Collection<String> getNamesFromArgAction(Token t) {
+		AttributeScope returnScope = grammar.createReturnScope("",t);
+		returnScope.addAttributes(t.getText(), ',');
+		return returnScope.attributes.keySet();
 	}
 
 	@Override

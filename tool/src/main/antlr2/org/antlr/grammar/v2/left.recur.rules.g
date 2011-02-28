@@ -73,6 +73,7 @@ public void ternaryAlt(GrammarAST altTree, GrammarAST rewriteTree, int alt) {;}
 public void prefixAlt(GrammarAST altTree, GrammarAST rewriteTree, int alt) {;}
 public void suffixAlt(GrammarAST altTree, GrammarAST rewriteTree, int alt) {;}
 public void otherAlt(GrammarAST altTree, GrammarAST rewriteTree, int alt) {;}
+public void setReturnValues(GrammarAST t) {;}
 }
 
 optionsSpec
@@ -103,8 +104,8 @@ rec_rule[Grammar g] returns [boolean isLeftRec=false]
 }
     :   #( r:RULE id:ID {ruleName=#id.getText();}
            (m:modifier)?
-           (ARG (ARG_ACTION)?)
-           (RET (ARG_ACTION)?)
+           #(ARG (arg:ARG_ACTION)?)
+           #(RET (ret:ARG_ACTION {setReturnValues(#ret);})?)
            (optionsSpec)?
            (ruleScopeSpec)?
        	   (AMPERSAND)*

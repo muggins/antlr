@@ -705,6 +705,7 @@ public class Grammar {
     }
 
 	public void translateLeftRecursiveRule(GrammarAST ruleAST) {
+		//System.out.println(ruleAST.toStringTree());
 		LeftRecursiveRuleAnalyzer leftRecursiveRuleWalker =
 			new LeftRecursiveRuleAnalyzer(this, ruleAST.enclosingRuleName);
 		leftRecursiveRuleWalker.setASTNodeClass("org.antlr.tool.GrammarAST");

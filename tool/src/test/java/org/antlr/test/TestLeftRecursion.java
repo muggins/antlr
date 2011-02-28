@@ -302,14 +302,35 @@ public class TestLeftRecursion extends BaseTest {
 		runTests(grammar, tests, "e");
 	}
 
+	@Test public void testReturnValueAndActions() throws Exception {
+		String grammar =
+			"grammar T;\n" +
+			"s : e {System.out.println($e.v);} ;\n" +
+			"e returns [int v]\n" +
+			"  : e '*' b=e {$v *= $b.v;}\n" +
+			"  | e '+' b=e {$v += $b.v;}\n" +
+			"  | INT {$v = $INT.int;}\n" +
+			"  ;\n" +
+			"INT : '0'..'9'+ ;\n" +
+			"WS : (' '|'\\n') {skip();} ;\n";
+		String[] tests = {
+			"4",			"4",
+			"1+2",			"3",
+		};
+		runTests(grammar, tests, "s");
+	}
+
 	public void runTests(String grammar, String[] tests, String startRule) {
 		rawGenerateAndBuildRecognizer("T.g", grammar, "TParser", "TLexer", debug);
+		boolean parserBuildsTrees =
+			grammar.indexOf("output=AST")>=0 ||
+			grammar.indexOf("output = AST")>=0;
 		writeRecognizerAndCompile("TParser",
 										 null,
 										 "TLexer",
 										 startRule,
 										 null,
-										 true,
+										 parserBuildsTrees,
 										 false,
 										 false,
 										 debug);
