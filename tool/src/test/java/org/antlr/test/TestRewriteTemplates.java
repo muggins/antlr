@@ -29,8 +29,7 @@ package org.antlr.test;
 
 import org.antlr.Tool;
 import org.antlr.codegen.CodeGenerator;
-import org.antlr.tool.ErrorManager;
-import org.antlr.tool.Grammar;
+import org.antlr.tool.*;
 import org.junit.Test;
 
 public class TestRewriteTemplates extends BaseTest {
@@ -293,7 +292,7 @@ public class TestRewriteTemplates extends BaseTest {
 		g.setCodeGenerator(generator);
 		generator.genRecognizer();
 
-		assertEquals("unexpected errors: "+equeue, 2, equeue.warnings.size());
+		assertEquals("unexpected errors: "+equeue, 0, equeue.warnings.size());
 	}
 
 	@Test public void testRewriteRuleAndRewriteModeRefRule() throws Exception {
@@ -313,7 +312,7 @@ public class TestRewriteTemplates extends BaseTest {
 		g.setCodeGenerator(generator);
 		generator.genRecognizer();
 
-		assertEquals("unexpected errors: "+equeue, 2, equeue.warnings.size());
+		assertEquals("unexpected errors: "+equeue, 0, equeue.warnings.size());
 	}
 
 }
