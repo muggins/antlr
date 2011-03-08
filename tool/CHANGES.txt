@@ -7,6 +7,16 @@ University of San Francisco
 
 CHANGES
 
+March 3, 2011
+
+* Add tree, getTree() to ParserRuleReturnScope to do away with specific ones like:
+    public static class rewrite_template_args_return extends ParserRuleReturnScope {
+        CommonTree tree;
+        public Object getTree() { return tree; }
+    };
+  Removed these special classes if it's just AST; keep if they have defined "returns"
+  values
+
 February 26, 2011
 
 * All finally {} have comment now to suppress warning.
