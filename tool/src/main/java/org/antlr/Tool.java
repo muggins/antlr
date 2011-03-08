@@ -460,7 +460,7 @@ public class Tool {
                 // we now have all grammars read in as ASTs
                 // (i.e., root and all delegates)
 				rootGrammar.composite.assignTokenTypes();
-				rootGrammar.composite.translateLeftRecursiveRules();
+				//rootGrammar.composite.translateLeftRecursiveRules();
 				rootGrammar.addRulesForSyntacticPredicates();
 				rootGrammar.composite.defineGrammarSymbols();
                 rootGrammar.composite.createNFAs();
