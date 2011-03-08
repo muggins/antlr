@@ -1376,6 +1376,13 @@ match( ANTLR3::EOF )<\n>
 <endif>
 >>
 
+// used for left-recursive rules
+recRuleDefArg()                       ::= "int <recRuleArg()>"
+recRuleArg()                          ::= "_p"
+recRuleAltPredicate(ruleName,opPrec)  ::= "<recRuleArg()> \<= <opPrec>"
+recRuleSetResultAction()              ::= "root_0=$<ruleName>_primary.tree;"
+recRuleSetReturnAction(src,name)      ::= "$<name>=$<src>.<name>;"
+
 /** $start in parser rule */
 rulePropertyRef_start(scope, attr) ::= "return_value.start"
 

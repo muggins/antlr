@@ -788,6 +788,13 @@ this.match(this.EOF); <checkRuleBacktrackFailure()>
 <endif>
 >>
 
+// used for left-recursive rules
+recRuleDefArg()                       ::= "int <recRuleArg()>"
+recRuleArg()                          ::= "_p"
+recRuleAltPredicate(ruleName,opPrec)  ::= "<recRuleArg()> \<= <opPrec>"
+recRuleSetResultAction()              ::= "root_0=$<ruleName>_primary.tree;"
+recRuleSetReturnAction(src,name)      ::= "$<name>=$<src>.<name>;"
+
 /** match ^(root children) in tree parser */
 tree(root, actionsAfterRoot, children, nullableChildList,enclosingTreeLevel, treeLevel) ::= <<
 <root:element()>
