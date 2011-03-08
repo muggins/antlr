@@ -32,7 +32,7 @@ import antlr.collections.AST;
 import org.antlr.Tool;
 import org.antlr.analysis.*;
 import org.antlr.codegen.CodeGenerator;
-import org.antlr.codegen.Target;
+import org.antlr.codegen.*;
 import org.antlr.grammar.v2.ANTLRLexer;
 import org.antlr.grammar.v2.ANTLRParser;
 import org.antlr.grammar.v2.*;
@@ -265,12 +265,14 @@ public class Grammar {
 
 	/** Legal options for terminal refs like ID<node=MyVarNode> */
 	public static final Set legalTokenOptions =
-			new HashSet() {
-				{
+		new HashSet() {
+			{
 				add(defaultTokenOption);
-                add("assoc");
-				}
-			};
+				add("type");
+				add("text");
+				add("assoc");
+			}
+		};
 
 	public static final String defaultTokenOption = "node";
 

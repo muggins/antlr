@@ -27,7 +27,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-group Scala implements ANTLRCore;
+group Scala;
 
 scalaTypeInitMap ::= [
 	"Int":"0",
@@ -155,7 +155,7 @@ override def nextToken(): Token = {
             }
         }
         catch {
-            case re: RecognitionException => 
+            case re: RecognitionException =>
             // shouldn't happen in backtracking mode, but...
             reportError(re)
             recover(re)
@@ -198,7 +198,7 @@ object <grammar.recognizerName> {
     <bitsets:bitset(name={FOLLOW_<it.name>_in_<it.inName><it.tokenIndex>},
                     words64=it.bits)>
 }
-              
+
 class <grammar.recognizerName>(input: <inputStreamType>, state<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>: RecognizerSharedState) extends <@superClassName><superClass><@end>(input, state) {
     import <grammar.recognizerName>._
     // delegates
@@ -218,7 +218,7 @@ class <grammar.recognizerName>(input: <inputStreamType>, state<grammar.delegator
 
         <parserCtorBody()>
         <grammar.directDelegates:
-         {g|<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this)}; separator="\n">         
+         {g|<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this)}; separator="\n">
         <grammar.indirectDelegates:{g | <g:delegateName()> = <g.delegator:delegateName()>.<g:delegateName()>}; separator="\n">
         <last(grammar.delegators):{g|gParent = <g:delegateName()>}>
     <@end>
@@ -281,7 +281,7 @@ synpredRule(ruleName, ruleDescriptor, block, description, nakedBlock) ::=
 <<
 // $ANTLR start <ruleName>
 @throws(classOf[RecognitionException])
-def <ruleName>_fragment(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): Unit = {   
+def <ruleName>_fragment(<ruleDescriptor.parameterScope:parameterScope(scope=it)>): Unit = {
     <ruleLabelDefs()>
 <if(trace)>
     traceIn("<ruleName>_fragment", <ruleDescriptor.index>)
@@ -306,7 +306,7 @@ final def <name>(): Boolean = {
     try {
         <name>_fragment() // can never throw exception
     } catch {
-        case re: RecognitionException => 
+        case re: RecognitionException =>
         System.err.println("impossible: "+re)
     }
     val success = !state.failed
@@ -663,13 +663,13 @@ element() ::= <<
 >>
 
 /** match a token optionally with a label in front */
-tokenRef(token,label,elementIndex,hetero) ::= <<
+tokenRef(token,label,elementIndex,terminalOptions) ::= <<
 <if(label)><label>=<endif>`match`(input,<token>,FOLLOW_<token>_in_<ruleName><elementIndex>)<if(label)>.asInstanceOf[<labelType>]<endif>
 <checkRuleBacktrackFailure()>
 >>
 
 /** ids+=ID */
-tokenRefAndListLabel(token,label,elementIndex,hetero) ::= <<
+tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRef(...)>
 <listLabel(elem=label,...)>
 >>
@@ -1320,7 +1320,7 @@ lexerRuleLabelPropertyRef_type(scope,attr) ::=
     "(if (<scope>!=null) <scope>.getType() else 0)"
 lexerRuleLabelPropertyRef_line(scope,attr) ::=
     "(if (<scope>!=null) <scope>.getLine() else 0)"
-lexerRuleLabelPropertyRef_pos(scope,attr) ::= 
+lexerRuleLabelPropertyRef_pos(scope,attr) ::=
     "(if (<scope>!=null) <scope>.getCharPositionInLine() else -1)"
 lexerRuleLabelPropertyRef_channel(scope,attr) ::=
     "(if (<scope>!=null) <scope>.getChannel() else 0)"

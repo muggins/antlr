@@ -1,5 +1,5 @@
 /*
- * [The "BSD licence"]
+ * [The "BSD license"]
  * Copyright (c) 2011 Terence Parr
  * All rights reserved.
  *
@@ -29,7 +29,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-group CSharp3 implements ANTLRCore;
+group CSharp3;
 
 csharpVisibilityMap ::= [
 	"private":"private",
@@ -1596,7 +1596,7 @@ lexerRuleLabelPropertyRef_type(scope,attr) ::=
 lexerRuleLabelPropertyRef_line(scope,attr) ::=
     "(<scope>!=null?<scope>.Line:0)"
 
-lexerRuleLabelPropertyRef_pos(scope,attr) ::= 
+lexerRuleLabelPropertyRef_pos(scope,attr) ::=
     "(<scope>!=null?<scope>.CharPositionInLine:-1)"
 
 lexerRuleLabelPropertyRef_channel(scope,attr) ::=

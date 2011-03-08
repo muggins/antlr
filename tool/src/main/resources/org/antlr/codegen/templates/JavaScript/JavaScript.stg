@@ -1,4 +1,4 @@
-group JavaScript implements ANTLRCore;
+group JavaScript;
 
 /** The overall file structure of a recognizer; stores methods for rules
  *  and cyclic DFAs plus support code.
@@ -166,7 +166,7 @@ var <grammar.recognizerName> = function(input, state<grammar.delegators:{g|, <g:
 
         <parserCtorBody()>
         <grammar.directDelegates:
-         {g|this.<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this);}; separator="\n">         
+         {g|this.<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this);}; separator="\n">
          <grammar.indirectDelegates:{g | this.<g:delegateName()> = <g.delegator:delegateName()>.<g:delegateName()>;}; separator="\n">
          <last(grammar.delegators):{g|this.gParent = this.<g:delegateName()>;}>
 
@@ -636,12 +636,12 @@ element() ::= <<
 >>
 
 /** match a token optionally with a label in front */
-tokenRef(token,label,elementIndex,hetero) ::= <<
+tokenRef(token,label,elementIndex,terminalOptions) ::= <<
 <if(label)><label>=<endif>this.match(this.input,<token>,<grammar.recognizerName>.FOLLOW_<token>_in_<ruleName><elementIndex>); <checkRuleBacktrackFailure()>
 >>
 
 /** ids+=ID */
-tokenRefAndListLabel(token,label,elementIndex,hetero) ::= <<
+tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRef(...)>
 <listLabel(elem=label,...)>
 >>

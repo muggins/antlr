@@ -81,6 +81,24 @@ public class TestHeteroAST extends BaseTest {
         assertEquals("a<V>\n", found);
     }
 
+	@Test public void testNamedType() throws Exception {
+		String grammar =
+			"grammar T;\n" +
+			"options {output=AST;}\n" +
+			"@members {static class V extends CommonTree {\n" +
+			"  public V(Token t) { token=t;}\n" +
+			"  public String toString() { return token.getText()+\"<V>\";}\n" +
+			"}\n" +
+			"}\n"+
+			"a : ID<node=V> ;\n"+
+			"ID : 'a'..'z'+ ;\n" +
+			"WS : (' '|'\\n') {$channel=HIDDEN;} ;\n";
+		String found = execParser("T.g", grammar, "TParser", "TLexer",
+					"a", "a", debug);
+		assertEquals("a<V>\n", found);
+	}
+
+
 	@Test public void testTokenWithLabel() throws Exception {
 		String grammar =
 			"grammar T;\n" +

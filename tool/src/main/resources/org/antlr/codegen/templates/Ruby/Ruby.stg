@@ -1,9 +1,9 @@
-group Ruby implements ANTLRCore;
+group Ruby;
 
 /******************************************************************************
  *********************  M A J O R   C O M P O N E N T S  **********************
  ******************************************************************************/
- 
+
 /** The overall file structure of a recognizer; stores methods
   * for rules and cyclic DFAs plus support code.
   */
@@ -20,7 +20,7 @@ outputFile(LEXER, PARSER, TREE_PARSER, actionScope, actions, docComment, recogni
 # Ruby runtime library version: <runtimeLibraryVersion()>
 # Input grammar file: <fileName>
 # Generated at: <generatedTimestamp>
-# 
+#
 
 # ~~~\> start load path setup
 this_directory = File.expand_path( File.dirname( __FILE__ ) )
@@ -29,13 +29,13 @@ $LOAD_PATH.unshift( this_directory ) unless $LOAD_PATH.include?( this_directory 
 antlr_load_failed = proc do
   load_path = $LOAD_PATH.map { |dir| '  - ' \<\< dir }.join( $/ )
   raise LoadError, \<\<-END.strip!
-  
+
 Failed to load the ANTLR3 runtime library (version <runtimeLibraryVersion()>):
 
 Ensure the library has been installed on your system and is available
 on the load path. If rubygems is available on your system, this can
 be done with the command:
-  
+
   gem install antlr3
 
 Current load path:
@@ -45,28 +45,28 @@ Current load path:
 end
 
 defined?( ANTLR3 ) or begin
-  
+
   # 1: try to load the ruby antlr3 runtime library from the system path
   require 'antlr3'
-  
+
 rescue LoadError
-  
+
   # 2: try to load rubygems if it isn't already loaded
   defined?( Gem ) or begin
     require 'rubygems'
   rescue LoadError
     antlr_load_failed.call
   end
-  
+
   # 3: try to activate the antlr3 gem
   begin
     Gem.activate( 'antlr3', '~> <runtimeLibraryVersion()>' )
   rescue Gem::LoadError
     antlr_load_failed.call
   end
-  
+
   require 'antlr3'
-  
+
 end
 # \<~~~ end load path setup
 
@@ -91,7 +91,7 @@ end
 
 tokenDataModule() ::= <<
 # TokenData defines all of the token type integer values
-# as constants, which will be included in all 
+# as constants, which will be included in all
 # ANTLR-generated recognizers.
 const_defined?( :TokenData ) or TokenData = ANTLR3::TokenScheme.new
 
@@ -113,7 +113,7 @@ module TokenData
   register_names( <tokenNames:{<it>}; separator=", ", anchor, wrap="\n"> )
 
 <endif>
-  
+
   <placeAction(scope="token",name="scheme")>
   <placeAction(scope="token",name="members")>
 end<\n>
@@ -263,15 +263,15 @@ end
   * need to be in a rule by themselves.
   */
 synpredRule(ruleName, ruleDescriptor, block, description, nakedBlock) ::= <<
-# 
+#
 # syntactic predicate <ruleName>
-# 
+#
 # (in <fileName>)
 # <description>
-# 
+#
 # This is an imaginary rule inserted by ANTLR to
 # implement a syntactic predicate decision
-# 
+#
 def <ruleName><if(ruleDescriptor.parameterScope)>( <ruleDescriptor.parameterScope:parameterScope(scope=it)> )<endif>
   <traceIn()><ruleLabelDefs()>
   <block>
@@ -287,16 +287,16 @@ end
 rule(ruleName, ruleDescriptor, block, emptyRule, description, exceptions, finally, memoize) ::= <<
 <returnScope(scope=ruleDescriptor.returnScope)>
 
-# 
+#
 # parser rule <ruleName>
-# 
+#
 # (in <fileName>)
 # <description>
-# 
+#
 def <ruleName><if(ruleDescriptor.parameterScope)>( <ruleDescriptor.parameterScope:parameterScope(scope=it)> )<endif>
   <traceIn()><ruleScopeSetUp()><ruleDeclarations()><ruleLabelDefs()><action(name="init", code=ruleDescriptor.actions.init)>
   <@body><ruleBody()><@end>
-  
+
   return <ruleReturnValue()>
 end
 <if(ruleDescriptor.modifier)>
@@ -432,7 +432,7 @@ begin
 <if(!emptyRule)>
 <if(actions.(actionScope).rulecatch)>
 
-# - - - - - - - - @rulecatch - - - - - - - - 
+# - - - - - - - - @rulecatch - - - - - - - -
 <actions.(actionScope).rulecatch>
 <else>
 rescue ANTLR3::Error::RecognitionError => re
@@ -632,18 +632,18 @@ alt(elements,altNum,description,autoAST,outerAlt,treeLevel,rew) ::= <<
 >>
 
 /** match a token optionally with a label in front */
-tokenRef(token,label,elementIndex,hetero) ::= <<
+tokenRef(token,label,elementIndex,terminalOptions) ::= <<
 <if(label)><label; format="label"> = <endif>match( <token>, TOKENS_FOLLOWING_<token>_IN_<ruleName>_<elementIndex> )
 >>
 
 /** ids+=ID */
-tokenRefAndListLabel(token,label,elementIndex,hetero) ::= <<
+tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRef(...)>
 <addToList(elem={<label; format="label">},...)>
 >>
 
 /* TRY THIS:
-tokenRefAndListLabel(token,label,elementIndex,hetero) ::= <<
+tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 list_of_<label; format="label"> << match( <token>, TOKENS_FOLLOWING_<token>_IN_<ruleName>_<elementIndex> )
 >>
 */
@@ -887,15 +887,15 @@ class DFA<dfa.decisionNumber> \< ANTLR3::DFA
   TRANSITION = [
     <dfa.javaCompressedTransition:{s|unpack( <s; wrap="\n", anchor, separator=", "> )}; separator=",\n">
   ].freeze
-  
+
   ( 0 ... MIN.length ).zip( MIN, MAX ) do | i, a, z |
     if a \> 0 and z \< 0
       MAX[ i ] %= 0x10000
     end
   end
-  
+
   @decision = <dfa.decisionNumber>
-  
+
   <@errorMethod()>
 <if(dfa.description)>
 
@@ -935,7 +935,7 @@ cyclicDFAInit(dfa) ::= <<
   <dfa.specialStateSTs:{state|when <i0>
   <state>}; separator="\n">
   end
-  
+
   if s \< 0
 <if(backtracking)>
     @state.backtracking > 0 and raise ANTLR3::Error::BacktrackingFailed<\n>
@@ -944,7 +944,7 @@ cyclicDFAInit(dfa) ::= <<
     @dfa<dfa.decisionNumber>.error( nva )
     raise nva
   end
-  
+
   s
 end<\n>
 <else>
@@ -1133,13 +1133,13 @@ class <if(grammar.delegator)><grammar.name><else>Lexer<endif> \< <superClass>
   include ANTLR3::FilterMode<\n>
 <endif>
   <scopes:{<if(it.isDynamicGlobalScope)><globalAttributeScopeClass(scope=it)><\n><endif>}>
-  
+
   begin
     generated_using( "<fileName>", "<ANTLRVersion>", "<runtimeLibraryVersion()>" )
   rescue NoMethodError => error
     # ignore
   end
-  
+
   RULE_NAMES   = [ <trunc(rules):{r|"<r.ruleName>"}; separator=", ", wrap="\n", anchor> ].freeze
   RULE_METHODS = [ <trunc(rules):{r|:<r.ruleName; format="lexerRule">}; separator=", ", wrap="\n", anchor> ].freeze
 
@@ -1149,7 +1149,7 @@ class <if(grammar.delegator)><grammar.name><else>Lexer<endif> \< <superClass>
 <if(grammar.directDelegates)>
   imports( <grammar.directDelegates:{d|:<d.name>}; separator=", "> )<\n>
 <endif>
-  
+
   def initialize( <grammar.delegators:{g|<g:delegateName()>, }>input=nil, options = {} )
     super( input, options )
 <if(memoize)>
@@ -1159,23 +1159,23 @@ class <if(grammar.delegator)><grammar.name><else>Lexer<endif> \< <superClass>
 <endif>
     <grammar.delegators:{g|@<g:delegateName()> = <g:delegateName()><\n>}><grammar.directDelegates:{g|@<g:delegateName()> = <newDelegate(g)><\n>}><last(grammar.delegators):{g|@parent = @<g:delegateName()><\n>}><placeAction(scope="lexer",name="init")>
   end
-  
+
   <placeAction(scope="lexer",name="members")>
-  
+
   # - - - - - - - - - - - lexer rules - - - - - - - - - - - -
   <rules:{<it><\n>}>
 <if(grammar.delegatedRules)>
-  
+
   # - - - - - - - - - - delegated rules - - - - - - - - - - -
   <grammar.delegatedRules:{ruleDescriptor|<delegateLexerRule(ruleDescriptor)><\n><\n>}>
 <endif>
 <if(cyclicDFAs)>
-  
+
   # - - - - - - - - - - DFA definitions - - - - - - - - - - -
   <cyclicDFAs:cyclicDFA()>
-  
+
   private
-  
+
   def initialize_dfas
     super rescue nil
     <cyclicDFAs:cyclicDFAInit()>
@@ -1208,14 +1208,14 @@ lexerRule(ruleName,nakedBlock,ruleDescriptor,block,memoize) ::= <<
 def <ruleName; format="lexerRule"><if(ruleDescriptor.parameterScope)>( <ruleDescriptor.parameterScope:parameterScope(scope=it)> )<endif>
   <traceIn()><ruleScopeSetUp()><ruleDeclarations()><if(memoize)>
 <if(backtracking)>
-  
+
   # backtracking success
   success = false<\n>
 <endif>
 <endif>
 <if(nakedBlock)>
   <ruleMemoization({<ruleName; format="lexerRule">})><lexerRuleLabelDefs()><action(name="init", code=ruleDescriptor.actions.init)>
-  
+
   # - - - - main rule block - - - -
   <block>
 <else>
@@ -1223,11 +1223,11 @@ def <ruleName; format="lexerRule"><if(ruleDescriptor.parameterScope)>( <ruleDesc
   type = <ruleName>
   channel = ANTLR3::DEFAULT_CHANNEL
   <ruleMemoization(ruleName)><lexerRuleLabelDefs()><action(name="init", code=ruleDescriptor.actions.init)>
-  
+
   # - - - - main rule block - - - -
   <block>
   <ruleCleanUp()>
-  
+
   @state.type = type
   @state.channel = channel
 <(ruleDescriptor.actions.after):execAction()>
@@ -1262,7 +1262,7 @@ tokensRule(ruleName,nakedBlock,args,block,ruleDescriptor) ::= <<
 # main rule used to study the input at the current position,
 # and choose the proper lexer rule to call in order to
 # fetch the next token
-# 
+#
 # usually, you don't make direct calls to this method,
 # but instead use the next_token method, which will
 # build and emit the actual next token

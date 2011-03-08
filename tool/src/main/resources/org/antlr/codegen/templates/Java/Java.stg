@@ -25,7 +25,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-group Java implements ANTLRCore;
+group Java;
 
 javaTypeInitMap ::= [
 	"int":"0",
@@ -666,12 +666,12 @@ element() ::= <<
 >>
 
 /** match a token optionally with a label in front */
-tokenRef(token,label,elementIndex,hetero) ::= <<
+tokenRef(token,label,elementIndex,terminalOptions) ::= <<
 <if(label)><label>=(<labelType>)<endif>match(input,<token>,FOLLOW_<token>_in_<ruleName><elementIndex>); <checkRuleBacktrackFailure()>
 >>
 
 /** ids+=ID */
-tokenRefAndListLabel(token,label,elementIndex,hetero) ::= <<
+tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRef(...)>
 <listLabel(elem=label,...)>
 >>

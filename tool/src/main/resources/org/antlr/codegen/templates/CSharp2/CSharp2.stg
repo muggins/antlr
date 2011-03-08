@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2007-2008 Johannes Luber
  Copyright (c) 2005-2007 Kunle Odutola
  Copyright (c) 2005 Terence Parr
@@ -27,7 +27,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-group CSharp2 implements ANTLRCore;
+group CSharp2;
 csharpVisibilityMap ::= [
 	"private":"private",
 	"protected":"protected",
@@ -166,7 +166,7 @@ public partial class <grammar.recognizerName> : <@superClassName><superClass><@e
 <if(filterMode)>
 	<filteringNextToken()>
 <endif>
- 
+
 	protected virtual void OnCreated() {}
 	protected virtual void EnterRule(string ruleName, int ruleIndex) {}
 	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
@@ -866,12 +866,12 @@ DebugLocation(<it.line>, <it.pos>);
 >>
 
 /** match a token optionally with a label in front */
-tokenRef(token,label,elementIndex,hetero) ::= <<
+tokenRef(token,label,elementIndex,terminalOptions) ::= <<
 <if(label)><label>=(<labelType>)<endif>Match(input,<token>,Follow._<token>_in_<ruleName><elementIndex>); <checkRuleBacktrackFailure()>
 >>
 
 /** ids+=ID */
-tokenRefAndListLabel(token,label,elementIndex,hetero) ::= <<
+tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRef(...)>
 <listLabel(elem=label,...)>
 >>
@@ -1584,7 +1584,7 @@ lexerRuleLabelPropertyRef_type(scope,attr) ::=
 lexerRuleLabelPropertyRef_line(scope,attr) ::=
     "(<scope>!=null?<scope>.Line:0)"
 
-lexerRuleLabelPropertyRef_pos(scope,attr) ::= 
+lexerRuleLabelPropertyRef_pos(scope,attr) ::=
     "(<scope>!=null?<scope>.CharPositionInLine:-1)"
 
 lexerRuleLabelPropertyRef_channel(scope,attr) ::=

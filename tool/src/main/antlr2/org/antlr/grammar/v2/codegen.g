@@ -827,7 +827,7 @@ if ( grammar.buildAST() && !r.hasRewrite(outerAltNum) ) {
          {rewriteTreeNestingLevel--;}
     ;
 
-atom[GrammarAST scope, GrammarAST label, GrammarAST astSuffix] 
+atom[GrammarAST scope, GrammarAST label, GrammarAST astSuffix]
     returns [StringTemplate code=null]
 {
 String labelText=null;
@@ -941,8 +941,8 @@ if ( grammar.type!=Grammar.LEXER &&
 				String tokenLabel =
 				   generator.getTokenTypeAsTargetLabel(grammar.getTokenType(t.getText()));
 				code.setAttribute("token",tokenLabel);
-				if ( !currentAltHasASTRewrite && #t.terminalOptions!=null ) { 
-                    code.setAttribute("hetero",#t.terminalOptions.get(Grammar.defaultTokenOption));
+				if ( !currentAltHasASTRewrite && #t.terminalOptions!=null ) {
+                    code.setAttribute("terminalOptions",#t.terminalOptions);
                 }
                 int i = ((TokenWithIndex)#t.getToken()).getIndex();
 			    code.setAttribute("elementIndex", i);
@@ -951,7 +951,7 @@ if ( grammar.type!=Grammar.LEXER &&
 		   #t.code = code;
 		}
 
-    |   c:CHAR_LITERAL 
+    |   c:CHAR_LITERAL
         {
 		if ( grammar.type==Grammar.LEXER ) {
 			code = templates.getInstanceOf("charRef");
@@ -966,7 +966,7 @@ if ( grammar.type!=Grammar.LEXER &&
 			String tokenLabel = generator.getTokenTypeAsTargetLabel(grammar.getTokenType(c.getText()));
 			code.setAttribute("token",tokenLabel);
             if ( #c.terminalOptions!=null ) {
-                code.setAttribute("hetero",#c.terminalOptions.get(Grammar.defaultTokenOption));
+                code.setAttribute("terminalOptions",#c.terminalOptions);
             }
             int i = ((TokenWithIndex)#c.getToken()).getIndex();
 			code.setAttribute("elementIndex", i);
@@ -992,7 +992,7 @@ if ( grammar.type!=Grammar.LEXER &&
 			   generator.getTokenTypeAsTargetLabel(grammar.getTokenType(#s.getText()));
 			code.setAttribute("token",tokenLabel);
             if ( #s.terminalOptions!=null ) {
-                code.setAttribute("hetero",#s.terminalOptions.get(Grammar.defaultTokenOption));
+                code.setAttribute("terminalOptions",#s.terminalOptions);
             }
 			code.setAttribute("elementIndex", i);
 			generator.generateLocalFOLLOW(#s,tokenLabel,currentRuleName,i);
@@ -1285,10 +1285,6 @@ rewrite_atom[boolean isRoot] returns [StringTemplate code=null]
     	Rule rule = grammar.getRule(currentRuleName);
     	Set tokenRefsInAlt = rule.getTokenRefsInAlt(outerAltNum);
     	boolean createNewNode = !tokenRefsInAlt.contains(tokenName) || #arg!=null;
-        Object hetero = null;
-		if ( term.terminalOptions!=null ) {
-			hetero = term.terminalOptions.get(Grammar.defaultTokenOption);
-		}
     	if ( createNewNode ) {
     		stName = "rewriteImaginaryTokenRef";
     	}
@@ -1296,7 +1292,7 @@ rewrite_atom[boolean isRoot] returns [StringTemplate code=null]
     		stName += "Root";
     	}
     	code = templates.getInstanceOf(stName);
-		code.setAttribute("hetero", hetero);
+		code.setAttribute("terminalOptions",term.terminalOptions);
     	if ( #arg!=null ) {
 			List args = generator.translateAction(currentRuleName,#arg);
 			code.setAttribute("args", args);

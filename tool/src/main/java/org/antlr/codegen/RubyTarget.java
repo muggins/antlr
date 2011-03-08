@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2010 Kyle Yetter
  All rights reserved.
 
@@ -28,12 +28,12 @@
 
 package org.antlr.codegen;
 
-import java.io.IOException;
-import java.util.*;
-
 import org.antlr.Tool;
 import org.antlr.stringtemplate.*;
 import org.antlr.tool.Grammar;
+
+import java.io.IOException;
+import java.util.*;
 
 public class RubyTarget extends Target
 {
@@ -43,19 +43,19 @@ public class RubyTarget extends Target
     public static final Set rubyKeywords =
     new HashSet() {
         {
-        	add( "alias" );     add( "END" );     add( "retry" );                                                                                                
-        	add( "and" );       add( "ensure" );  add( "return" );                                                                                               
-        	add( "BEGIN" );     add( "false" );   add( "self" );                                                                                                 
-        	add( "begin" );     add( "for" );     add( "super" );                                                                                                
-        	add( "break" );     add( "if" );      add( "then" );                                                                                                 
-        	add( "case" );      add( "in" );      add( "true" );                                                                                                 
-        	add( "class" );     add( "module" );  add( "undef" );                                                                                                
-        	add( "def" );       add( "next" );    add( "unless" );                                                                                               
-        	add( "defined?" );  add( "nil" );     add( "until" );                                                                                                
-        	add( "do" );        add( "not" );     add( "when" );                                                                                                 
-        	add( "else" );      add( "or" );      add( "while" );                                                                                                
-        	add( "elsif" );     add( "redo" );    add( "yield" );                                                                                                
-        	add( "end" );       add( "rescue" );                                                                                                                 
+        	add( "alias" );     add( "END" );     add( "retry" );
+        	add( "and" );       add( "ensure" );  add( "return" );
+        	add( "BEGIN" );     add( "false" );   add( "self" );
+        	add( "begin" );     add( "for" );     add( "super" );
+        	add( "break" );     add( "if" );      add( "then" );
+        	add( "case" );      add( "in" );      add( "true" );
+        	add( "class" );     add( "module" );  add( "undef" );
+        	add( "def" );       add( "next" );    add( "unless" );
+        	add( "defined?" );  add( "nil" );     add( "until" );
+        	add( "do" );        add( "not" );     add( "when" );
+        	add( "else" );      add( "or" );      add( "while" );
+        	add( "elsif" );     add( "redo" );    add( "yield" );
+        	add( "end" );       add( "rescue" );
         }
     };
 
@@ -64,7 +64,7 @@ public class RubyTarget extends Target
     public class RubyRenderer implements AttributeRenderer
     {
     	protected String[] rubyCharValueEscape = new String[256];
-    	
+
     	public RubyRenderer() {
     		for ( int i = 0; i < 16; i++ ) {
     			rubyCharValueEscape[ i ] = "\\x0" + Integer.toHexString( i );
@@ -78,7 +78,7 @@ public class RubyTarget extends Target
     		for ( int i = 127; i < 256; i++ ) {
     			rubyCharValueEscape[ i ] = "\\x" + Integer.toHexString( i );
     		}
-    		
+
     		rubyCharValueEscape['\n'] = "\\n";
     		rubyCharValueEscape['\r'] = "\\r";
     		rubyCharValueEscape['\t'] = "\\t";
@@ -87,7 +87,7 @@ public class RubyTarget extends Target
     		rubyCharValueEscape['\\'] = "\\\\";
     		rubyCharValueEscape['"'] = "\\\"";
     	}
-    	
+
         public String toString( Object o ) {
             return o.toString();
         }
@@ -223,11 +223,11 @@ public class RubyTarget extends Target
         private String constantPath( String value ) {
             return value.replaceAll( "\\.", "::" );
         }
-        
+
         private String rubyString( String value ) {
         	StringBuilder output_buffer = new StringBuilder();
-        	int len = value.length(); 
-        	
+        	int len = value.length();
+
         	output_buffer.append( '"' );
         	for ( int i = 0; i < len; i++ ) {
         		output_buffer.append( rubyCharValueEscape[ value.charAt( i ) ] );
@@ -298,7 +298,7 @@ public class RubyTarget extends Target
         }
     }
 
-    protected void genRecognizerFile( 
+    protected void genRecognizerFile(
     		Tool tool,
     		CodeGenerator generator,
     		Grammar grammar,
@@ -335,7 +335,7 @@ public class RubyTarget extends Target
 
             Kyle Yetter - March 25, 2010
         */
-    	
+
         if ( grammar.type == Grammar.COMBINED ) {
             Map actions = grammar.getActions();
             if ( actions.containsKey( "all" ) ) {
@@ -369,7 +369,7 @@ public class RubyTarget extends Target
     {
         int code_point = 0;
         literal = literal.substring( 1, literal.length() - 1 );
-        
+
         if ( literal.charAt( 0 ) == '\\' ) {
             switch ( literal.charAt( 1 ) ) {
                 case    '\\':
@@ -404,7 +404,7 @@ public class RubyTarget extends Target
         } else {
             System.out.println( "2: hey you didn't account for this: \"" + literal + "\"" );
         }
-        
+
         return ( "0x" + Integer.toHexString( code_point ) );
     }
 
@@ -423,7 +423,7 @@ public class RubyTarget extends Target
         }
         return name;
     }
-    
+
     public boolean isValidActionScope( int grammarType, String scope ) {
         if ( scope.equals( "all" ) )       {
             return true;
@@ -437,7 +437,7 @@ public class RubyTarget extends Target
         if ( scope.equals( "overrides" ) ) {
             return true;
         }
-				
+
         switch ( grammarType ) {
         case Grammar.LEXER:
             if ( scope.equals( "lexer" ) ) {

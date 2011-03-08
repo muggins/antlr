@@ -9,6 +9,22 @@ CHANGES
 
 March 3, 2011
 
+* left-recursion pattern off until all targets catch up
+
+* ANTLRCore.sti no longer used; removed from all targets.
+
+* Adding type, text terminal options
+
+* Replaced hetero arg with terminalOptions arg in all templates that reference hetero
+  (this is the class name / node type used for TOKEN<NODETYPE> references
+  in grammar).  Widespread but trivial changes to all targets.  hetero is
+  now terminalOptions.node.  Can also get terminalOptions.type and
+  terminalOptions.text from dictionary of options.
+
+* Fixed mispelling of license in BSD license headers
+
+March 3, 2011
+
 * Add tree, getTree() to ParserRuleReturnScope to do away with specific ones like:
     public static class rewrite_template_args_return extends ParserRuleReturnScope {
         CommonTree tree;

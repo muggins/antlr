@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2005-2006 Terence Parr
  All rights reserved.
 
@@ -28,7 +28,7 @@
 
 /* in sync with Java/Java.stg revision 107 */
 
-group Python implements ANTLRCore;
+group Python;
 
 /** The overall file structure of a recognizer; stores methods for rules
  *  and cyclic DFAs plus support code.
@@ -209,12 +209,12 @@ filteringActionGate() ::= "self._state.backtracking == 1"
 
 genericParser(grammar, name, scopes, tokens, tokenNames, rules, numRules,
               bitsets, inputStreamType, superClass, filterMode,
-              ASTLabelType="Object", labelType, members, rewriteElementType, 
+              ASTLabelType="Object", labelType, members, rewriteElementType,
               init) ::= <<
 <if(grammar.grammarIsRoot)>
 # token names
 tokenNames = [
-    "\<invalid>", "\<EOR>", "\<DOWN>", "\<UP>", 
+    "\<invalid>", "\<EOR>", "\<DOWN>", "\<UP>",
     <tokenNames; wrap, separator=", ">
 ]<\n>
 <else>
@@ -742,12 +742,12 @@ element() ::= <<
 >>
 
 /** match a token optionally with a label in front */
-tokenRef(token,label,elementIndex,hetero) ::= <<
+tokenRef(token,label,elementIndex,terminalOptions) ::= <<
 <if(label)><label>=<endif>self.match(self.input, <token>, self.FOLLOW_<token>_in_<ruleName><elementIndex>)
 >>
 
 /** ids+=ID */
-tokenRefAndListLabel(token,label,elementIndex,hetero) ::= <<
+tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRef(...)>
 <listLabel(elem=label,...)>
 >>
@@ -865,7 +865,7 @@ ruleRefAndListLabel(rule,label,elementIndex,args,scope) ::= <<
 <listLabel(elem=label,...)>
 >>
 
-/** A lexer rule reference 
+/** A lexer rule reference
  *  The 'rule' argument was the target rule name, but now
  *  is type Rule, whose toString is same: the rule name.
  *  Now though you can access full rule descriptor stuff.
@@ -875,7 +875,7 @@ lexerRuleRef(rule,label,args,elementIndex,scope) ::= <<
 <label>Start<elementIndex> = self.getCharIndex()
 self.<if(scope)><scope:delegateName()>.<endif>m<rule.name>(<args; separator=", ">)
 <label> = CommonToken(
-    input=self.input, 
+    input=self.input,
     type=INVALID_TOKEN_TYPE,
     channel=DEFAULT_CHANNEL,
     start=<label>Start<elementIndex>,
@@ -911,7 +911,7 @@ recRuleSetResultAction()              ::= "root_0=$<ruleName>_primary.tree;"
 recRuleSetReturnAction(src,name)      ::= "$<name>=$<src>.<name>;"
 
 /** match ^(root children) in tree parser */
-tree(root, actionsAfterRoot, children, nullableChildList, 
+tree(root, actionsAfterRoot, children, nullableChildList,
      enclosingTreeLevel, treeLevel) ::= <<
 <root:element()>
 <actionsAfterRoot:element()>
@@ -1002,7 +1002,7 @@ if (<labelExpr>) <if(predicates)>and (<predicates>)<endif>:
  *  decides if this is possible: CodeGenerator.canGenerateSwitch().
  */
 dfaStateSwitch(k,edges,eotPredictsAlt,description,stateNumber,semPredState) ::= <<
-<! 
+<!
   FIXME: this is one of the few occasion, where I miss a switch statement
   in Python. ATM this is implemented as a list of if .. elif ..
   This may be replaced by faster a dictionary lookup, when I find a solution
@@ -1086,7 +1086,7 @@ DFA<dfa.decisionNumber>_special = DFA.unpack(
     u"<dfa.javaCompressedSpecial; wrap="\"\n    u\"">"
     )
 
-        
+
 DFA<dfa.decisionNumber>_transition = [
     <dfa.javaCompressedTransition:{s|DFA.unpack(u"<s; wrap="\"\nu\"">")}; separator=",\n">
 ]

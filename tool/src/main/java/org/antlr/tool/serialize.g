@@ -1,6 +1,6 @@
 header {
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
@@ -96,7 +96,7 @@ option
     :   #( ASSIGN ID optionValue )
     ;
 
-optionValue 
+optionValue
     :   id:ID
     |   s:STRING_LITERAL
     |   c:CHAR_LITERAL
@@ -128,9 +128,9 @@ tokensSpec
 tokenSpec
 	:	t:TOKEN_REF
 	|	#( ASSIGN
-		   t2:TOKEN_REF      
+		   t2:TOKEN_REF
 		   ( s:STRING_LITERAL
-		   | c:CHAR_LITERAL 
+		   | c:CHAR_LITERAL
 		   )
 		 )
 	;
@@ -168,7 +168,7 @@ block
     :   #(  BLOCK {out.block(#BLOCK.getNumberOfChildrenWithType(ALT));}
             (optionsSpec)?
             ( alternative rewrite )+
-            EOB   
+            EOB
          )
     ;
 
@@ -204,7 +204,7 @@ element
     |	#(PLUS_ASSIGN ID element)
     |   ebnf
     |   tree
-    |   #( SYNPRED block ) 
+    |   #( SYNPRED block )
     |   FORCED_ACTION
     |   ACTION
     |   SEMPRED
@@ -215,9 +215,9 @@ element
     ;
 
 ebnf:   block
-    |   #( OPTIONAL block ) 
-    |   #( CLOSURE block )  
-    |   #( POSITIVE_CLOSURE block ) 
+    |   #( OPTIONAL block )
+    |   #( CLOSURE block )
+    |   #( POSITIVE_CLOSURE block )
     ;
 
 tree:   #(TREE_BEGIN  element (element)*  )
