@@ -1200,8 +1200,6 @@ XDIGIT :
 INT	:	('0'..'9')+
 	;
 
-//HETERO_TYPE : '<'! ~'<' (~'>')* '>'! ;
-
 ARG_ACTION
 	:	'['! NESTED_ARG_ACTION ']'!
 	;
