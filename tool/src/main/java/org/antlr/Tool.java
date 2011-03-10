@@ -460,7 +460,7 @@ public class Tool {
                 // we now have all grammars read in as ASTs
                 // (i.e., root and all delegates)
 				rootGrammar.composite.assignTokenTypes();
-				//rootGrammar.composite.translateLeftRecursiveRules();
+				rootGrammar.composite.translateLeftRecursiveRules();
 				rootGrammar.addRulesForSyntacticPredicates();
 				rootGrammar.composite.defineGrammarSymbols();
                 rootGrammar.composite.createNFAs();
@@ -638,7 +638,7 @@ public class Tool {
      *  After all NFA, comes DFA conversion for root grammar then code gen for
      *  root grammar.  DFA and code gen for delegates comes next.
      */
-    protected void generateRecognizer(Grammar grammar) {
+    public void generateRecognizer(Grammar grammar) {
         String language = (String) grammar.getOption("language");
         if (language != null) {
             CodeGenerator generator = new CodeGenerator(this, grammar, language);

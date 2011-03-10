@@ -27,7 +27,7 @@
  */
 package org.antlr.runtime.tree;
 
-import org.antlr.stringtemplate.StringTemplate;
+import org.stringtemplate.v4.ST;
 
 import java.util.HashMap;
 
@@ -52,23 +52,23 @@ import java.util.HashMap;
  */
 public class DOTTreeGenerator {
 
-	public static StringTemplate _treeST =
-		new StringTemplate(
+	public static ST _treeST =
+		new ST(
 			"digraph {\n\n" +
 			"\tordering=out;\n" +
 			"\tranksep=.4;\n" +
 			"\tbgcolor=\"lightgrey\"; node [shape=box, fixedsize=false, fontsize=12, fontname=\"Helvetica-bold\", fontcolor=\"blue\"\n" +
 			"\t\twidth=.25, height=.25, color=\"black\", fillcolor=\"white\", style=\"filled, solid, bold\"];\n" +
 			"\tedge [arrowsize=.5, color=\"black\", style=\"bold\"]\n\n" +
-			"  $nodes$\n" +
-			"  $edges$\n" +
+			"  <nodes>\n" +
+			"  <edges>\n" +
 			"}\n");
 
-	public static StringTemplate _nodeST =
-			new StringTemplate("$name$ [label=\"$text$\"];\n");
+	public static ST _nodeST =
+			new ST("<name> [label=\"<text>\"];\n");
 
-	public static StringTemplate _edgeST =
-			new StringTemplate("$parent$ -> $child$ // \"$parentText$\" -> \"$childText$\"\n");
+	public static ST _edgeST =
+			new ST("<parent> -> <child> // \"<parentText>\" -> \"<childText>\"\n");
 
 	/** Track node to number mapping so we can get proper node name back */
 	HashMap nodeToNumberMap = new HashMap();
@@ -76,26 +76,20 @@ public class DOTTreeGenerator {
 	/** Track node number so we can get unique node names */
 	int nodeNumber = 0;
 
-	public StringTemplate toDOT(Object tree,
-								TreeAdaptor adaptor,
-								StringTemplate _treeST,
-								StringTemplate _edgeST)
+	public ST toDOT(Object tree,
+					TreeAdaptor adaptor,
+					ST _treeST,
+					ST _edgeST)
 	{
-		StringTemplate treeST = _treeST.getInstanceOf();
+		ST treeST = new ST(_treeST); // dup
 		nodeNumber = 0;
 		toDOTDefineNodes(tree, adaptor, treeST);
 		nodeNumber = 0;
 		toDOTDefineEdges(tree, adaptor, treeST);
-		/*
-		if ( adaptor.getChildCount(tree)==0 ) {
-            // single node, don't do edge.
-            treeST.setAttribute("nodes", adaptor.getText(tree));
-        }
-        */
 		return treeST;
 	}
 
-	public StringTemplate toDOT(Object tree,
+	public ST toDOT(Object tree,
 								TreeAdaptor adaptor)
 	{
 		return toDOT(tree, adaptor, _treeST, _edgeST);
@@ -118,13 +112,13 @@ public class DOTTreeGenerator {
 	 *
 	 * Takes a Tree interface object.
 	 */
-	public StringTemplate toDOT(Tree tree) {
+	public ST toDOT(Tree tree) {
 		return toDOT(tree, new CommonTreeAdaptor());
 	}
 
 	protected void toDOTDefineNodes(Object tree,
 									TreeAdaptor adaptor,
-									StringTemplate treeST)
+									ST treeST)
 	{
 		if ( tree==null ) {
 			return;
@@ -137,21 +131,21 @@ public class DOTTreeGenerator {
 		}
 
 		// define parent node
-		StringTemplate parentNodeST = getNodeST(adaptor, tree);
-		treeST.setAttribute("nodes", parentNodeST);
+		ST parentNodeST = getNodeST(adaptor, tree);
+		treeST.add("nodes", parentNodeST);
 
 		// for each child, do a "<unique-name> [label=text]" node def
 		for (int i = 0; i < n; i++) {
 			Object child = adaptor.getChild(tree, i);
-			StringTemplate nodeST = getNodeST(adaptor, child);
-			treeST.setAttribute("nodes", nodeST);
+			ST nodeST = getNodeST(adaptor, child);
+			treeST.add("nodes", nodeST);
 			toDOTDefineNodes(child, adaptor, treeST);
 		}
 	}
 
 	protected void toDOTDefineEdges(Object tree,
 									TreeAdaptor adaptor,
-									StringTemplate treeST)
+									ST treeST)
 	{
 		if ( tree==null ) {
 			return;
@@ -171,23 +165,23 @@ public class DOTTreeGenerator {
 			Object child = adaptor.getChild(tree, i);
 			String childText = adaptor.getText(child);
 			String childName = "n"+getNodeNumber(child);
-			StringTemplate edgeST = _edgeST.getInstanceOf();
-			edgeST.setAttribute("parent", parentName);
-			edgeST.setAttribute("child", childName);
-			edgeST.setAttribute("parentText", fixString(parentText));
-			edgeST.setAttribute("childText", fixString(childText));
-			treeST.setAttribute("edges", edgeST);
+			ST edgeST = new ST(_edgeST);
+			edgeST.add("parent", parentName);
+			edgeST.add("child", childName);
+			edgeST.add("parentText", fixString(parentText));
+			edgeST.add("childText", fixString(childText));
+			treeST.add("edges", edgeST);
 			toDOTDefineEdges(child, adaptor, treeST);
 		}
 	}
 
-	protected StringTemplate getNodeST(TreeAdaptor adaptor, Object t) {
+	protected ST getNodeST(TreeAdaptor adaptor, Object t) {
 		String text = adaptor.getText(t);
-		StringTemplate nodeST = _nodeST.getInstanceOf();
+		ST nodeST = new ST(_nodeST);
 		String uniqueName = "n"+getNodeNumber(t);
-		nodeST.setAttribute("name", uniqueName);
+		nodeST.add("name", uniqueName);
 
-		nodeST.setAttribute("text", fixString(text));
+		nodeST.add("text", fixString(text));
 		return nodeST;
 	}
 

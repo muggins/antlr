@@ -47,8 +47,8 @@ public class TestTemplates extends BaseTest {
 	@Test
     public void testTemplateConstructor() throws Exception {
 		String action = "x = %foo(name={$ID.text});";
-		String expecting = "x = templateLib.getInstanceOf(\"foo\"," +
-			LINE_SEP + "  new STAttrMap().put(\"name\", (ID1!=null?ID1.getText():null)));";
+		String expecting = "x = templateLib.getInstanceOf(\"foo\")" +
+			LINE_SEP + "  .add(\"name\", (ID1!=null?ID1.getText():null));";
 
 		ErrorQueue equeue = new ErrorQueue();
 		ErrorManager.setErrorListener(equeue);
@@ -85,7 +85,7 @@ public class TestTemplates extends BaseTest {
 	@Test
     public void testTemplateConstructorNoArgs() throws Exception {
 		String action = "x = %foo();";
-		String expecting = "x = templateLib.getInstanceOf(\"foo\");";
+		String expecting = "x = templateLib.getInstanceOf(\"foo\")"+LINE_SEP+";";
 
 		ErrorQueue equeue = new ErrorQueue();
 		ErrorManager.setErrorListener(equeue);
@@ -122,8 +122,8 @@ public class TestTemplates extends BaseTest {
 	@Test
     public void testIndirectTemplateConstructor() throws Exception {
 		String action = "x = %({\"foo\"})(name={$ID.text});";
-		String expecting = "x = templateLib.getInstanceOf(\"foo\"," +
-			LINE_SEP + "  new STAttrMap().put(\"name\", (ID1!=null?ID1.getText():null)));";
+		String expecting = "x = templateLib.getInstanceOf(\"foo\")" +
+			LINE_SEP + "  .add(\"name\", (ID1!=null?ID1.getText():null));";
 
 		ErrorQueue equeue = new ErrorQueue();
 		ErrorManager.setErrorListener(equeue);
@@ -159,7 +159,7 @@ public class TestTemplates extends BaseTest {
 
 	@Test public void testStringConstructor() throws Exception {
 		String action = "x = %{$ID.text};";
-		String expecting = "x = new StringTemplate(templateLib,(ID1!=null?ID1.getText():null));";
+		String expecting = "x = new ST(templateLib,(ID1!=null?ID1.getText():null));";
 
 		ErrorQueue equeue = new ErrorQueue();
 		ErrorManager.setErrorListener(equeue);

@@ -33,8 +33,6 @@ import org.antlr.analysis.Label;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenSource;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.tool.ANTLRErrorListener;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.GrammarSemanticsMessage;
@@ -42,6 +40,7 @@ import org.antlr.tool.Message;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.stringtemplate.v4.ST;
 
 import java.io.*;
 import java.util.*;
@@ -80,22 +79,12 @@ public abstract class BaseTest {
         // new output dir for each test
         tmpdir = new File(System.getProperty("java.io.tmpdir"), "antlr-"+getClass().getName()+"-"+System.currentTimeMillis()).getAbsolutePath();
         ErrorManager.resetErrorState();
-        // force reset of static caches
-        new StringTemplateGroup("") {
-            {
-                StringTemplateGroup.nameToGroupMap = Collections.synchronizedMap(new HashMap());
-                StringTemplateGroup.nameToInterfaceMap = Collections.synchronizedMap(new HashMap());
-            }
-        };
-        StringTemplate.resetTemplateCounter();
-        StringTemplate.defaultGroup = new StringTemplateGroup("defaultGroup", ".");
     }
 
     @After
     public void tearDown() throws Exception {
         // remove tmpdir if no error.
-        if ( !lastTestFailed ) eraseTempDir();
-
+    	if ( !lastTestFailed ) eraseTempDir();
     }
 
     protected Tool newTool(String[] args) {
@@ -575,7 +564,7 @@ public abstract class BaseTest {
 								 String parserStartRuleName,
 								 boolean debug)
 	{
-		StringTemplate outputFileST = new StringTemplate(
+		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
 			"import org.antlr.runtime.tree.*;\n" +
 			"import org.antlr.runtime.debug.*;\n" +
@@ -586,32 +575,32 @@ public abstract class BaseTest {
 			"public class Test {\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
 			"        CharStream input = new ANTLRFileStream(args[0]);\n" +
-			"        $lexerName$ lex = new $lexerName$(input);\n" +
+			"        <lexerName> lex = new <lexerName>(input);\n" +
 			"        CommonTokenStream tokens = new CommonTokenStream(lex);\n" +
-			"        $createParser$\n"+
-			"        parser.$parserStartRuleName$();\n" +
+			"        <createParser>\n"+
+			"        parser.<parserStartRuleName>();\n" +
 			"    }\n" +
 			"}"
 			);
-		StringTemplate createParserST =
-			new StringTemplate(
+		ST createParserST =
+			new ST(
 			"        Profiler2 profiler = new Profiler2();\n"+
-			"        $parserName$ parser = new $parserName$(tokens,profiler);\n" +
+			"        <parserName> parser = new <parserName>(tokens,profiler);\n" +
 			"        profiler.setParser(parser);\n");
 		if ( !debug ) {
 			createParserST =
-				new StringTemplate(
-				"        $parserName$ parser = new $parserName$(tokens);\n");
+				new ST(
+				"        <parserName> parser = new <parserName>(tokens);\n");
 		}
-		outputFileST.setAttribute("createParser", createParserST);
-		outputFileST.setAttribute("parserName", parserName);
-		outputFileST.setAttribute("lexerName", lexerName);
-		outputFileST.setAttribute("parserStartRuleName", parserStartRuleName);
-		writeFile(tmpdir, "Test.java", outputFileST.toString());
+		outputFileST.add("createParser", createParserST);
+		outputFileST.add("parserName", parserName);
+		outputFileST.add("lexerName", lexerName);
+		outputFileST.add("parserStartRuleName", parserStartRuleName);
+		writeFile(tmpdir, "Test.java", outputFileST.render());
 	}
 
 	protected void writeLexerTestFile(String lexerName, boolean debug) {
-		StringTemplate outputFileST = new StringTemplate(
+		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
 			"import org.antlr.runtime.tree.*;\n" +
 			"import org.antlr.runtime.debug.*;\n" +
@@ -622,14 +611,14 @@ public abstract class BaseTest {
 			"public class Test {\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
 			"        CharStream input = new ANTLRFileStream(args[0]);\n" +
-			"        $lexerName$ lex = new $lexerName$(input);\n" +
+			"        <lexerName> lex = new <lexerName>(input);\n" +
 			"        CommonTokenStream tokens = new CommonTokenStream(lex);\n" +
 			"        System.out.println(tokens);\n" +
 			"    }\n" +
 			"}"
 			);
-		outputFileST.setAttribute("lexerName", lexerName);
-		writeFile(tmpdir, "Test.java", outputFileST.toString());
+		outputFileST.add("lexerName", lexerName);
+		writeFile(tmpdir, "Test.java", outputFileST.render());
 	}
 
 	protected void writeTreeTestFile(String parserName,
@@ -639,7 +628,7 @@ public abstract class BaseTest {
 									 String treeParserStartRuleName,
 									 boolean debug)
 	{
-		StringTemplate outputFileST = new StringTemplate(
+		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
 			"import org.antlr.runtime.tree.*;\n" +
 			"import org.antlr.runtime.debug.*;\n" +
@@ -650,41 +639,41 @@ public abstract class BaseTest {
 			"public class Test {\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
 			"        CharStream input = new ANTLRFileStream(args[0]);\n" +
-			"        $lexerName$ lex = new $lexerName$(input);\n" +
+			"        <lexerName> lex = new <lexerName>(input);\n" +
 			"        TokenRewriteStream tokens = new TokenRewriteStream(lex);\n" +
-			"        $createParser$\n"+
-			"        $parserName$.$parserStartRuleName$_return r = parser.$parserStartRuleName$();\n" +
-			"        $if(!treeParserStartRuleName)$\n" +
+			"        <createParser>\n"+
+			"        <parserName>.<parserStartRuleName>_return r = parser.<parserStartRuleName>();\n" +
+			"        <if(!treeParserStartRuleName)>\n" +
 			"        if ( r.tree!=null ) {\n" +
 			"            System.out.println(((Tree)r.tree).toStringTree());\n" +
 			"            ((CommonTree)r.tree).sanityCheckParentAndChildIndexes();\n" +
 			"		 }\n" +
-			"        $else$\n" +
+			"        <else>\n" +
 			"        CommonTreeNodeStream nodes = new CommonTreeNodeStream((Tree)r.tree);\n" +
 			"        nodes.setTokenStream(tokens);\n" +
-			"        $treeParserName$ walker = new $treeParserName$(nodes);\n" +
-			"        walker.$treeParserStartRuleName$();\n" +
-			"        $endif$\n" +
+			"        <treeParserName> walker = new <treeParserName>(nodes);\n" +
+			"        walker.<treeParserStartRuleName>();\n" +
+			"        <endif>\n" +
 			"    }\n" +
 			"}"
 			);
-		StringTemplate createParserST =
-			new StringTemplate(
+		ST createParserST =
+			new ST(
 			"        Profiler2 profiler = new Profiler2();\n"+
-			"        $parserName$ parser = new $parserName$(tokens,profiler);\n" +
+			"        <parserName> parser = new <parserName>(tokens,profiler);\n" +
 			"        profiler.setParser(parser);\n");
 		if ( !debug ) {
 			createParserST =
-				new StringTemplate(
-				"        $parserName$ parser = new $parserName$(tokens);\n");
+				new ST(
+				"        <parserName> parser = new <parserName>(tokens);\n");
 		}
-		outputFileST.setAttribute("createParser", createParserST);
-		outputFileST.setAttribute("parserName", parserName);
-		outputFileST.setAttribute("treeParserName", treeParserName);
-		outputFileST.setAttribute("lexerName", lexerName);
-		outputFileST.setAttribute("parserStartRuleName", parserStartRuleName);
-		outputFileST.setAttribute("treeParserStartRuleName", treeParserStartRuleName);
-		writeFile(tmpdir, "Test.java", outputFileST.toString());
+		outputFileST.add("createParser", createParserST);
+		outputFileST.add("parserName", parserName);
+		outputFileST.add("treeParserName", treeParserName);
+		outputFileST.add("lexerName", lexerName);
+		outputFileST.add("parserStartRuleName", parserStartRuleName);
+		outputFileST.add("treeParserStartRuleName", treeParserStartRuleName);
+		writeFile(tmpdir, "Test.java", outputFileST.render());
 	}
 
 	/** Parser creates trees and so does the tree parser */
@@ -695,7 +684,7 @@ public abstract class BaseTest {
 											String treeParserStartRuleName,
 											boolean debug)
 	{
-		StringTemplate outputFileST = new StringTemplate(
+		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
 			"import org.antlr.runtime.tree.*;\n" +
 			"import org.antlr.runtime.debug.*;\n" +
@@ -706,37 +695,37 @@ public abstract class BaseTest {
 			"public class Test {\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
 			"        CharStream input = new ANTLRFileStream(args[0]);\n" +
-			"        $lexerName$ lex = new $lexerName$(input);\n" +
+			"        <lexerName> lex = new <lexerName>(input);\n" +
 			"        TokenRewriteStream tokens = new TokenRewriteStream(lex);\n" +
-			"        $createParser$\n"+
-			"        $parserName$.$parserStartRuleName$_return r = parser.$parserStartRuleName$();\n" +
+			"        <createParser>\n"+
+			"        <parserName>.<parserStartRuleName>_return r = parser.<parserStartRuleName>();\n" +
 			"        ((CommonTree)r.tree).sanityCheckParentAndChildIndexes();\n" +
 			"        CommonTreeNodeStream nodes = new CommonTreeNodeStream((Tree)r.tree);\n" +
 			"        nodes.setTokenStream(tokens);\n" +
-			"        $treeParserName$ walker = new $treeParserName$(nodes);\n" +
-			"        $treeParserName$.$treeParserStartRuleName$_return r2 = walker.$treeParserStartRuleName$();\n" +
+			"        <treeParserName> walker = new <treeParserName>(nodes);\n" +
+			"        <treeParserName>.<treeParserStartRuleName>_return r2 = walker.<treeParserStartRuleName>();\n" +
 			"		 CommonTree rt = ((CommonTree)r2.tree);\n" +
 			"		 if ( rt!=null ) System.out.println(((CommonTree)r2.tree).toStringTree());\n" +
 			"    }\n" +
 			"}"
 			);
-		StringTemplate createParserST =
-			new StringTemplate(
+		ST createParserST =
+			new ST(
 			"        Profiler2 profiler = new Profiler2();\n"+
-			"        $parserName$ parser = new $parserName$(tokens,profiler);\n" +
+			"        <parserName> parser = new <parserName>(tokens,profiler);\n" +
 			"        profiler.setParser(parser);\n");
 		if ( !debug ) {
 			createParserST =
-				new StringTemplate(
-				"        $parserName$ parser = new $parserName$(tokens);\n");
+				new ST(
+				"        <parserName> parser = new <parserName>(tokens);\n");
 		}
-		outputFileST.setAttribute("createParser", createParserST);
-		outputFileST.setAttribute("parserName", parserName);
-		outputFileST.setAttribute("treeParserName", treeParserName);
-		outputFileST.setAttribute("lexerName", lexerName);
-		outputFileST.setAttribute("parserStartRuleName", parserStartRuleName);
-		outputFileST.setAttribute("treeParserStartRuleName", treeParserStartRuleName);
-		writeFile(tmpdir, "Test.java", outputFileST.toString());
+		outputFileST.add("createParser", createParserST);
+		outputFileST.add("parserName", parserName);
+		outputFileST.add("treeParserName", treeParserName);
+		outputFileST.add("lexerName", lexerName);
+		outputFileST.add("parserStartRuleName", parserStartRuleName);
+		outputFileST.add("treeParserStartRuleName", treeParserStartRuleName);
+		writeFile(tmpdir, "Test.java", outputFileST.render());
 	}
 
 	protected void writeTemplateTestFile(String parserName,
@@ -744,10 +733,9 @@ public abstract class BaseTest {
 										 String parserStartRuleName,
 										 boolean debug)
 	{
-		StringTemplate outputFileST = new StringTemplate(
+		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
-			"import org.antlr.stringtemplate.*;\n" +
-			"import org.antlr.stringtemplate.language.*;\n" +
+			"import org.stringtemplate.v4.*;\n" +
 			"import org.antlr.runtime.debug.*;\n" +
 			"import java.io.*;\n" +
 			"\n" +
@@ -756,40 +744,37 @@ public abstract class BaseTest {
 			"}\n"+
 			"public class Test {\n" +
 			"    static String templates =\n" +
-			"    		\"group test;\"+" +
-			"    		\"foo(x,y) ::= \\\"<x> <y>\\\"\";\n"+
-			"    static StringTemplateGroup group ="+
-			"    		new StringTemplateGroup(new StringReader(templates)," +
-			"					AngleBracketTemplateLexer.class);"+
+			"    		\"foo(x,y) ::= \\\"\\<x> \\<y>\\\"\";\n"+
+			"    static STGroup group = new STGroupString(templates);\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
 			"        CharStream input = new ANTLRFileStream(args[0]);\n" +
-			"        $lexerName$ lex = new $lexerName$(input);\n" +
+			"        <lexerName> lex = new <lexerName>(input);\n" +
 			"        CommonTokenStream tokens = new CommonTokenStream(lex);\n" +
-			"        $createParser$\n"+
+			"        <createParser>\n"+
 			"		 parser.setTemplateLib(group);\n"+
-			"        $parserName$.$parserStartRuleName$_return r = parser.$parserStartRuleName$();\n" +
+			"        <parserName>.<parserStartRuleName>_return r = parser.<parserStartRuleName>();\n" +
 			"        if ( r.st!=null )\n" +
-			"            System.out.print(r.st.toString());\n" +
+			"            System.out.print(r.st.render());\n" +
 			"	 	 else\n" +
 			"            System.out.print(\"\");\n" +
 			"    }\n" +
 			"}"
 			);
-		StringTemplate createParserST =
-			new StringTemplate(
+		ST createParserST =
+			new ST(
 			"        Profiler2 profiler = new Profiler2();\n"+
-			"        $parserName$ parser = new $parserName$(tokens,profiler);\n" +
+			"        <parserName> parser = new <parserName>(tokens,profiler);\n" +
 			"        profiler.setParser(parser);\n");
 		if ( !debug ) {
 			createParserST =
-				new StringTemplate(
-				"        $parserName$ parser = new $parserName$(tokens);\n");
+				new ST(
+				"        <parserName> parser = new <parserName>(tokens);\n");
 		}
-		outputFileST.setAttribute("createParser", createParserST);
-		outputFileST.setAttribute("parserName", parserName);
-		outputFileST.setAttribute("lexerName", lexerName);
-		outputFileST.setAttribute("parserStartRuleName", parserStartRuleName);
-		writeFile(tmpdir, "Test.java", outputFileST.toString());
+		outputFileST.add("createParser", createParserST);
+		outputFileST.add("parserName", parserName);
+		outputFileST.add("lexerName", lexerName);
+		outputFileST.add("parserStartRuleName", parserStartRuleName);
+		writeFile(tmpdir, "Test.java", outputFileST.render());
 	}
 
     protected void eraseFiles(final String filesEndingWith) {

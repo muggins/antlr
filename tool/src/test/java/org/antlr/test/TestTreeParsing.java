@@ -152,7 +152,7 @@ public class TestTreeParsing extends BaseTest {
 			"tree grammar TP;\n" +
 			"options {output=template; ASTLabelType=CommonTree;}\n" +
 			"s : a {System.out.println($a.st);};\n" +
-			"a : ID INT -> {new StringTemplate($INT.text)}\n" +
+			"a : ID INT -> {new ST($INT.text)}\n" +
 			"  ;\n";
 
 		String found = execTreeParser("T.g", grammar, "TParser", "TP.g",

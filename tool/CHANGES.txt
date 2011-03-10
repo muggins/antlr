@@ -7,7 +7,9 @@ University of San Francisco
 
 CHANGES
 
-March 3, 2011
+March 7, 2011
+
+* Changed output=template code to use ST v4 not ST v3.2.1
 
 * left-recursion pattern off until all targets catch up
 
@@ -30,8 +32,7 @@ March 3, 2011
         CommonTree tree;
         public Object getTree() { return tree; }
     };
-  Removed these special classes if it's just AST; keep if they have defined "returns"
-  values
+  Removed these special classes if it's just AST; keep if they have defined "returns" values
 
 February 26, 2011
 

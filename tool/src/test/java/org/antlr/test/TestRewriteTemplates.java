@@ -52,7 +52,7 @@ public class TestRewriteTemplates extends BaseTest {
 		String grammar =
 			"grammar T;\n" +
 			"options {output=template;}\n" +
-			"a : ID INT -> {new StringTemplate($ID.text)} ;\n" +
+			"a : ID INT -> {new ST($ID.text)} ;\n" +
 			"ID : 'a'..'z'+ ;\n" +
 			"INT : '0'..'9'+;\n" +
 			"WS : (' '|'\\n') {$channel=HIDDEN;} ;\n";
@@ -121,7 +121,7 @@ public class TestRewriteTemplates extends BaseTest {
 		String grammar =
 			"grammar T;\n" +
 			"options {output=template;}\n" +
-			"a : ID INT -> template(x={$ID.text},y={$INT.text}) \"<foo(...)>\" ;\n" +
+			"a : ID INT -> template(x={$ID.text},y={$INT.text}) \"<foo(x,y)>\" ;\n" +
 			"ID : 'a'..'z'+ ;\n" +
 			"INT : '0'..'9'+;\n" +
 			"WS : (' '|'\\n') {$channel=HIDDEN;} ;\n";
@@ -151,7 +151,7 @@ public class TestRewriteTemplates extends BaseTest {
 		String grammar =
 			"grammar T;\n" +
 			"options {output=template;}\n" +
-			"a : b {System.out.println($b.st);} ;\n" +
+			"a : b {System.out.println($b.st.render());} ;\n" +
 			"b : ID INT -> foo(x={$ID.text},y={$INT.text}) ;\n" +
 			"ID : 'a'..'z'+ ;\n" +
 			"INT : '0'..'9'+;\n" +
@@ -180,7 +180,7 @@ public class TestRewriteTemplates extends BaseTest {
 			"grammar T;\n" +
 			"options {output=template;}\n" +
 			"a scope {String id;} : ID {$a::id=$ID.text;} b\n" +
-			"	{System.out.println($b.st.toString());}\n" +
+			"	{System.out.println($b.st.render());}\n" +
 			"   ;\n" +
 			"b : INT -> foo(x={$a::id}) ;\n" +
 			"ID : 'a'..'z'+ ;\n" +
@@ -205,7 +205,7 @@ public class TestRewriteTemplates extends BaseTest {
 		String treeGrammar =
 			"tree grammar TP;\n"+
 			"options {ASTLabelType=CommonTree; output=template;}\n" +
-			"s : a {System.out.println($a.st);} ;\n" +
+			"s : a {System.out.println($a.st.render());} ;\n" +
 			"a : ID -> template(x={$ID.text}) <<|<x>|>> ;\n";
 
 		String found = execTreeParser("T.g", grammar, "TParser", "TP.g",
@@ -288,9 +288,7 @@ public class TestRewriteTemplates extends BaseTest {
 		);
 		Tool antlr = newTool();
 		antlr.setOutputDirectory(null); // write to /dev/null
-		CodeGenerator generator = new CodeGenerator(antlr, g, "Java");
-		g.setCodeGenerator(generator);
-		generator.genRecognizer();
+		antlr.generateRecognizer(g);
 
 		assertEquals("unexpected errors: "+equeue, 0, equeue.warnings.size());
 	}
