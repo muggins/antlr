@@ -90,7 +90,7 @@ static NSInteger INITIAL_BUFFER_SIZE = 1024;
         numRead = [retData length];
         NSLog( @"read %d chars; p was %d is now %d", n, p1, (p1+numRead) );
         p1 += numRead;
-        n = p1+1;
+        n = p1;
         data = [[NSString alloc] initWithData:retData encoding:NSASCIIStringEncoding];
         NSLog( @"n=%d", n );
     }
