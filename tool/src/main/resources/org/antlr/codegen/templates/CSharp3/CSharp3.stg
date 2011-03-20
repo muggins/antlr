@@ -304,11 +304,11 @@ public <grammar.recognizerName>( <inputStreamType> input<grammar.delegators:{g|,
 public <grammar.recognizerName>(<inputStreamType> input, RecognizerSharedState state<grammar.delegators:{g|, <g.recognizerName> <g:delegateName()>}>)
 	: base(input, state)
 {
-	<parserCtorBody()>
 	<grammar.directDelegates:
 	 {g|<g:delegateName()> = new <g.recognizerName>(input, state<trunc(g.delegators):{p|, <p:delegateName()>}>, this);}; separator="\n">
 	<grammar.indirectDelegates:{g | <g:delegateName()> = <g.delegator:delegateName()>.<g:delegateName()>;}; separator="\n">
 	<last(grammar.delegators):{g|gParent = <g:delegateName()>;}>
+	<parserCtorBody()>
 
 	OnCreated();
 }
@@ -870,10 +870,6 @@ tokenRef(token,label,elementIndex,terminalOptions) ::= <<
 tokenRefAndListLabel(token,label,elementIndex,terminalOptions) ::= <<
 <tokenRef(...)>
 <listLabelElem(elem=label,elemType=labelType,...)>
->>
-
-listLabel(label,elem) ::= <<
-#error The listLabel template should not be used with this target.<\n>
 >>
 
 listLabelElem(label,elem,elemType) ::= <<
