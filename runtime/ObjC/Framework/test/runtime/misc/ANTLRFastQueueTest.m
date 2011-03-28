@@ -33,7 +33,7 @@
 
 -(void) testInvalidElementIndex
 {
-    //ANTLRRuntimeException *ANTLRNoSuchElementException = [ANTLRRuntimeException newANTLRNoSuchElementException:@"No such element exception"];
+    //ANTLRRuntimeException *ANTLRNoSuchElementException = [ANTLRNoSuchElementException newException:@"No such element exception"];
     id retVal;
 	ANTLRFastQueue *queue = [ANTLRFastQueue newANTLRFastQueue];
 	STAssertNotNil(queue, @"Queue was not created and was nil");
@@ -41,7 +41,7 @@
 	{
 		retVal = [queue objectAtIndex:100];
 	}
-	@catch (ANTLRRuntimeException *e) 
+	@catch (ANTLRNoSuchElementException *e) 
 	{
 		STAssertTrue([[e name] isEqualTo:@"ANTLRNoSuchElementException"], @"Exception was not type: ANTLRNoSuchElementException -- %@", [e name]);
 		return;
