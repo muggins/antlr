@@ -110,8 +110,8 @@ static NSInteger INITIAL_BUFFER_SIZE = 1024;
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)eventCode
 {
-    NSMutableData *myData;
-    NSNumber *bytesRead;
+    NSMutableData *myData = nil;
+    NSNumber *bytesRead = [NSNumber numberWithInteger:0];
     switch(eventCode) {
         case NSStreamEventHasBytesAvailable:
         {

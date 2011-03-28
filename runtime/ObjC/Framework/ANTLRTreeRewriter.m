@@ -56,10 +56,12 @@
 	if ( [actor respondsToSelector:ruleSEL] )
 		return [actor performSelector:ruleSEL];
     else
-        @throw [ANTLRRecognitionException newANTLRRuntimeException:@"Unknown Rewrite exception"];
+        @throw [ANTLRRecognitionException newException:@"Unknown Rewrite exception"];
     return nil;
 }
 
+@synthesize actor;
+@synthesize ruleSEL;
 @end
 
 @implementation ANTLRTreeRewriter
@@ -122,11 +124,11 @@
         if ( [self getFailed] )
             return t;
         if ( showTransformations &&
-            r != nil && !(t == [r getNode]) && [r getNode] != nil ) {
-            [self reportTransformation:(id<ANTLRTree>)t Tree:[r getNode]];
+            r != nil && !(t == r.start) && r.start != nil ) {
+            [self reportTransformation:(id<ANTLRTree>)t Tree:r.start];
         }
-        if ( r != nil && [r getNode] != nil )
-            return [r getNode];
+        if ( r != nil && r.start != nil )
+            return r.start;
         else
             return t;
     }
@@ -214,15 +216,19 @@ public Object downup(Object t, boolean showTransformations) {
 - (ANTLRTreeRewriter *) topdown
 // @throws RecognitionException
 {
-    [ANTLRRecognitionException newANTLRRuntimeException:@"TopDown exception"];
+    [ANTLRRecognitionException newException:@"TopDown exception"];
     return nil;
 }
 
 - (ANTLRTreeRewriter *) bottomup
 //@throws RecognitionException
 {
-    @throw [ANTLRRecognitionException newANTLRRuntimeException:@"BottomUp exception"];
+    @throw [ANTLRRecognitionException newException:@"BottomUp exception"];
     return nil;
 }
 
+@synthesize showTransformations;
+@synthesize originalTokenStream;
+@synthesize originalAdaptor;
+@synthesize rule;
 @end

@@ -67,7 +67,7 @@ extern NSInteger debug;
 
 - (void) remove
 {
-	@throw [ANTLRRuntimeException newANTLRRuntimeException:@"cannot remove nodes from stream"];
+	@throw [ANTLRRuntimeException newException:@"cannot remove nodes from stream"];
 }
 
 @end
@@ -429,6 +429,11 @@ extern NSInteger debug;
 		[self fillBuffer];
 	}
 	return [nodes count];
+}
+
+-(NSUInteger) size
+{
+	return [self count];
 }
 
 -(NSEnumerator *) objectEnumerator
