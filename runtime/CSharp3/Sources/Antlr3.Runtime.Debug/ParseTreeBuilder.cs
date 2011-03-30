@@ -59,7 +59,7 @@ namespace Antlr.Runtime.Debug
         {
             get
             {
-                return callStack.First();
+                return callStack.Last();
             }
         }
 
