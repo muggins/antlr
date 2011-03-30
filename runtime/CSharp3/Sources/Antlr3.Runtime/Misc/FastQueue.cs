@@ -97,7 +97,7 @@ namespace Antlr.Runtime.Misc
         public virtual T Dequeue()
         {
             if (Count == 0)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(string.Format("queue index {0} > last index {1}", 0, _data.Count - 1));
 
             T o = this[0];
             _p++;
