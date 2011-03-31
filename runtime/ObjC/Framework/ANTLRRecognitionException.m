@@ -36,17 +36,17 @@
 @synthesize line;
 @synthesize charPositionInLine;
 
-+ (ANTLRRecognitionException *) newException
++ (id) newException
 {
 	return [[ANTLRRecognitionException alloc] init];
 }
 
-+ (ANTLRRecognitionException *) newException:(id<ANTLRIntStream>) anInputStream
++ (id) newException:(id<ANTLRIntStream>) anInputStream
 {
 	return [[ANTLRRecognitionException alloc] initWithStream:anInputStream];
 }
 
-+ (ANTLRRecognitionException *) newException:(id<ANTLRIntStream>) anInputStream reason:(NSString *)aReason
++ (id) newException:(id<ANTLRIntStream>) anInputStream reason:(NSString *)aReason
 {
 	return [[ANTLRRecognitionException alloc] initWithStream:anInputStream reason:aReason];
 }
@@ -89,6 +89,13 @@
 	if ((self = [super initWithName:NSStringFromClass([self class]) reason:@"Runtime Exception" userInfo:nil]) != nil) {
 	}
 	return self;
+}
+
+- (id) initWithName:(NSString *)aName reason:(NSString *)aReason userInfo:(NSDictionary *)aUserInfo
+{
+    if ((self = [super initWithName:(NSString *)aName reason:(NSString *)aReason userInfo:(NSDictionary *)aUserInfo]) != nil) {
+    }
+    return self;
 }
 
 - (void) dealloc
