@@ -33,6 +33,8 @@ import org.antlr.analysis.Label;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenSource;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 import org.antlr.tool.ANTLRErrorListener;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.GrammarSemanticsMessage;
@@ -40,7 +42,6 @@ import org.antlr.tool.Message;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.stringtemplate.v4.ST;
 
 import java.io.*;
 import java.util.*;
@@ -78,7 +79,9 @@ public abstract class BaseTest {
 	public void setUp() throws Exception {
         lastTestFailed = false; // hope for the best, but set to true in asserts that fail
         // new output dir for each test
-        tmpdir = new File(System.getProperty("java.io.tmpdir"), "antlr-"+getClass().getName()+"-"+System.currentTimeMillis()).getAbsolutePath();
+        tmpdir = new File(System.getProperty("java.io.tmpdir"),
+						  "antlr-"+getClass().getName()+"-"+
+						  System.currentTimeMillis()).getAbsolutePath();
         ErrorManager.resetErrorState();
     }
 
@@ -326,7 +329,7 @@ public abstract class BaseTest {
 													String lexerName,
 													boolean debug)
 	{
-		System.out.println(grammarStr);
+		//System.out.println(grammarStr);
 		boolean allIsWell =
 			antlr(grammarFileName, grammarFileName, grammarStr, debug);
 		if ( lexerName!=null ) {
@@ -383,7 +386,7 @@ public abstract class BaseTest {
 			output = stdoutVacuum.toString();
 			if ( stderrVacuum.toString().length()>0 ) {
 				this.stderrDuringParse = stderrVacuum.toString();
-				//System.err.println("exec stderrVacuum: "+ stderrVacuum);
+				System.err.println("exec stderrVacuum: "+ stderrVacuum);
 			}
 			return output;
 		}
@@ -750,9 +753,6 @@ public abstract class BaseTest {
 			"    public void terminate() { ; }\n" +
 			"}\n"+
 			"public class Test {\n" +
-			"    static String templates =\n" +
-			"    		\"foo(x,y) ::= \\\"\\<x> \\<y>\\\"\";\n"+
-			"    static STGroup group = new STGroupString(templates);\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
 			"        CharStream input = new ANTLRFileStream(args[0]);\n" +
 			"        <lexerName> lex = new <lexerName>(input);\n" +
