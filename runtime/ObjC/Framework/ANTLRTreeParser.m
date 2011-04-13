@@ -166,7 +166,7 @@
 {
     if ( [self isKindOfClass:[ANTLRTreeParser class]] ) {
         id<ANTLRTreeAdaptor> adaptor = (id<ANTLRTreeAdaptor>)[((id<ANTLRTreeNodeStream>)e.input) getTreeAdaptor];
-        e.token = [adaptor getToken:((id<ANTLRTree>)e.node)];
+        e.token = [adaptor getToken:((id<ANTLRBaseTree>)e.node)];
         if ( e.token == nil ) { // could be an UP/DOWN node
             e.token = [ANTLRCommonToken newToken:[adaptor getType:e.node]
                                                         Text:[adaptor getText:e.node]];

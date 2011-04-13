@@ -41,6 +41,7 @@
 @synthesize eofElementIndex;
 @synthesize lastMarker;
 @synthesize markDepth;
+@synthesize prevElement;
 
 -(id) init
 {
@@ -117,7 +118,7 @@
 	}
 }
 
--(NSInteger) count
+-(NSUInteger) count
 {
 	@throw [NSException exceptionWithName:@"ANTLRUnsupportedOperationException" reason:@"Streams have no defined size" userInfo:nil];
 }

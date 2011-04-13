@@ -113,7 +113,7 @@
 	if (k < 0)
 		@throw [NSException exceptionWithName:@"ANTLRTreeException" reason:@"-LT: looking back more than one node unsupported for unbuffered streams" userInfo:nil];
 	if (k == 0)
-		return [ANTLRBaseTree invalidNode];
+		return ANTLRBaseTree.INVALID_NODE;
 	[self fillBufferWithLookahead:k];
 	return [lookahead objectAtIndex:(head+k-1) % [lookahead count]];
 }
@@ -270,7 +270,7 @@
 
 
 #pragma mark Lookahead Handling
-- (void) addLookahead:(id<ANTLRTree>)aNode;
+- (void) addLookahead:(id<ANTLRBaseTree>)aNode;
 {
 	[lookahead replaceObjectAtIndex:tail withObject:aNode];
 	tail = (tail+1) % [lookahead count];

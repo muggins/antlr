@@ -979,7 +979,6 @@ static NSString *NEXT_TOKEN_RULE_NAME;
 {
     NSNumber *stopIndexI;
     ANTLRHashRule *aHashRule;
-    ANTLRRuleMemo *aRuleMap;
     if ( (aHashRule = [state.ruleMemo objectAtIndex:ruleIndex]) == nil ) {
         aHashRule = [[ANTLRHashRule newANTLRHashRuleWithLen:17] retain];
         [state.ruleMemo insertObject:aHashRule atIndex:ruleIndex];
@@ -1026,7 +1025,6 @@ static NSString *NEXT_TOKEN_RULE_NAME;
      StartIndex:(NSInteger)ruleStartIndex
 {
     ANTLRRuleStack *aRuleStack;
-    ANTLRHashRule *aHashRule;
     NSInteger stopTokenIndex;
 
     aRuleStack = state.ruleMemo;

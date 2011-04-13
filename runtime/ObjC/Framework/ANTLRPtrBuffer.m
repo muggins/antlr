@@ -60,7 +60,8 @@
 {
     NSUInteger idx;
     
-	if ((self = [super init]) != nil) {
+	self = [super init];
+	if ( self != nil ) {
         BuffSize  = BUFFSIZE;
         ptr = 0;
         buffer = [[NSMutableData dataWithLength:(NSUInteger)BuffSize * sizeof(id)] retain];
@@ -76,7 +77,8 @@
 {
     NSUInteger idx;
     
-	if ((self = [super init]) != nil) {
+	self = [super init];
+	if ( self != nil ) {
         BuffSize  = cnt;
         ptr = 0;
         buffer = [[NSMutableData dataWithLength:(NSUInteger)BuffSize * sizeof(id)] retain];

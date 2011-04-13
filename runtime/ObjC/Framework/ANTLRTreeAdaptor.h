@@ -34,13 +34,11 @@
 
 #pragma mark Construction
 
-+ (id<ANTLRTree>) newEmptyTree;
-
-- (id<ANTLRTree>) createTree:(id<ANTLRToken>)payload;
+- (id<ANTLRBaseTree>) createTree:(id<ANTLRToken>)payload;
 
 #pragma mark ANTLRTreeAdaptor implementation
-- (id<ANTLRTree>)dupNode:(id<ANTLRTree>)aNode;	// copies just the node
-- (id<ANTLRTree>)dupTree:(id<ANTLRTree>)aTree;	// copies the entire subtree, recursively
+- (id<ANTLRBaseTree>)dupNode:(id<ANTLRBaseTree>)aNode;	// copies just the node
+- (id<ANTLRBaseTree>)dupTree:(id<ANTLRBaseTree>)aTree;	// copies the entire subtree, recursively
 
 /** Return a nil node (an empty but non-null node) that can hold
  *  a list of element as the children.  If you want a flat tree (a list)
@@ -68,10 +66,10 @@
        Exception:(NSException *) e;
 
 /** Is tree considered a nil node used to make lists of child nodes? */
-- (BOOL) isNil:(id<ANTLRTree>)aTree;
+- (BOOL) isNil:(id<ANTLRBaseTree>)aTree;
 
 
-- (void) addChild:(id<ANTLRTree>)child toTree:(id<ANTLRTree>)aTree;
+- (void) addChild:(id<ANTLRBaseTree>)child toTree:(id<ANTLRBaseTree>)aTree;
 
 /** If oldRoot is a nil root, just copy or move the children to newRoot.
  *  If not a nil root, make oldRoot a child of newRoot.
@@ -99,62 +97,62 @@
  *  constructing these nodes so we should have this control for
  *  efficiency.
  */
-- (id) becomeRoot:(id<ANTLRTree>)newRoot old:(id<ANTLRTree>)oldRoot;
+- (id) becomeRoot:(id<ANTLRBaseTree>)newRoot old:(id<ANTLRBaseTree>)oldRoot;
 
-- (id) rulePostProcessing:(id<ANTLRTree>)root;
+- (id) rulePostProcessing:(id<ANTLRBaseTree>)root;
 
 #pragma mark Rewrite Rules
                            
-- (NSUInteger) getUniqueID:(id<ANTLRTree>)aNode;
+- (NSUInteger) getUniqueID:(id<ANTLRBaseTree>)aNode;
 
-- (id<ANTLRTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken;
-- (id<ANTLRTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text;
-- (id<ANTLRTree>) createTree:(NSInteger)tokenType Text:(NSString *)text;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType Text:(NSString *)text;
 
 #pragma mark Content
 
-- (id<ANTLRTree>)dupNode:(id<ANTLRTree>)aNode;
-- (id<ANTLRTree>)dupTree:(id<ANTLRTree>)aTree;
+- (id<ANTLRBaseTree>)dupNode:(id<ANTLRBaseTree>)aNode;
+- (id<ANTLRBaseTree>)dupTree:(id<ANTLRBaseTree>)aTree;
 
-- (NSInteger) getType:(id<ANTLRTree>)aNode;
-- (void) setType:(id<ANTLRTree>)aNode Type:(NSInteger)tokenType;
+- (NSInteger) getType:(id<ANTLRBaseTree>)aNode;
+- (void) setType:(id<ANTLRBaseTree>)aNode Type:(NSInteger)tokenType;
 
-- (NSString *) getText:(id<ANTLRTree>)aNode;
-- (void) setText:(id<ANTLRTree>)aNode Text:(NSString *)tokenText;
+- (NSString *) getText:(id<ANTLRBaseTree>)aNode;
+- (void) setText:(id<ANTLRBaseTree>)aNode Text:(NSString *)tokenText;
 
-- (id<ANTLRToken>) getToken:(id<ANTLRTree>)t;
+- (id<ANTLRToken>) getToken:(id<ANTLRBaseTree>)t;
 
-- (void) setTokenBoundaries:(id<ANTLRTree>)aTree From:(id<ANTLRToken>)startToken To:(id<ANTLRToken>)stopToken;
-- (NSInteger) getTokenStartIndex:(id<ANTLRTree>)aTree;
-- (NSInteger) getTokenStopIndex:(id<ANTLRTree>)aTree;
+- (void) setTokenBoundaries:(id<ANTLRBaseTree>)aTree From:(id<ANTLRToken>)startToken To:(id<ANTLRToken>)stopToken;
+- (NSInteger) getTokenStartIndex:(id<ANTLRBaseTree>)aTree;
+- (NSInteger) getTokenStopIndex:(id<ANTLRBaseTree>)aTree;
 
 #pragma mark Navigation / Tree Parsing
 
 /** Get a child 0..n-1 node */
-- (id<ANTLRTree>) getChild:(id<ANTLRTree>)aNode At:(NSInteger) i;
+- (id<ANTLRBaseTree>) getChild:(id<ANTLRBaseTree>)aNode At:(NSInteger) i;
 /** Set ith child (0..n-1) to t; t must be non-null and non-nil node */
-- (void) setChild:(id<ANTLRTree>)aTree At:(NSInteger)index Child:(id<ANTLRTree>)child;
+- (void) setChild:(id<ANTLRBaseTree>)aTree At:(NSInteger)index Child:(id<ANTLRBaseTree>)child;
 /** Remove ith child and shift children down from right. */
-- (id<ANTLRTree>) deleteChild:(id<ANTLRTree>)t Index:(NSInteger)index;
+- (id<ANTLRBaseTree>) deleteChild:(id<ANTLRBaseTree>)t Index:(NSInteger)index;
 
 /** How many children?  If 0, then this is a leaf node */
-- (NSInteger) getChildCount:(id<ANTLRTree>) aTree;
+- (NSInteger) getChildCount:(id<ANTLRBaseTree>) aTree;
 
 /** Who is the parent node of this node; if null, implies node is root.
  *  If your node type doesn't handle this, it's ok but the tree rewrites
  *  in tree parsers need this functionality.
  */
-- (id<ANTLRTree>)getParent:(id<ANTLRTree>)t;
-- (void) setParent:(id<ANTLRTree>)t With:(id<ANTLRTree>)parent;
+- (id<ANTLRBaseTree>)getParent:(id<ANTLRBaseTree>)t;
+- (void) setParent:(id<ANTLRBaseTree>)t With:(id<ANTLRBaseTree>)parent;
 
 /** What index is this node in the child list? Range: 0..n-1
  *  If your node type doesn't handle this, it's ok but the tree rewrites
  *  in tree parsers need this functionality.
  */
-- (NSInteger) getChildIndex:(id<ANTLRTree>)t;
-- (void) setChildIndex:(id<ANTLRTree>)t With:(NSInteger)index;
+- (NSInteger) getChildIndex:(id<ANTLRBaseTree>)t;
+- (void) setChildIndex:(id<ANTLRBaseTree>)t With:(NSInteger)index;
 
-- (void) replaceChildren:(id<ANTLRTree>)parent From:(NSInteger)startChildIndex To:(NSInteger)stopChildIndex With:(id<ANTLRTree>)t;
+- (void) replaceChildren:(id<ANTLRBaseTree>)parent From:(NSInteger)startChildIndex To:(NSInteger)stopChildIndex With:(id<ANTLRBaseTree>)t;
 
 @end
 
@@ -162,15 +160,18 @@
     
 }
 
++ (id) newAdaptor;
+- (id) init;
+
 #pragma mark Construction
 
-+ (id<ANTLRTree>) newEmptyTree;
++ (id<ANTLRBaseTree>) newEmptyTree;
 
-- (id<ANTLRTree>) createTree:(id<ANTLRToken>)payload;
+- (id<ANTLRBaseTree>) createTree:(id<ANTLRToken>)payload;
 
 #pragma mark ANTLRTreeAdaptor implementation
-- (id<ANTLRTree>)dupNode:(id<ANTLRTree>)aNode;	// copies just the node
-- (id<ANTLRTree>)dupTree:(id<ANTLRTree>)aTree;	// copies the entire subtree, recursively
+- (id<ANTLRBaseTree>)dupNode:(id<ANTLRBaseTree>)aNode;	// copies just the node
+- (id<ANTLRBaseTree>)dupTree:(id<ANTLRBaseTree>)aTree;	// copies the entire subtree, recursively
 
 /** Return a nil node (an empty but non-null node) that can hold
  *  a list of element as the children.  If you want a flat tree (a list)
@@ -198,10 +199,10 @@
        Exception:(NSException *) e;
 
 /** Is tree considered a nil node used to make lists of child nodes? */
-- (BOOL) isNil:(id<ANTLRTree>)aTree;
+- (BOOL) isNil:(id<ANTLRBaseTree>)aTree;
 
 
-- (void) addChild:(id<ANTLRTree>)child toTree:(id<ANTLRTree>)aTree;
+- (void) addChild:(id<ANTLRBaseTree>)child toTree:(id<ANTLRBaseTree>)aTree;
 
 /** If oldRoot is a nil root, just copy or move the children to newRoot.
  *  If not a nil root, make oldRoot a child of newRoot.
@@ -229,61 +230,61 @@
  *  constructing these nodes so we should have this control for
  *  efficiency.
  */
-- (id) becomeRoot:(id<ANTLRTree>)newRoot old:(id<ANTLRTree>)oldRoot;
+- (id) becomeRoot:(id<ANTLRBaseTree>)newRoot old:(id<ANTLRBaseTree>)oldRoot;
 
-- (id) rulePostProcessing:(id<ANTLRTree>)root;
+- (id) rulePostProcessing:(id<ANTLRBaseTree>)root;
 
 #pragma mark Rewrite Rules
 
-- (NSUInteger) getUniqueID:(id<ANTLRTree>)aNode;
+- (NSUInteger) getUniqueID:(id<ANTLRBaseTree>)aNode;
 
-- (id<ANTLRTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken;
-- (id<ANTLRTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text;
-- (id<ANTLRTree>) createTree:(NSInteger)tokenType Text:(NSString *)text;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType Text:(NSString *)text;
 
 #pragma mark Content
 
-- (id<ANTLRTree>)dupNode:(id<ANTLRTree>)aNode;
-- (id<ANTLRTree>)dupTree:(id<ANTLRTree>)aTree;
+- (id<ANTLRBaseTree>)dupNode:(id<ANTLRBaseTree>)aNode;
+- (id<ANTLRBaseTree>)dupTree:(id<ANTLRBaseTree>)aTree;
 
-- (NSInteger) getType:(id<ANTLRTree>)aNode;
-- (void) setType:(id<ANTLRTree>)aNode Type:(NSInteger)tokenType;
+- (NSInteger) getType:(id<ANTLRBaseTree>)aNode;
+- (void) setType:(id<ANTLRBaseTree>)aNode Type:(NSInteger)tokenType;
 
-- (NSString *) getText:(id<ANTLRTree>)aNode;
-- (void) setText:(id<ANTLRTree>)aNode Text:(NSString *)tokenText;
+- (NSString *) getText:(id<ANTLRBaseTree>)aNode;
+- (void) setText:(id<ANTLRBaseTree>)aNode Text:(NSString *)tokenText;
 
-- (id<ANTLRToken>) getToken:(id<ANTLRTree>)t;
+- (id<ANTLRToken>) getToken:(id<ANTLRBaseTree>)t;
 
-- (void) setTokenBoundaries:(id<ANTLRTree>)aTree From:(id<ANTLRToken>)startToken To:(id<ANTLRToken>)stopToken;
-- (NSInteger) getTokenStartIndex:(id<ANTLRTree>)aTree;
-- (NSInteger) getTokenStopIndex:(id<ANTLRTree>)aTree;
+- (void) setTokenBoundaries:(id<ANTLRBaseTree>)aTree From:(id<ANTLRToken>)startToken To:(id<ANTLRToken>)stopToken;
+- (NSInteger) getTokenStartIndex:(id<ANTLRBaseTree>)aTree;
+- (NSInteger) getTokenStopIndex:(id<ANTLRBaseTree>)aTree;
 
 #pragma mark Navigation / Tree Parsing
 
 /** Get a child 0..n-1 node */
-- (id<ANTLRTree>) getChild:(id<ANTLRTree>)aNode At:(NSInteger) i;
+- (id<ANTLRBaseTree>) getChild:(id<ANTLRBaseTree>)aNode At:(NSInteger) i;
 /** Set ith child (0..n-1) to t; t must be non-null and non-nil node */
-- (void) setChild:(id<ANTLRTree>)aTree At:(NSInteger)index Child:(id<ANTLRTree>)child;
+- (void) setChild:(id<ANTLRBaseTree>)aTree At:(NSInteger)index Child:(id<ANTLRBaseTree>)child;
 /** Remove ith child and shift children down from right. */
-- (id<ANTLRTree>) deleteChild:(id<ANTLRTree>)t Index:(NSInteger)index;
+- (id<ANTLRBaseTree>) deleteChild:(id<ANTLRBaseTree>)t Index:(NSInteger)index;
 
 /** How many children?  If 0, then this is a leaf node */
-- (NSInteger) getChildCount:(id<ANTLRTree>) aTree;
+- (NSInteger) getChildCount:(id<ANTLRBaseTree>) aTree;
 
 /** Who is the parent node of this node; if null, implies node is root.
  *  If your node type doesn't handle this, it's ok but the tree rewrites
  *  in tree parsers need this functionality.
  */
-- (id<ANTLRTree>)getParent:(id<ANTLRTree>)t;
-- (void) setParent:(id<ANTLRTree>)t With:(id<ANTLRTree>)parent;
+- (id<ANTLRBaseTree>)getParent:(id<ANTLRBaseTree>)t;
+- (void) setParent:(id<ANTLRBaseTree>)t With:(id<ANTLRBaseTree>)parent;
 
 /** What index is this node in the child list? Range: 0..n-1
  *  If your node type doesn't handle this, it's ok but the tree rewrites
  *  in tree parsers need this functionality.
  */
-- (NSInteger) getChildIndex:(id<ANTLRTree>)t;
-- (void) setChildIndex:(id<ANTLRTree>)t With:(NSInteger)index;
+- (NSInteger) getChildIndex:(id<ANTLRBaseTree>)t;
+- (void) setChildIndex:(id<ANTLRBaseTree>)t With:(NSInteger)index;
 
-- (void) replaceChildren:(id<ANTLRTree>)parent From:(NSInteger)startChildIndex To:(NSInteger)stopChildIndex With:(id<ANTLRTree>)t;
+- (void) replaceChildren:(id<ANTLRBaseTree>)parent From:(NSInteger)startChildIndex To:(NSInteger)stopChildIndex With:(id<ANTLRBaseTree>)t;
 
 @end

@@ -61,7 +61,7 @@ NSInteger range; // how deep have we gone?
 
 + (ANTLRBufferedTokenStream *) newANTLRBufferedTokenStream;
 + (ANTLRBufferedTokenStream *) newANTLRBufferedTokenStreamWith:(id<ANTLRTokenSource>)aSource;
-- (id) initWithSource:(id<ANTLRTokenSource>)aSource;
+- (id) initWithTokenSource:(id<ANTLRTokenSource>)aSource;
 - (id) copyWithZone:(NSZone *)aZone;
 - (NSInteger) getIndex;
 - (void) setIndex:(NSInteger)index;

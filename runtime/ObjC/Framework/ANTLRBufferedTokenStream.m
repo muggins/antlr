@@ -46,7 +46,7 @@ extern NSInteger debug;
 
 + (ANTLRBufferedTokenStream *) newANTLRBufferedTokenStreamWith:(id<ANTLRTokenSource>)aSource
 {
-    return [[ANTLRBufferedTokenStream alloc] initWithSource:aSource];
+    return [[ANTLRBufferedTokenStream alloc] initWithTokenSource:aSource];
 }
 
 - (ANTLRBufferedTokenStream *) init
@@ -61,7 +61,7 @@ extern NSInteger debug;
 	return self;
 }
 
--(id) initWithSource:(id<ANTLRTokenSource>)aSource
+-(id) initWithTokenSource:(id<ANTLRTokenSource>)aSource
 {
 	if ((self = [super init]) != nil)
 	{

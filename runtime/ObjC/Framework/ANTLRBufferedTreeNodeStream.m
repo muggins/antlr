@@ -89,19 +89,19 @@ extern NSInteger debug;
 @synthesize e;
 @synthesize currentSymbol;
 
-+ (ANTLRBufferedTreeNodeStream *) newANTLRBufferedTreeNodeStream:(id<ANTLRTree>) aTree
++ (ANTLRBufferedTreeNodeStream *) newANTLRBufferedTreeNodeStream:(id<ANTLRBaseTree>) aTree
 {
-    return [((ANTLRBufferedTreeNodeStream *)[ANTLRBufferedTreeNodeStream alloc]) initWithTree:(id<ANTLRTree>)aTree];
+    return [((ANTLRBufferedTreeNodeStream *)[ANTLRBufferedTreeNodeStream alloc]) initWithTree:(id<ANTLRBaseTree>)aTree];
 }
 
-+ (ANTLRBufferedTreeNodeStream *) newANTLRBufferedTreeNodeStream:(id<ANTLRTreeAdaptor>)adaptor Tree:(ANTLRCommonTree *)aTree
++ (ANTLRBufferedTreeNodeStream *) newANTLRBufferedTreeNodeStream:(id<ANTLRTreeAdaptor>)adaptor Tree:(id<ANTLRBaseTree>)aTree
 {
-    return [[ANTLRBufferedTreeNodeStream alloc] initWithTreeAdaptor:adaptor Tree:(id<ANTLRTree>)aTree];
+    return [[ANTLRBufferedTreeNodeStream alloc] initWithTreeAdaptor:adaptor Tree:(id<ANTLRBaseTree>)aTree];
 }
 
-+ (ANTLRBufferedTreeNodeStream *) newANTLRBufferedTreeNodeStream:(id<ANTLRTreeAdaptor>)adaptor Tree:(id<ANTLRTree>)aTree withBufferSize:(NSInteger)initialBufferSize
++ (ANTLRBufferedTreeNodeStream *) newANTLRBufferedTreeNodeStream:(id<ANTLRTreeAdaptor>)adaptor Tree:(id<ANTLRBaseTree>)aTree withBufferSize:(NSInteger)initialBufferSize
 {
-    return [[ANTLRBufferedTreeNodeStream alloc] initWithTreeAdaptor:adaptor Tree:(id<ANTLRTree>)aTree WithBufferSize:initialBufferSize];
+    return [[ANTLRBufferedTreeNodeStream alloc] initWithTreeAdaptor:adaptor Tree:(id<ANTLRBaseTree>)aTree WithBufferSize:initialBufferSize];
 }
 
 -(ANTLRBufferedTreeNodeStream *) init
@@ -121,7 +121,7 @@ extern NSInteger debug;
 	return self;
 }
 
-- (ANTLRBufferedTreeNodeStream *)initWithTree:(id<ANTLRTree>) aTree
+- (ANTLRBufferedTreeNodeStream *)initWithTree:(id<ANTLRBaseTree>) aTree
 {
 	self = [super init];
 	if (self) {
@@ -138,7 +138,7 @@ extern NSInteger debug;
 	return self;
 }
 
--(ANTLRBufferedTreeNodeStream *) initWithTreeAdaptor:(ANTLRCommonTreeAdaptor *)anAdaptor Tree:(id<ANTLRTree>)aTree
+-(ANTLRBufferedTreeNodeStream *) initWithTreeAdaptor:(ANTLRCommonTreeAdaptor *)anAdaptor Tree:(id<ANTLRBaseTree>)aTree
 {
 	self = [super init];
 	if (self) {
@@ -155,7 +155,7 @@ extern NSInteger debug;
 	return self;
 }
 
--(ANTLRBufferedTreeNodeStream *) initWithTreeAdaptor:(ANTLRCommonTreeAdaptor *)anAdaptor Tree:(id<ANTLRTree>)aTree WithBufferSize:(NSInteger)bufferSize
+-(ANTLRBufferedTreeNodeStream *) initWithTreeAdaptor:(ANTLRCommonTreeAdaptor *)anAdaptor Tree:(id<ANTLRBaseTree>)aTree WithBufferSize:(NSInteger)bufferSize
 {
 	self = [super init];
 	if (self) {
@@ -211,7 +211,7 @@ extern NSInteger debug;
 	p = 0; // buffer of nodes intialized now
 }
 
--(void) fillBufferWithTree:(id<ANTLRTree>) aTree
+-(void) fillBufferWithTree:(id<ANTLRBaseTree>) aTree
 {
 	BOOL empty = [adaptor isNil:aTree];
 	if (!empty) {
@@ -230,7 +230,7 @@ extern NSInteger debug;
 	}
 }
 
--(NSInteger) getNodeIndex:(id<ANTLRTree>) node
+-(NSInteger) getNodeIndex:(id<ANTLRBaseTree>) node
 {
 	if (p == -1) {
 		[self fillBuffer];
@@ -308,7 +308,7 @@ extern NSInteger debug;
 	return [nodes objectAtIndex:(p - k)];
 }
 
-- (id<ANTLRTree>)getTreeSource
+- (id<ANTLRBaseTree>)getTreeSource
 {
     return root;
 }
@@ -444,7 +444,7 @@ extern NSInteger debug;
 	return e;
 }
 
--(void) replaceChildren:(id<ANTLRTree>) parent From:(NSInteger)startIdx To:(NSInteger)stopIdx With:(id<ANTLRTree>)aTree
+-(void) replaceChildren:(id<ANTLRBaseTree>) parent From:(NSInteger)startIdx To:(NSInteger)stopIdx With:(id<ANTLRBaseTree>)aTree
 {
 	if (parent != nil) {
 		[adaptor replaceChildren:parent From:startIdx To:stopIdx With:aTree];
@@ -459,7 +459,7 @@ extern NSInteger debug;
 	}
 	NSMutableString *buf = [NSMutableString stringWithCapacity:10];
 	for (NSUInteger i= 0; i < [nodes count]; i++) {
-		id<ANTLRTree> aTree = (id<ANTLRTree>)[self getNode:i];
+		id<ANTLRBaseTree> aTree = (id<ANTLRBaseTree>)[self getNode:i];
 		[buf appendFormat:@" %d", [adaptor getType:aTree]];
 	}
 	return buf;
@@ -472,7 +472,7 @@ extern NSInteger debug;
 	}
 	NSMutableString *buf = [NSMutableString stringWithCapacity:10];
 	for (NSUInteger i = aStart; i < [nodes count] && i <= aStop; i++) {
-		id<ANTLRTree> t = (id<ANTLRTree>)[self getNode:i];
+		id<ANTLRBaseTree> t = (id<ANTLRBaseTree>)[self getNode:i];
 		[buf appendFormat:@" %d", [adaptor getType:t]];
 	}
 	return buf;
@@ -501,7 +501,7 @@ extern NSInteger debug;
         [tokens toStringFromStart:beginTokenIndex ToEnd:endTokenIndex];
 	}
 	// walk nodes looking for aStart
-	id<ANTLRTree> aTree = nil;
+	id<ANTLRBaseTree> aTree = nil;
 	NSUInteger i = 0;
 	for (; i < [nodes count]; i++) {
 		aTree = [nodes objectAtIndex:i];
@@ -534,7 +534,7 @@ extern NSInteger debug;
     return nodes;
 }
 
-- (id<ANTLRTree>) getEof
+- (id<ANTLRBaseTree>) getEof
 {
     return eof;
 }

@@ -252,13 +252,13 @@ extern NSInteger debug;
         State = [markers objectAtIndex:markDepth];
         [State retain];
         State = (ANTLRCharStreamState *)[markers objectAtIndex:markDepth];
-        if (debug > 1) NSLog(@"mark retrieve charState %x from %d, p=%d, line=%d, charPositionInLine=%d\n", charState, markDepth, charState.p, charState.line, charState.charPositionInLine);
+        if (debug > 1) NSLog(@"mark retrieve charState %x from %d, p=%d, line=%d, charPositionInLine=%d\n", State, markDepth, State.p, State.line, State.charPositionInLine);
 	}
     State.p = p;
 	State.line = line;
 	State.charPositionInLine = charPositionInLine;
 	lastMarker = markDepth;
-    if (debug > 1) NSLog(@"mark exit -- markers=%x, charState=%x, p=%d, line=%d, charPositionInLine=%d\n", markers, charState, charState.p, charState.line, charState.charPositionInLine);
+    if (debug > 1) NSLog(@"mark exit -- markers=%x, charState=%x, p=%d, line=%d, charPositionInLine=%d\n", markers, State, State.p, State.line, State.charPositionInLine);
 	return markDepth;
 }
 

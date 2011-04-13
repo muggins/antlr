@@ -55,7 +55,7 @@
 +(ANTLRPtrBuffer *)newANTLRPtrBuffer;
 +(ANTLRPtrBuffer *)newANTLRPtrBufferWithLen:(NSInteger)cnt;
 -(id)init;
--(id)initWithLen:(NSInteger)cnt;
+-(id)initWithLen:(NSUInteger)cnt;
 -(void)dealloc;
 
 // Instance Methods

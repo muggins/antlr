@@ -65,13 +65,13 @@
     return self;
 }
 
-- (id<ANTLRTree>)pattern
+- (id<ANTLRBaseTree>)pattern
 {
     if ( ttype==ANTLRLexerTokenTypeBEGIN ) {
         return [self parseTree];
     }
     else if ( ttype==ANTLRLexerTokenTypeID ) {
-        id<ANTLRTree> node = [self parseNode];
+        id<ANTLRBaseTree> node = [self parseNode];
         if ( ttype==ANTLRLexerTokenTypeEOF ) {
             return node;
         }
@@ -80,13 +80,13 @@
     return nil;
 }
 
-- (id<ANTLRTree>) parseTree
+- (id<ANTLRBaseTree>) parseTree
 {
     if ( ttype != ANTLRLexerTokenTypeBEGIN ) {
         @throw [ANTLRRuntimeException newException:@"no BEGIN"];
     }
     ttype = [tokenizer nextToken];
-    id<ANTLRTree> root = [self parseNode];
+    id<ANTLRBaseTree> root = [self parseNode];
     if ( root==nil ) {
         return nil;
     }
@@ -96,11 +96,11 @@
            ttype==ANTLRLexerTokenTypeDOT )
     {
         if ( ttype==ANTLRLexerTokenTypeBEGIN ) {
-            id<ANTLRTree> subtree = [self parseTree];
+            id<ANTLRBaseTree> subtree = [self parseTree];
             [adaptor addChild:subtree toTree:root];
         }
         else {
-            id<ANTLRTree> child = [self parseNode];
+            id<ANTLRBaseTree> child = [self parseNode];
             if ( child == nil ) {
                 return nil;
             }
@@ -114,7 +114,7 @@
     return root;
 }
 
-- (id<ANTLRTree>) parseNode
+- (id<ANTLRBaseTree>) parseNode
 {
     // "%label:" prefix
     NSString *label = nil;
@@ -149,7 +149,7 @@
     NSString *tokenName = [tokenizer toString];
     ttype = [tokenizer nextToken];
     if ( [tokenName isEqualToString:@"nil"] ) {
-        return adaptor;
+        return [adaptor emptyNode];
     }
     NSString *text = tokenName;
     // check for arg
@@ -165,7 +165,7 @@
     if ( treeNodeType==ANTLRTokenTypeInvalid ) {
         return nil;
     }
-    id<ANTLRTree> node;
+    id<ANTLRBaseTree> node;
     node = [adaptor createTree:treeNodeType Text:text];
     if ( label!=nil && [node class] == [ANTLRTreePattern class] ) {
         ((ANTLRTreePattern *)node).label = label;

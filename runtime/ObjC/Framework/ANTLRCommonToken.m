@@ -57,6 +57,11 @@ static ANTLRCommonToken *INVALID_TOKEN;
     [INVALID_TOKEN retain];
 }
 
++ (ANTLRCommonToken *)INVALID_TOKEN
+{
+    return INVALID_TOKEN;
+}
+
 + (NSInteger) DEFAULT_CHANNEL
 {
     return DEFAULT_CHANNEL;
@@ -323,7 +328,7 @@ static ANTLRCommonToken *INVALID_TOKEN;
     return startIndex;
 }
 
-- (void) setStart: (NSUInteger) aStart
+- (void) setStart: (NSInteger) aStart
 {
     startIndex = aStart;
 }

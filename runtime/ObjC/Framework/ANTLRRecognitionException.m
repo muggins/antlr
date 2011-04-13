@@ -173,12 +173,12 @@
 //---------------------------------------------------------- 
 //  node 
 //---------------------------------------------------------- 
-- (id<ANTLRTree>) getNode
+- (id<ANTLRBaseTree>) getNode
 {
     return node; 
 }
 
-- (void) setNode: (id<ANTLRTree>) aNode
+- (void) setNode: (id<ANTLRBaseTree>) aNode
 {
     if (node != aNode) {
         [aNode retain];

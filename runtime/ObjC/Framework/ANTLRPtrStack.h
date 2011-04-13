@@ -22,7 +22,6 @@
 
 //@property (copy) ANTLRPtrStack *fNext;
 //@property (copy) TStringPool *fPool;
-@property (assign) NSInteger LastHash;
 
 // Contruction/Destruction
 + (ANTLRPtrStack *)newANTLRPtrStack;

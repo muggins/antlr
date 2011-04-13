@@ -50,7 +50,7 @@
     return self;
 }
 
-- (id<ANTLRTree>)dupNode
+- (id<ANTLRBaseTree>)dupNode
 {
     return nil;
 }
