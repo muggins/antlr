@@ -7,6 +7,11 @@ University of San Francisco
 
 CHANGES
 
+April 13, 2011
+
+* Integrated STv4 upgrade from antlr3-main.  Tool/runtime should no longer
+  need ANTLR v2! :)
+
 March 7, 2011
 
 * Changed output=template code to use ST v4 not ST v3.2.1
