@@ -73,7 +73,7 @@
  *  If you care what the token payload objects' type is, you should
  *  override this method and any other createToken variant.
  */
-- (ANTLRCommonTree *) createTree:(ANTLRCommonToken *)aToken
+- (ANTLRCommonTree *) create:(ANTLRCommonToken *)aToken
 {
     return [ANTLRCommonTree newTreeWithToken:aToken];
 }

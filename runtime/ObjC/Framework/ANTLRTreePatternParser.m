@@ -118,6 +118,7 @@
 {
     // "%label:" prefix
     NSString *label = nil;
+    ANTLRTreePattern *node;
     if ( ttype == ANTLRLexerTokenTypePERCENT ) {
         ttype = [tokenizer nextToken];
         if ( ttype != ANTLRLexerTokenTypeID ) {
@@ -135,7 +136,7 @@
     if ( ttype == ANTLRLexerTokenTypeDOT ) {
         ttype = [tokenizer nextToken];
         id<ANTLRToken> wildcardPayload = [ANTLRCommonToken newToken:0 Text:@"."];
-        ANTLRTreePattern *node = [ANTLRWildcardTreePattern newANTLRWildcardTreePattern:wildcardPayload];
+        node = [ANTLRWildcardTreePattern newANTLRWildcardTreePattern:wildcardPayload];
         if ( label != nil ) {
             node.label = label;
         }
@@ -165,7 +166,6 @@
     if ( treeNodeType==ANTLRTokenTypeInvalid ) {
         return nil;
     }
-    id<ANTLRBaseTree> node;
     node = [adaptor createTree:treeNodeType Text:text];
     if ( label!=nil && [node class] == [ANTLRTreePattern class] ) {
         ((ANTLRTreePattern *)node).label = label;

@@ -34,8 +34,6 @@
 	NSInteger uniqueNodeID;
 }
 
-- (id<ANTLRBaseTree>) createTree:(id<ANTLRToken>)payload;
-
 - (id) init;
 
 - (id) copyWithZone:(NSZone *)aZone;
@@ -112,11 +110,10 @@
 
 - (id<ANTLRBaseTree>)becomeRootfromToken:(id<ANTLRToken>)aNewRoot old:(id<ANTLRBaseTree>)oldRoot;
 
-- (id<ANTLRBaseTree>)createTree:(NSInteger)aTType FromToken:(id<ANTLRToken>)aFromToken;
-
-- (id<ANTLRBaseTree>)createTree:(NSInteger)aTType FromToken:(id<ANTLRToken>)aFromToken Text:(NSString *)theText;
-
-- (id<ANTLRBaseTree>)createTree:(NSInteger)aTType Text:(NSString *)theText;
+- (id<ANTLRBaseTree>) create:(id<ANTLRToken>)payload;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)aTType FromToken:(id<ANTLRToken>)aFromToken;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)aTType FromToken:(id<ANTLRToken>)aFromToken Text:(NSString *)theText;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)aTType Text:(NSString *)theText;
 
 - (NSInteger) getType:(id<ANTLRBaseTree>)aTree;
 

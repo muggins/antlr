@@ -37,9 +37,11 @@
 + (id<ANTLRBaseTree>) newEmptyTree;
 + (ANTLRCommonTreeAdaptor *)newTreeAdaptor;
 - (id) init;
-- (id<ANTLRBaseTree>)dupNode:(id<ANTLRBaseTree>)t;    
-- (ANTLRCommonTree *)createTree:(ANTLRCommonToken *)aToken;
-- (ANTLRCommonTree *)createTree:(NSInteger)tokenType Text:(NSString *)text;
+- (id<ANTLRBaseTree>)dupNode:(id<ANTLRBaseTree>)t;   
+
+- (id<ANTLRBaseTree>) create:(id<ANTLRToken>) payload;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType fromToken:(ANTLRCommonToken *)aToken;
+- (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType fromToken:(ANTLRCommonToken *)aToken Text:(NSString *)text;
 - (id<ANTLRToken>)createToken:(NSInteger)tokenType Text:(NSString *)text;
 - (id<ANTLRToken>)createToken:(id<ANTLRToken>)fromToken;
 - (void) setTokenBoundaries:(id<ANTLRBaseTree>)t From:(id<ANTLRToken>)startToken To:(id<ANTLRToken>)stopToken;

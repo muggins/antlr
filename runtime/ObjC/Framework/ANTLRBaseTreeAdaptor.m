@@ -40,11 +40,6 @@
     return [[ANTLRCommonTree alloc] init];
 }
 
-- (id<ANTLRBaseTree>) createTree:(id<ANTLRToken>)aToken
-{
-    return [ANTLRCommonTree newTreeWithToken:aToken];
-}
-
 - (id) init
 {
     self = [super init];
@@ -219,7 +214,12 @@
 
 - (id<ANTLRBaseTree>)becomeRootfromToken:(id<ANTLRToken>)newRoot old:(id<ANTLRBaseTree>)oldRoot
 {
-    return [self becomeRoot:[self createTree:newRoot] old:oldRoot];
+    return [self becomeRoot:(id<ANTLRToken>)[self create:newRoot] old:oldRoot];
+}
+
+- (id<ANTLRBaseTree>) create:(id<ANTLRToken>)aToken
+{
+    return [ANTLRCommonTree newTreeWithToken:aToken];
 }
 
 - (id<ANTLRBaseTree>)createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken
@@ -227,25 +227,25 @@
     fromToken = [self createToken:fromToken];
     //((ClassicToken)fromToken).setType(tokenType);
     [fromToken setType:tokenType];
-    id<ANTLRBaseTree> t = [[self class] createTree:fromToken];
+    id<ANTLRBaseTree> t = [self create:fromToken];
     return t;
 }
 
-- (id<ANTLRBaseTree>)createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text;
+- (id<ANTLRBaseTree>)createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text
 {
     if (fromToken == nil)
         return [self createTree:tokenType Text:text];
-    fromToken = [self createToken:fromToken];
+    fromToken = [self createToken:tokenType Text:text];
     [fromToken setType:tokenType];
     [fromToken setText:text];
-    id<ANTLRBaseTree>t = [self createTree:fromToken];
+    id<ANTLRBaseTree>t = [self create:fromToken];
     return t;
 }
 
 - (id<ANTLRBaseTree>)createTree:(NSInteger)tokenType Text:(NSString *)text
 {
     id<ANTLRToken> fromToken = [self createToken:tokenType Text:text];
-    id<ANTLRBaseTree> t = (id<ANTLRBaseTree>)[self createTree:fromToken];
+    id<ANTLRBaseTree> t = (id<ANTLRBaseTree>)[self create:fromToken];
     return t;
 }
 

@@ -94,12 +94,12 @@
 - (NSString *) toString;
 - (NSString *) toStringTree;
 
-@property (retain) ANTLRCommonToken *token;
+@property (retain) id<ANTLRToken>token;
 @property (assign) NSInteger startIndex;
 @property (assign) NSInteger stopIndex;
 @property (retain) id<ANTLRBaseTree> parent;
 @property (assign) NSInteger childIndex;
-@property (retain, getter=getChildren, setter=setChildren:) NSMutableArray *children;
+@property (retain) NSMutableArray *children;
 @property (retain) NSException *anException;
 
 @end

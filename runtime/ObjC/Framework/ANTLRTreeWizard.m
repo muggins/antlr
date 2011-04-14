@@ -164,7 +164,7 @@
 
 - (id<ANTLRBaseTree>)createTreePattern:(id<ANTLRToken>)payload
 {
-    return (id<ANTLRBaseTree>)[super createTree:payload];
+    return (id<ANTLRBaseTree>)[super create:payload];
 }
           
 @end

@@ -34,8 +34,6 @@
 
 #pragma mark Construction
 
-- (id<ANTLRBaseTree>) createTree:(id<ANTLRToken>)payload;
-
 #pragma mark ANTLRTreeAdaptor implementation
 - (id<ANTLRBaseTree>)dupNode:(id<ANTLRBaseTree>)aNode;	// copies just the node
 - (id<ANTLRBaseTree>)dupTree:(id<ANTLRBaseTree>)aTree;	// copies the entire subtree, recursively
@@ -105,6 +103,7 @@
                            
 - (NSUInteger) getUniqueID:(id<ANTLRBaseTree>)aNode;
 
+- (id<ANTLRBaseTree>) createTreeFromToken:(id<ANTLRToken>)payload;
 - (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken;
 - (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text;
 - (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType Text:(NSString *)text;
@@ -238,6 +237,7 @@
 
 - (NSUInteger) getUniqueID:(id<ANTLRBaseTree>)aNode;
 
+- (id<ANTLRBaseTree>) create:(id<ANTLRToken>)payload;
 - (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken;
 - (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType FromToken:(id<ANTLRToken>)fromToken Text:(NSString *)text;
 - (id<ANTLRBaseTree>) createTree:(NSInteger)tokenType Text:(NSString *)text;
