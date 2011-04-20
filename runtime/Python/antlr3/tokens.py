@@ -241,6 +241,9 @@ class CommonToken(Token):
     def setType(self, ttype):
         self.type = ttype
 
+    def getTypeName(self):
+        return str(self.type)
+
     
     def getLine(self):
         return self.line
@@ -293,11 +296,11 @@ class CommonToken(Token):
         else:
             txt = "<no text>"
 
-        return "[@%d,%d:%d=%r,<%d>%s,%d:%d]" % (
+        return "[@%d,%d:%d=%r,<%s>%s,%d:%d]" % (
             self.index,
             self.start, self.stop,
             txt,
-            self.type, channelStr,
+            self.getTypeName(), channelStr,
             self.line, self.charPositionInLine
             )
     
