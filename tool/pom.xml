@@ -4,7 +4,7 @@
     <groupId>org.antlr</groupId>
     <artifactId>antlr</artifactId>
     <packaging>jar</packaging>
-    <name>ANTLR Tool 3.4.1-SNAPSHOT</name>
+    <name>ANTLR Grammar Tool v 3.4-beta2</name>
     <url>http://antlr.org</url>
 
 
@@ -18,8 +18,9 @@
     <parent>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-master</artifactId>
-        <version>3.4.1-SNAPSHOT</version>
+        <version>3.4-beta2</version>
     </parent>
+    
     <dependencies>
         <dependency>
             <groupId>org.antlr</groupId>
@@ -34,7 +35,14 @@
             <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>ST4</artifactId>
+            <version>4.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+            
     </dependencies>
   <!--
 
@@ -59,12 +67,13 @@
 
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr3-maven-plugin</artifactId>
-                <version>3.4</version>
+                <version>3.3</version>
                 <configuration>
                     <libDirectory>target/generated-sources/antlr/org/antlr/grammar/v3</libDirectory>
                 </configuration>
                 <executions>
                     <execution>
+
                         <goals>
                             <goal>antlr</goal>
                         </goals>
@@ -75,6 +84,7 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>jsr14</target>
@@ -83,7 +93,6 @@
             </plugin>
 
         </plugins>
-
 
     </build>
 </project>

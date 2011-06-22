@@ -6,20 +6,20 @@
   <packaging>jar</packaging>
   
   <!--
-
     Inherit from the ANTLR master pom, which tells us what
     version we are and allows us to inherit dependencies
     and so on.
-
     -->
   <parent>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-master</artifactId>
-      <version>3.4.1-SNAPSHOT</version>
+
+      <version>3.4-beta2</version>
 
   </parent>
   
-  <name>Antlr Runtime 3.4.1-SNAPSHOT</name>
+
+  <name>Antlr 3.4-beta2 Runtime</name>
 
   <description>A framework for constructing recognizers, compilers, and translators from grammatical descriptions containing Java, C#, C++, or Python actions.</description>
   <url>http://www.antlr.org</url>
@@ -61,7 +61,6 @@
     repository.
   -->
   <distributionManagement>
-
       <repository>
           <id>antlr-repo</id>
           <name>ANTLR Testing repository</name>
@@ -73,9 +72,7 @@
             <name>ANTLR Testing Snapshot Repository</name>
             <url>scpexe://antlr.org/home/mavensync/antlr-snapshot</url>
       </snapshotRepository>
-
   </distributionManagement>
-
   <dependencies>
     
     <dependency>
@@ -83,8 +80,18 @@
       <artifactId>stringtemplate</artifactId>
       <version>3.2.1</version>
       <scope>compile</scope>
+
+      
     </dependency>
     
+    
+    <dependency>
+        <groupId>antlr</groupId>
+        <artifactId>antlr</artifactId>
+        <version>2.7.7</version>
+        <scope>compile</scope>
+    </dependency>    
+
   </dependencies>
   
 <build>
@@ -105,10 +112,11 @@
                 <target>jsr14</target>
             </configuration>
         </plugin>
-
         <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
+
+            <version>2.3.2</version>
             <configuration>
                 <findbugsXmlOutput>true</findbugsXmlOutput>
                 <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
@@ -117,5 +125,4 @@
         </plugin>
     </plugins>
 </build>
-
 </project>

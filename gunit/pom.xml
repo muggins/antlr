@@ -5,7 +5,7 @@
     <artifactId>gunit</artifactId>
     <packaging>jar</packaging>
   
-    <name>ANTLR gUnit</name>
+    <name>ANTLR gUnit v3.4-beta2</name>
   <!--
 
     Inherit from the ANTLR master pom, which tells us what
@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-master</artifactId>
-        <version>3.4</version>
+        <version>3.4-beta2</version>
     </parent>
 
     <url>http://www.antlr.org/wiki/display/ANTLR3/gUnit+-+Grammar+Unit+Testing</url>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.5</version>
+            <version>4.8.2</version>
             <scope>compile</scope>
         </dependency>
 
@@ -97,23 +97,21 @@
             <scope>compile</scope>
             
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>ST4</artifactId>
+            <version>4.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>stringtemplate</artifactId>
             <version>3.2.1</version>
             <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>stringtemplate</artifactId>
-            <version>4.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-
-
-
+        
     </dependencies>
 
     <build>
@@ -139,7 +137,7 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.5</source>
+                    <source>1.6</source>
                     <target>jsr14</target>
                     <sourceDirectory>src</sourceDirectory>
                 </configuration>
@@ -152,6 +150,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <findbugsXmlOutput>true</findbugsXmlOutput>
                     <findbugsXmlWithMessages>true</findbugsXmlWithMessages>

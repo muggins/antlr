@@ -34,8 +34,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.antlr.mojo.antlr3;
 
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -47,6 +45,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.antlr.Tool;
+import org.antlr.runtime.RecognitionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.SimpleSourceInclusionScanner;
@@ -75,7 +74,7 @@ public class Antlr3Mojo
     //
     /**
      * If set to true, then after the tool has processed an input grammar file
-     * it will report variaous statistics about the parser, such as information
+     * it will report various statistics about the parser, such as information
      * on cyclic DFAs, which rules may use backtracking, and so on.
      *
      * @parameter default-value="false"
@@ -126,7 +125,7 @@ public class Antlr3Mojo
     protected boolean trace;
     /**
      * If this parameter is set, it indicates that any warning or error messages returned
-     * by ANLTR, shoould be formatted in the specified way. Currently, ANTLR suports the
+     * by ANLTR, should be formatted in the specified way. Currently, ANTLR supports the
      * built-in formats of antlr, gnu and vs2005.
      *
      * @parameter default-value="antlr"
@@ -239,8 +238,8 @@ public class Antlr3Mojo
      * The main entry point for this Mojo, it is responsible for converting
      * ANTLR 3.x grammars into the target language specified by the grammar.
      * 
-     * @throws org.apache.maven.plugin.MojoExecutionException When something is disvocered such as a missing source
-     * @throws org.apache.maven.plugin.MojoFailureException When something really bad happesn such as not being able to create the ANTLR Tool
+     * @throws org.apache.maven.plugin.MojoExecutionException When something is discovered such as a missing source
+     * @throws org.apache.maven.plugin.MojoFailureException When something really bad happens such as not being able to create the ANTLR Tool
      */
     public void execute()
             throws MojoExecutionException, MojoFailureException {
@@ -408,7 +407,7 @@ public class Antlr3Mojo
      * @throws org.codehaus.plexus.compiler.util.scan.InclusionScanException
      */
     private void processGrammarFiles(File sourceDirectory, File outputDirectory)
-            throws TokenStreamException, RecognitionException, IOException, InclusionScanException {
+            throws RecognitionException, IOException, InclusionScanException {
         // Which files under the source set should we be looking for as grammar files
         //
         SourceMapping mapping = new SuffixMapping("g", Collections.EMPTY_SET);
