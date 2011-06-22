@@ -15,12 +15,6 @@
     <id>completejar</id>
 
     <!--
-        Exclude the antlr-master pom from the jar - we don't need it
-        and it causes silly things to happen.
-      -->
-    <useProjectArtifact>false</useProjectArtifact>
-
-    <!--
         The only output format we need is the executable jar file
       -->
     <formats>
@@ -55,12 +49,24 @@
               -->
             <binaries>
 
-            <!--
-                Unpack the binary dependencies so we have a nice
-                uber jar that can run with java -jar and need not have
-                CLASSPATH configured and so on.
-              -->
-                        <unpack>true</unpack>
+            <dependencySets>
+                <dependencySet>
+                    <!--
+                        Exclude the antlr-master pom from the jar - we don't need it
+                        and it causes silly things to happen.
+                      -->
+                    <useProjectArtifact>false</useProjectArtifact>
+                    
+                    <!--
+                        Unpack the binary dependencies so we have a nice
+                        uber jar that can run with java -jar and need not have
+                        CLASSPATH configured and so on.
+                      -->
+                    <unpack>true</unpack>
+                </dependencySet>
+            </dependencySets>
+
+
             </binaries>
 
         </moduleSet>
