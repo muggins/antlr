@@ -2503,14 +2503,14 @@ static const ANTLR3_INT32 dfa<dfa.decisionNumber>_special[<dfa.numberOfStates>] 
 static const ANTLR3_INT32 dfa<dfa.decisionNumber>_T<i0>[] =
     {
 	<table; separator=", ", wrap="\n", null="-1">
-    \};}; null = "">
+    \};<\n>}; null = "">
 
 /* Transition tables are a table of sub tables, with some tables
  * reused for efficiency.
  */
 static const ANTLR3_INT32 * const dfa<dfa.decisionNumber>_transitions[] =
 {
-    <dfa.transitionEdgeTables:{xref|dfa<dfa.decisionNumber>_T<xref>}; separator=", ", wrap="\n", null="_empty">
+    <dfa.transitionEdgeTables:{xref|dfa<dfa.decisionNumber>_T<xref>}; separator=", ", wrap="\n", null="dfa<dfa.decisionNumber>_T_empty">
 };
 
 <if(dfa.specialStateSTs)>
