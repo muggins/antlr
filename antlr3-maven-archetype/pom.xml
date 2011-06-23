@@ -6,9 +6,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.antlr</groupId>
     <artifactId>antlr3-maven-archetype</artifactId>
-    <version>3.4-beta2</version>
+    <version>3.4-beta3</version>
     <packaging>maven-archetype</packaging>
-    <name>ANTLR3 Maven Archetype</name>
+    <name>ANTLR3 Maven Archetype 3.4beta3</name>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

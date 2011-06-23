@@ -14,12 +14,12 @@
       <groupId>org.antlr</groupId>
       <artifactId>antlr-master</artifactId>
 
-      <version>3.4-beta2</version>
+      <version>3.4-beta3</version>
 
   </parent>
   
 
-  <name>Antlr 3.4-beta2 Runtime</name>
+  <name>Antlr 3.4-beta3 Runtime</name>
 
   <description>A framework for constructing recognizers, compilers, and translators from grammatical descriptions containing Java, C#, C++, or Python actions.</description>
   <url>http://www.antlr.org</url>
