@@ -3018,7 +3018,7 @@ void
 %>
 
 delegateName(d) ::= <<
-<if(d.label)><d.label><else>g<it.name><endif>
+<if(d.label)><d.label><else>g<d.name><endif>
 >>
 
 /** Using a type to init value map, try to init a type; if not in table
