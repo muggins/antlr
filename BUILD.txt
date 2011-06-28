@@ -93,7 +93,7 @@ Building
 --------
 
 Building ANTLR is trivial, assuming that you have loaded Maven version
-2.0.9 or better on to your build system and installed it as explained
+2.0.9 or better (but NOT version 3.x) on to your build system and installed it as explained
 here:
 
 http://maven.apache.org/download.html
