@@ -3,8 +3,7 @@
 <!--
     This file defines what goes in to ANTLR Uber jar, which includes
     all of the classes we need to run an executable jar in standalone
-    mode, other than junit, which has a non Free BSD license and so
-    we are reluctanct to include it in the jar.
+    mode.
   -->
 <assembly>
 
@@ -23,7 +22,7 @@
 
     <!--
         Make all jars unpack at the same level and don't include
-        any extranous directories.
+        any extraneous directories.
       -->
     <includeBaseDirectory>false</includeBaseDirectory>
 
@@ -43,55 +42,34 @@
           
             </includes>
             <!--
-                Of the binaries, such as the depencies that the
+                Of the binaries, such as the dependencies that the
                 above modules need, which do we want and which do we not.
                 Currently we want all the dependencies in the Tool jar.
               -->
             <binaries>
 
-            <dependencySets>
-                <dependencySet>
-                    <!--
-                        Exclude the antlr-master pom from the jar - we don't need it
-                        and it causes silly things to happen.
-                      -->
-                    <useProjectArtifact>false</useProjectArtifact>
+                <dependencySets>
+                    <dependencySet>
+                        <!--
+                            Exclude the antlr-master pom from the jar - we don't need it
+                            and it causes silly things to happen.
+                          -->
+                        <useProjectArtifact>false</useProjectArtifact>
                     
-                    <!--
-                        Unpack the binary dependencies so we have a nice
-                        uber jar that can run with java -jar and need not have
-                        CLASSPATH configured and so on.
-                      -->
-                    <unpack>true</unpack>
-                </dependencySet>
-            </dependencySets>
+                        <!--
+                            Unpack the binary dependencies so we have a nice
+                            uber jar that can run with java -jar and need not have
+                            CLASSPATH configured and so on.
+                          -->
+                        <unpack>true</unpack>
+                    </dependencySet>
+                </dependencySets>
 
 
             </binaries>
 
         </moduleSet>
-        
-        <moduleSet>
-
-            <includes>
-
-                <include>org.antlr:gunit</include>
-
-            </includes>
-
-            <!--
-                We do not want any of the dependencies that gunit has as they
-                are inlcuded with the tool. In particular we want to exclude
-                the junit dependency.
-              -->
-            <binaries>
-                
-               <includeDependencies>false</includeDependencies>
-
-            </binaries>
-
-        </moduleSet>
-
+       
     </moduleSets>
 
     <!--
@@ -107,6 +85,4 @@
         </fileSet>
     </fileSets>
 
-
-    
 </assembly>
