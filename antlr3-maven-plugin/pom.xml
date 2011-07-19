@@ -36,6 +36,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+
+    <!--
+        The ANTLR Maven artifacts are now released via the Sonotype OSS
+        repository, which means that they are synced to Maven central 
+        within a few minutes of hitting the release repo for Sonotype.
+        To enable this, we inherit from the Sonotype provided parent
+        pom. However, we must also configure our .m2/settings.xml to include
+        the snapshot and staging server and the sonotype password. This 
+        means that only ANTLR developers can released the artifacts, but
+        anyone can build locally.
+      -->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>  
+    
     <!-- Maven model we are inheriting from
       -->
     <modelVersion>4.0.0</modelVersion>
@@ -64,8 +81,8 @@
          we cannot use the paren pom to control the version number
          and MUST update <version> in this pom manually!
          -->
-    <version>3.4-beta4</version>
-    <name>Maven plugin for ANTLR V3.4-beta4</name>
+    <version>3.4</version>
+    <name>Maven plugin for ANTLR V3.4</name>
     <prerequisites>
         <maven>2.0</maven>
     </prerequisites>
@@ -109,13 +126,44 @@ Jim Idle - March 2009
 
     </description>
 
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>deploy</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.3</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                   <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
     <developers>
 
         <developer>
             <name>Jim Idle</name>
             <url>http://www.temporal-wave.com</url>
             <roles>
-                <role>Originator, version 3.1.3</role>
+                <role>Originator, version 3.1.3+</role>
             </roles>
         </developer>
 
@@ -161,55 +209,6 @@ Jim Idle - March 2009
             <url>http://www.antlr.org/LICENSE.txt </url>
         </license>
     </licenses>
-
-    <distributionManagement>
-
-        <repository>
-            <id>antlr-repo</id>
-            <name>ANTLR Testing repository</name>
-            <url>scpexe://antlr.org/home/mavensync/antlr-repo</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>antlr-snapshot</id>
-            <name>ANTLR Testing Snapshot Repository</name>
-            <url>scpexe://antlr.org/home/mavensync/antlr-snapshot</url>
-        </snapshotRepository>
-
-        <site>
-            <id>antlr-repo</id>
-            <name>ANTLR Maven Plugin Web Site</name>
-            <url>scpexe://antlr.org/home/mavensync/antlr-maven-webs/antlr3-maven-plugin</url>
-        </site>
-    </distributionManagement>
-
-    <!--
-
-    Inform Maven of the ANTLR snapshot repository, which it will
-    need to consult to get the latest snapshot build of the runtime and tool
-    if it was not built and installed locally.
-    -->
-    <repositories>
-
-      <!--
-        This is the ANTLR repository.
-        -->
-        <repository>
-            <id>antlr-snapshot</id>
-            <name>ANTLR Testing Snapshot Repository</name>
-            <url>http://antlr.org/antlr-snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            
-        </repository>
-
-    </repositories>
     
     <!-- Ancilliary information for completeness
       -->
@@ -273,7 +272,7 @@ Jim Idle - March 2009
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>3.4-beta4</version>
+            <version>3.4</version>
         </dependency>
 
         <!--
@@ -300,14 +299,6 @@ Jim Idle - March 2009
     <build>
 
         <defaultGoal>install</defaultGoal>
-
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
 
         <plugins>
 
@@ -349,6 +340,20 @@ Jim Idle - March 2009
                 </executions>
             </plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+            
         </plugins>
 
     </build>

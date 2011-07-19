@@ -13,13 +13,11 @@
   <parent>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-master</artifactId>
-
-      <version>3.4-beta4</version>
-
+      <version>3.4</version>
   </parent>
   
 
-  <name>Antlr 3.4-beta4 Runtime</name>
+  <name>Antlr 3.4 Runtime</name>
 
   <description>A framework for constructing recognizers, compilers, and translators from grammatical descriptions containing Java, C#, C++, or Python actions.</description>
   <url>http://www.antlr.org</url>
@@ -53,26 +51,6 @@
     <connection>http://fisheye2.cenqua.com/browse/antlr</connection>
   </scm>
   
-  <!--
-    Definition of the ANTLR repositories. Note that you can only deploy
-    to the repositories via scp, and so the server must already know about
-    your public key. ONly ANTLR developers are allowed to deploy to the 
-    release and snapshot repositories, which are synced with the Maven central
-    repository.
-  -->
-  <distributionManagement>
-      <repository>
-          <id>antlr-repo</id>
-          <name>ANTLR Testing repository</name>
-          <url>scpexe://antlr.org/home/mavensync/antlr-repo</url>
-      </repository>
-      
-      <snapshotRepository>
-            <id>antlr-snapshot</id>
-            <name>ANTLR Testing Snapshot Repository</name>
-            <url>scpexe://antlr.org/home/mavensync/antlr-snapshot</url>
-      </snapshotRepository>
-  </distributionManagement>
   <dependencies>
     
     <dependency>
@@ -80,8 +58,6 @@
       <artifactId>stringtemplate</artifactId>
       <version>3.2.1</version>
       <scope>compile</scope>
-
-      
     </dependency>
     
     
@@ -96,13 +72,6 @@
   
 <build>
     <defaultGoal>install</defaultGoal>
-    <extensions>
-        <extension>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-ssh-external</artifactId>
-            <version>1.0-beta-2</version>
-        </extension>
-    </extensions>
     <plugins>
         <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -115,7 +84,6 @@
         <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
-
             <version>2.3.2</version>
             <configuration>
                 <findbugsXmlOutput>true</findbugsXmlOutput>
