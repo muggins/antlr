@@ -1,4 +1,8 @@
-/// \page changes31 Changes in 3.1 from 3.0
+/// \page changes31 Changes in 3.4 from 3.x
+///
+///
+/// 
+/// 3.0 to 3.1
 ///
 /// The following changes have taken place from 3.0 to 3.1. Some of
 /// them may require minor changes to your grammar files or the
@@ -41,7 +45,7 @@
 /// \section macros Macro Changes
 ///
 /// Prior to the 3.1 release, accessing the token source of a lexer required knowledge of where
-/// the token source pointer was located wihtin the lexer. In 3.1, the token source was burried
+/// the token source pointer was located within the lexer. In 3.1, the token source was burried
 /// further in the innards of the C runtime and such knowledge is considerd irreleavant and confusing.
 /// Hence, when creating a token stream from a token source, it is now mandatory to use the new
 /// C macro TOKENSOURCE(lxr), which will expand to point at the token source interface. This MACRO

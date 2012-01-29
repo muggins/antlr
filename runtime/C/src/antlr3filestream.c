@@ -116,7 +116,7 @@ antlr3StringStreamNew(pANTLR3_UINT8 data, ANTLR3_UINT32 encoding, ANTLR3_UINT32 
 
     // Now we can set up the file name
     //	
-    input->istream->streamName	= input->strFactory->newStr8(input->strFactory, name);
+	input->istream->streamName	= name == NULL ? NULL : input->strFactory->newStr8(input->strFactory, name);
     input->fileName		= input->istream->streamName;
 
     return input;
