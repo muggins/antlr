@@ -36,7 +36,6 @@
 {
     SEL preAction;
     SEL postAction;
-
 }
 
 @property (assign, setter=setPreAction:) SEL preAction;

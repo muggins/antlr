@@ -159,8 +159,8 @@
     BOOL treeChanged = true;
     while ( treeChanged ) {
         TreeRewriter *u = [self applyOnce:t Rule:whichRule];
-        treeChanged = !(t == u);
-        t = u;
+        treeChanged = !(t == (CommonTree *)u);
+        t = (CommonTree *)u;
     }
     return t;
 }
@@ -204,7 +204,7 @@ public Object downup(Object t, boolean showTransformations) {
         //public Object post(Object t) { return applyRepeatedly(t, bottomup_ftpr); }
         [self post:t];
     };
-    t = [v visit:t Action:actions];
+    t = (CommonTree *)[v visit:(id<BaseTree>)t Action:actions];
     return t;
 }
 
@@ -232,14 +232,14 @@ public Object downup(Object t, boolean showTransformations) {
 - (id) topdown
 // @throws RecognitionException
 {
-    @throw [RecognitionException newException:@"TopDown exception"];
+    @throw [RecognitionException newException:input reason:@"TopDown exception"];
     return nil;
 }
 
 - (id) bottomup
 //@throws RecognitionException
 {
-    @throw [RecognitionException newException:@"BottomUp exception"];
+    @throw [RecognitionException newException:input reason:@"BottomUp exception"];
     return nil;
 }
 

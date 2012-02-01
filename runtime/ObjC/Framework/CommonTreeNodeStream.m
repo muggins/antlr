@@ -176,7 +176,7 @@
     adaptor = anAdaptor;
 }
 
-- (CommonTree *)getNode:(NSInteger) i
+- (CommonTree *)get:(NSInteger) i
 {
     @throw [RuntimeException newException:@"Absolute node indexes are meaningless in an unbuffered stream"];
     return nil;

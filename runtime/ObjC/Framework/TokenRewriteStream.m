@@ -433,7 +433,7 @@ extern NSInteger debug;
 {
     NSMutableString *buf = [NSMutableString stringWithCapacity:100];
     for (int i = start; i >= MIN_TOKEN_INDEX && i <= end && i< [tokens count]; i++) {
-        if ( [[lastRewriteTokenIndexes objectAtIndex:i] type] != TokenTypeEOF )
+        if ( [((CommonToken *)[lastRewriteTokenIndexes objectAtIndex:i]) type] != TokenTypeEOF )
             [buf appendString:[[tokens objectAtIndex:i] text]];
     }
     return [NSString stringWithString:buf];

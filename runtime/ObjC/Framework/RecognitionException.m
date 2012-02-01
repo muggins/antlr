@@ -46,7 +46,7 @@
 	return [[RecognitionException alloc] initWithStream:anInputStream];
 }
 
-+ (id) newException:(id<IntStream>) anInputStream reason:(NSString *)aReason
++ (id) newException:(id<IntStream>)anInputStream reason:(NSString *)aReason
 {
 	return [[RecognitionException alloc] initWithStream:anInputStream reason:aReason];
 }

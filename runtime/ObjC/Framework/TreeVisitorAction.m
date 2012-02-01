@@ -31,7 +31,6 @@
 
 #import "TreeVisitorAction.h"
 
-
 @implementation TreeVisitorAction
 
 + (TreeVisitorAction *)newTreeVisitorAction
@@ -96,7 +95,7 @@
                                               RuleD:(fptr *)aTDRule
                                               RuleU:(fptr *)aBURule
 {
-    return [TreeVisitorActionFiltered newTreeVisitorActionFiltered:aFilter];
+    return [[TreeVisitorActionFiltered alloc] initWithFilter:aFilter RuleD:aTDRule RuleU:aBURule];
 }
 
 - (id) initWithFilter:(TreeFilter *)aFilter
@@ -118,7 +117,7 @@
  */
 - (id<BaseTree>)pre:(id<BaseTree>) t
 {
-    [aTFilter applyOnce:t rule:(fptr *)TDRule];
+    [aTFilter applyOnce:t Rule:(fptr *)TDRule];
     return t;
 }
 
@@ -128,7 +127,7 @@
  */
 - (id<BaseTree>)post:(id<BaseTree>) t
 {
-    [aTFilter applyOnce:t rule:(fptr *)BURule];
+    [aTFilter applyOnce:t Rule:(fptr *)BURule];
     return t;
 }
 

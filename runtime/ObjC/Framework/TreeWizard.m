@@ -444,7 +444,7 @@
     TreePatternLexer *tokenizer = [TreePatternLexer newTreePatternLexer:pattern];
     TreePatternParser *parser =
     [TreePatternParser newTreePatternParser:tokenizer Wizard:self Adaptor:[TreePatternTreeAdaptor newTreeAdaptor]];
-    CommonTree *tpattern = [parser pattern];
+    CommonTree *tpattern = (CommonTree *)[parser pattern];
     // don't allow invalid patterns
     if ( tpattern == nil ||
         [tpattern isNil] ||
@@ -499,7 +499,7 @@
     TreePatternParser *parser = [TreePatternParser newTreePatternParser:tokenizer
                                                                                 Wizard:self
                                                                                Adaptor:[TreePatternTreeAdaptor newTreeAdaptor]];
-    CommonTree *tpattern = [parser pattern];
+    CommonTree *tpattern = (CommonTree *)[parser pattern];
     /*
      System.out.println("t="+((Tree)t).toStringTree());
      System.out.println("scant="+tpattern.toStringTree());
@@ -575,7 +575,7 @@
 {
     TreePatternLexer *tokenizer = [TreePatternLexer newTreePatternLexer:pattern];
     TreePatternParser *parser = [TreePatternParser newTreePatternParser:tokenizer Wizard:self Adaptor:adaptor];
-    CommonTree * t = [parser pattern];
+    CommonTree *t = (CommonTree *)[parser pattern];
     return t;
 }
 

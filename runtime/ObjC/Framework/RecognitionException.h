@@ -51,6 +51,7 @@
 
 + (id) newException;
 + (id) newException:(id<IntStream>) anInputStream; 
++ (id) newException:(id<IntStream>)anInputStream reason:(NSString *)aReason;
 - (id) init;
 - (id) initWithStream:(id<IntStream>)anInputStream;
 - (id) initWithStream:(id<IntStream>)anInputStream reason:(NSString *)aReason;

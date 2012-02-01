@@ -154,7 +154,7 @@
         if ( label != nil ) {
             node.label = label;
         }
-        return node;
+        return (id<BaseTree>)node;
     }
     
     // "ID" or "ID[arg]"
@@ -187,7 +187,7 @@
     if ( arg!=nil && [node class] == [TreePattern class] ) {
         ((TreePattern *)node).hasTextArg = YES;
     }
-    return node;
+    return (id<BaseTree>)node;
 }
 
 @synthesize tokenizer;

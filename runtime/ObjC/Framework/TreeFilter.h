@@ -181,7 +181,7 @@ fptr *bottomup_fptr;
     
 - (id) initWithStream:(id<TreeNodeStream>)anInput State:(RecognizerSharedState *)aState;
 
-- (void) applyOnce:(id<BaseTree>)t rule:(fptr *)whichRule;
+- (void) applyOnce:(id<BaseTree>)t Rule:(fptr *)whichRule;
     
 - (void) downup:(id<BaseTree>)t;
 

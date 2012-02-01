@@ -199,7 +199,7 @@ public class TreeFilter extends TreeParser {
     return self;
 }
     
-- (void) applyOnce:(id<BaseTree>)t rule:(fptr *)whichRule
+- (void) applyOnce:(id<BaseTree>)t Rule:(fptr *)whichRule
 {
         if ( t==nil ) return;
         @try {
