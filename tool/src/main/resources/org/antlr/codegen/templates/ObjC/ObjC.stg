@@ -195,9 +195,9 @@ headerFile( LEXER,
 <@imports>
 <actions.(actionScope).preincludes>
 /* =============================================================================
- * Standard antlr3 OBJC runtime definitions
+ * Standard antlr OBJC runtime definitions
  */
-#import \<Foundation/Foundation.h>
+#import \<Cocoa/Cocoa.h>
 #import \<ANTLR/ANTLR.h>
 /* End of standard antlr3 runtime definitions
  * =============================================================================
@@ -1676,17 +1676,17 @@ setTest(ranges) ::= <%
 
 // A T T R I B U T E S
 
-memVars(scope) ::= << <scope.attributes:{a|<a.type> <a.name>;<\n>}; separator="\n"> >>
+memVars(scope) ::= <% <scope.attributes:{a|<a.type> <a.name>;<\n>}; separator="\n"> %>
 
-properties(scope) ::= <<
+properties(scope) ::= <%
 <scope.attributes:{a|@property (assign, getter=get<a.name>, setter=set<a.name>:) <a.type> <a.name>;<\n>}; separator="\n">
->>
+%>
 
-methodsDecl(scope) ::= <<
+methodsDecl(scope) ::= <%
 <scope.attributes:{a|- (<a.type>)get<a.name>;<\n>- (void)set<a.name>:(<a.type>)aVal;<\n>}; separator="\n">
->>
+%>
 
-synthesize(scope) ::= << <scope.attributes:{a|@synthesize <a.name>;}; separator="\n"> >>
+synthesize(scope) ::= <% <scope.attributes:{a|@synthesize <a.name>;}; separator="\n"> %>
 
 methods(scope) ::= <%
 <scope.attributes:{a|
